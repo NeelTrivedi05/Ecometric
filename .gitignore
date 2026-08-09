@@ -9,6 +9,13 @@ out/
 build/
 dist/
 
+# Large dataset archives & raw database dumps
+*.7z
+*.zip
+*.tar.gz
+Ecoinvent database/
+database/ecoinvent_raw/*.7z
+
 # Python / Backend virtualenv & cache
 __pycache__/
 **/__pycache__/
@@ -21,10 +28,22 @@ venv/
 env/
 .pytest_cache/
 
+# Databases & local sqlite files
+*.db
+*.sqlite
+*.sqlite3
+**/dev.db
+**/ecometric.db
+
 # Environment & local config files (secrets)
 .env
 .env*.local
 *.env
+
+# Local AI / Jetro cache
+.jetro/
+.agents/
+.cursor/
 
 # Logs
 logs
