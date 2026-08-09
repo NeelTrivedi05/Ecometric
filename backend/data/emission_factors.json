@@ -1,0 +1,87 @@
+{
+  "_note": "EcoMetric Emission Factors & Impact Characterization Dataset — Pinned to ecoinvent v3.12, TRACI 2.1, CML-IA, PEF EF 3.1",
+  "version": "3.12",
+  "methodologies": ["TRACI 2.1", "CML-IA", "PEF EF 3.1"],
+  "materials": {
+    "steel_enclosure": {
+      "name": "Steel, low-alloyed, at plant",
+      "unit": "kg",
+      "gwp_kg_co2e_per_unit": 2.45,
+      "odp_kg_cfc11e_per_unit": 1.2e-8,
+      "ap_kg_so2e_per_unit": 0.0078,
+      "ep_kg_po4e_per_unit": 0.00095,
+      "pocp_kg_eethene_per_unit": 0.00084,
+      "adp_elements_kg_sbe_per_unit": 0.000012,
+      "adp_fossil_mj_per_unit": 28.5,
+      "water_use_m3_per_unit": 0.045
+    },
+    "copper_coils": {
+      "name": "Copper, primary, at refinery",
+      "unit": "kg",
+      "gwp_kg_co2e_per_unit": 4.85,
+      "odp_kg_cfc11e_per_unit": 3.4e-8,
+      "ap_kg_so2e_per_unit": 0.038,
+      "ep_kg_po4e_per_unit": 0.0042,
+      "pocp_kg_eethene_per_unit": 0.0031,
+      "adp_elements_kg_sbe_per_unit": 0.00045,
+      "adp_fossil_mj_per_unit": 54.2,
+      "water_use_m3_per_unit": 0.12
+    },
+    "compressor_motor": {
+      "name": "Electric motor, 100kW+, assembly",
+      "unit": "kg",
+      "gwp_kg_co2e_per_unit": 5.20,
+      "odp_kg_cfc11e_per_unit": 2.8e-8,
+      "ap_kg_so2e_per_unit": 0.024,
+      "ep_kg_po4e_per_unit": 0.0028,
+      "pocp_kg_eethene_per_unit": 0.0021,
+      "adp_elements_kg_sbe_per_unit": 0.00018,
+      "adp_fossil_mj_per_unit": 62.0,
+      "water_use_m3_per_unit": 0.095
+    },
+    "insulation_puf": {
+      "name": "Polyurethane rigid foam insulation",
+      "unit": "kg",
+      "gwp_kg_co2e_per_unit": 3.80,
+      "odp_kg_cfc11e_per_unit": 8.5e-9,
+      "ap_kg_so2e_per_unit": 0.012,
+      "ep_kg_po4e_per_unit": 0.0014,
+      "pocp_kg_eethene_per_unit": 0.0018,
+      "adp_elements_kg_sbe_per_unit": 0.000004,
+      "adp_fossil_mj_per_unit": 72.4,
+      "water_use_m3_per_unit": 0.062
+    },
+    "electronics_vfd": {
+      "name": "Variable frequency drive & power electronics",
+      "unit": "kg",
+      "gwp_kg_co2e_per_unit": 18.5,
+      "odp_kg_cfc11e_per_unit": 1.4e-7,
+      "ap_kg_so2e_per_unit": 0.092,
+      "ep_kg_po4e_per_unit": 0.011,
+      "pocp_kg_eethene_per_unit": 0.0085,
+      "adp_elements_kg_sbe_per_unit": 0.0012,
+      "adp_fossil_mj_per_unit": 240.0,
+      "water_use_m3_per_unit": 0.45
+    }
+  },
+  "refrigerants": {
+    "R134a": { "gwp_ar5": 1430, "gwp_ar6": 1530, "odp": 0.0 },
+    "R1233zd": { "gwp_ar5": 1, "gwp_ar6": 1, "odp": 0.00034 },
+    "R1234ze": { "gwp_ar5": 1, "gwp_ar6": 1.37, "odp": 0.0 },
+    "R410A": { "gwp_ar5": 2088, "gwp_ar6": 2256, "odp": 0.0 },
+    "R32": { "gwp_ar5": 675, "gwp_ar6": 771, "odp": 0.0 },
+    "R513A": { "gwp_ar5": 631, "gwp_ar6": 673, "odp": 0.0 }
+  },
+  "electricity_grids": {
+    "US_Average": { "gwp_kg_co2e_per_kwh": 0.385, "unit": "kg CO2e / kWh" },
+    "India_Grid": { "gwp_kg_co2e_per_kwh": 0.710, "unit": "kg CO2e / kWh" },
+    "EU_Grid_Mix": { "gwp_kg_co2e_per_kwh": 0.255, "unit": "kg CO2e / kWh" },
+    "UAE_Dubai_Grid": { "gwp_kg_co2e_per_kwh": 0.490, "unit": "kg CO2e / kWh" },
+    "China_Grid": { "gwp_kg_co2e_per_kwh": 0.580, "unit": "kg CO2e / kWh" }
+  },
+  "transport_modes": {
+    "lorry >32t": { "gwp_kg_co2e_per_tkm": 0.088 },
+    "freight_train": { "gwp_kg_co2e_per_tkm": 0.024 },
+    "cargo_ship": { "gwp_kg_co2e_per_tkm": 0.012 }
+  }
+}

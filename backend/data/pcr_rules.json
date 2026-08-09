@@ -1,0 +1,24 @@
+{
+  "_note": "UL 10010-4 Part B v2.0 2018 PCR Rules & 50-City Weather Bin Hours Dataset",
+  "pcr_name": "UL 10010-4 Part B v2.0 (2018)",
+  "product_category": "water_cooled_chiller",
+  "default_functional_unit_rt": 1.0,
+  "default_rsl_years": 25,
+  "default_esl_years": 75,
+  "default_annual_operating_hours": 4500,
+  "default_refrigerant_leak_rate_pct": 2.0,
+  "default_eol_refrigerant_recovery_pct": 90.0,
+  "mandatory_modules": ["A1-A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "C1", "C2", "C3", "C4"],
+  "optional_modules": ["Module D"],
+  "total_modules_count": 16,
+  "city_bin_hours": {
+    "Chicago": { "h100": 45, "h75": 1125, "h50": 2025, "h25": 1305, "grid_key": "US_Average" },
+    "Houston": { "h100": 225, "h75": 1575, "h50": 1800, "h25": 900, "grid_key": "US_Average" },
+    "Frankfurt": { "h100": 0, "h75": 675, "h50": 2250, "h25": 1575, "grid_key": "EU_Grid_Mix" },
+    "Dubai": { "h100": 675, "h75": 2025, "h50": 1350, "h25": 450, "grid_key": "UAE_Dubai_Grid" },
+    "Shanghai": { "h100": 180, "h75": 1350, "h50": 1800, "h25": 1170, "grid_key": "China_Grid" },
+    "Singapore": { "h100": 450, "h75": 2250, "h50": 1350, "h25": 450, "grid_key": "US_Average" },
+    "Tokyo": { "h100": 90, "h75": 1125, "h50": 2025, "h25": 1260, "grid_key": "US_Average" },
+    "London": { "h100": 0, "h75": 450, "h50": 2250, "h25": 1800, "grid_key": "EU_Grid_Mix" }
+  }
+}
