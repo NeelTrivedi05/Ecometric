@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../frontend/node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  role      String    @default("STUDENT") // STUDENT | GUIDE | REVIEWER
+  projects  Project[]
+  createdAt DateTime  @default(now())
+}
+
+model Project {
+  id                 String                     @id @default(uuid())
+  userId             String?
+  user               User?                      @relation(fields: [userId], references: [id])
+  name               String
+  productCategory    String                     @default("water_cooled_chiller")
+  pcrRef             String                     @default("UL 10010-4 Part B v2.0 2018")
+  status             String                     @default("DRAFT") // DRAFT | CALCULATED | REPORTED
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  technicalData      ProductTechnicalData?
+  moduleA4           ModuleA4Transport?
+  moduleA5           ModuleA5Installation?
+  moduleB1           ModuleB1Use?
+  moduleB2           ModuleB2Maintenance?
+  moduleB3           ModuleB3Repair?
+  moduleB4           ModuleB4Replacement?
+  moduleB5           ModuleB5Refurbishment?
+  moduleB6           ModuleB6OperationalEnergy?
+  moduleB7           ModuleB7Water?
+  moduleC1C4         ModuleC1C4Eol?
+  moduleD            ModuleDBeyondBoundary?
+  results            Result[]
+  reports            Report[]
+}
+
+model ProductTechnicalData {
+  id                          String   @id @default(uuid())
+  projectId                   String   @unique
+  project                     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  chillingCapacityRt          Float
+  chillingCapacityKw          Float    // Derived: RT * 3.51685
+  energyEfficiencyJson        String   // JSON string of [{loadPct, ecwt, kwPerTon}]
+  pressureDropFt              Float    @default(15.0)
+  pressureDropKpa             Float    // Derived: ft * 2.989
+  refrigerantType             String   @default("R134a")
+  refrigerantChargeKg         Float    @default(45.0)
+  massDeliveredKg             Float    @default(3200.0)
+  conversionFactorKgPerTon    Float    @default(6.4)
+}
+
+model ModuleA4Transport {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fuelLPer100km              Float    @default(35.0)
+  distanceKm                 Float    @default(500.0)
+  fuelType                   String   @default("diesel")
+  capacityUtilizationPct     Float    @default(85.0)
+  grossDensityKgM3           Float    @default(300.0)
+  capacityUtilVolumeFactor   Float    @default(1.0)
+  additionalOceanFreightKm   Float?   @default(0.0)
+}
+
+model ModuleA5Installation {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  auxiliaryMaterialsKg       Float    @default(12.0)
+  netFreshwaterM3            Float    @default(0.5)
+  freshwaterEvaporatedM3     Float    @default(0.1)
+  freshwaterSewerM3          Float    @default(0.4)
+  electricityKwh             Float    @default(45.0)
+  otherEnergyMj              Float    @default(0.0)
+  productLossKg              Float    @default(0.0)
+  constructionWasteKg        Float    @default(15.0)
+  wasteOutputByRouteJson     String   @default("{}")
+  directEmissionsJson        String   @default("{}")
+}
+
+model ModuleB1Use {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  rslYears                   Int      @default(25)
+}
+
+model ModuleB2Maintenance {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  maintenanceCyclesPerRsl    Int      @default(25)
+  maintenanceCyclesPerEsl    Int      @default(75)
+  refrigerantReplacementKg   Float    @default(22.5)
+  refrigerantLossRatePct     Float    @default(2.0)
+  waterConsumptionM3         Float    @default(5.0)
+  electricityKwh             Float    @default(120.0)
+  directEmissionsKg          Float    @default(0.0)
+}
+
+model ModuleB3Repair {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  notApplicable              Boolean  @default(false)
+  repairCyclesPerRsl         Int      @default(2)
+  repairCyclesPerEsl         Int      @default(6)
+  refrigerantReplacementKg   Float    @default(5.0)
+  electricityKwh             Float    @default(50.0)
+}
+
+model ModuleB4Replacement {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  replacementCycles          Int      @default(2)
+  eslYears                   Int      @default(75)
+  electricityKwh             Float    @default(90.0)
+  waterM3                    Float    @default(1.0)
+  wornPartsReplacedKg        Float    @default(150.0)
+  directEmissionsKg          Float    @default(0.0)
+}
+
+model ModuleB5Refurbishment {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  notApplicable              Boolean  @default(true)
+  refurbishmentCycles        Int      @default(0)
+  detailsJson                String   @default("{}")
+}
+
+model ModuleB6OperationalEnergy {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  targetCitiesJson           String   @default("[\"Chicago\"]")
+  annualHoursOperationJson   String   @default("{}")
+  efficiencyKwPerTon         Float    @default(0.54)
+  chillerCapacityTons        Float    @default(500.0)
+  productLifespanYears       Int      @default(25)
+  electricityKwhJson        String   @default("{}")
+  gridEmissionFactorSource   String   @default("US EPA eGRID / ecoinvent 3.12")
+  gridEmissionFactorKgCo2ePerKwh Float @default(0.716)
+}
+
+model ModuleB7Water {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  netFreshwaterM3            Float    @default(12500.0)
+}
+
+model ModuleC1C4Eol {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  collectedSeparatelyKg      Float    @default(3200.0)
+  collectedMixedWasteKg      Float    @default(0.0)
+  reuseKg                    Float    @default(0.0)
+  distanceReuseKm            Float    @default(50.0)
+  landfillKg                 Float    @default(320.0)
+  distanceLandfillKm         Float    @default(50.0)
+  incinerationKg             Float    @default(0.0)
+  distanceIncinerationKm     Float    @default(50.0)
+  recyclingKg                Float    @default(2880.0)
+  distanceRecyclingKm        Float    @default(100.0)
+  refrigerantRecoveryPct     Float    @default(90.0)
+}
+
+model ModuleDBeyondBoundary {
+  id                         String   @id @default(uuid())
+  projectId                  String   @unique
+  project                    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  notApplicable              Boolean  @default(false)
+  energyRecoveryC3Mj         Float    @default(0.0)
+  thermalTreatmentC4Mj       Float    @default(0.0)
+  materialFlowC3Mj           Float    @default(14500.0)
+}
+
+model ImpactFactor {
+  id                  String   @id @default(uuid())
+  source              String   @default("ecoinvent v3.12")
+  materialOrProcess   String
+  impactCategory      String
+  methodology         String
+  unit                String
+  valuePerKg          Float
+  region              String   @default("Global")
+  datasetVersion      String   @default("ecoinvent 3.12 LCIA")
+  licenseStatus       String   @default("licensed")
+  createdAt           DateTime @default(now())
+
+  @@index([materialOrProcess, methodology, impactCategory])
+}
+
+model RefrigerantGwpFactor {
+  id              String   @id @default(uuid())
+  refrigerantName String   @unique
+  gwpAr5          Float
+  gwpAr6          Float
+  source          String   @default("IPCC AR6 / ecoinvent 3.12")
+}
+
+model GridEmissionFactor {
+  id              String   @id @default(uuid())
+  region          String   @unique
+  kgCo2ePerKwh    Float
+  source          String   @default("ecoinvent 3.12 / eGRID")
+}
+
+model CityClimateData {
+  id                  String   @id @default(uuid())
+  cityName            String   @unique
+  annualHoursByLoadJson String
+  weatherDataSource   String   @default("AHRI 550/590 Standard 50-City Bin Data")
+  gridEmissionFactor  Float    @default(0.716)
+}
+
+model Result {
+  id             String   @id @default(uuid())
+  projectId      String
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  module         String
+  impactCategory String
+  methodology    String
+  unit           String
+  value          Float
+  city           String?
+  calculatedAt   DateTime @default(now())
+
+  @@index([projectId, methodology, module])
+}
+
+model Report {
+  id                    String   @id @default(uuid())
+  projectId             String
+  project               Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  pdfUrl                String
+  version               String   @default("1.0")
+  disclaimerTextSnapshot String
+  generatedAt           DateTime @default(now())
+}
