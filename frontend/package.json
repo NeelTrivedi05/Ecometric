@@ -4,16 +4,19 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "next build",
+    "build": "prisma generate --schema=../database/prisma/schema.prisma && node -r ./patch-node25.js ./node_modules/next/dist/bin/next build",
+    "db:push": "prisma db push --schema=../database/prisma/schema.prisma",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.3.0",
+    "@prisma/client": "^5.22.0",
     "framer-motion": "^12.43.0",
     "next": "^15.5.22",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
@@ -22,6 +25,7 @@
     "@types/react-dom": "^19.2.4",
     "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.22",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
   }

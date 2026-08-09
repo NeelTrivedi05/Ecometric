@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   useEffect,
   useRef,
@@ -9,7 +9,8 @@ import {
   type RefObject,
   type ReactNode,
 } from 'react';
-import { calculateEPD } from '@/lib/epd-calculator';
+import MethodologyStrip from '@/components/MethodologyStrip';
+import MethodologyDocsModal from '@/components/MethodologyDocsModal';
 
 const FRAME_COUNT = 300;
 const PRELOAD_BATCH = 40;
@@ -128,7 +129,7 @@ function drawToCanvas(canvas: HTMLCanvasElement, img: HTMLImageElement) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
-  ctx.fillStyle = '#111111';
+  ctx.fillStyle = '#111111'; // Seamless color match with page background
   ctx.fillRect(0, 0, cssW, cssH);
   const scale = Math.max(cssW / img.naturalWidth, cssH / img.naturalHeight);
   const dw = img.naturalWidth * scale;
@@ -142,7 +143,7 @@ export default function ScrollytellingPage() {
   );
   const [loadedCount, setLoadedCount] = useState(0);
   const [ready, setReady] = useState(false);
-  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [isDocsOpen, setIsDocsOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -197,10 +198,12 @@ export default function ScrollytellingPage() {
 
   return (
     <div className="relative min-h-screen bg-[#111111] text-[#F2EFE9]">
-      <SiteNav onOpenCalculator={() => setIsCalculatorOpen(true)} />
+      <SiteNav onOpenDocs={() => setIsDocsOpen(true)} />
+      
+      {/* NON-BLOCKING LOADING SCREEN WITH SKIP OPTION */}
       {!ready && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#111111]">
-          <div className="w-full max-w-xs space-y-3 px-6">
+          <div className="w-full max-w-xs space-y-4 px-6 text-center">
             <div className="flex items-center justify-between font-display text-[0.58rem] font-semibold uppercase tracking-[0.22em]">
               <span className="text-[#F2EFE9]/50">Loading chiller engine</span>
               <span className="text-[#81BD01]">{Math.round(loadPct * 100)}%</span>
@@ -211,29 +214,35 @@ export default function ScrollytellingPage() {
                 style={{ width: `${Math.max(4, loadPct * 100)}%` }}
               />
             </div>
+            {/* SKIP TO INTERACTIVE CONTENT BUTTON IF LOAD EXCEEDS ~2-3s */}
+            <button
+              type="button"
+              onClick={() => setReady(true)}
+              className="mt-2 text-xs font-display font-semibold uppercase text-[#81BD01] hover:underline"
+            >
+              Skip to Interactive Content →
+            </button>
           </div>
         </div>
       )}
+
       <main>
         <SingleChillerTrack
           imagesRef={imagesRef}
           ready={ready}
           loadedCount={loadedCount}
-          onOpenCalculator={() => setIsCalculatorOpen(true)}
         />
-        <WhyThisMattersSection />
-        <CtaFooter onOpenCalculator={() => setIsCalculatorOpen(true)} />
+        <WhyThisMattersSection onOpenDocs={() => setIsDocsOpen(true)} />
+        <CtaFooter />
       </main>
-      <AnimatePresence>
-        {isCalculatorOpen && (
-          <EpdCalculatorModal onClose={() => setIsCalculatorOpen(false)} />
-        )}
-      </AnimatePresence>
+
+      <MethodologyStrip />
+      <MethodologyDocsModal isOpen={isDocsOpen} onClose={() => setIsDocsOpen(false)} />
     </div>
   );
 }
 
-function SiteNav({ onOpenCalculator }: { onOpenCalculator: () => void }) {
+function SiteNav({ onOpenDocs }: { onOpenDocs: () => void }) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-[#2A2A2A] bg-[#111111]/90 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3.5 sm:px-6 lg:px-8">
@@ -247,14 +256,19 @@ function SiteNav({ onOpenCalculator }: { onOpenCalculator: () => void }) {
         <div className="hidden items-center gap-7 md:flex">
           <Link href="#home" className="font-display text-[0.72rem] font-semibold uppercase text-[#F2EFE9]/60 hover:text-[#81BD01]">Home</Link>
           <Link href="#how-it-works" className="font-display text-[0.72rem] font-semibold uppercase text-[#F2EFE9]/60 hover:text-[#81BD01]">How It Works</Link>
-          <Link href="#docs" className="font-display text-[0.72rem] font-semibold uppercase text-[#F2EFE9]/60 hover:text-[#81BD01]">Docs</Link>
           <button
             type="button"
-            onClick={onOpenCalculator}
+            onClick={onOpenDocs}
+            className="font-display text-[0.72rem] font-semibold uppercase text-[#F2EFE9]/60 hover:text-[#81BD01]"
+          >
+            Docs
+          </button>
+          <Link
+            href="/wizard"
             className="font-display border border-[#81BD01]/60 px-4 py-2 text-[0.72rem] font-semibold uppercase text-[#81BD01] hover:bg-[#81BD01] hover:text-[#111111]"
           >
             Generate EPD
-          </button>
+          </Link>
         </div>
       </nav>
     </header>
@@ -265,12 +279,10 @@ function SingleChillerTrack({
   imagesRef,
   ready,
   loadedCount,
-  onOpenCalculator,
 }: {
   imagesRef: RefObject<(HTMLImageElement | null)[]>;
   ready: boolean;
   loadedCount: number;
-  onOpenCalculator: () => void;
 }) {
   const trackRef = useRef<HTMLElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -358,7 +370,15 @@ function SingleChillerTrack({
 
   return (
     <section ref={trackRef} id="home" className="relative bg-[#111111]" style={{ height: '850vh' }}>
-      <div id="how-it-works" className="absolute top-[18vh]" />
+      {/* HOW IT WORKS SECTION SCROLL ANCHOR & HEADER */}
+      <div id="how-it-works" className="absolute top-[15vh] inset-x-0">
+        <div className="mx-auto max-w-7xl px-6 opacity-0 pointer-events-none">
+          <span className="font-display text-[0.62rem] font-bold uppercase tracking-[0.2em] text-[#81BD01]">
+            How It Works — Exploded View
+          </span>
+        </div>
+      </div>
+
       <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden bg-[#111111] pt-16">
         
         {/* HERO TEXT */}
@@ -397,7 +417,7 @@ function SingleChillerTrack({
           </div>
         </div>
 
-        {/* LIFECYCLE VERDICT CARD */}
+        {/* LIFECYCLE VERDICT CARD & POLISHED CAPTION */}
         <div
           className="absolute right-6 top-[18vh] z-[4] w-full max-w-md sm:right-10 lg:right-16"
           style={{
@@ -408,12 +428,19 @@ function SingleChillerTrack({
         >
           <div className="space-y-5">
             <Tag critical>Lifecycle Verdict</Tag>
+            
+            {/* POLISHED CAPTION TEXT AS REQUESTED */}
+            <div className="font-mono text-xs font-bold text-[#81BD01] uppercase tracking-wider">
+              REASSEMBLING CHILLER ASSEMBLY — Stage B6 Operational Energy Dominated (200×)
+            </div>
+
             <h2 className="font-display text-[clamp(1.6rem,3.4vw,2.8rem)] font-bold leading-[1.12] tracking-tight text-[#F2EFE9]">
               Which component is most pollutant?
             </h2>
             <p className="text-[clamp(0.82rem,1.1vw,0.92rem)] leading-6 text-[#F2EFE9]/65">
               As the chiller reassembles to its operating state, it becomes clear that it is not the steel enclosure, copper coils, or compressor motor that dominates its carbon footprint.
             </p>
+
             <div className="rounded-xl border border-[#2A2A2A] bg-[#181818]/95 p-5 shadow-2xl backdrop-blur-md">
               <div className="flex flex-wrap items-end gap-4">
                 <span className="font-display text-[clamp(2.8rem,6vw,4.5rem)] font-extrabold leading-none tracking-tight text-[#81BD01]">
@@ -429,14 +456,13 @@ function SingleChillerTrack({
                 </div>
               </div>
               <div className="mt-4 border-t border-[#2A2A2A] pt-3">
-                <button
-                  type="button"
-                  onClick={onOpenCalculator}
+                <Link
+                  href="/wizard"
                   className="group inline-flex items-center text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[#81BD01] hover:text-[#ffffff]"
                 >
                   Calculate Your Chiller&apos;s EPD Ratio
                   <span className="ml-1.5 transition-transform group-hover:translate-x-1">→</span>
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -508,7 +534,7 @@ function SingleChillerTrack({
   );
 }
 
-function WhyThisMattersSection() {
+function WhyThisMattersSection({ onOpenDocs }: { onOpenDocs: () => void }) {
   const [ref, visible] = useVisibleOnce<HTMLDivElement>();
   return (
     <section id="docs" ref={ref} className="relative bg-[#111111] py-24 lg:py-32">
@@ -517,23 +543,36 @@ function WhyThisMattersSection() {
         <div className="mb-12 space-y-3">
           <Tag>EPD Procurement Reality</Tag>
           <h2 className="font-display text-[clamp(1.8rem,4vw,3rem)] font-bold tracking-tight text-[#F2EFE9]">Why EPD Data Matters for OEMs</h2>
-          <p className="max-w-xl text-[0.9rem] leading-7 text-[#F2EFE9]/60">Raw material weights matter, but European buyers evaluate total lifecycle performance under strict EU regulations.</p>
+          
+          {/* EXPLICIT REGULATION CITATIONS AS REQUESTED: CPR 2024/3110 & ESPR/DPP */}
+          <p className="max-w-3xl text-[0.92rem] leading-7 text-[#F2EFE9]/70">
+            Under <strong>Regulation (EU) 2024/3110</strong> (Construction Products Regulation revision) and the <strong>Ecodesign for Sustainable Products Regulation (ESPR) / Digital Product Passport (DPP)</strong> mandate, European buyers evaluate total lifecycle performance under strict EU environmental laws. EPD compliance is now a mandatory prerequisite for OEM exporters.
+          </p>
         </div>
+
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="rounded-xl border border-[#2A2A2A] bg-[#181818] p-6">
             <Tag>Lifecycle Scale</Tag>
             <div className="mt-5 grid gap-4 sm:grid-cols-[0.65fr_1.35fr]">
               <div className="rounded-lg border border-[#2A2A2A] bg-[#111111]/70 p-4">
                 <div className="font-display text-[0.6rem] font-semibold uppercase text-[#F2EFE9]/40">Operating Lifespan</div>
-                <div className="mt-2 font-display text-[clamp(1.8rem,3.5vw,2.4rem)] font-bold text-[#81BD01]">15–20 Years</div>
+                <div className="mt-2 font-display text-[clamp(1.8rem,3.5vw,2.4rem)] font-bold text-[#81BD01]">15–25 Years</div>
                 <p className="mt-3 text-[0.78rem] text-[#F2EFE9]/50">Emissions compound exponentially during continuous runtime.</p>
               </div>
               <div className="rounded-lg border border-[#2A2A2A] bg-[#111111]/70 p-4">
                 <div className="font-display text-[0.6rem] font-semibold uppercase text-[#F2EFE9]/40">Declaration Focus</div>
-                <p className="mt-2 text-[0.78rem] text-[#F2EFE9]/50">Manufacturing phase is only A1–A3. Stage B6 (Operational Energy) dominates EU procurement scoring.</p>
+                <p className="mt-2 text-[0.78rem] text-[#F2EFE9]/50">Manufacturing phase is only A1–A3. Stage B6 (Operational Energy) dominates EU procurement scoring under CPR 2024/3110.</p>
+                <button
+                  type="button"
+                  onClick={onOpenDocs}
+                  className="mt-3 font-display text-xs font-bold uppercase text-[#81BD01] hover:underline"
+                >
+                  Read PCR Documentation →
+                </button>
               </div>
             </div>
           </div>
+
           <div className="rounded-xl border border-[#2A2A2A] bg-[#181818] p-6">
             <Tag>Emissions Ratios (PCR-Referenced)</Tag>
             <div className="mt-6 space-y-6">
@@ -563,7 +602,7 @@ function ImpactBar({ label, value, fill, muted = false }: { label: string; value
   );
 }
 
-function CtaFooter({ onOpenCalculator }: { onOpenCalculator: () => void }) {
+function CtaFooter() {
   return (
     <section id="generate" className="bg-[#111111] pb-8 pt-12">
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
@@ -574,137 +613,16 @@ function CtaFooter({ onOpenCalculator }: { onOpenCalculator: () => void }) {
             <p className="max-w-2xl text-[clamp(0.85rem,1.3vw,1rem)] text-[#F2EFE9]/60">Input your unit&apos;s bill of materials, compressor specs, and duty cycle.</p>
           </div>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <button
-              type="button"
+            <Link
+              href="/wizard"
               id="cta-generate-epd"
-              onClick={onOpenCalculator}
-              className="bg-[#81BD01] px-8 py-3.5 font-display text-[0.75rem] font-bold uppercase tracking-[0.16em] text-[#111111] hover:bg-[#92d402]"
+              className="inline-block bg-[#81BD01] px-8 py-3.5 font-display text-[0.75rem] font-bold uppercase tracking-[0.16em] text-[#111111] hover:bg-[#92d402]"
             >
               Generate EPD Now →
-            </button>
+            </Link>
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function EpdCalculatorModal({ onClose }: { onClose: () => void }) {
-  const [capacitykW, setCapacitykW] = useState(500);
-  const [refrigerantType, setRefrigerantType] = useState('R134a');
-  const [cop, setCop] = useState(5.5);
-  const [operatingHours, setOperatingHours] = useState(4500);
-  const [result, setResult] = useState<any>(null);
-
-  const handleCalculate = () => {
-    const res = calculateEPD({
-      capacitykW: Number(capacitykW),
-      refrigerantType,
-      cop: Number(cop),
-      operatingHoursPerYear: Number(operatingHours),
-    });
-    setResult(res);
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#111111]/85 p-4 backdrop-blur-xl"
-    >
-      <motion.div
-        initial={{ scale: 0.95, y: 16 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.95, y: 16 }}
-        className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-[#2A2A2A] bg-[#181818] p-6 shadow-2xl sm:p-8"
-      >
-        <button type="button" onClick={onClose} className="absolute right-5 top-5 font-mono text-sm text-[#F2EFE9]/40 hover:text-[#F2EFE9]">✕</button>
-        <div className="space-y-2">
-          <Tag critical>Interactive EPD Scorecard Generator</Tag>
-          <h2 className="font-display text-xl font-bold text-[#F2EFE9]">Calculate Industrial Chiller Footprint</h2>
-        </div>
-        {!result ? (
-          <div className="mt-6 space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block font-display text-[0.65rem] font-semibold uppercase text-[#F2EFE9]/60">Cooling Capacity (kW)</label>
-                <input
-                  type="number"
-                  value={capacitykW}
-                  onChange={(e) => setCapacitykW(Number(e.target.value))}
-                  className="mt-1.5 w-full rounded-md border border-[#2A2A2A] bg-[#111111] px-3.5 py-2 text-sm text-[#F2EFE9] outline-none focus:border-[#81BD01]"
-                />
-              </div>
-              <div>
-                <label className="block font-display text-[0.65rem] font-semibold uppercase text-[#F2EFE9]/60">Refrigerant Gas</label>
-                <select
-                  value={refrigerantType}
-                  onChange={(e) => setRefrigerantType(e.target.value)}
-                  className="mt-1.5 w-full rounded-md border border-[#2A2A2A] bg-[#111111] px-3.5 py-2 text-sm text-[#F2EFE9] outline-none focus:border-[#81BD01]"
-                >
-                  <option value="R134a">R134a (GWP 1430)</option>
-                  <option value="R1234ze">R1234ze (GWP 7 - Ultra Low)</option>
-                  <option value="R410A">R410A (GWP 2088)</option>
-                  <option value="R32">R32 (GWP 675)</option>
-                </select>
-              </div>
-              <div>
-                <label className="block font-display text-[0.65rem] font-semibold uppercase text-[#F2EFE9]/60">Efficiency Rating (COP)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={cop}
-                  onChange={(e) => setCop(Number(e.target.value))}
-                  className="mt-1.5 w-full rounded-md border border-[#2A2A2A] bg-[#111111] px-3.5 py-2 text-sm text-[#F2EFE9] outline-none focus:border-[#81BD01]"
-                />
-              </div>
-              <div>
-                <label className="block font-display text-[0.65rem] font-semibold uppercase text-[#F2EFE9]/60">Annual Hours (Hrs/Year)</label>
-                <input
-                  type="number"
-                  value={operatingHours}
-                  onChange={(e) => setOperatingHours(Number(e.target.value))}
-                  className="mt-1.5 w-full rounded-md border border-[#2A2A2A] bg-[#111111] px-3.5 py-2 text-sm text-[#F2EFE9] outline-none focus:border-[#81BD01]"
-                />
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleCalculate}
-              className="mt-4 w-full bg-[#81BD01] py-3 font-display text-xs font-bold uppercase tracking-[0.18em] text-[#111111] hover:bg-[#92d402]"
-            >
-              Generate EPD Scorecard
-            </button>
-          </div>
-        ) : (
-          <div className="mt-6 space-y-5">
-            <div className="rounded-xl border border-[#2A2A2A] bg-[#111111] p-5">
-              <div className="flex items-center justify-between">
-                <span className="font-display text-xs font-bold uppercase text-[#81BD01]">{result.epdReadinessScore}</span>
-                <span className="font-mono text-[0.65rem] text-[#F2EFE9]/40">{result.complianceStandard}</span>
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-4 border-t border-[#2A2A2A] pt-4">
-                <div>
-                  <div className="font-display text-[0.6rem] font-semibold uppercase text-[#F2EFE9]/40">Manufacturing (A1-A3)</div>
-                  <div className="mt-1 font-display text-lg font-bold text-[#F2EFE9]">{result.stageA1A3EmissionsTons} Tons CO2e</div>
-                </div>
-                <div>
-                  <div className="font-display text-[0.6rem] font-semibold uppercase text-[#F2EFE9]/40">Operational Energy (B6)</div>
-                  <div className="mt-1 font-display text-lg font-bold text-[#81BD01]">{result.stageB6EnergyEmissionsTons} Tons CO2e</div>
-                </div>
-              </div>
-              <div className="mt-4 border-t border-[#2A2A2A] pt-3 text-xs text-[#F2EFE9]/60">
-                Operational-to-Material Ratio: <strong className="text-[#81BD01]">{result.operationalToMaterialRatio}</strong>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <button type="button" onClick={() => setResult(null)} className="flex-1 border border-[#2A2A2A] py-2.5 font-display text-xs uppercase text-[#F2EFE9]/70 hover:bg-[#222222]">Recalculate</button>
-              <button type="button" onClick={onClose} className="flex-1 bg-[#81BD01] py-2.5 font-display text-xs font-bold uppercase text-[#111111]">Done</button>
-            </div>
-          </div>
-        )}
-      </motion.div>
-    </motion.div>
   );
 }
