@@ -1,8 +1,14 @@
 {
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "preview": "npm run preview --prefix frontend"
+  },
   "devDependencies": {
     "prisma": "^5.22.0"
   },
   "dependencies": {
+    "@paper-design/shaders-react": "^0.0.80",
     "@prisma/client": "^5.22.0"
   }
 }

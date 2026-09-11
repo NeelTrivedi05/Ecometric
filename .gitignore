@@ -40,10 +40,21 @@ env/
 .env*.local
 *.env
 
-# Local AI / Jetro cache
+# Local AI & Private Tracking Files (Never commit to Git)
+.trace/
 .jetro/
 .agents/
 .cursor/
+.codex/
+.impeccable/
+ARCHITECTURE.md
+CONSTRAINTS.md
+DECISIONS.md
+FEATURE.md
+FLOW.md
+HANDOVER.md
+ROLLBACK.md
+TEST_CHECKLIST.md
 
 # Logs
 logs
