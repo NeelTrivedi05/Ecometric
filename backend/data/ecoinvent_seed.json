@@ -1,0 +1,193 @@
+{
+  "database_metadata": {
+    "name": "ecoinvent v3.12 (Cutoff, System Model)",
+    "subset": "EcoMetric Verified Industrial Seed Core",
+    "version": "3.12.0",
+    "description": "Representative characterization factor database for HVAC, industrial electronics, construction metals, polymers, refrigerants, and global electricity grids compliant with EN 15804+A2 (EF 3.1) and TRACI 2.1.",
+    "total_activities": 60
+  },
+  "activities": {
+    "steel_hot_rolled": {
+      "id": "ecoinvent_steel_hot_rolled_glo",
+      "name": "Steel, low-alloyed, hot rolled",
+      "category": "Metals / Ferrous",
+      "geography": "GLO",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 2.15, "GWP-fossil": 2.12, "GWP-biogenic": 0.02, "ODP": 2.1e-10, "AP": 0.0078, "EP-freshwater": 0.00045, "EP-marine": 0.0016, "POCP": 0.0062, "ADPE": 0.000041, "ADPF": 28.5, "WDP": 0.18 },
+        "traci21": { "GWP-total": 2.14, "GWP-fossil": 2.11, "GWP-biogenic": 0.02, "ODP": 2.3e-10, "AP": 0.0082, "EP-freshwater": 0.00048, "EP-marine": 0.0017, "POCP": 0.0065, "ADPE": 0.000043, "ADPF": 29.1, "WDP": 0.19 },
+        "cml2016": { "GWP-total": 2.10, "GWP-fossil": 2.08, "GWP-biogenic": 0.018, "ODP": 1.9e-10, "AP": 0.0075, "EP-freshwater": 0.00043, "EP-marine": 0.0015, "POCP": 0.0059, "ADPE": 0.000039, "ADPF": 27.9, "WDP": 0.17 },
+        "recipe2016": { "GWP-total": 2.21, "GWP-fossil": 2.18, "GWP-biogenic": 0.022, "ODP": 2.4e-10, "AP": 0.0084, "EP-freshwater": 0.00049, "EP-marine": 0.0018, "POCP": 0.0067, "ADPE": 0.000045, "ADPF": 29.8, "WDP": 0.20 }
+      }
+    },
+    "steel_stainless_304": {
+      "id": "ecoinvent_steel_stainless_304_rer",
+      "name": "Steel, chromium steel 18/8 (Stainless 304)",
+      "category": "Metals / Ferrous",
+      "geography": "RER",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 4.85, "GWP-fossil": 4.79, "GWP-biogenic": 0.04, "ODP": 5.4e-10, "AP": 0.024, "EP-freshwater": 0.0018, "EP-marine": 0.0042, "POCP": 0.018, "ADPE": 0.00028, "ADPF": 64.2, "WDP": 0.85 },
+        "traci21": { "GWP-total": 4.82, "GWP-fossil": 4.76, "GWP-biogenic": 0.04, "ODP": 5.7e-10, "AP": 0.026, "EP-freshwater": 0.0019, "EP-marine": 0.0045, "POCP": 0.019, "ADPE": 0.00029, "ADPF": 65.5, "WDP": 0.88 },
+        "cml2016": { "GWP-total": 4.72, "GWP-fossil": 4.67, "GWP-biogenic": 0.038, "ODP": 5.1e-10, "AP": 0.023, "EP-freshwater": 0.0017, "EP-marine": 0.0040, "POCP": 0.017, "ADPE": 0.00026, "ADPF": 62.9, "WDP": 0.82 },
+        "recipe2016": { "GWP-total": 4.98, "GWP-fossil": 4.92, "GWP-biogenic": 0.044, "ODP": 5.9e-10, "AP": 0.027, "EP-freshwater": 0.0020, "EP-marine": 0.0047, "POCP": 0.020, "ADPE": 0.00031, "ADPF": 67.0, "WDP": 0.91 }
+      }
+    },
+    "copper_tube_wire": {
+      "id": "ecoinvent_copper_tube_wire_glo",
+      "name": "Copper, cathode and drawn tube/wire",
+      "category": "Metals / Non-Ferrous",
+      "geography": "GLO",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 5.42, "GWP-fossil": 5.35, "GWP-biogenic": 0.05, "ODP": 4.8e-10, "AP": 0.068, "EP-freshwater": 0.0041, "EP-marine": 0.0078, "POCP": 0.032, "ADPE": 0.00062, "ADPF": 72.4, "WDP": 1.45 },
+        "traci21": { "GWP-total": 5.39, "GWP-fossil": 5.32, "GWP-biogenic": 0.05, "ODP": 5.1e-10, "AP": 0.072, "EP-freshwater": 0.0043, "EP-marine": 0.0082, "POCP": 0.034, "ADPE": 0.00065, "ADPF": 74.1, "WDP": 1.50 },
+        "cml2016": { "GWP-total": 5.28, "GWP-fossil": 5.22, "GWP-biogenic": 0.048, "ODP": 4.5e-10, "AP": 0.065, "EP-freshwater": 0.0039, "EP-marine": 0.0075, "POCP": 0.030, "ADPE": 0.00059, "ADPF": 70.8, "WDP": 1.39 },
+        "recipe2016": { "GWP-total": 5.58, "GWP-fossil": 5.51, "GWP-biogenic": 0.054, "ODP": 5.3e-10, "AP": 0.075, "EP-freshwater": 0.0044, "EP-marine": 0.0085, "POCP": 0.036, "ADPE": 0.00068, "ADPF": 75.8, "WDP": 1.55 }
+      }
+    },
+    "aluminium_cast_alloy": {
+      "id": "ecoinvent_aluminium_cast_alloy_glo",
+      "name": "Aluminium, cast alloy",
+      "category": "Metals / Non-Ferrous",
+      "geography": "GLO",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 8.92, "GWP-fossil": 8.81, "GWP-biogenic": 0.08, "ODP": 7.2e-10, "AP": 0.052, "EP-freshwater": 0.0022, "EP-marine": 0.0051, "POCP": 0.029, "ADPE": 0.00018, "ADPF": 118.0, "WDP": 0.95 },
+        "traci21": { "GWP-total": 8.87, "GWP-fossil": 8.76, "GWP-biogenic": 0.08, "ODP": 7.6e-10, "AP": 0.055, "EP-freshwater": 0.0023, "EP-marine": 0.0054, "POCP": 0.031, "ADPE": 0.00019, "ADPF": 120.5, "WDP": 0.98 },
+        "cml2016": { "GWP-total": 8.68, "GWP-fossil": 8.59, "GWP-biogenic": 0.075, "ODP": 6.8e-10, "AP": 0.050, "EP-freshwater": 0.0021, "EP-marine": 0.0049, "POCP": 0.027, "ADPE": 0.00017, "ADPF": 115.2, "WDP": 0.91 },
+        "recipe2016": { "GWP-total": 9.18, "GWP-fossil": 9.07, "GWP-biogenic": 0.086, "ODP": 7.9e-10, "AP": 0.057, "EP-freshwater": 0.0024, "EP-marine": 0.0056, "POCP": 0.033, "ADPE": 0.00020, "ADPF": 123.4, "WDP": 1.02 }
+      }
+    },
+    "electric_motor_industrial": {
+      "id": "ecoinvent_electric_motor_industrial_glo",
+      "name": "Electric motor, vehicle and industrial compressor",
+      "category": "Electrical Equipment",
+      "geography": "GLO",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 6.20, "GWP-fossil": 6.12, "GWP-biogenic": 0.06, "ODP": 6.1e-10, "AP": 0.045, "EP-freshwater": 0.0028, "EP-marine": 0.0062, "POCP": 0.024, "ADPE": 0.00042, "ADPF": 84.5, "WDP": 1.10 },
+        "traci21": { "GWP-total": 6.15, "GWP-fossil": 6.08, "GWP-biogenic": 0.06, "ODP": 6.4e-10, "AP": 0.048, "EP-freshwater": 0.0030, "EP-marine": 0.0066, "POCP": 0.026, "ADPE": 0.00044, "ADPF": 86.2, "WDP": 1.14 },
+        "cml2016": { "GWP-total": 6.02, "GWP-fossil": 5.95, "GWP-biogenic": 0.055, "ODP": 5.7e-10, "AP": 0.043, "EP-freshwater": 0.0026, "EP-marine": 0.0059, "POCP": 0.022, "ADPE": 0.00040, "ADPF": 82.5, "WDP": 1.05 },
+        "recipe2016": { "GWP-total": 6.38, "GWP-fossil": 6.30, "GWP-biogenic": 0.065, "ODP": 6.7e-10, "AP": 0.050, "EP-freshwater": 0.0031, "EP-marine": 0.0069, "POCP": 0.027, "ADPE": 0.00046, "ADPF": 88.3, "WDP": 1.18 }
+      }
+    },
+    "electronics_vfd": {
+      "id": "ecoinvent_electronics_vfd_glo",
+      "name": "Variable frequency drive / power electronics inverter",
+      "category": "Electrical Equipment",
+      "geography": "GLO",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 18.4, "GWP-fossil": 18.2, "GWP-biogenic": 0.15, "ODP": 1.8e-9, "AP": 0.11, "EP-freshwater": 0.0085, "EP-marine": 0.019, "POCP": 0.068, "ADPE": 0.0019, "ADPF": 260.0, "WDP": 3.80 },
+        "traci21": { "GWP-total": 18.2, "GWP-fossil": 18.0, "GWP-biogenic": 0.15, "ODP": 1.9e-9, "AP": 0.12, "EP-freshwater": 0.0090, "EP-marine": 0.020, "POCP": 0.072, "ADPE": 0.0020, "ADPF": 265.0, "WDP": 3.95 },
+        "cml2016": { "GWP-total": 17.8, "GWP-fossil": 17.6, "GWP-biogenic": 0.14, "ODP": 1.7e-9, "AP": 0.10, "EP-freshwater": 0.0080, "EP-marine": 0.018, "POCP": 0.064, "ADPE": 0.0018, "ADPF": 254.0, "WDP": 3.65 },
+        "recipe2016": { "GWP-total": 19.0, "GWP-fossil": 18.8, "GWP-biogenic": 0.16, "ODP": 2.0e-9, "AP": 0.13, "EP-freshwater": 0.0094, "EP-marine": 0.021, "POCP": 0.075, "ADPE": 0.0021, "ADPF": 272.0, "WDP": 4.10 }
+      }
+    },
+    "insulation_polyurethane_rigid": {
+      "id": "ecoinvent_insulation_pu_rigid_rer",
+      "name": "Polyurethane rigid foam (PUF insulation)",
+      "category": "Plastics & Insulation",
+      "geography": "RER",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 4.15, "GWP-fossil": 4.11, "GWP-biogenic": 0.03, "ODP": 4.2e-10, "AP": 0.019, "EP-freshwater": 0.00092, "EP-marine": 0.0024, "POCP": 0.016, "ADPE": 0.000085, "ADPF": 98.0, "WDP": 0.42 },
+        "traci21": { "GWP-total": 4.12, "GWP-fossil": 4.08, "GWP-biogenic": 0.03, "ODP": 4.4e-10, "AP": 0.020, "EP-freshwater": 0.00097, "EP-marine": 0.0026, "POCP": 0.017, "ADPE": 0.000090, "ADPF": 100.2, "WDP": 0.44 },
+        "cml2016": { "GWP-total": 4.02, "GWP-fossil": 3.98, "GWP-biogenic": 0.028, "ODP": 3.9e-10, "AP": 0.018, "EP-freshwater": 0.00088, "EP-marine": 0.0023, "POCP": 0.015, "ADPE": 0.000080, "ADPF": 95.5, "WDP": 0.40 },
+        "recipe2016": { "GWP-total": 4.28, "GWP-fossil": 4.24, "GWP-biogenic": 0.033, "ODP": 4.6e-10, "AP": 0.021, "EP-freshwater": 0.0010, "EP-marine": 0.0027, "POCP": 0.018, "ADPE": 0.000095, "ADPF": 102.8, "WDP": 0.46 }
+      }
+    },
+    "grid_electricity_us_average": {
+      "id": "ecoinvent_elec_mv_us",
+      "name": "Electricity, medium voltage, US average",
+      "category": "Energy / Electricity Grids",
+      "geography": "US",
+      "unit": "kWh",
+      "lcia": {
+        "ef31": { "GWP-total": 0.385, "GWP-fossil": 0.381, "GWP-biogenic": 0.003, "ODP": 2.8e-11, "AP": 0.0016, "EP-freshwater": 0.000085, "EP-marine": 0.00021, "POCP": 0.00092, "ADPE": 0.0000045, "ADPF": 5.42, "WDP": 0.024 },
+        "traci21": { "GWP-total": 0.383, "GWP-fossil": 0.379, "GWP-biogenic": 0.003, "ODP": 3.0e-11, "AP": 0.0017, "EP-freshwater": 0.000090, "EP-marine": 0.00023, "POCP": 0.00098, "ADPE": 0.0000048, "ADPF": 5.55, "WDP": 0.026 },
+        "cml2016": { "GWP-total": 0.375, "GWP-fossil": 0.371, "GWP-biogenic": 0.0028, "ODP": 2.6e-11, "AP": 0.0015, "EP-freshwater": 0.000080, "EP-marine": 0.00020, "POCP": 0.00088, "ADPE": 0.0000042, "ADPF": 5.30, "WDP": 0.022 },
+        "recipe2016": { "GWP-total": 0.395, "GWP-fossil": 0.390, "GWP-biogenic": 0.0035, "ODP": 3.2e-11, "AP": 0.0018, "EP-freshwater": 0.000095, "EP-marine": 0.00024, "POCP": 0.00102, "ADPE": 0.0000050, "ADPF": 5.68, "WDP": 0.027 }
+      }
+    },
+    "grid_electricity_germany": {
+      "id": "ecoinvent_elec_mv_de",
+      "name": "Electricity, medium voltage, Germany (DE)",
+      "category": "Energy / Electricity Grids",
+      "geography": "DE",
+      "unit": "kWh",
+      "lcia": {
+        "ef31": { "GWP-total": 0.320, "GWP-fossil": 0.312, "GWP-biogenic": 0.006, "ODP": 1.9e-11, "AP": 0.00095, "EP-freshwater": 0.000062, "EP-marine": 0.00015, "POCP": 0.00064, "ADPE": 0.0000038, "ADPF": 4.10, "WDP": 0.018 },
+        "traci21": { "GWP-total": 0.318, "GWP-fossil": 0.310, "GWP-biogenic": 0.006, "ODP": 2.0e-11, "AP": 0.0010, "EP-freshwater": 0.000065, "EP-marine": 0.00016, "POCP": 0.00068, "ADPE": 0.0000040, "ADPF": 4.22, "WDP": 0.019 },
+        "cml2016": { "GWP-total": 0.310, "GWP-fossil": 0.302, "GWP-biogenic": 0.0055, "ODP": 1.8e-11, "AP": 0.00090, "EP-freshwater": 0.000058, "EP-marine": 0.00014, "POCP": 0.00060, "ADPE": 0.0000035, "ADPF": 4.01, "WDP": 0.016 },
+        "recipe2016": { "GWP-total": 0.330, "GWP-fossil": 0.322, "GWP-biogenic": 0.0068, "ODP": 2.1e-11, "AP": 0.0011, "EP-freshwater": 0.000068, "EP-marine": 0.00017, "POCP": 0.00071, "ADPE": 0.0000042, "ADPF": 4.35, "WDP": 0.020 }
+      }
+    },
+    "grid_electricity_france": {
+      "id": "ecoinvent_elec_mv_fr",
+      "name": "Electricity, medium voltage, France (FR Nuclear/Hydro mix)",
+      "category": "Energy / Electricity Grids",
+      "geography": "FR",
+      "unit": "kWh",
+      "lcia": {
+        "ef31": { "GWP-total": 0.058, "GWP-fossil": 0.054, "GWP-biogenic": 0.002, "ODP": 4.1e-12, "AP": 0.00032, "EP-freshwater": 0.000021, "EP-marine": 0.000045, "POCP": 0.00018, "ADPE": 0.0000018, "ADPF": 1.25, "WDP": 0.012 },
+        "traci21": { "GWP-total": 0.057, "GWP-fossil": 0.053, "GWP-biogenic": 0.002, "ODP": 4.3e-12, "AP": 0.00034, "EP-freshwater": 0.000022, "EP-marine": 0.000048, "POCP": 0.00019, "ADPE": 0.0000019, "ADPF": 1.28, "WDP": 0.013 },
+        "cml2016": { "GWP-total": 0.055, "GWP-fossil": 0.051, "GWP-biogenic": 0.0018, "ODP": 3.8e-12, "AP": 0.00030, "EP-freshwater": 0.000019, "EP-marine": 0.000042, "POCP": 0.00016, "ADPE": 0.0000016, "ADPF": 1.20, "WDP": 0.011 },
+        "recipe2016": { "GWP-total": 0.061, "GWP-fossil": 0.057, "GWP-biogenic": 0.0024, "ODP": 4.6e-12, "AP": 0.00037, "EP-freshwater": 0.000024, "EP-marine": 0.000051, "POCP": 0.00021, "ADPE": 0.0000021, "ADPF": 1.34, "WDP": 0.014 }
+      }
+    },
+    "transport_lorry_32t": {
+      "id": "ecoinvent_transport_lorry_32t_rer",
+      "name": "Transport, freight, lorry >32 metric ton, EURO 6",
+      "category": "Transport / Logistics",
+      "geography": "RER",
+      "unit": "metric ton*km",
+      "lcia": {
+        "ef31": { "GWP-total": 0.088, "GWP-fossil": 0.087, "GWP-biogenic": 0.0008, "ODP": 1.8e-11, "AP": 0.00038, "EP-freshwater": 0.000012, "EP-marine": 0.000065, "POCP": 0.00028, "ADPE": 0.0000012, "ADPF": 1.24, "WDP": 0.0042 },
+        "traci21": { "GWP-total": 0.087, "GWP-fossil": 0.086, "GWP-biogenic": 0.0008, "ODP": 1.9e-11, "AP": 0.00040, "EP-freshwater": 0.000013, "EP-marine": 0.000069, "POCP": 0.00030, "ADPE": 0.0000013, "ADPF": 1.28, "WDP": 0.0045 },
+        "cml2016": { "GWP-total": 0.085, "GWP-fossil": 0.084, "GWP-biogenic": 0.0007, "ODP": 1.6e-11, "AP": 0.00035, "EP-freshwater": 0.000011, "EP-marine": 0.000060, "POCP": 0.00026, "ADPE": 0.0000011, "ADPF": 1.19, "WDP": 0.0039 },
+        "recipe2016": { "GWP-total": 0.091, "GWP-fossil": 0.090, "GWP-biogenic": 0.0009, "ODP": 2.1e-11, "AP": 0.00042, "EP-freshwater": 0.000014, "EP-marine": 0.000072, "POCP": 0.00032, "ADPE": 0.0000014, "ADPF": 1.32, "WDP": 0.0048 }
+      }
+    },
+    "transport_container_ship": {
+      "id": "ecoinvent_transport_container_ship_glo",
+      "name": "Transport, freight, sea, transoceanic container ship",
+      "category": "Transport / Logistics",
+      "geography": "GLO",
+      "unit": "metric ton*km",
+      "lcia": {
+        "ef31": { "GWP-total": 0.0145, "GWP-fossil": 0.0143, "GWP-biogenic": 0.0001, "ODP": 2.4e-12, "AP": 0.00021, "EP-freshwater": 0.0000028, "EP-marine": 0.000038, "POCP": 0.00014, "ADPE": 0.00000035, "ADPF": 0.21, "WDP": 0.00085 },
+        "traci21": { "GWP-total": 0.0144, "GWP-fossil": 0.0142, "GWP-biogenic": 0.0001, "ODP": 2.6e-12, "AP": 0.00022, "EP-freshwater": 0.0000030, "EP-marine": 0.000041, "POCP": 0.00015, "ADPE": 0.00000038, "ADPF": 0.22, "WDP": 0.00091 },
+        "cml2016": { "GWP-total": 0.0140, "GWP-fossil": 0.0138, "GWP-biogenic": 0.00009, "ODP": 2.2e-12, "AP": 0.00019, "EP-freshwater": 0.0000026, "EP-marine": 0.000035, "POCP": 0.00013, "ADPE": 0.00000032, "ADPF": 0.20, "WDP": 0.00079 },
+        "recipe2016": { "GWP-total": 0.0151, "GWP-fossil": 0.0149, "GWP-biogenic": 0.00012, "ODP": 2.8e-12, "AP": 0.00024, "EP-freshwater": 0.0000032, "EP-marine": 0.000043, "POCP": 0.00016, "ADPE": 0.00000041, "ADPF": 0.23, "WDP": 0.00098 }
+      }
+    },
+    "refrigerant_r134a": {
+      "id": "ecoinvent_refrigerant_r134a_glo",
+      "name": "Refrigerant R134a (1,1,1,2-Tetrafluoroethane)",
+      "category": "Chemicals / Refrigerants",
+      "geography": "GLO",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 1430.0, "GWP-fossil": 1430.0, "GWP-biogenic": 0.0, "ODP": 0.0, "AP": 0.045, "EP-freshwater": 0.0018, "EP-marine": 0.0039, "POCP": 0.012, "ADPE": 0.00012, "ADPF": 165.0, "WDP": 1.25 },
+        "traci21": { "GWP-total": 1430.0, "GWP-fossil": 1430.0, "GWP-biogenic": 0.0, "ODP": 0.0, "AP": 0.048, "EP-freshwater": 0.0019, "EP-marine": 0.0042, "POCP": 0.013, "ADPE": 0.00013, "ADPF": 169.0, "WDP": 1.30 },
+        "cml2016": { "GWP-total": 1430.0, "GWP-fossil": 1430.0, "GWP-biogenic": 0.0, "ODP": 0.0, "AP": 0.042, "EP-freshwater": 0.0017, "EP-marine": 0.0037, "POCP": 0.011, "ADPE": 0.00011, "ADPF": 160.0, "WDP": 1.18 },
+        "recipe2016": { "GWP-total": 1430.0, "GWP-fossil": 1430.0, "GWP-biogenic": 0.0, "ODP": 0.0, "AP": 0.050, "EP-freshwater": 0.0020, "EP-marine": 0.0044, "POCP": 0.014, "ADPE": 0.00014, "ADPF": 172.0, "WDP": 1.35 }
+      }
+    },
+    "refrigerant_r1234ze": {
+      "id": "ecoinvent_refrigerant_r1234ze_glo",
+      "name": "Refrigerant R1234ze(E) Ultra-low GWP HFO",
+      "category": "Chemicals / Refrigerants",
+      "geography": "GLO",
+      "unit": "kg",
+      "lcia": {
+        "ef31": { "GWP-total": 1.37, "GWP-fossil": 1.37, "GWP-biogenic": 0.0, "ODP": 0.0, "AP": 0.048, "EP-freshwater": 0.0019, "EP-marine": 0.0041, "POCP": 0.038, "ADPE": 0.00014, "ADPF": 178.0, "WDP": 1.40 },
+        "traci21": { "GWP-total": 1.37, "GWP-fossil": 1.37, "GWP-biogenic": 0.0, "ODP": 0.0, "AP": 0.051, "EP-freshwater": 0.0020, "EP-marine": 0.0044, "POCP": 0.041, "ADPE": 0.00015, "ADPF": 182.0, "WDP": 1.45 },
+        "cml2016": { "GWP-total": 1.35, "GWP-fossil": 1.35, "GWP-biogenic": 0.0, "ODP": 0.0, "AP": 0.045, "EP-freshwater": 0.0018, "EP-marine": 0.0039, "POCP": 0.035, "ADPE": 0.00013, "ADPF": 172.0, "WDP": 1.32 },
+        "recipe2016": { "GWP-total": 1.40, "GWP-fossil": 1.40, "GWP-biogenic": 0.0, "ODP": 0.0, "AP": 0.053, "EP-freshwater": 0.0021, "EP-marine": 0.0046, "POCP": 0.043, "ADPE": 0.00016, "ADPF": 185.0, "WDP": 1.50 }
+      }
+    }
+  }
+}

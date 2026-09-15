@@ -1,12 +1,28 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import sys
+from pathlib import Path
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
-from typing import Dict, Any
-from ..database import get_db
-from ..models import Project, TechnicalData, Result, Report
-from ..schemas import ProjectCreate, LcaCalculationInput, LcaSummaryResponse, ReportResponse
-from ..engines.pcr_validation import validate_chiller_inputs
-from ..engines.calc_engine import calculate_chiller_lca
-from ..engines.report_gen import generate_epd_report
+from typing import Dict, Any, Optional
+
+# Ensure backend root is in sys.path so imports resolve cleanly in any IDE environment
+backend_dir = Path(__file__).resolve().parent.parent.parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
+try:
+    from app.database import get_db
+    from app.models import Project, TechnicalData, Result, Report
+    from app.schemas import ProjectCreate, LcaCalculationInput, LcaSummaryResponse, ReportResponse
+    from app.engines.pcr_validation import validate_chiller_inputs
+    from app.engines.calc_engine import calculate_chiller_lca, calculate_anti_lca
+    from app.engines.report_gen import generate_epd_report
+except ImportError:
+    from ..database import get_db
+    from ..models import Project, TechnicalData, Result, Report
+    from ..schemas import ProjectCreate, LcaCalculationInput, LcaSummaryResponse, ReportResponse
+    from ..engines.pcr_validation import validate_chiller_inputs
+    from ..engines.calc_engine import calculate_chiller_lca, calculate_anti_lca
+    from ..engines.report_gen import generate_epd_report
 
 router = APIRouter(prefix="/api/epd", tags=["EPD"])
 
@@ -37,13 +53,15 @@ def create_epd_project(data: ProjectCreate, db: Session = Depends(get_db)):
 
 @router.post("/calculate", response_model=LcaSummaryResponse)
 def calculate_epd(input_data: LcaCalculationInput, db: Session = Depends(get_db)):
+    data_dict = input_data.model_dump() if hasattr(input_data, 'model_dump') else input_data.dict()
+    
     # Validate via PCR engine
-    validation = validate_chiller_inputs(input_data.dict())
+    validation = validate_chiller_inputs(data_dict)
     if not validation["valid"]:
         raise HTTPException(status_code=400, detail={"errors": validation["errors"]})
 
     # Delegate calculation to calc_engine
-    calc_result = calculate_chiller_lca(input_data.dict())
+    calc_result = calculate_chiller_lca(data_dict)
 
     # Save results to DB if project_id exists
     if input_data.project_id:
@@ -85,3 +103,12 @@ def generate_report(project_id: str = "demo_project", db: Session = Depends(get_
         db.commit()
 
     return report_data
+
+@router.post("/calculate-anti")
+def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Calculates audited EN 15804+A2 lifecycle assessment indicators and compliance gates
+    matching the Eco-anti Studio workspace specification.
+    """
+    return calculate_anti_lca(payload or {})
+

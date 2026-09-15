@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routers import auth_routes, epd, submissions
+from app.routers import auth_routes, epd, submissions, documents
 
 # Initialize DB tables
 Base.metadata.create_all(bind=engine)
@@ -14,8 +14,11 @@ app = FastAPI(
 )
 
 # CORS setup
-allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
-origins = allowed_origins_str.split(",")
+allowed_origins_str = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174"
+)
+origins = [o.strip() for o in allowed_origins_str.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,6 +32,7 @@ app.add_middleware(
 app.include_router(auth_routes.router)
 app.include_router(epd.router)
 app.include_router(submissions.router)
+app.include_router(documents.router)
 
 @app.get("/health")
 def healthcheck():
