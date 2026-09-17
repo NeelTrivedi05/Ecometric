@@ -29,10 +29,10 @@ export default function ResultsView() {
           <div>
             <h1 className="view-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <ResultsIcon size={24} style={{ color: 'var(--accent)' }} />
-              5. Characterized LCIA Results
+              6. View Results
             </h1>
             <p className="view-subtitle" style={{ marginBottom: 0 }}>
-              Environmental indicator inventory compliant with EN 15804+A2 and ISO 14025 across all declared lifecycle stages.
+              Environmental impact indicators across life cycle stages (pure characterization metrics, prior to provider export declaration).
             </p>
           </div>
 

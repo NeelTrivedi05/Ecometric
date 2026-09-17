@@ -9,7 +9,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="EcoMetric EPD & Life-Cycle Assessment API Engine",
-    description="FastAPI Backend for HVAC Chiller EPD declarations compliant with UL 10010-4 Part B & ecoinvent v3.12",
+    description="FastAPI Backend for HVAC Chiller EPD declarations compliant with UL 10010-4 Part B & ecoinvent v3.12 (26,533 activities)",
     version="1.0.0"
 )
 

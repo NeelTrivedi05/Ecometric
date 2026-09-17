@@ -333,10 +333,18 @@ async def upload_and_extract_documents(
                 parsed = json.loads(contents.decode("utf-8"))
                 if "bom" in parsed:
                     extracted["bom"] = parsed["bom"]
+                if "transport" in parsed:
+                    extracted["transport"] = parsed["transport"]
                 if "manufacturing" in parsed:
                     extracted["manufacturing"] = parsed["manufacturing"]
+                if "installation" in parsed:
+                    extracted["installation"] = parsed["installation"]
                 if "operational" in parsed:
                     extracted["operational"] = parsed["operational"]
+                if "end_of_life" in parsed:
+                    extracted["end_of_life"] = parsed["end_of_life"]
+                if "circularity_d" in parsed:
+                    extracted["circularity_d"] = parsed["circularity_d"]
                 if "project_info" in parsed:
                     extracted["project_info"] = parsed["project_info"]
             except Exception:

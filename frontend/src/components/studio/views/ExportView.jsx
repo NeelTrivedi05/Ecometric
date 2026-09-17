@@ -25,12 +25,20 @@ export default function ExportView() {
       <div className="view-section no-print">
         <div className="section-header-flex">
           <div>
-            <h2 className="section-title">6. Export EPD &amp; Verification Package</h2>
+            <h2 className="section-title">7. Export EPD &amp; Verification Package</h2>
             <p className="section-subtitle">
               Generate digital ILCD+EPD compliant XML/JSON packages and print the official EN 15804+A2 Summary Certificate.
             </p>
           </div>
           <div className="export-action-group">
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={() => setActivePhase('results')}
+              style={{ fontSize: '13px' }}
+            >
+              Back to View Results
+            </button>
             <button
               type="button"
               className="btn btn-ghost"

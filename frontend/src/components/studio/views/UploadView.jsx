@@ -53,7 +53,7 @@ export default function UploadView() {
 
   const handleExtractAndProceed = async () => {
     await extractDocuments();
-    setActivePhase('review');
+    setActivePhase('extract');
   };
 
   return (
@@ -284,16 +284,16 @@ export default function UploadView() {
               disabled={isLoading}
               style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              <span>{isLoading ? 'Extracting...' : 'Extract & Proceed to BOM Review'}</span>
+              <span>{isLoading ? 'Extracting...' : 'Extract & Proceed to Extracted Data'}</span>
               <ChevronRightIcon size={16} />
             </button>
 
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => setActivePhase('review')}
+              onClick={() => setActivePhase('extract')}
             >
-              Skip to BOM Review
+              Skip to Extracted Data
             </button>
           </div>
         </div>

@@ -19,13 +19,17 @@ import os
 import sys
 import pandas as pd
 
+from pathlib import Path
+
 # ---------------------------------------------------------------------------
 # CONFIG
 # ---------------------------------------------------------------------------
-PRIMARY_FILE_PATH = r"/Users/parth/Desktop/Ecometric/Cut-off Cumulative LCIA v3.12.xlsx"
-FALLBACK_FILE_PATH = r"/Users/parth/Desktop/final year project/Cut-off Cumulative LCIA v3.12.xlsx"
+_REPO_ROOT = Path(__file__).resolve().parent
+PRIMARY_FILE_PATH = str(_REPO_ROOT / "Ecoinvent database" / "ecoinvent 3.12_cut-off_cumulative_lcia_xlsx" / "Cut-off Cumulative LCIA v3.12.xlsx")
+FALLBACK_FILE_PATH = r"/Users/parth/Desktop/Ecometric/Cut-off Cumulative LCIA v3.12.xlsx"
 
 FILE_PATH = PRIMARY_FILE_PATH if os.path.exists(PRIMARY_FILE_PATH) else FALLBACK_FILE_PATH
+
 SHEET_NAME = "LCIA"          # the data sheet (your file also has a "Read me" sheet)
 N_META_COLS = 6               # Activity UUID_Product UUID, Activity Name, Geography,
                                # Reference Product Name, Reference Product Unit,
@@ -156,7 +160,15 @@ def get_row_for_method(data: pd.DataFrame, row_index: int, method_filter: str | 
 
     if method_filter:
         target = _normalize(method_filter)
-        cols = [c for c in data.columns if c[0] != "META" and target in _normalize(c[0])]
+        # Strip leading/trailing v or standard noise to maximize match flexibility
+        target_clean = target.replace("v", "")
+        cols = [
+            c for c in data.columns 
+            if c[0] != "META" and (
+                target in _normalize(c[0]) or 
+                target_clean in _normalize(c[0]).replace("v", "")
+            )
+        ]
     else:
         cols = [c for c in data.columns if c[0] != "META"]
 

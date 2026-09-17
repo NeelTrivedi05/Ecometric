@@ -5,10 +5,12 @@ import StudioSidebar from './StudioSidebar';
 
 import UploadView from './views/UploadView';
 import ReviewView from './views/ReviewView';
+import UserReviewView from './views/UserReviewView';
 import ValidateView from './views/ValidateView';
 import MethodologyView from './views/MethodologyView';
 import ResultsView from './views/ResultsView';
 import ExportView from './views/ExportView';
+
 
 class StudioErrorBoundary extends Component {
   constructor(props) {
@@ -85,8 +87,11 @@ export default function StudioWorkspace() {
     switch (activePhase) {
       case 'upload':
         return <UploadView />;
+      case 'extract':
       case 'review':
         return <ReviewView />;
+      case 'user_review':
+        return <UserReviewView />;
       case 'validate':
         return <ValidateView />;
       case 'methodology':
@@ -99,6 +104,7 @@ export default function StudioWorkspace() {
         return <UploadView />;
     }
   };
+
 
   return (
     <div className="studio-root">

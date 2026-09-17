@@ -3,6 +3,7 @@ import { useStudio } from '../../context/StudioContext';
 import {
   UploadIcon,
   ReviewIcon,
+  EditIcon,
   ValidateIcon,
   MethodologyIcon,
   ResultsIcon,
@@ -13,27 +14,30 @@ import {
 
 const PHASES = [
   { id: 'upload', label: '1. Upload Documents', icon: UploadIcon },
-  { id: 'review', label: '2. Review Extracted Data', icon: ReviewIcon },
-  { id: 'validate', label: '3. Validate Against Rules', icon: ValidateIcon },
-  { id: 'methodology', label: '4. Select Methodology', icon: MethodologyIcon },
-  { id: 'results', label: '5. View Results', icon: ResultsIcon },
-  { id: 'export', label: '6. Export EPD', icon: ExportIcon },
+  { id: 'extract', label: '2. Extracted Data', icon: ReviewIcon },
+  { id: 'user_review', label: '3. User Review', icon: EditIcon },
+  { id: 'validate', label: '4. Validate Against Rules', icon: ValidateIcon },
+  { id: 'methodology', label: '5. Select Methodology', icon: MethodologyIcon },
+  { id: 'results', label: '6. View Results', icon: ResultsIcon },
+  { id: 'export', label: '7. Export EPD', icon: ExportIcon },
 ];
 
 export default function StudioSidebar() {
-  const { activePhase, setActivePhase, isSidebarOpen, setIsSidebarOpen, uploadedFiles, validationResults, selectedMethodology, results } = useStudio();
+  const { activePhase, setActivePhase, isSidebarOpen, setIsSidebarOpen, uploadedFiles, extractedData, validationResults, selectedMethodology, results } = useStudio();
 
   const getPhaseStatus = (phaseId) => {
     switch (phaseId) {
       case 'upload': return uploadedFiles.length > 0 ? 'done' : '';
-      case 'review': return uploadedFiles.some(f => f.status === 'done') ? 'done' : '';
-      case 'validate': return validationResults.run_at ? 'done' : '';
+      case 'extract': return uploadedFiles.some(f => f.status === 'done') || (extractedData.bom && extractedData.bom.length > 0) ? 'done' : '';
+      case 'user_review': return extractedData.bom && extractedData.bom.length > 0 ? 'done' : '';
+      case 'validate': return validationResults?.run_at ? 'done' : '';
       case 'methodology': return selectedMethodology ? 'done' : '';
       case 'results': return results ? 'done' : '';
       case 'export': return '';
       default: return '';
     }
   };
+
 
   const handleSelectPhase = (phaseId) => {
     setActivePhase(phaseId);

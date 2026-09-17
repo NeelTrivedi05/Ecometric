@@ -24,7 +24,7 @@ export default function MethodologyView() {
       <div className="section-header" style={{ marginBottom: 20 }}>
         <h1 className="view-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <MethodologyIcon size={24} style={{ color: 'var(--accent)' }} />
-          4. Select LCIA Characterization Methodology
+          5. Select Methodology
         </h1>
         <p className="view-subtitle">
           In OpenLCA and EN 15804 standards, characterization factors convert raw Life Cycle Inventory (LCI) elementary flows into verified environmental impact indicators. Select which methodology package to apply.

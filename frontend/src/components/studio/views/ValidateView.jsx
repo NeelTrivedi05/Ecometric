@@ -35,10 +35,10 @@ export default function ValidateView() {
       <div className="section-header" style={{ marginBottom: 20 }}>
         <h1 className="view-title" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <ValidateIcon size={24} style={{ color: 'var(--accent)' }} />
-          3. Validate Against Rules
+          4. Validate Against Rules
         </h1>
         <p className="view-subtitle">
-          Automated compliance verification against Product Category Rules (PCR), General Programme Instructions (GPI), and ISO 14025 before calculating LCIA impact scores.
+          Automated compliance verification against <strong>1. Product Category Rules (PCR)</strong> and <strong>2. General Programme Instructions (GPI)</strong> before selecting LCIA methodology and calculating results.
         </p>
       </div>
 
@@ -160,9 +160,9 @@ export default function ValidateView() {
         <button
           type="button"
           className="btn btn-outline btn-lg"
-          onClick={() => setActivePhase('review')}
+          onClick={() => setActivePhase('user_review')}
         >
-          Back to Review Data
+          Back to User Review
         </button>
 
         <button
