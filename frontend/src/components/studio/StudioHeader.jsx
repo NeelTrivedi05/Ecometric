@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
 import { MenuIcon, ExportIcon } from './Icons';
 
@@ -22,6 +23,15 @@ export default function StudioHeader() {
         <div className="brand-logo" role="banner" onClick={() => setActivePhase('upload')}>
           <div className="brand-name">EcoMetric</div>
         </div>
+
+        <Link
+          to="/"
+          className="btn btn-ghost btn-sm hide-mobile"
+          style={{ fontSize: '11px', color: 'var(--text-muted)', textDecoration: 'none', padding: '4px 8px' }}
+          title="Return to Landing Page"
+        >
+          ← Home
+        </Link>
 
         <div className="topbar-divider hide-mobile" aria-hidden="true" />
 

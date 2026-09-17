@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "product_name": "EcoMetric Centrifugal Chiller 500RT Benchmark",
+    "manufacturer_name": "EcoMetric Thermal Systems Inc.",
+    "functional_unit": "1 unit of HVAC water-cooled chiller over 25 years reference service life",
+    "declared_unit": "1 piece of 500 RT chiller",
+    "pcr_ref": "UL 10010-4 Part B v2.0 & EN 15804+A2",
+    "geography": "US-Midwest",
+    "lifespan_years": 25
+  },
+  "bom": [
+    {
+      "id": "bom-1",
+      "name": "Compressor Volute & Impeller",
+      "material": "steel_hot_rolled",
+      "mass": 2250,
+      "unit": "kg",
+      "ecoinvent_id": "ecoinvent_steel_hot_rolled_glo",
+      "supplier": "Midwest Steel Casting",
+      "transport_km": 420
+    },
+    {
+      "id": "bom-2",
+      "name": "Evaporator & Condenser Tubes",
+      "material": "copper_tube_wire",
+      "mass": 720,
+      "unit": "kg",
+      "ecoinvent_id": "ecoinvent_copper_tube_wire_glo",
+      "supplier": "Great Lakes Copper Corp",
+      "transport_km": 280
+    },
+    {
+      "id": "bom-3",
+      "name": "Semi-Hermetic Induction Motor",
+      "material": "electric_motor_industrial",
+      "mass": 480,
+      "unit": "kg",
+      "ecoinvent_id": "ecoinvent_electric_motor_industrial_glo",
+      "supplier": "Precision ElectroMotors Ltd",
+      "transport_km": 650
+    },
+    {
+      "id": "bom-4",
+      "name": "Thermal PUF Insulation Jackets",
+      "material": "insulation_polyurethane_rigid",
+      "mass": 140,
+      "unit": "kg",
+      "ecoinvent_id": "ecoinvent_insulation_pu_rigid_rer",
+      "supplier": "PolyFoam Systems",
+      "transport_km": 190
+    },
+    {
+      "id": "bom-5",
+      "name": "Solid-State Variable Frequency Drive",
+      "material": "electronics_vfd",
+      "mass": 110,
+      "unit": "kg",
+      "ecoinvent_id": "ecoinvent_electronics_vfd_glo",
+      "supplier": "Advantech Power Systems",
+      "transport_km": 890
+    },
+    {
+      "id": "bom-6",
+      "name": "Subcooler Microchannel Coils",
+      "material": "aluminium_cast_alloy",
+      "mass": 95,
+      "unit": "kg",
+      "ecoinvent_id": "ecoinvent_aluminium_cast_alloy_glo",
+      "supplier": "Alloy Heat Exchangers",
+      "transport_km": 350
+    },
+    {
+      "id": "bom-7",
+      "name": "Refrigerant High-Pressure Piping",
+      "material": "steel_stainless_304",
+      "mass": 85,
+      "unit": "kg",
+      "ecoinvent_id": "ecoinvent_steel_stainless_304_glo",
+      "supplier": "Precision Alloy Tubing",
+      "transport_km": 340
+    }
+  ],
+  "manufacturing": {
+    "annual_facility_kwh": 38500,
+    "natural_gas_mj": 21000,
+    "grid_region": "US_Average",
+    "water_m3": 52.0
+  },
+  "transport": [
+    {
+      "mode": "Heavy Lorry >32t (EURO 6)",
+      "distance": 485,
+      "dist": 485,
+      "emission_factor": 0.088,
+      "ef": 0.088,
+      "module": "A2"
+    },
+    {
+      "mode": "Transoceanic Container Ship",
+      "distance": 1200,
+      "dist": 1200,
+      "emission_factor": 0.0145,
+      "ef": 0.0145,
+      "module": "A2"
+    }
+  ],
+  "operational": {
+    "refrigerant_type": "R134a",
+    "refrigerant_charge_kg": 45.0,
+    "annual_leak_rate_percent": 2.0,
+    "efficiency_kw_per_ton": 0.54,
+    "capacity_rt": 500.0,
+    "target_cities": [
+      "Chicago",
+      "Houston",
+      "Frankfurt",
+      "Dubai"
+    ]
+  },
+  "end_of_life": {
+    "recycling_rate_percent": 92.4,
+    "landfill_rate_percent": 4.5,
+    "incineration_rate_percent": 3.1,
+    "decommissioning_energy_kwh": 120
+  }
+}

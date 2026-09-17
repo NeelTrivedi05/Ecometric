@@ -4,9 +4,61 @@ import csv
 import json
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi.responses import FileResponse
 from ..engines.ecoinvent_lookup import search_ecoinvent_activities, get_activity_lcia
+from ..engines.pdf_extractor import extract_pdf_data
+from ..engines.excel_extractor import extract_excel_data
 
 router = APIRouter(prefix="/api/documents", tags=["Document Ingestion & Gap Analysis"])
+
+SAMPLES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "samples"))
+
+@router.get("/samples")
+def list_sample_files():
+    """List available test sample files that can be used for verification."""
+    samples = [
+        {
+            "filename": "sample_chiller_spec.pdf",
+            "type": "PDF",
+            "title": "Technical Specification PDF (HVAC Chiller)",
+            "description": "Contains technical specs, refrigerant R134a 45kg, annual power 34,000 kWh, and 6-part BOM table.",
+            "url": "/api/documents/samples/sample_chiller_spec.pdf",
+            "expected_items": 6
+        },
+        {
+            "filename": "sample_chiller_bom.xlsx",
+            "type": "Excel (XLSX)",
+            "title": "Engineering Bill of Materials (.xlsx)",
+            "description": "Multi-column engineering BOM with Component, Material, Mass (kg), Supplier, and Freight Distance.",
+            "url": "/api/documents/samples/sample_chiller_bom.xlsx",
+            "expected_items": 6
+        },
+        {
+            "filename": "sample_chiller_bom.csv",
+            "type": "CSV",
+            "title": "Standard BOM (.csv)",
+            "description": "Comma-separated BOM with part names, masses, and material classes ready for instant table ingestion.",
+            "url": "/api/documents/samples/sample_chiller_bom.csv",
+            "expected_items": 6
+        }
+    ]
+    return {"samples": samples}
+
+@router.get("/samples/{filename}")
+def get_sample_file(filename: str):
+    safe_filename = os.path.basename(filename)
+    file_path = os.path.join(SAMPLES_DIR, safe_filename)
+    if not os.path.isfile(file_path):
+        raise HTTPException(status_code=404, detail="Sample file not found")
+    
+    media_types = {
+        ".pdf": "application/pdf",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".csv": "text/csv"
+    }
+    _, ext = os.path.splitext(safe_filename)
+    return FileResponse(file_path, media_type=media_types.get(ext.lower(), "application/octet-stream"), filename=safe_filename)
+
 
 SAMPLE_BOM_DATA = {
     "project_info": {
@@ -33,21 +85,41 @@ SAMPLE_BOM_DATA = {
     },
     "transport": [
         { "mode": "Heavy Lorry >32t (EURO 6)", "distance": 485, "dist": 485, "emission_factor": 0.088, "ef": 0.088, "module": "A2" },
-        { "mode": "Transoceanic Container Ship", "distance": 1200, "dist": 1200, "emission_factor": 0.0145, "ef": 0.0145, "module": "A2" }
+        { "mode": "Transoceanic Container Ship", "distance": 1200, "dist": 1200, "emission_factor": 0.0145, "ef": 0.0145, "module": "A2" },
+        { "mode": "Heavy Delivery Lorry >32t to Customer Site", "distance": 500, "dist": 500, "emission_factor": 0.088, "ef": 0.088, "module": "A4" }
     ],
+    "installation": {
+        "outbound_transport_km": 500,
+        "transport_mode": "Heavy Lorry >32t (EURO 6)",
+        "installation_energy_kwh": 350,
+        "commissioning_refrigerant_loss_kg": 0.5,
+        "rigging_crane_diesel_liters": 25.0
+    },
     "operational": {
         "refrigerant_type": "R134a",
         "refrigerant_charge_kg": 45.0,
         "annual_leak_rate_percent": 2.0,
+        "fugitive_operational_leak_rate": 0.5,
         "efficiency_kw_per_ton": 0.54,
         "capacity_rt": 500.0,
-        "target_cities": ["Chicago", "Houston", "Frankfurt", "Dubai"]
+        "target_cities": ["Chicago", "Houston", "Frankfurt", "Dubai"],
+        "cooling_tower_water_m3_yr": 120.0,
+        "scheduled_maintenance_kwh_yr": 180.0,
+        "major_component_replacement_year": 15
     },
     "end_of_life": {
         "recycling_rate_percent": 92.4,
         "landfill_rate_percent": 4.5,
         "incineration_rate_percent": 3.1,
-        "decommissioning_energy_kwh": 120
+        "decommissioning_energy_kwh": 120,
+        "waste_transport_km": 100
+    },
+    "circularity_d": {
+        "steel_scrap_recovery_rate": 95.0,
+        "copper_scrap_recovery_rate": 96.0,
+        "aluminium_recovery_rate": 90.0,
+        "refrigerant_reclamation_rate": 92.0,
+        "net_avoided_burden_gwp_kg": -3210.0
     }
 }
 
@@ -205,8 +277,32 @@ async def upload_and_extract_documents(
         contents = await file.read()
         filename = (file.filename or "").lower()
         
+        # PDF parsing via local pdfplumber
+        if filename.endswith(".pdf"):
+            try:
+                pdf_res = extract_pdf_data(contents)
+                if pdf_res.get("bom"):
+                    extracted["bom"] = pdf_res["bom"]
+                if pdf_res.get("project_info", {}).get("product_name") != "Industrial Product Model":
+                    extracted["project_info"].update(pdf_res["project_info"])
+                if pdf_res.get("operational"):
+                    extracted["operational"].update(pdf_res["operational"])
+                if pdf_res.get("manufacturing"):
+                    extracted["manufacturing"].update(pdf_res["manufacturing"])
+            except Exception as e:
+                pass
+
+        # Excel parsing via openpyxl
+        elif filename.endswith((".xlsx", ".xls")):
+            try:
+                excel_res = extract_excel_data(contents)
+                if excel_res.get("bom"):
+                    extracted["bom"] = excel_res["bom"]
+            except Exception:
+                pass
+
         # CSV parsing for custom BOMs
-        if filename.endswith(".csv"):
+        elif filename.endswith(".csv"):
             try:
                 decoded = contents.decode("utf-8-sig")
                 reader = csv.DictReader(io.StringIO(decoded))
@@ -228,8 +324,7 @@ async def upload_and_extract_documents(
                     })
                 if custom_bom:
                     extracted["bom"] = custom_bom
-            except Exception as e:
-                # Retain default sample if CSV parsing encountered irregular schema
+            except Exception:
                 pass
                 
         # JSON parsing
