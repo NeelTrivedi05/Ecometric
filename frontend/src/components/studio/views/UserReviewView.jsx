@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useStudio, STANDARD_DATABASE_PROVIDERS } from '../../../context/StudioContext';
 import {
   EditIcon,
@@ -13,6 +13,7 @@ import {
   TruckIcon,
   LayersIcon,
   LeafIcon,
+  RefreshCwIcon,
 } from '../Icons';
 
 export default function UserReviewView() {
@@ -29,6 +30,10 @@ export default function UserReviewView() {
     updateOperational,
     updateEndOfLife,
     updateCircularityD,
+    updateMaintenanceB2,
+    updateRepairB3,
+    updateReplacementB4,
+    updateRefurbishmentB5,
     setActivePhase,
     showNotif,
   } = useStudio();
@@ -40,7 +45,46 @@ export default function UserReviewView() {
   const operational = extractedData.operational || {};
   const end_of_life = extractedData.end_of_life || {};
   const circularity_d = extractedData.circularity_d || {};
+  const maintenance_b2 = extractedData.maintenance_b2 || {};
+  const repair_b3 = extractedData.repair_b3 || {};
+  const replacement_b4 = extractedData.replacement_b4 || {};
+  const refurbishment_b5 = extractedData.refurbishment_b5 || {};
   const project_info = extractedData.project_info || {};
+
+  // Reusable provider dataset selector helper
+  const renderProviderSelector = (label, value, onChange, categoryFilter) => {
+    const filtered = categoryFilter
+      ? STANDARD_DATABASE_PROVIDERS.filter(p => p.category.toLowerCase().includes(categoryFilter.toLowerCase()))
+      : STANDARD_DATABASE_PROVIDERS;
+    const list = filtered.length > 0 ? filtered : STANDARD_DATABASE_PROVIDERS;
+
+    return (
+      <div className="form-group" style={{ marginTop: '6px' }}>
+        <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 600 }}>
+          {label || 'Emission Factor Provider / Dataset'}
+        </label>
+        <select
+          value={value || list[0]?.id || ''}
+          onChange={(e) => onChange(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '4px 6px',
+            fontSize: '11px',
+            border: '1px solid #E2D9D2',
+            borderRadius: '4px',
+            backgroundColor: '#FFFFFF',
+            color: '#2C221E',
+          }}
+        >
+          {list.map(p => (
+            <option key={p.id} value={p.id}>
+              {p.name} [{p.geography}] ({p.defaultEf} {p.unit ? `kg CO₂e/${p.unit}` : ''})
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  };
 
   // Stage filter tab state
   const [activeStageTab, setActiveStageTab] = useState('all'); // 'all' | 'a1_a3' | 'a4_a5' | 'b1_b7' | 'c1_c4' | 'd'
@@ -50,6 +94,8 @@ export default function UserReviewView() {
   const [providerSearchQuery, setProviderSearchQuery] = useState('');
   const [isSearchingDb, setIsSearchingDb] = useState(false);
   const [liveSearchResults, setLiveSearchResults] = useState([]);
+  const [visibleMatchesCount, setVisibleMatchesCount] = useState(20);
+  const [isAutoMatching, setIsAutoMatching] = useState(false);
 
   // New component modal state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -66,33 +112,107 @@ export default function UserReviewView() {
   // Calculate live total mass
   const totalMass = bom.reduce((sum, item) => sum + (Number(item.mass) || 0), 0);
 
-  // Handle provider search
-  const handleSearchProviders = async (q) => {
-    setProviderSearchQuery(q);
-    if (!q.trim()) {
+  // Auto-match all BOM items to their best ecoinvent database match
+  const autoMatchAllProviders = async () => {
+    setIsAutoMatching(true);
+    let count = 0;
+    try {
+      for (let idx = 0; idx < bom.length; idx++) {
+        const item = bom[idx];
+        const rawKw = item.material || item.name || '';
+        const cleanKw = rawKw.replace(/_/g, ' ').trim();
+        if (!cleanKw) continue;
+        try {
+          const res = await fetch(`/api/documents/lcia-search?query=${encodeURIComponent(cleanKw)}&limit=1`);
+          const d = await res.json();
+          if (d.status === 'success' && d.results && d.results.length > 0) {
+            const best = d.results[0];
+            updateBomItem(idx, {
+              ecoinvent_id: `ecoinvent_row_${best.row_index}`,
+              dataset: `${best.activity_name} [${best.geography}]`,
+              reference_product_name: best.reference_product_name,
+              ecoinvent_row: best.row_index,
+              ecoinvent_geography: best.geography,
+              ecoinvent_matched: true,
+            });
+            count++;
+          }
+        } catch {}
+      }
+      if (count > 0) {
+        showNotif?.(`Auto-selected best ecoinvent provider for ${count} component(s)`, 'Auto-Match Complete');
+      }
+    } finally {
+      setIsAutoMatching(false);
+    }
+  };
+
+  // By default, auto-select best ecoinvent search match on mount if not matched yet
+  useEffect(() => {
+    if (bom.length > 0) {
+      const hasUnmatched = bom.some(item => !item.ecoinvent_matched && !item.ecoinvent_row);
+      if (hasUnmatched) {
+        autoMatchAllProviders();
+      }
+    }
+  }, []);
+
+  const searchDebounceRef = useRef(null);
+
+  // Debounced provider search execution
+  const executeSearch = async (queryText) => {
+    const q = (queryText || '').trim();
+    if (!q) {
       setLiveSearchResults([]);
+      setIsSearchingDb(false);
       return;
     }
     setIsSearchingDb(true);
     try {
-      const res = await fetch(`/api/documents/lcia-search?query=${encodeURIComponent(q)}`);
+      const res = await fetch(`/api/documents/lcia-search?query=${encodeURIComponent(q)}&limit=200`);
       const data = await res.json();
       if (data.status === 'success' && data.results) {
         setLiveSearchResults(data.results);
       }
     } catch {
       // Offline fallback
-      setLiveSearchResults([]);
     } finally {
       setIsSearchingDb(false);
     }
   };
 
+  // Called on keyboard typing in the search box - debounced to stop blinking
+  const handleSearchInputChange = (val) => {
+    setProviderSearchQuery(val);
+    setVisibleMatchesCount(20);
+
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+
+    searchDebounceRef.current = setTimeout(() => {
+      executeSearch(val);
+    }, 280);
+  };
+
+  // Immediate search for button clicks, quick tags, or opening modal
+  const handleImmediateSearch = (val) => {
+    setProviderSearchQuery(val);
+    setVisibleMatchesCount(20);
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+    executeSearch(val);
+  };
+
   const handleSelectProvider = (targetIdx, provider) => {
     updateBomItem(targetIdx, {
-      ecoinvent_id: provider.id || provider.row_index,
-      dataset: provider.name || provider.activity_name,
-      material: provider.name || provider.reference_product_name,
+      ecoinvent_id: provider.id || `ecoinvent_row_${provider.row_index}`,
+      dataset: provider.name || `${provider.activity_name} [${provider.geography || 'GLO'}]`,
+      material: provider.reference_product_name || provider.name || provider.material,
+      ecoinvent_row: provider.row_index,
+      ecoinvent_geography: provider.geography,
+      ecoinvent_matched: true,
     });
     setProviderModalItemIndex(null);
     setProviderSearchQuery('');
@@ -279,18 +399,31 @@ export default function UserReviewView() {
               <span>Bill of Materials (BOM) & Database Activity Provider Selection</span>
             </h2>
             <div style={{ fontSize: '12px', color: '#7A6B63', marginTop: '3px' }}>
-              Click any field to edit directly. Click <strong>"Select Provider"</strong> to map the exact ecoinvent database activity/dataset.
+              By default, each component is auto-matched to the best ecoinvent v3.12 provider as per keyword. Click <strong>"Select Provider"</strong> to explore and customize providers.
             </div>
           </div>
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            onClick={() => setIsAddModalOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
-          >
-            <PlusIcon size={14} />
-            <span>Add Row</span>
-          </button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={autoMatchAllProviders}
+              disabled={isAutoMatching}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
+              title="Automatically query ecoinvent v3.12 database and assign the best search match for each extracted keyword"
+            >
+              <RefreshCwIcon size={13} className={isAutoMatching ? 'spin-anim' : ''} />
+              <span>{isAutoMatching ? 'Auto-Matching...' : '⚡ Auto-Match All Providers'}</span>
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => setIsAddModalOpen(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
+            >
+              <PlusIcon size={14} />
+              <span>Add Row</span>
+            </button>
+          </div>
         </div>
 
         {bom.length > 0 ? (
@@ -360,18 +493,24 @@ export default function UserReviewView() {
                           }}>
                             {item.dataset || item.name || 'Select Database Provider'}
                           </div>
-                          <div style={{ fontSize: '10px', color: '#8A7A72' }}>
-                            ID: <code style={{ backgroundColor: '#FAF0E6', padding: '1px 4px', borderRadius: '3px', color: '#9C5832' }}>
+                          <div style={{ fontSize: '10px', color: '#8A7A72', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                            <span>ID:</span>
+                            <code style={{ backgroundColor: '#FAF0E6', padding: '1px 4px', borderRadius: '3px', color: '#9C5832' }}>
                               {item.ecoinvent_id || 'ecoinvent_proxy'}
                             </code>
+                            {item.ecoinvent_geography && (
+                              <span style={{ backgroundColor: '#E8F5E9', color: '#2E7D32', padding: '1px 5px', borderRadius: '3px', fontWeight: 700, fontSize: '9px' }}>
+                                {item.ecoinvent_geography}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => {
                             setProviderModalItemIndex(idx);
-                            setProviderSearchQuery(item.material || item.name || '');
-                            handleSearchProviders(item.material || item.name || '');
+                            const cleanKw = (item.material || item.name || '').replace(/_/g, ' ').trim();
+                            handleImmediateSearch(cleanKw);
                           }}
                           style={{
                             padding: '4px 8px',
@@ -515,37 +654,74 @@ export default function UserReviewView() {
                 {transport.length > 0 ? (
                   transport.map((leg, lIdx) => (
                     <div key={lIdx} style={{
-                      padding: '10px 12px',
+                      padding: '12px',
                       backgroundColor: '#FCFAF8',
                       borderRadius: '6px',
                       border: '1px solid #EED8C5',
                       display: 'flex',
-                      alignItems: 'center',
+                      flexDirection: 'column',
                       gap: '8px'
                     }}>
-                      <input
-                        type="text"
-                        value={leg.mode || 'Freight transport'}
-                        onChange={(e) => updateTransportLeg(lIdx, { mode: e.target.value })}
-                        style={{ flex: 1, padding: '4px 6px', fontSize: '12px', border: '1px solid #E2D9D2', borderRadius: '4px' }}
-                      />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <input
-                          type="number"
-                          value={leg.dist || leg.distance || 0}
-                          onChange={(e) => updateTransportLeg(lIdx, { dist: parseFloat(e.target.value) || 0, distance: parseFloat(e.target.value) || 0 })}
-                          style={{ width: '75px', textAlign: 'right', padding: '4px 6px', fontSize: '12px', border: '1px solid #E2D9D2', borderRadius: '4px', fontWeight: 600 }}
+                          type="text"
+                          value={leg.mode || 'Freight transport'}
+                          onChange={(e) => updateTransportLeg(lIdx, { mode: e.target.value })}
+                          style={{ flex: 1, padding: '4px 6px', fontSize: '12px', border: '1px solid #E2D9D2', borderRadius: '4px' }}
                         />
-                        <span style={{ fontSize: '11px', color: '#7A6B63' }}>km</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <input
+                            type="number"
+                            value={leg.dist || leg.distance || 0}
+                            onChange={(e) => updateTransportLeg(lIdx, { dist: parseFloat(e.target.value) || 0, distance: parseFloat(e.target.value) || 0 })}
+                            style={{ width: '75px', textAlign: 'right', padding: '4px 6px', fontSize: '12px', border: '1px solid #E2D9D2', borderRadius: '4px', fontWeight: 600 }}
+                          />
+                          <span style={{ fontSize: '11px', color: '#7A6B63' }}>km</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => deleteTransportLeg(lIdx)}
+                          style={{ background: 'none', border: 'none', color: '#C25A23', cursor: 'pointer', padding: '2px' }}
+                          title="Remove leg"
+                        >
+                          <TrashIcon size={14} />
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => deleteTransportLeg(lIdx)}
-                        style={{ background: 'none', border: 'none', color: '#C25A23', cursor: 'pointer', padding: '2px' }}
-                        title="Remove leg"
-                      >
-                        <TrashIcon size={14} />
-                      </button>
+
+                      {/* Heading: Linked Material(s) (multi-select referencing A1 BOM rows) */}
+                      <div style={{ marginTop: '4px' }}>
+                        <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 600, margin: '0 0 2px 0' }}>
+                          Linked Material(s)
+                        </label>
+                        <select
+                          multiple
+                          value={leg.linked_materials || []}
+                          onChange={(e) => {
+                            const selected = Array.from(e.target.selectedOptions, opt => opt.value);
+                            updateTransportLeg(lIdx, { linked_materials: selected });
+                          }}
+                          style={{ width: '100%', padding: '4px', fontSize: '11px', border: '1px solid #E2D9D2', borderRadius: '4px', minHeight: '48px', backgroundColor: '#FFFFFF' }}
+                        >
+                          {bom.length > 0 ? bom.map((bItem, bIdx) => (
+                            <option key={bItem.id || bIdx} value={bItem.id || bItem.name}>
+                              {bItem.name || bItem.material} ({bItem.mass} kg)
+                            </option>
+                          )) : (
+                            <option disabled>No A1 BOM rows available — add BOM components first</option>
+                          )}
+                        </select>
+                        <div style={{ fontSize: '10px', color: '#8A7A72', marginTop: '2px' }}>
+                          Select A1 BOM rows whose mass travels on this transport leg
+                        </div>
+                      </div>
+
+                      {/* Leg-Specific Provider Selection */}
+                      {renderProviderSelector(
+                        'Leg Emission Factor Provider',
+                        leg.provider_id || (leg.mode?.toLowerCase().includes('ship') ? 'ecoinvent_transport_container_ship_glo' : 'ecoinvent_transport_lorry_32t_rer'),
+                        (val) => updateTransportLeg(lIdx, { provider_id: val }),
+                        'Transport'
+                      )}
                     </div>
                   ))
                 ) : (
@@ -603,12 +779,28 @@ export default function UserReviewView() {
                   />
                 </div>
               </div>
+
+              {/* A3 Providers: Electricity & Fuel */}
+              <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #EED8C5', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                {renderProviderSelector(
+                  'Grid Electricity Provider',
+                  manufacturing.electricity_provider_id || 'ecoinvent_elec_mv_us',
+                  (val) => updateManufacturing({ electricity_provider_id: val }),
+                  'Grids'
+                )}
+                {renderProviderSelector(
+                  'Fuel / Gas Provider',
+                  manufacturing.gas_provider_id || 'ecoinvent_gas_burned_boiler_glo',
+                  (val) => updateManufacturing({ gas_provider_id: val }),
+                  'Fuels'
+                )}
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── SECTION 4: MODULE A4–A5 (LOGISTICS TO SITE & INSTALLATION RIGGING) ── */}
+             {/* ── SECTION 4: MODULE A4–A5 (LOGISTICS TO SITE & INSTALLATION RIGGING) ── */}
       {(activeStageTab === 'all' || activeStageTab === 'a4_a5') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -648,6 +840,12 @@ export default function UserReviewView() {
                     placeholder="Heavy Lorry >32t (EURO 6)"
                   />
                 </div>
+                {renderProviderSelector(
+                  'A4 Delivery Transport Provider',
+                  installation.outbound_provider_id || 'ecoinvent_transport_lorry_32t_rer',
+                  (val) => updateInstallation({ outbound_provider_id: val }),
+                  'Transport'
+                )}
               </div>
             </div>
 
@@ -689,6 +887,20 @@ export default function UserReviewView() {
                   />
                 </div>
               </div>
+              <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #EED8C5', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                {renderProviderSelector(
+                  'Installation Energy Provider',
+                  installation.installation_energy_provider_id || 'ecoinvent_elec_mv_us',
+                  (val) => updateInstallation({ installation_energy_provider_id: val }),
+                  'Grids'
+                )}
+                {renderProviderSelector(
+                  'Consumables / Crane Diesel Provider',
+                  installation.consumable_provider_id || 'ecoinvent_diesel_burned_building_machine_glo',
+                  (val) => updateInstallation({ consumable_provider_id: val }),
+                  'Fuels'
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -702,12 +914,12 @@ export default function UserReviewView() {
               MODULE B1–B7
             </span>
             <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
-              Operational Use Stage (Fugitive Leaks, Energy, Water & Overhaul)
+              Operational Use Stage (Fugitive Leaks, Maintenance, Repair, Replacement, Refurbishment & Energy)
             </h3>
           </div>
 
           <div className="card">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
               {/* B1: Fugitive Leaks */}
               <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
@@ -749,10 +961,22 @@ export default function UserReviewView() {
                 </div>
               </div>
 
-              {/* B2 & B3: Servicing */}
+              {/* B2: Maintenance */}
               <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
-                  B2 & B3: Maintenance & Repair
+                  B2: Maintenance
+                </div>
+                <div className="form-group" style={{ marginBottom: '8px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                    Maintenance Cycles (per RSL)
+                  </label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={maintenance_b2.maintenance_cycles_per_rsl || 25}
+                    onChange={(e) => updateMaintenanceB2({ maintenance_cycles_per_rsl: parseInt(e.target.value, 10) || 0 })}
+                    placeholder="25"
+                  />
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
                   <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Maintenance Power (kWh/yr)</label>
@@ -764,25 +988,113 @@ export default function UserReviewView() {
                     placeholder="180.0"
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Fugitive Operational Rate (%)</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    className="form-input"
-                    value={operational.fugitive_operational_leak_rate || ''}
-                    onChange={(e) => updateOperational({ fugitive_operational_leak_rate: parseFloat(e.target.value) || 0 })}
-                    placeholder="0.5"
-                  />
-                </div>
+                {renderProviderSelector(
+                  'Maintenance Material Provider',
+                  maintenance_b2.provider_id || 'ecoinvent_lubricating_oil_glo',
+                  (val) => updateMaintenanceB2({ provider_id: val }),
+                  'Consumables'
+                )}
               </div>
 
-              {/* B4 & B5: Replacement & RSL */}
+              {/* B3: Repair */}
               <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
-                  B4 & B5: Replacement & RSL
+                  B3: Repair (Repeatable Row)
+                </div>
+                <div className="form-group" style={{ marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                    Repair Events (per RSL)
+                  </label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={repair_b3.repair_events_per_rsl || 2}
+                    onChange={(e) => updateRepairB3({ repair_events_per_rsl: parseInt(e.target.value, 10) || 0 })}
+                    placeholder="2"
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                    Replaced Part Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={repair_b3.replaced_part_name || 'Compressor Shaft Seal & Bearing'}
+                    onChange={(e) => updateRepairB3({ replaced_part_name: e.target.value })}
+                    placeholder="Compressor Shaft Seal"
+                  />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '6px' }}>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                      Part Mass (kg)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      className="form-input"
+                      value={repair_b3.part_mass_kg || 18.5}
+                      onChange={(e) => updateRepairB3({ part_mass_kg: parseFloat(e.target.value) || 0 })}
+                      placeholder="18.5"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                      Material Type
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={repair_b3.material_type || 'Steel, low-alloyed'}
+                      onChange={(e) => updateRepairB3({ material_type: e.target.value })}
+                      placeholder="Steel, low-alloyed"
+                    />
+                  </div>
+                </div>
+                {renderProviderSelector(
+                  'Replaced Part Material Provider',
+                  repair_b3.provider_id || 'ecoinvent_steel_hot_rolled_glo',
+                  (val) => updateRepairB3({ provider_id: val }),
+                  'Metals'
+                )}
+              </div>
+
+              {/* B4: Replacement */}
+              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+                  B4: Replacement
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                    Estimated Service Life (ESL, years)
+                  </label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={replacement_b4.esl_years || project_info.lifespan_years || 25}
+                    onChange={(e) => updateReplacementB4({ esl_years: parseInt(e.target.value, 10) || 1 })}
+                    placeholder="25"
+                  />
+                </div>
+                {/* Replacement Cycles Derived Display: (ESL ÷ RSL − 1) */}
+                <div style={{
+                  padding: '8px 10px',
+                  backgroundColor: '#FAF0E6',
+                  borderRadius: '6px',
+                  border: '1px solid #EED8C5',
+                  fontSize: '11px',
+                  marginBottom: '8px'
+                }}>
+                  <div style={{ color: '#7A6B63', fontWeight: 600 }}>Derived Replacement Cycles:</div>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#C25A23' }}>
+                    {Math.max(0, (replacement_b4.esl_years || project_info.lifespan_years || 25) / (project_info.lifespan_years || 25) - 1).toFixed(2)} cycle(s)
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#8A7A72' }}>
+                    Formula: (ESL {replacement_b4.esl_years || 25} yrs ÷ RSL {project_info.lifespan_years || 25} yrs − 1)
+                  </div>
+                </div>
+                <div className="form-group">
                   <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Major Overhaul (Year)</label>
                   <input
                     type="number"
@@ -792,22 +1104,64 @@ export default function UserReviewView() {
                     placeholder="15"
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Reference Service Life (Yrs)</label>
+              </div>
+
+              {/* B5: Refurbishment */}
+              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+                  B5: Refurbishment (Repeatable Row)
+                </div>
+                <div className="form-group" style={{ marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                    Refurbishment Events (per RSL)
+                  </label>
                   <input
                     type="number"
                     className="form-input"
-                    value={project_info.lifespan_years || ''}
-                    onChange={(e) => updateOperational({ lifespan_years: parseInt(e.target.value, 10) || 25 })}
-                    placeholder="25"
+                    value={refurbishment_b5.refurbishment_events_per_rsl || 1}
+                    onChange={(e) => updateRefurbishmentB5({ refurbishment_events_per_rsl: parseInt(e.target.value, 10) || 0 })}
+                    placeholder="1"
                   />
                 </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '6px' }}>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                      Material/Energy Name
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={refurbishment_b5.material_name || 'Copper Winding Rebuild'}
+                      onChange={(e) => updateRefurbishmentB5({ material_name: e.target.value })}
+                      placeholder="Copper Winding"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                      Mass / Qty (kg)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      className="form-input"
+                      value={refurbishment_b5.mass_kg || 45.0}
+                      onChange={(e) => updateRefurbishmentB5({ mass_kg: parseFloat(e.target.value) || 0 })}
+                      placeholder="45.0"
+                    />
+                  </div>
+                </div>
+                {renderProviderSelector(
+                  'Refurbishment Material/Energy Provider',
+                  refurbishment_b5.provider_id || 'ecoinvent_copper_tube_wire_glo',
+                  (val) => updateRefurbishmentB5({ provider_id: val }),
+                  'Metals'
+                )}
               </div>
 
               {/* B6 & B7: Power & Water */}
               <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
-                  B6 & B7: Energy & Water
+                  B6 & B7: Operational Energy & Water
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
                   <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Rated Efficiency (kW/ton)</label>
@@ -820,17 +1174,13 @@ export default function UserReviewView() {
                     placeholder="0.54"
                   />
                 </div>
-                <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Capacity (RT)</label>
-                  <input
-                    type="number"
-                    className="form-input"
-                    value={operational.capacity_rt || ''}
-                    onChange={(e) => updateOperational({ capacity_rt: parseFloat(e.target.value) || 0 })}
-                    placeholder="500.0"
-                  />
-                </div>
-                <div className="form-group">
+                {renderProviderSelector(
+                  'B6 Operational Grid Provider',
+                  operational.energy_provider_id || 'ecoinvent_elec_mv_us',
+                  (val) => updateOperational({ energy_provider_id: val }),
+                  'Grids'
+                )}
+                <div className="form-group" style={{ marginTop: '8px', marginBottom: '8px' }}>
                   <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Cooling Tower Water (m³/yr)</label>
                   <input
                     type="number"
@@ -840,6 +1190,12 @@ export default function UserReviewView() {
                     placeholder="120.0"
                   />
                 </div>
+                {renderProviderSelector(
+                  'B7 Operational Water Provider',
+                  operational.water_provider_id || 'ecoinvent_water_deionised_glo',
+                  (val) => updateOperational({ water_provider_id: val }),
+                  'Water'
+                )}
               </div>
             </div>
           </div>
@@ -854,64 +1210,109 @@ export default function UserReviewView() {
               MODULE C1–C4
             </span>
             <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
-              End of Life Decommissioning, Waste Transport & Disposal
+              End of Life Decommissioning, Waste Transport, Processing & Disposal
             </h3>
           </div>
 
           <div className="card">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px' }}>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Deconstruction Power (C1 kWh)</label>
-                <input
-                  type="number"
-                  className="form-input"
-                  value={end_of_life.decommissioning_energy_kwh || ''}
-                  onChange={(e) => updateEndOfLife({ decommissioning_energy_kwh: parseFloat(e.target.value) || 0 })}
-                  placeholder="120"
-                />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              {/* C1 & C2 */}
+              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+                  C1 Deconstruction & C2 Waste Transport
+                </div>
+                <div className="form-group" style={{ marginBottom: '8px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Deconstruction Power (C1 kWh)</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={end_of_life.decommissioning_energy_kwh || ''}
+                    onChange={(e) => updateEndOfLife({ decommissioning_energy_kwh: parseFloat(e.target.value) || 0 })}
+                    placeholder="120"
+                  />
+                </div>
+                {renderProviderSelector(
+                  'C1 Deconstruction Power Provider',
+                  end_of_life.deconstruction_provider_id || 'ecoinvent_diesel_dismantling_glo',
+                  (val) => updateEndOfLife({ deconstruction_provider_id: val }),
+                  'Decommissioning'
+                )}
+                <div className="form-group" style={{ marginTop: '8px', marginBottom: '8px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Waste Transit Distance (C2 km)</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={end_of_life.waste_transport_km || ''}
+                    onChange={(e) => updateEndOfLife({ waste_transport_km: parseFloat(e.target.value) || 0 })}
+                    placeholder="100"
+                  />
+                </div>
+                {renderProviderSelector(
+                  'C2 Waste Transport Provider',
+                  end_of_life.waste_transport_provider_id || 'ecoinvent_transport_lorry_32t_rer',
+                  (val) => updateEndOfLife({ waste_transport_provider_id: val }),
+                  'Transport'
+                )}
               </div>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Waste Transit Distance (C2 km)</label>
-                <input
-                  type="number"
-                  className="form-input"
-                  value={end_of_life.waste_transport_km || ''}
-                  onChange={(e) => updateEndOfLife({ waste_transport_km: parseFloat(e.target.value) || 0 })}
-                  placeholder="100"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Metal Recycling Rate (C3 %)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  className="form-input"
-                  value={end_of_life.recycling_rate_percent || ''}
-                  onChange={(e) => updateEndOfLife({ recycling_rate_percent: parseFloat(e.target.value) || 0 })}
-                  placeholder="92.4"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Sanitary Landfill (C4 %)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  className="form-input"
-                  value={end_of_life.landfill_rate_percent || ''}
-                  onChange={(e) => updateEndOfLife({ landfill_rate_percent: parseFloat(e.target.value) || 0 })}
-                  placeholder="4.5"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Thermal Incineration (C4 %)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  className="form-input"
-                  value={end_of_life.incineration_rate_percent || ''}
-                  onChange={(e) => updateEndOfLife({ incineration_rate_percent: parseFloat(e.target.value) || 0 })}
-                  placeholder="3.1"
-                />
+
+              {/* C3 & C4 */}
+              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+                  C3 Waste Processing & C4 Final Disposal
+                </div>
+                <div className="form-group" style={{ marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Metal Recycling Rate (C3 %)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="form-input"
+                    value={end_of_life.recycling_rate_percent || ''}
+                    onChange={(e) => updateEndOfLife({ recycling_rate_percent: parseFloat(e.target.value) || 0 })}
+                    placeholder="92.4"
+                  />
+                </div>
+                {renderProviderSelector(
+                  'C3 Recycling Process Provider',
+                  end_of_life.recycling_process_provider_id || 'ecoinvent_waste_metal_recycling_glo',
+                  (val) => updateEndOfLife({ recycling_process_provider_id: val }),
+                  'Waste Processing'
+                )}
+
+                <div className="form-group" style={{ marginTop: '8px', marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Thermal Incineration (C4 %)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="form-input"
+                    value={end_of_life.incineration_rate_percent || ''}
+                    onChange={(e) => updateEndOfLife({ incineration_rate_percent: parseFloat(e.target.value) || 0 })}
+                    placeholder="3.1"
+                  />
+                </div>
+                {renderProviderSelector(
+                  'C3 Incineration Process Provider',
+                  end_of_life.incineration_process_provider_id || 'ecoinvent_waste_incineration_glo',
+                  (val) => updateEndOfLife({ incineration_process_provider_id: val }),
+                  'Waste Processing'
+                )}
+
+                <div className="form-group" style={{ marginTop: '8px', marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Sanitary Landfill (C4 %)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="form-input"
+                    value={end_of_life.landfill_rate_percent || ''}
+                    onChange={(e) => updateEndOfLife({ landfill_rate_percent: parseFloat(e.target.value) || 0 })}
+                    placeholder="4.5"
+                  />
+                </div>
+                {renderProviderSelector(
+                  'C4 Landfill Process Provider',
+                  end_of_life.landfill_process_provider_id || 'ecoinvent_waste_landfill_glo',
+                  (val) => updateEndOfLife({ landfill_process_provider_id: val }),
+                  'Disposal'
+                )}
               </div>
             </div>
           </div>
@@ -931,7 +1332,7 @@ export default function UserReviewView() {
           </div>
 
           <div className="card" style={{ borderLeft: '4px solid #2E7D32' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
               <div className="form-group">
                 <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Steel Scrap Recovery (%)</label>
                 <input
@@ -976,17 +1377,47 @@ export default function UserReviewView() {
                   placeholder="92.0"
                 />
               </div>
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Net Avoided Carbon Burden Credit (kg CO₂e)</label>
-                <input
-                  type="number"
-                  className="form-input"
-                  value={circularity_d.net_avoided_burden_gwp_kg || ''}
-                  onChange={(e) => updateCircularityD({ net_avoided_burden_gwp_kg: parseFloat(e.target.value) || 0 })}
-                  placeholder="-3210.0"
-                />
+
+              {/* Module D Provider Selectors: Virgin Material vs Secondary Recycled Process */}
+              <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingTop: '8px', borderTop: '1px solid #C8E6C9' }}>
+                {renderProviderSelector(
+                  'Module D Virgin Material Provider (Displaced Primary)',
+                  circularity_d.virgin_material_provider_id || 'ecoinvent_virgin_steel_primary_glo',
+                  (val) => updateCircularityD({ virgin_material_provider_id: val }),
+                  'Virgin'
+                )}
+                {renderProviderSelector(
+                  'Module D Secondary Recycled Process Provider',
+                  circularity_d.recycled_process_provider_id || 'ecoinvent_secondary_steel_electric_glo',
+                  (val) => updateCircularityD({ recycled_process_provider_id: val }),
+                  'Recycled'
+                )}
+              </div>
+
+              {/* Module D: Changed "Net Avoided Carbon Burden Credit" from editable field to READ-ONLY / calculated display field */}
+              <div className="form-group" style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
+                <label className="form-label" style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 700 }}>
+                  Net Avoided Carbon Burden Credit (Calculated Display)
+                </label>
+                <div style={{
+                  padding: '10px 14px',
+                  backgroundColor: '#E8F5E9',
+                  borderRadius: '6px',
+                  border: '1px solid #C8E6C9',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  color: '#2E7D32',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
+                  <span>{Number(circularity_d.net_avoided_burden_gwp_kg || -3210.0).toFixed(1)} kg CO₂e</span>
+                  <span style={{ fontSize: '11px', color: '#388E3C', fontWeight: 600, backgroundColor: '#FFFFFF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #C8E6C9' }}>
+                    READ-ONLY CALCULATED DISPLAY
+                  </span>
+                </div>
                 <div style={{ fontSize: '11px', color: '#2E7D32', marginTop: '4px' }}>
-                  Negative value offsets virgin raw material extraction per EN 15804+A2 & ISO 21930.
+                  Net avoided carbon credit derived from displaced primary virgin materials vs. secondary recycling recovery processes per EN 15804+A2 & ISO 21930.
                 </div>
               </div>
             </div>
@@ -1082,74 +1513,255 @@ export default function UserReviewView() {
               </button>
             </div>
 
-            {/* Search Input */}
+            {/* Search Input & Quick Keyword Chips */}
             <div style={{ padding: '14px 20px', borderBottom: '1px solid #EED8C5', backgroundColor: '#FCFAF8' }}>
-              <div style={{ position: 'relative' }}>
-                <SearchIcon size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: '#7A6B63' }} />
+              <div style={{ position: 'relative', marginBottom: '10px' }}>
+                <SearchIcon size={16} style={{ position: 'absolute', left: '12px', top: '11px', color: '#7A6B63' }} />
                 <input
                   type="text"
-                  placeholder="Search ecoinvent activities (e.g., steel, stainless, copper, aluminium, motor)..."
+                  placeholder="Search 26,533 ecoinvent activities (e.g., steel, copper, motor, polyurethane, inverter)..."
                   value={providerSearchQuery}
-                  onChange={(e) => handleSearchProviders(e.target.value)}
+                  onChange={(e) => handleSearchInputChange(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '8px 12px 8px 36px',
+                    padding: '8px 58px 8px 36px',
                     border: '1px solid #E2D9D2',
                     borderRadius: '6px',
                     fontSize: '13px'
                   }}
                   autoFocus
                 />
+                <div style={{ position: 'absolute', right: '10px', top: '7px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {isSearchingDb && (
+                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: '#C25A23' }} />
+                  )}
+                  {providerSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => handleImmediateSearch('')}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#7A6B63',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        padding: '2px'
+                      }}
+                      title="Clear search"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Suggested Quick Keywords */}
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', color: '#7A6B63', fontWeight: 600 }}>Quick search:</span>
+                {['steel', 'copper', 'motor', 'polyurethane', 'inverter', 'stainless steel', 'aluminium', 'refrigerant'].map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => handleImmediateSearch(tag)}
+                    style={{
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                      fontSize: '11px',
+                      border: '1px solid #EED8C5',
+                      backgroundColor: providerSearchQuery.toLowerCase() === tag ? '#FAF0E6' : '#FFF',
+                      color: providerSearchQuery.toLowerCase() === tag ? '#9C5832' : '#5C4E46',
+                      fontWeight: providerSearchQuery.toLowerCase() === tag ? 700 : 500,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {tag}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Provider List */}
-            <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1 }}>
+            {/* Provider List with Stable DOM Height and Smooth Transitions */}
+            <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1, minHeight: '320px' }}>
               {/* If search returns results from backend */}
               {liveSearchResults.length > 0 && (
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C5832', textTransform: 'uppercase', marginBottom: '8px' }}>
-                    Live ecoinvent Search Results ({liveSearchResults.length})
+                <div style={{
+                  marginBottom: '16px',
+                  opacity: isSearchingDb ? 0.6 : 1,
+                  transition: 'opacity 0.2s ease',
+                  pointerEvents: isSearchingDb ? 'none' : 'auto'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C5832', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>Live ecoinvent Search Results (Showing {Math.min(visibleMatchesCount, liveSearchResults.length)} of {liveSearchResults.length})</span>
+                      {isSearchingDb && <span style={{ fontSize: '10px', color: '#C25A23', fontWeight: 500 }}>(updating...)</span>}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 600 }}>
+                      ★ Best match ranked first
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {liveSearchResults.map((res, rIdx) => (
-                      <div
-                        key={rIdx}
-                        onClick={() => handleSelectProvider(providerModalItemIndex, {
-                          id: `ecoinvent_row_${res.row_index}`,
-                          name: `${res.activity_name} [${res.geography}]`,
-                          reference_product_name: res.reference_product_name,
-                        })}
-                        style={{
-                          padding: '10px 12px',
-                          border: '1px solid #EED8C5',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          backgroundColor: '#FFF',
-                          transition: 'all 0.15s ease',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FFF8F2'; e.currentTarget.style.borderColor = '#C25A23'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFF'; e.currentTarget.style.borderColor = '#EED8C5'; }}
-                      >
-                        <div>
-                          <div style={{ fontSize: '13px', fontWeight: 600, color: '#2C221E' }}>{res.activity_name}</div>
-                          <div style={{ fontSize: '11px', color: '#7A6B63' }}>Product: {res.reference_product_name}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {liveSearchResults.slice(0, visibleMatchesCount).map((res, rIdx) => {
+                      const isBestMatch = rIdx === 0;
+                      const isCurrentlySelected =
+                        bom[providerModalItemIndex]?.ecoinvent_id === `ecoinvent_row_${res.row_index}` ||
+                        bom[providerModalItemIndex]?.ecoinvent_row === res.row_index;
+
+                      return (
+                        <div
+                          key={rIdx}
+                          onClick={() => handleSelectProvider(providerModalItemIndex, {
+                            id: `ecoinvent_row_${res.row_index}`,
+                            row_index: res.row_index,
+                            activity_name: res.activity_name,
+                            geography: res.geography,
+                            reference_product_name: res.reference_product_name,
+                          })}
+                          style={{
+                            padding: '12px 14px',
+                            border: isCurrentlySelected
+                              ? '2px solid #2E7D32'
+                              : isBestMatch
+                              ? '2px solid #C25A23'
+                              : '1px solid #EED8C5',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            backgroundColor: isCurrentlySelected
+                              ? '#F1F8F2'
+                              : isBestMatch
+                              ? '#FFFBF8'
+                              : '#FFF',
+                            transition: 'all 0.15s ease',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: '12px',
+                            boxShadow: isBestMatch ? '0 2px 8px rgba(194,90,35,0.12)' : 'none'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isCurrentlySelected && !isBestMatch) {
+                              e.currentTarget.style.backgroundColor = '#FFF8F2';
+                              e.currentTarget.style.borderColor = '#C25A23';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isCurrentlySelected && !isBestMatch) {
+                              e.currentTarget.style.backgroundColor = '#FFF';
+                              e.currentTarget.style.borderColor = '#EED8C5';
+                            }
+                          }}
+                        >
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                              {isBestMatch && (
+                                <span style={{
+                                  backgroundColor: '#FAF0E6',
+                                  color: '#C25A23',
+                                  fontSize: '9px',
+                                  fontWeight: 800,
+                                  padding: '1px 6px',
+                                  borderRadius: '3px',
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.04em'
+                                }}>
+                                  ★ Best Match (Default)
+                                </span>
+                              )}
+                              {isCurrentlySelected && (
+                                <span style={{
+                                  backgroundColor: '#E8F5E9',
+                                  color: '#2E7D32',
+                                  fontSize: '9px',
+                                  fontWeight: 800,
+                                  padding: '1px 6px',
+                                  borderRadius: '3px',
+                                  textTransform: 'uppercase'
+                                }}>
+                                  ✓ Selected
+                                </span>
+                              )}
+                              <span style={{
+                                fontSize: '10px',
+                                color: '#8A7A72',
+                                fontFamily: 'monospace'
+                              }}>
+                                Row #{res.row_index}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', lineHeight: 1.3 }}>
+                              {res.activity_name}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#7A6B63', marginTop: '2px' }}>
+                              Reference Product: <strong>{res.reference_product_name}</strong>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                            <span style={{
+                              backgroundColor: '#FAF0E6',
+                              color: '#9C5832',
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              fontSize: '11px',
+                              fontWeight: 700
+                            }}>
+                              {res.geography}
+                            </span>
+                            <button
+                              type="button"
+                              style={{
+                                padding: '4px 10px',
+                                backgroundColor: isCurrentlySelected ? '#2E7D32' : isBestMatch ? '#C25A23' : '#FAF0E6',
+                                color: isCurrentlySelected || isBestMatch ? '#FFF' : '#9C5832',
+                                border: 'none',
+                                borderRadius: '4px',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              {isCurrentlySelected ? 'Selected' : 'Select'}
+                            </button>
+                          </div>
                         </div>
-                        <span style={{
-                          backgroundColor: '#FAF0E6',
-                          color: '#9C5832',
-                          padding: '2px 8px',
-                          borderRadius: '4px',
-                          fontSize: '11px',
-                          fontWeight: 700
-                        }}>
-                          {res.geography}
-                        </span>
-                      </div>
-                    ))}
+                      );
+                    })}
+                  </div>
+
+                  {/* Load more matches controls */}
+                  {liveSearchResults.length > visibleMatchesCount && (
+                    <div style={{ marginTop: '14px', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() => setVisibleMatchesCount(prev => Math.min(prev + 20, liveSearchResults.length))}
+                        style={{ fontSize: '12px', padding: '6px 14px' }}
+                      >
+                        + Show 20 More Matches (Showing {Math.min(visibleMatchesCount, liveSearchResults.length)} of {liveSearchResults.length})
+                      </button>
+                      {liveSearchResults.length > visibleMatchesCount + 20 && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => setVisibleMatchesCount(liveSearchResults.length)}
+                          style={{ fontSize: '12px', padding: '6px 14px' }}
+                        >
+                          Show All ({liveSearchResults.length})
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* If no search results */}
+              {!isSearchingDb && providerSearchQuery && liveSearchResults.length === 0 && (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#7A6B63', fontSize: '13px', backgroundColor: '#FFF', borderRadius: '8px', border: '1px dashed #EED8C5', marginBottom: '16px' }}>
+                  No exact ecoinvent activities found for "{providerSearchQuery}".
+                  <div style={{ fontSize: '11px', marginTop: '4px' }}>
+                    Try searching for broader keywords like <code>steel</code>, <code>copper</code>, <code>motor</code>, or select from the core industrial providers below.
                   </div>
                 </div>
               )}

@@ -115,18 +115,47 @@ def load_lcia_data(filepath: str, sheet_name: str = SHEET_NAME, use_cache: bool 
 # ---------------------------------------------------------------------------
 # SEARCH / SELECT
 # ---------------------------------------------------------------------------
+KEYWORD_SYNONYMS = {
+    "steel_hot_rolled": "steel, low-alloyed, hot rolled",
+    "copper_tube_wire": "copper, cathode",
+    "electric_motor_industrial": "electric motor",
+    "insulation_polyurethane": "polyurethane, rigid foam",
+    "electronics_vfd": "inverter",
+    "steel_stainless_304": "steel, chromium steel 18/8",
+    "aluminium_cast_alloy": "aluminium, cast alloy",
+    "refrigerant_r134a": "refrigerant R134a",
+    "refrigerant_r1234ze": "refrigerant",
+}
+
 def search_product(data: pd.DataFrame, keyword: str) -> pd.DataFrame:
     """
-    Case-insensitive substring search across Reference Product Name AND
-    Activity Name. Returns a small lookup table of distinct matches with
-    their ORIGINAL row index (so we can pull the full row later), ready to
-    show the user as a numbered list.
+    Intelligent case-insensitive search across Reference Product Name AND
+    Activity Name. Handles underscores, multiple tokens, known synonyms, and ranks best matches first.
     """
+    raw_key = keyword.strip().lower()
+    target_query = KEYWORD_SYNONYMS.get(raw_key, keyword)
+    clean_kw = target_query.replace("_", " ").replace("-", " ").strip()
+    words = [w for w in clean_kw.split() if len(w) > 1]
+    if not words:
+        words = [clean_kw] if clean_kw else []
+
     ref_name = data[("META", "META", "META", "Reference Product Name")].astype(str)
     act_name = data[("META", "META", "META", "Activity Name")].astype(str)
+    geog = data[("META", "META", "META", "Geography")].astype(str)
 
-    mask = ref_name.str.contains(keyword, case=False, na=False) | \
-           act_name.str.contains(keyword, case=False, na=False)
+    # First attempt: all words must match in either ref_name or act_name
+    all_mask = pd.Series(True, index=data.index)
+    for w in words:
+        all_mask &= (ref_name.str.contains(w, case=False, na=False) | act_name.str.contains(w, case=False, na=False))
+
+    if all_mask.sum() > 0:
+        mask = all_mask
+    else:
+        # Fallback attempt: any word matches
+        any_mask = pd.Series(False, index=data.index)
+        for w in words:
+            any_mask |= (ref_name.str.contains(w, case=False, na=False) | act_name.str.contains(w, case=False, na=False))
+        mask = any_mask
 
     meta_cols = [
         ("META", "META", "META", "Activity Name"),
@@ -135,7 +164,44 @@ def search_product(data: pd.DataFrame, keyword: str) -> pd.DataFrame:
     ]
     subset = data.loc[mask, meta_cols].copy()
     subset.columns = ["Activity Name", "Geography", "Reference Product Name"]
-    subset = subset.drop_duplicates().reset_index()  # keeps original df index in a column called 'index'
+    subset = subset.drop_duplicates().reset_index()
+
+    if subset.empty:
+        return subset
+
+    # Calculate match relevance score (higher is better)
+    def calc_score(row):
+        score = 0
+        r_lower = str(row["Reference Product Name"]).lower()
+        a_lower = str(row["Activity Name"]).lower()
+        g = str(row["Geography"]).upper()
+        kw_lower = clean_kw.lower()
+
+        # Exact matches
+        if r_lower == kw_lower:
+            score += 100
+        elif r_lower.startswith(kw_lower):
+            score += 60
+        elif kw_lower in r_lower:
+            score += 40
+
+        # Market activities preferred in ecoinvent
+        if a_lower.startswith("market for"):
+            score += 25
+        elif "market" in a_lower:
+            score += 10
+
+        # Global or European geography preferred
+        if g in ["GLO", "RER"]:
+            score += 15
+
+        # Shorter names often mean cleaner baseline commodities
+        score -= min(len(r_lower), 60) * 0.2
+        return score
+
+    scores = subset.apply(calc_score, axis=1)
+    subset["_score"] = scores
+    subset = subset.sort_values(by="_score", ascending=False).drop(columns=["_score"]).reset_index(drop=True)
     return subset
 
 

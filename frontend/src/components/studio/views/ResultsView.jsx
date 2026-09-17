@@ -1,7 +1,6 @@
 import React from 'react';
-import { useStudio, METHODOLOGIES } from '../../../context/StudioContext';
+import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
 import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon } from '../Icons';
-import LciaExtractorSection from '../LciaExtractorSection';
 
 export default function ResultsView() {
   const {
@@ -20,7 +19,7 @@ export default function ResultsView() {
     return val.toFixed(2);
   };
 
-  const currentMethod = METHODOLOGIES[selectedMethodology] || METHODOLOGIES.ef31;
+  const currentMethod = getMethodology(selectedMethodology);
 
   return (
     <div className="view-container">
@@ -46,12 +45,12 @@ export default function ResultsView() {
               value={selectedMethodology}
               onChange={(e) => {
                 changeMethodology(e.target.value);
-                showNotif(`Characterized using ${METHODOLOGIES[e.target.value]?.name || e.target.value}`, 'Methodology Updated');
+                showNotif(`Characterized using ${getMethodology(e.target.value)?.name || e.target.value}`, 'Methodology Updated');
               }}
               style={{ padding: '4px 8px', fontSize: 'var(--text-xs)', height: 'auto', background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--accent)', cursor: 'pointer' }}
             >
-              {Object.entries(METHODOLOGIES).map(([k, m]) => (
-                <option key={k} value={k}>{m.name}</option>
+              {ALL_METHODOLOGIES.map((m) => (
+                <option key={m.id} value={m.id}>{m.name} ({m.standard})</option>
               ))}
             </select>
           </div>
@@ -186,8 +185,6 @@ export default function ResultsView() {
         </div>
       </div>
 
-      {/* Live ecoinvent LCIA Extractor & EPD Calculator Component */}
-      <LciaExtractorSection />
 
       {/* Action Footer */}
       <div style={{ marginTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>

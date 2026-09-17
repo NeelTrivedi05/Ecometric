@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { ALL_METHODOLOGIES, METHODOLOGIES, getMethodology } from '../data/lciaMethodologies';
 
 const API_BASE = '/api';
 
@@ -14,19 +15,49 @@ export function StudioProvider({ children }) {
   // Extracted data (populated after upload parsing)
   const [extractedData, setExtractedData] = useState({
     bom: [],
-    transport: [],
+    transport: [
+      { id: 'leg-1', mode: 'Heavy Lorry >32t (EURO 6)', distance: 485, dist: 485, linked_materials: [], provider_id: 'ecoinvent_transport_lorry_32t_rer', module: 'A2' },
+      { id: 'leg-2', mode: 'Transoceanic Container Ship', distance: 1200, dist: 1200, linked_materials: [], provider_id: 'ecoinvent_transport_container_ship_glo', module: 'A2' }
+    ],
     manufacturing: {
       annual_facility_kwh: 34000,
       natural_gas_mj: 18500,
       grid_region: 'US_Average',
       water_m3: 45.0,
+      electricity_provider_id: 'ecoinvent_elec_mv_us',
+      gas_provider_id: 'ecoinvent_gas_burned_boiler_glo',
     },
     installation: {
       outbound_transport_km: 500,
       transport_mode: 'Heavy Lorry >32t (EURO 6)',
+      outbound_provider_id: 'ecoinvent_transport_lorry_32t_rer',
       installation_energy_kwh: 350,
+      installation_energy_provider_id: 'ecoinvent_elec_mv_us',
       commissioning_refrigerant_loss_kg: 0.5,
       rigging_crane_diesel_liters: 25.0,
+      consumable_provider_id: 'ecoinvent_diesel_burned_building_machine_glo',
+    },
+    maintenance_b2: {
+      maintenance_cycles_per_rsl: 25,
+      consumable_name: 'Lubricating Oil & Filter Cartridges',
+      consumable_mass_kg: 5.0,
+      provider_id: 'ecoinvent_lubricating_oil_glo',
+    },
+    repair_b3: {
+      repair_events_per_rsl: 2,
+      replaced_part_name: 'Compressor Shaft Seal & Bearing',
+      part_mass_kg: 18.5,
+      material_type: 'Steel, low-alloyed',
+      provider_id: 'ecoinvent_steel_hot_rolled_glo',
+    },
+    replacement_b4: {
+      esl_years: 25,
+    },
+    refurbishment_b5: {
+      refurbishment_events_per_rsl: 1,
+      material_name: 'Copper Winding & Stator Rebuild',
+      mass_kg: 45.0,
+      provider_id: 'ecoinvent_copper_tube_wire_glo',
     },
     operational: {
       refrigerant_type: 'R134a',
@@ -38,6 +69,8 @@ export function StudioProvider({ children }) {
       cooling_tower_water_m3_yr: 120.0,
       scheduled_maintenance_kwh_yr: 180.0,
       major_component_replacement_year: 15,
+      energy_provider_id: 'ecoinvent_elec_mv_us',
+      water_provider_id: 'ecoinvent_water_deionised_glo',
     },
     end_of_life: {
       recycling_rate_percent: 92.4,
@@ -45,6 +78,11 @@ export function StudioProvider({ children }) {
       incineration_rate_percent: 3.1,
       decommissioning_energy_kwh: 120,
       waste_transport_km: 100,
+      deconstruction_provider_id: 'ecoinvent_diesel_dismantling_glo',
+      waste_transport_provider_id: 'ecoinvent_transport_lorry_32t_rer',
+      recycling_process_provider_id: 'ecoinvent_waste_metal_recycling_glo',
+      incineration_process_provider_id: 'ecoinvent_waste_incineration_glo',
+      landfill_process_provider_id: 'ecoinvent_waste_landfill_glo',
     },
     circularity_d: {
       steel_scrap_recovery_rate: 95.0,
@@ -52,6 +90,8 @@ export function StudioProvider({ children }) {
       aluminium_recovery_rate: 90.0,
       refrigerant_reclamation_rate: 92.0,
       net_avoided_burden_gwp_kg: -3210.0,
+      virgin_material_provider_id: 'ecoinvent_virgin_steel_primary_glo',
+      recycled_process_provider_id: 'ecoinvent_secondary_steel_electric_glo',
     },
     project_info: {
       product_name: '',
@@ -417,6 +457,46 @@ export function StudioProvider({ children }) {
     }));
   }, []);
 
+  const updateMaintenanceB2 = useCallback((fields) => {
+    setExtractedData(prev => ({
+      ...prev,
+      maintenance_b2: {
+        ...(prev.maintenance_b2 || {}),
+        ...fields,
+      },
+    }));
+  }, []);
+
+  const updateRepairB3 = useCallback((fields) => {
+    setExtractedData(prev => ({
+      ...prev,
+      repair_b3: {
+        ...(prev.repair_b3 || {}),
+        ...fields,
+      },
+    }));
+  }, []);
+
+  const updateReplacementB4 = useCallback((fields) => {
+    setExtractedData(prev => ({
+      ...prev,
+      replacement_b4: {
+        ...(prev.replacement_b4 || {}),
+        ...fields,
+      },
+    }));
+  }, []);
+
+  const updateRefurbishmentB5 = useCallback((fields) => {
+    setExtractedData(prev => ({
+      ...prev,
+      refurbishment_b5: {
+        ...(prev.refurbishment_b5 || {}),
+        ...fields,
+      },
+    }));
+  }, []);
+
   // ─── VALIDATION ───
   const runValidation = useCallback(async () => {
     setIsLoading(true);
@@ -485,7 +565,8 @@ export function StudioProvider({ children }) {
     const totalMass = (extractedData.bom || []).reduce((acc, item) => acc + (Number(item.mass) || 0), 0) || 8450;
     
     // Characterization scaling factor based on methodology
-    const cfMultiplier = selectedMethodology === 'recipe2016' ? 1.05 : selectedMethodology === 'cml2016' ? 0.98 : selectedMethodology === 'traci21' ? 1.02 : 1.0;
+    const methodObj = getMethodology(selectedMethodology);
+    const cfMultiplier = methodObj.group === 'ReCiPe' ? 1.05 : methodObj.group === 'CML' ? 0.98 : methodObj.group === 'TRACI' ? 1.02 : 1.0;
 
     const a1_gwp = Math.round(totalMass * 1.85 * cfMultiplier);
     const a2_gwp = Math.round(totalMass * 0.12 * cfMultiplier);
@@ -531,7 +612,7 @@ export function StudioProvider({ children }) {
     operator: 'The International EPD® System (Environdec)',
     declaredUnitStatement: extractedData.project_info?.functional_unit || extractedData.project_info?.declared_unit || '1 unit of HVAC chiller over 20 years reference service life',
     pcrRef: extractedData.project_info?.pcr_ref || 'PCR 2019:14 Construction Products v1.3.1 (UN CPC 439)',
-    lciaMethod: METHODOLOGIES[selectedMethodology]?.name || 'EF 3.1 (Environmental Footprint)',
+    lciaMethod: getMethodology(selectedMethodology)?.name || 'TRACI v2.1',
     rsl: '20 Years',
   }), [extractedData.project_info, selectedMethodology]);
 
@@ -541,7 +622,7 @@ export function StudioProvider({ children }) {
       format: 'ILCD+EPD',
       version: '1.2',
       standard: 'EN 15804+A2:2019 / ISO 14025:2006',
-      methodology: METHODOLOGIES[selectedMethodology]?.name || selectedMethodology,
+      methodology: getMethodology(selectedMethodology)?.name || selectedMethodology,
       database: 'ecoinvent 3.12 cutoff',
       generated_at: new Date().toISOString(),
       project: projectInfo,
@@ -582,6 +663,10 @@ export function StudioProvider({ children }) {
         updateOperational,
         updateEndOfLife,
         updateCircularityD,
+        updateMaintenanceB2,
+        updateRepairB3,
+        updateReplacementB4,
+        updateRefurbishmentB5,
         validationResults,
         runValidation,
         selectedMethodology,
@@ -619,33 +704,8 @@ export function useStudio() {
   return context;
 }
 
-// ─── LCIA METHODOLOGIES ───
-export const METHODOLOGIES = {
-  ef31: {
-    name: 'EF 3.1 (Environmental Footprint)',
-    standard: 'EU PEF/OEF',
-    desc: 'European Commission recommended method. 16 midpoint impact categories. Required for Environdec EPDs.',
-    indicators: 16,
-  },
-  cml2016: {
-    name: 'CML-IA 2016',
-    standard: 'CML Leiden University',
-    desc: 'Widely used academic method with established characterization factors for European context.',
-    indicators: 11,
-  },
-  recipe2016: {
-    name: 'ReCiPe 2016 Midpoint (H)',
-    standard: 'RIVM / Radboud University',
-    desc: 'Comprehensive 18-category method with Hierarchist perspective. Combines midpoint and endpoint.',
-    indicators: 18,
-  },
-  traci21: {
-    name: 'TRACI 2.1',
-    standard: 'US EPA',
-    desc: 'US-specific method for North American EPDs. Required by UL Environment and USGBC.',
-    indicators: 10,
-  },
-};
+// ─── LCIA METHODOLOGIES (41 ecoinvent v3.12 Cut-off Methodologies) ───
+export { ALL_METHODOLOGIES, METHODOLOGIES, getMethodology };
 
 // ─── STANDARD ECOINVENT DATABASE PROVIDERS (for quick selection in User Review) ───
 export const STANDARD_DATABASE_PROVIDERS = [
@@ -662,8 +722,19 @@ export const STANDARD_DATABASE_PROVIDERS = [
   { id: 'ecoinvent_elec_mv_us', name: 'Electricity, medium voltage, US average', category: 'Energy / Grids', geography: 'US', unit: 'kWh', defaultEf: 0.385 },
   { id: 'ecoinvent_elec_mv_de', name: 'Electricity, medium voltage, Germany (DE)', category: 'Energy / Grids', geography: 'DE', unit: 'kWh', defaultEf: 0.320 },
   { id: 'ecoinvent_elec_mv_fr', name: 'Electricity, medium voltage, France (Nuclear/Hydro mix)', category: 'Energy / Grids', geography: 'FR', unit: 'kWh', defaultEf: 0.058 },
+  { id: 'ecoinvent_gas_burned_boiler_glo', name: 'Natural gas, burned in industrial boiler', category: 'Energy / Fuels', geography: 'GLO', unit: 'MJ', defaultEf: 0.068 },
   { id: 'ecoinvent_transport_lorry_32t_rer', name: 'Transport, freight, lorry >32 metric ton, EURO 6', category: 'Transport / Logistics', geography: 'RER', unit: 'tkm', defaultEf: 0.088 },
   { id: 'ecoinvent_transport_container_ship_glo', name: 'Transport, freight, sea, container ship', category: 'Transport / Logistics', geography: 'GLO', unit: 'tkm', defaultEf: 0.0145 },
+  { id: 'ecoinvent_diesel_burned_building_machine_glo', name: 'Diesel fuel, burned in heavy machinery / crane', category: 'Energy / Fuels', geography: 'GLO', unit: 'liter', defaultEf: 3.15 },
+  { id: 'ecoinvent_water_deionised_glo', name: 'Tap water / process water supply', category: 'Water & Waste', geography: 'GLO', unit: 'm3', defaultEf: 0.35 },
+  { id: 'ecoinvent_wastewater_treatment_glo', name: 'Wastewater treatment, unpolluted municipal', category: 'Water & Waste', geography: 'GLO', unit: 'm3', defaultEf: 0.42 },
+  { id: 'ecoinvent_lubricating_oil_glo', name: 'Lubricating oil / grease consumable', category: 'Consumables & Lubricants', geography: 'GLO', unit: 'kg', defaultEf: 1.25 },
+  { id: 'ecoinvent_diesel_dismantling_glo', name: 'Diesel & electric machinery for deconstruction', category: 'Decommissioning', geography: 'GLO', unit: 'kWh', defaultEf: 0.45 },
+  { id: 'ecoinvent_waste_metal_recycling_glo', name: 'Scrap metal recycling & remelting process', category: 'Waste Processing', geography: 'GLO', unit: 'kg', defaultEf: 0.12 },
+  { id: 'ecoinvent_waste_incineration_glo', name: 'Municipal thermal waste incineration process', category: 'Waste Processing', geography: 'GLO', unit: 'kg', defaultEf: 0.98 },
+  { id: 'ecoinvent_waste_landfill_glo', name: 'Sanitary landfill process for inert waste', category: 'Disposal', geography: 'GLO', unit: 'kg', defaultEf: 0.045 },
+  { id: 'ecoinvent_virgin_steel_primary_glo', name: 'Primary virgin steel production (Blast Furnace)', category: 'Virgin Materials', geography: 'GLO', unit: 'kg', defaultEf: 2.25 },
+  { id: 'ecoinvent_secondary_steel_electric_glo', name: 'Secondary steel via Electric Arc Furnace (EAF)', category: 'Recycled Processes', geography: 'GLO', unit: 'kg', defaultEf: 0.65 },
 ];
 
 // ─── CLIENT-SIDE VALIDATION (Dual PCR & GPI validation) ───
@@ -783,7 +854,7 @@ function generateClientValidation(data) {
 
 // ─── CLIENT-SIDE RESULTS (when backend offline) ───
 function generateClientResults(data, methodology) {
-  const methodName = METHODOLOGIES[methodology]?.name || methodology;
+  const methodName = getMethodology(methodology)?.name || methodology;
 
   return {
     methodology,

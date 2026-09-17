@@ -387,8 +387,8 @@ def get_lcia_methodologies():
     return {"status": "success", "count": len(methods), "methodologies": methods}
 
 @router.get("/lcia-search")
-def search_lcia_products(query: str = ""):
-    """Searches for products / activities in the ecoinvent LCIA Excel file."""
+def search_lcia_products(query: str = "", limit: int = 200):
+    """Searches for products / activities in the ecoinvent LCIA Excel file with intelligent ranking."""
     if not query.strip():
         return {"status": "success", "query": query, "count": 0, "results": []}
     if not lcia_extractor:
@@ -398,7 +398,7 @@ def search_lcia_products(query: str = ""):
     matches = lcia_extractor.search_product(data, query.strip())
     
     results = []
-    for idx, row in matches.iterrows():
+    for idx, row in matches.head(limit).iterrows():
         results.append({
             "option_number": idx,
             "row_index": int(row["index"]),
@@ -410,7 +410,7 @@ def search_lcia_products(query: str = ""):
     return {
         "status": "success",
         "query": query,
-        "count": len(results),
+        "count": len(matches),
         "results": results
     }
 

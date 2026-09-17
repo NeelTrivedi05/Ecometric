@@ -10,7 +10,6 @@ import {
   EditIcon, 
   AlertIcon 
 } from '../Icons';
-import LciaExtractorSection from '../LciaExtractorSection';
 
 export default function ReviewView() {
   const { 
@@ -862,16 +861,26 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Net Avoided Carbon Burden Credit (kg CO₂e)</label>
-                <input
-                  type="number"
-                  className="form-input"
-                  value={circularity_d.net_avoided_burden_gwp_kg || ''}
-                  onChange={(e) => updateCircularityD({ net_avoided_burden_gwp_kg: Number(e.target.value) })}
-                  placeholder="-3210.0"
-                />
+                <label className="form-label" style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 700 }}>Net Avoided Carbon Burden Credit (Calculated Display)</label>
+                <div style={{
+                  padding: '10px 14px',
+                  backgroundColor: '#E8F5E9',
+                  borderRadius: '6px',
+                  border: '1px solid #C8E6C9',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  color: '#2E7D32',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
+                  <span>{Number(circularity_d.net_avoided_burden_gwp_kg || -3210.0).toFixed(1)} kg CO₂e</span>
+                  <span style={{ fontSize: '11px', color: '#388E3C', fontWeight: 600, backgroundColor: '#FFFFFF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #C8E6C9' }}>
+                    READ-ONLY CALCULATED DISPLAY
+                  </span>
+                </div>
                 <div style={{ fontSize: '11px', color: '#2E7D32', marginTop: '4px' }}>
-                  Negative value indicates a net environmental credit offset against virgin raw material extraction.
+                  Net avoided carbon credit derived from displaced primary virgin materials vs. secondary recycling recovery processes per EN 15804+A2 & ISO 21930.
                 </div>
               </div>
             </div>
@@ -879,8 +888,6 @@ export default function ReviewView() {
         </div>
       )}
 
-      {/* Live ecoinvent LCIA Extractor & EPD Calculator Component */}
-      <LciaExtractorSection />
 
       {/* Action Footer */}
       <div style={{ marginTop: '24px', display: 'flex', gap: '14px', alignItems: 'center' }}>
