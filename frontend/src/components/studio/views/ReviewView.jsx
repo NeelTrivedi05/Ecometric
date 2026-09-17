@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStudio } from '../../../context/StudioContext';
 import { ChevronRightIcon, FileIcon, CheckCircleIcon, RefreshCwIcon } from '../Icons';
+import LciaExtractorSection from '../LciaExtractorSection';
 
 export default function ReviewView() {
   const { extractedData, setExtractedData, setActivePhase, uploadedFiles, loadSampleData } = useStudio();
@@ -281,8 +282,12 @@ export default function ReviewView() {
         </div>
       </div>
 
+      {/* Live ecoinvent LCIA Extractor & EPD Calculator Component */}
+      <LciaExtractorSection />
+
       {/* Action Footer */}
       <div style={{ marginTop: '24px', display: 'flex', gap: '14px', alignItems: 'center' }}>
+
         <button
           type="button"
           className="btn btn-primary btn-lg"

@@ -354,3 +354,78 @@ async def upload_and_extract_documents(
         "critical_gaps": len([g for g in gaps if g.get("severity") == "critical"]),
         "traceability_flow": traceability
     }
+
+# ---------------------------------------------------------------------------
+# LCIA Excel Extractor & EPD Calculation API Endpoints
+# ---------------------------------------------------------------------------
+import sys
+from pathlib import Path
+root_dir = str(Path(__file__).resolve().parent.parent.parent.parent)
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
+try:
+    import lcia_extractor
+except ImportError:
+    lcia_extractor = None
+
+@router.get("/lcia-methodologies")
+def get_lcia_methodologies():
+    """Returns the list of all 41 LCIA methodologies available in the Excel dataset."""
+    if not lcia_extractor:
+        raise HTTPException(status_code=500, detail="lcia_extractor module not available")
+    data = lcia_extractor.get_lcia_data()
+    methods = lcia_extractor.get_available_methods(data)
+    return {"status": "success", "count": len(methods), "methodologies": methods}
+
+@router.get("/lcia-search")
+def search_lcia_products(query: str = ""):
+    """Searches for products / activities in the ecoinvent LCIA Excel file."""
+    if not query.strip():
+        return {"status": "success", "query": query, "count": 0, "results": []}
+    if not lcia_extractor:
+        raise HTTPException(status_code=500, detail="lcia_extractor module not available")
+    
+    data = lcia_extractor.get_lcia_data()
+    matches = lcia_extractor.search_product(data, query.strip())
+    
+    results = []
+    for idx, row in matches.iterrows():
+        results.append({
+            "option_number": idx,
+            "row_index": int(row["index"]),
+            "activity_name": str(row["Activity Name"]),
+            "geography": str(row["Geography"]),
+            "reference_product_name": str(row["Reference Product Name"]),
+        })
+    
+    return {
+        "status": "success",
+        "query": query,
+        "count": len(results),
+        "results": results
+    }
+
+@router.post("/lcia-calculate")
+def calculate_lcia_epd(payload: Dict[str, Any]):
+    """
+    Runs lcia_extractor calculation for a selected row_index and methodology.
+    """
+    row_index = payload.get("row_index")
+    methodology = payload.get("methodology")
+    
+    if row_index is None:
+        raise HTTPException(status_code=400, detail="row_index is required")
+    if not lcia_extractor:
+        raise HTTPException(status_code=500, detail="lcia_extractor module not available")
+    
+    data = lcia_extractor.get_lcia_data()
+    if row_index < 0 or row_index >= len(data):
+        raise HTTPException(status_code=400, detail=f"Invalid row_index {row_index}")
+    
+    res = lcia_extractor.extract_lcia_results_dict(data, int(row_index), methodology or None)
+    return {
+        "status": "success",
+        "result": res
+    }
+

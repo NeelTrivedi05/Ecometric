@@ -15,6 +15,8 @@ dist/
 *.tar.gz
 Ecoinvent database/
 database/ecoinvent_raw/*.7z
+Cut-off Cumulative LCIA v3.12.xlsx
+Cut-off Cumulative LCIA v3.12.xlsx.cache.pkl
 
 # Python / Backend virtualenv & cache
 __pycache__/

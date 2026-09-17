@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStudio, METHODOLOGIES } from '../../../context/StudioContext';
 import { MethodologyIcon, CheckIcon, ChevronRightIcon, InfoIcon, RefreshCwIcon } from '../Icons';
+import LciaExtractorSection from '../LciaExtractorSection';
 
 export default function MethodologyView() {
   const {
@@ -174,8 +175,12 @@ export default function MethodologyView() {
         </div>
       </div>
 
+      {/* Live ecoinvent LCIA Extractor & EPD Calculator Component */}
+      <LciaExtractorSection />
+
       {/* Action Footer */}
       <div style={{ marginTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+
         <button
           type="button"
           className="btn btn-outline btn-lg"
