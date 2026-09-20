@@ -15,12 +15,11 @@ export default function ResultsView() {
 
   const [showFullBreakdown, setShowFullBreakdown] = useState(false);
 
-  const formatValue = (val) => {
-    if (typeof val !== 'number' || isNaN(val)) return '—';
-    if (val === 0) return '0.00';
-    if (Math.abs(val) >= 1000) return Math.round(val).toLocaleString();
-    if (Math.abs(val) < 0.001) return val.toExponential(2);
-    return val.toFixed(4);
+  const formatValue = (val, digits = 3) => {
+    if (val === null || val === undefined) return '—';
+    const num = typeof val === 'number' ? val : parseFloat(val);
+    if (isNaN(num) || !isFinite(num)) return '—';
+    return num.toExponential(digits);
   };
 
   const currentMethod = getMethodology(selectedMethodology);
@@ -152,7 +151,7 @@ export default function ResultsView() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {lca.isCalculated && (
               <span className="item-badge" style={{ background: 'var(--success-dim)', color: 'var(--success)', border: '1px solid var(--success)' }}>
-                ✓ Synced with epd_results.csv
+                ✓ Synced with epd_results_exp.csv
               </span>
             )}
             <button

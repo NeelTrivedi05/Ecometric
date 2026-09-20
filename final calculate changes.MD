@@ -91,9 +91,87 @@ Previous calculations erroneously extracted emission factors for pre-populated d
 
 ---
 
+## 6. UI Component Removals & Calculation Engine Refinements
+
+### Background & Objective
+To streamline frontend data entry, remove redundant input fields, and ensure full alignment between UI inputs, stage payload data, and the `calculate_epd.py` engine.
+
+### Implementation Details
+- **A1 BOM**:
+  - Removed `Module` dropdown ("A1 (Raw)") from the BOM table in [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx) and the new component creation form in [`BomView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/BomView.jsx).
+  - Rebalanced BOM table column widths (Component Name 24%, Extracted Keyword 16%, Database Provider 35%, Mass 13%, Actions 12%).
+
+- **A2 Inbound Transport Legs**:
+  - Removed `Transport Mode` text field, `Materials Carried` multi-select checkboxes, and `Mass Carried (kg)` read-only display field from transport leg cards in [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx).
+  - Removed third default transport leg (*"Heavy Delivery Lorry >32t to Customer Site" (500 km)*) from initial context state in [`StudioContext.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/context/StudioContext.jsx).
+
+- **A3 Manufacturing**:
+  - Removed `Grid Sub-region` input field from [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx) and [`ReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/ReviewView.jsx).
+  - Updated `calc_A3` in [`calculate_epd.py`](file:///Users/parth/Desktop/Ecometric/backend/app/engines/calculate_epd.py) to scale annual facility utilities by `annual_production_units`.
+
+- **A4 Outbound Transport**:
+  - Removed `Transport Mode` input field from [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx) and [`ReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/ReviewView.jsx).
+
+- **A5 Rigging & Commissioning**:
+  - Renamed `Install Waste (kg)` label to `Commissioning Refrigerant Loss (kg)` in [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx).
+  - Added unit conversion in `calc_A5` in [`calculate_epd.py`](file:///Users/parth/Desktop/Ecometric/backend/app/engines/calculate_epd.py) to convert crane diesel litres to provider reference units.
+
+- **B2 Maintenance**:
+  - Updated `Material/Energy Used per Cycle (kWh)` field to `Consumable Mass per Cycle (kg)` and re-bound it to `maintenance_b2.consumable_mass_kg`.
+
+- **B3 Repair**:
+  - Removed `Replaced Part Name` and `Material Type` input fields in [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx).
+
+- **B4 Replacement**:
+  - Removed `Major Overhaul (Year)` field from [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx) and `Major Replacement Milestone (Year)` from [`ReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/ReviewView.jsx).
+
+- **B5 Refurbishment**:
+  - Removed `Material/Energy Name` input field in [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx).
+
+- **B6 & B7 Operational**:
+  - Removed `Load Basis` dropdown select.
+  - Removed the entire `City-Specific Grid Providers` section along with all 4 provider cards in [`UserReviewView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/UserReviewView.jsx).
+
+- **C1 Deconstruction**:
+  - Implemented unit conversion helper `convert_amount` in `calc_C1` in [`calculate_epd.py`](file:///Users/parth/Desktop/Ecometric/backend/app/engines/calculate_epd.py) to convert decommissioning energy (kWh) to matching provider reference units (MJ).
+
+---
+
+## 7. Exponential (Scientific) Form Results Conversion & Display
+
+### Background & Objective
+To format EPD calculation output values into standard exponential (scientific) notation (e.g. `1.120e+08`) across exported CSV files and the UI View Results section.
+
+### Implementation Details
+- **Standalone Conversion Script**:
+  - Created [`convert_results_to_exponential.py`](file:///Users/parth/Desktop/Ecometric/convert_results_to_exponential.py) and backend helper [`convert_results_to_exponential.py`](file:///Users/parth/Desktop/Ecometric/backend/app/engines/convert_results_to_exponential.py).
+  - Converts every numeric cell in `epd_results.csv` to exponential form (`to_exponential(cell, digits=3)`), preserving column 1 category headers and non-numeric labels.
+- **Backend Integration**:
+  - Updated `write_csv` and `run_epd_calculation` in [`calculate_epd.py`](file:///Users/parth/Desktop/Ecometric/backend/app/engines/calculate_epd.py) to generate `epd_results_exp.csv` alongside `epd_results.csv`.
+- **Frontend View Results Display**:
+  - Updated `formatValue()` in [`ResultsView.jsx`](file:///Users/parth/Desktop/Ecometric/frontend/src/components/studio/views/ResultsView.jsx) to format all numeric indicator values into exponential notation using `num.toExponential(digits)`.
+
+---
+
+## 8. Bugfix: Missing `math` Import in `calculate_epd.py`
+
+### Background & Root Cause
+The `convert_csv_to_exponential` function within [`calculate_epd.py`](file:///Users/parth/Desktop/Ecometric/backend/app/engines/calculate_epd.py) calls `to_exponential()`, which uses `math.isfinite()`. However, the `math` module was not imported in the file, causing a `NameError` at runtime. This silently failed during API-triggered calculations (caught by the `try/except` in the EPD router), resulting in `epd_results_exp.csv` containing only the header row with no data.
+
+### Fix Applied
+- Added `import math` to the imports section of [`calculate_epd.py`](file:///Users/parth/Desktop/Ecometric/backend/app/engines/calculate_epd.py).
+- Updated the EPD router log line in [`epd.py`](file:///Users/parth/Desktop/Ecometric/backend/app/routers/epd.py) to include `csv_exp_path` in the output log for better debugging visibility.
+
+### Verification
+- Running `run_epd_calculation()` now successfully generates both `epd_results.csv` and `epd_results_exp.csv` with all 16 impact categories converted to exponential notation (304 numeric values).
+
+---
+
 ## Verification & Output Files
 
 - Output CSV File: [`/Users/parth/Desktop/Ecometric/results/epd_results.csv`](file:///Users/parth/Desktop/Ecometric/results/epd_results.csv)
+- Exponential Output CSV: [`/Users/parth/Desktop/Ecometric/results/epd_results_exp.csv`](file:///Users/parth/Desktop/Ecometric/results/epd_results_exp.csv)
 - Output JSON File: [`/Users/parth/Desktop/Ecometric/results/epd_results.json`](file:///Users/parth/Desktop/Ecometric/results/epd_results.json)
 - Output TXT Report: [`/Users/parth/Desktop/Ecometric/results/epd_results.txt`](file:///Users/parth/Desktop/Ecometric/results/epd_results.txt)
 - Calculation Input Payload: [`/Users/parth/Desktop/Ecometric/results/epd_calculation_input.json`](file:///Users/parth/Desktop/Ecometric/results/epd_calculation_input.json)
+

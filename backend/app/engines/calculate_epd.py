@@ -31,6 +31,7 @@ Outputs (written to the same folder as the input JSON unless --out is given):
 import argparse
 import csv
 import json
+import math
 import os
 import re
 import sys
@@ -49,6 +50,17 @@ DEFAULT_PAYLOAD_PATH = str(DEFAULT_RESULTS_DIR / "epd_calculation_input.json")
 ANNUAL_OPERATING_HOURS = None  # e.g. 8760 for continuous duty
 A2_MASS_FALLBACK = "total_bom_mass"
 A5_REFRIGERANT_LOSS_USES_B1_CF = True
+
+# Unit conversion. Some inputs are entered in kWh or litres, but the matching
+# ecoinvent providers are per MJ. The script converts the input amount to the
+# provider's reference unit. That unit is read from "<provider_key>_reference_unit"
+# in the payload when present, otherwise from DEFAULT_PROVIDER_REF_UNITS.
+KWH_TO_MJ = 3.6
+DIESEL_MJ_PER_LITRE = 35.8  # ASSUMPTION: ~43 MJ/kg x ~0.83 kg/L. Edit if you use another value.
+DEFAULT_PROVIDER_REF_UNITS = {
+    "consumable_provider_id": "MJ",       # A5 crane diesel
+    "deconstruction_provider_id": "MJ",   # C1 deconstruction energy
+}
 
 # ============================================================
 # Indicator sets, keyed by NORMALIZED methodology name
@@ -273,6 +285,47 @@ def add_scaled(totals: dict, vec: dict, scale: float):
 
 
 # ============================================================
+# Unit conversion helpers
+# ============================================================
+
+_UNIT_ALIASES = {"l": "l", "liter": "l", "liters": "l", "litre": "l", "litres": "l",
+                 "kwh": "kwh", "mj": "mj"}
+_UNIT_FACTORS = {
+    ("kwh", "mj"): KWH_TO_MJ,
+    ("mj", "kwh"): 1.0 / KWH_TO_MJ,
+    ("l", "mj"): DIESEL_MJ_PER_LITRE,            # diesel only
+    ("mj", "l"): 1.0 / DIESEL_MJ_PER_LITRE,
+    ("l", "kwh"): DIESEL_MJ_PER_LITRE / KWH_TO_MJ,
+    ("kwh", "l"): KWH_TO_MJ / DIESEL_MJ_PER_LITRE,
+}
+
+
+def _unit_key(unit):
+    u = (unit or "").strip().lower().replace(" ", "")
+    return _UNIT_ALIASES.get(u, u)
+
+
+def convert_amount(amount, input_unit, ref_unit, label, warnings):
+    """Convert `amount` from input_unit to the provider's reference unit."""
+    if not amount:
+        return amount
+    f, t = _unit_key(input_unit), _unit_key(ref_unit)
+    if not t or f == t:
+        return amount
+    factor = _UNIT_FACTORS.get((f, t))
+    if factor is None:
+        warnings.append(f"{label}: cannot convert {input_unit} -> {ref_unit}; amount used as-is.")
+        return amount
+    converted = amount * factor
+    warnings.append(
+        f"{label}: converted {amount:g} {input_unit} -> {converted:.6g} {ref_unit} "
+        f"(x{factor:.6g}) to match the provider's reference unit."
+        + (" Diesel energy content is an assumption (DIESEL_MJ_PER_LITRE)." if f == "l" or t == "l" else "")
+    )
+    return converted
+
+
+# ============================================================
 # Stage calculations
 # ============================================================
 
@@ -314,27 +367,40 @@ def calc_A2(transport_entries, ctx, total_bom_mass, warnings):
 
 def calc_A3(manufacturing, ctx, warnings):
     totals = ctx.zero_vector()
-    warnings.append(
-        "A3: annual_facility_kwh / natural_gas_mj / water_m3 look like annual FACILITY totals and "
-        "the payload has no annual production volume - used as-is as per-unit inputs. "
-        "If they are facility-wide, A3 is overstated."
-    )
 
-    elec_kwh = manufacturing.get("annual_facility_kwh", 0)
+    units = manufacturing.get("annual_production_units")
+    try:
+        units = float(units)
+    except (TypeError, ValueError):
+        units = 0.0
+    if units > 0:
+        per_unit = 1.0 / units
+        warnings.append(
+            f"A3: annual facility totals divided by annual_production_units ({units:g}) "
+            f"to get per-unit inputs."
+        )
+    else:
+        per_unit = 1.0
+        warnings.append(
+            "A3: annual_production_units missing or zero - facility totals used as-is per unit. "
+            "If they are facility-wide, A3 is overstated."
+        )
+
+    elec_kwh = manufacturing.get("annual_facility_kwh", 0) * per_unit
     elec_provider = manufacturing.get("electricity_provider_id")
     if elec_provider:
         add_scaled(totals, ctx.ef_vector(elec_provider, warnings), elec_kwh)
     else:
         warnings.append("A3: no electricity_provider_id - electricity term skipped.")
 
-    gas_mj = manufacturing.get("natural_gas_mj", 0)
+    gas_mj = manufacturing.get("natural_gas_mj", 0) * per_unit
     gas_provider = manufacturing.get("gas_provider_id")
     if gas_provider:
         add_scaled(totals, ctx.ef_vector(gas_provider, warnings), gas_mj)
     else:
         warnings.append("A3: no gas_provider_id - gas term skipped.")
 
-    water_m3 = manufacturing.get("water_m3", 0)
+    water_m3 = manufacturing.get("water_m3", 0) * per_unit
     water_provider = manufacturing.get("water_provider_id")
     if water_provider:
         add_scaled(totals, ctx.ef_vector(water_provider, warnings), water_m3)
@@ -377,7 +443,10 @@ def calc_A5(installation, refrigerant_cf, ctx, warnings):
     diesel_l = installation.get("rigging_crane_diesel_liters", 0)
     diesel_provider = installation.get("consumable_provider_id")
     if diesel_provider:
-        add_scaled(totals, ctx.ef_vector(diesel_provider, warnings), diesel_l)
+        diesel_ref = (installation.get("consumable_provider_id_reference_unit")
+                      or DEFAULT_PROVIDER_REF_UNITS["consumable_provider_id"])
+        diesel_amount = convert_amount(diesel_l, "L", diesel_ref, "A5 crane diesel", warnings)
+        add_scaled(totals, ctx.ef_vector(diesel_provider, warnings), diesel_amount)
     else:
         warnings.append("A5: no consumable_provider_id - crane diesel term skipped.")
 
@@ -497,6 +566,9 @@ def calc_C1(end_of_life, ctx, warnings):
     if not provider_id:
         warnings.append("C1: no deconstruction_provider_id - C1 = 0.")
         return totals
+    ref_unit = (end_of_life.get("deconstruction_provider_id_reference_unit")
+                or DEFAULT_PROVIDER_REF_UNITS["deconstruction_provider_id"])
+    energy = convert_amount(energy, "kWh", ref_unit, "C1 deconstruction energy", warnings)
     add_scaled(totals, ctx.ef_vector(provider_id, warnings), energy)
     return totals
 
@@ -773,8 +845,50 @@ def write_txt(columns: dict, meta: dict, warnings: list, imported: dict, out_pat
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def to_exponential(cell, digits: int = 3) -> str:
+    """Return cell in exponential form if finite number, else unchanged."""
+    text = str(cell).strip() if cell is not None else ""
+    if not text:
+        return "" if cell is None else str(cell)
+    try:
+        value = float(text)
+    except ValueError:
+        return str(cell)
+    if not math.isfinite(value):
+        return str(cell)
+    return f"{value:.{digits}e}"
+
+
+def convert_csv_to_exponential(input_path: Path | str, output_path: Path | str, digits: int = 3) -> int:
+    inp = Path(input_path).expanduser()
+    outp = Path(output_path).expanduser()
+    if not inp.is_file():
+        return 0
+    with inp.open("r", newline="", encoding="utf-8-sig") as f:
+        rows = list(csv.reader(f))
+    if not rows:
+        return 0
+    header, body = rows[0], rows[1:]
+    converted = [header]
+    count = 0
+    for row in body:
+        if not row:
+            continue
+        new_row = [row[0]]
+        for cell in row[1:]:
+            new_cell = to_exponential(cell, digits)
+            if new_cell != cell:
+                count += 1
+            new_row.append(new_cell)
+        converted.append(new_row)
+    outp.parent.mkdir(parents=True, exist_ok=True)
+    with outp.open("w", newline="", encoding="utf-8") as f:
+        csv.writer(f).writerows(converted)
+    return count
+
+
 def write_csv(columns: dict, row_names: list, out_path: str):
-    with open(out_path, "w", newline="") as f:
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["Impact category"] + COL_ORDER)
         for row in row_names:
@@ -788,7 +902,7 @@ def write_csv(columns: dict, row_names: list, out_path: str):
 def run_epd_calculation(input_path: str | Path, out_dir: str | Path | None = None, ef_path: str | Path | None = None, methodology_override: str | None = None) -> dict:
     """
     Importable function that reads the EPD calculation input JSON, runs the A1-D calculation,
-    writes epd_results.csv, epd_results.json, and epd_results.txt to out_dir
+    writes epd_results.csv, epd_results_exp.csv, epd_results.json, and epd_results.txt to out_dir
     (default: input file's folder), and returns the output paths and warnings.
     """
     payload_path = Path(input_path).expanduser()
@@ -813,19 +927,24 @@ def run_epd_calculation(input_path: str | Path, out_dir: str | Path | None = Non
     imported = import_summary(payload, ef_lookup)
 
     output_dir = Path(out_dir).expanduser() if out_dir else payload_path.parent
+    if output_dir.is_file():
+        output_dir = output_dir.parent
     output_dir.mkdir(parents=True, exist_ok=True)
 
     csv_path = output_dir / "epd_results.csv"
+    csv_exp_path = output_dir / "epd_results_exp.csv"
     json_path = output_dir / "epd_results.json"
     txt_path = output_dir / "epd_results.txt"
 
     write_csv(columns, meta["row_names"], str(csv_path))
+    convert_csv_to_exponential(csv_path, csv_exp_path, digits=3)
     write_json(columns, meta, warnings, imported, json_path)
     write_txt(columns, meta, warnings, imported, txt_path, ef_source)
 
     return {
         "status": "success",
         "csv_path": str(csv_path),
+        "csv_exp_path": str(csv_exp_path),
         "json_path": str(json_path),
         "txt_path": str(txt_path),
         "warnings": warnings,

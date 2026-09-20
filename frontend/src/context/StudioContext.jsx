@@ -242,8 +242,7 @@ export function StudioProvider({ children }) {
           },
           transport: [
             { mode: 'Heavy Lorry >32t (EURO 6)', distance: 485, dist: 485, emission_factor: 0.088, ef: 0.088, module: 'A2' },
-            { mode: 'Transoceanic Container Ship', distance: 1200, dist: 1200, emission_factor: 0.0145, ef: 0.0145, module: 'A2' },
-            { mode: 'Heavy Delivery Lorry >32t to Customer Site', distance: 500, dist: 500, emission_factor: 0.088, ef: 0.088, module: 'A4' }
+            { mode: 'Transoceanic Container Ship', distance: 1200, dist: 1200, emission_factor: 0.0145, ef: 0.0145, module: 'A2' }
           ],
           installation: {
             outbound_transport_km: 500,

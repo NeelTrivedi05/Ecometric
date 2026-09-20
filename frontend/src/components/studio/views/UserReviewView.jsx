@@ -613,11 +613,10 @@ export default function UserReviewView() {
             <table className="data-table" style={{ width: '100%', fontSize: '13px' }}>
               <thead>
                 <tr>
-                  <th style={{ textAlign: 'left', padding: '10px 12px', width: '22%' }}>Component Name</th>
-                  <th style={{ textAlign: 'left', padding: '10px 12px', width: '15%' }}>Extracted Keyword</th>
-                  <th style={{ textAlign: 'left', padding: '10px 12px', width: '32%' }}>Database Provider (ecoinvent Match)</th>
-                  <th style={{ textAlign: 'right', padding: '10px 12px', width: '11%' }}>Mass (kg)</th>
-                  <th style={{ textAlign: 'center', padding: '10px 12px', width: '8%' }}>Module</th>
+                  <th style={{ textAlign: 'left', padding: '10px 12px', width: '24%' }}>Component Name</th>
+                  <th style={{ textAlign: 'left', padding: '10px 12px', width: '16%' }}>Extracted Keyword</th>
+                  <th style={{ textAlign: 'left', padding: '10px 12px', width: '35%' }}>Database Provider (ecoinvent Match)</th>
+                  <th style={{ textAlign: 'right', padding: '10px 12px', width: '13%' }}>Mass (kg)</th>
                   <th style={{ textAlign: 'center', padding: '10px 12px', width: '12%' }}>Actions</th>
                 </tr>
               </thead>
@@ -737,29 +736,6 @@ export default function UserReviewView() {
                       />
                     </td>
 
-                    {/* Module */}
-                    <td style={{ padding: '8px 10px', textAlign: 'center' }}>
-                      <select
-                        value={item.module || 'A1'}
-                        onChange={(e) => updateBomItem(idx, { module: e.target.value })}
-                        style={{
-                          padding: '5px 8px',
-                          border: '1px solid #E2D9D2',
-                          borderRadius: '4px',
-                          fontSize: '11px',
-                          fontWeight: 600,
-                          backgroundColor: '#FAF0E6',
-                          color: '#9C5832'
-                        }}
-                      >
-                        <option value="A1">A1 (Raw)</option>
-                        <option value="A2">A2 (Transport)</option>
-                        <option value="A3">A3 (Mfg)</option>
-                        <option value="B1">B1 (Use)</option>
-                        <option value="C1">C1 (EoL)</option>
-                      </select>
-                    </td>
-
                     {/* Delete Action */}
                     <td style={{ padding: '8px 10px', textAlign: 'center' }}>
                       <button
@@ -834,32 +810,7 @@ export default function UserReviewView() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {transport.length > 0 ? (
-                  transport.map((leg, lIdx) => {
-                    const selectedMatIds = leg.linked_material_ids || leg.linked_materials || [];
-                    const calculatedMass = bom.reduce((sum, item) => {
-                      if (selectedMatIds.includes(item.id)) {
-                        return sum + (Number(item.mass) || 0);
-                      }
-                      return sum;
-                    }, 0);
-
-                    const toggleMaterial = (matId) => {
-                      let next;
-                      if (selectedMatIds.includes(matId)) {
-                        next = selectedMatIds.filter(id => id !== matId);
-                      } else {
-                        next = [...selectedMatIds, matId];
-                      }
-                      const newMass = bom.reduce((sum, item) => {
-                        if (next.includes(item.id)) {
-                          return sum + (Number(item.mass) || 0);
-                        }
-                        return sum;
-                      }, 0);
-                      updateTransportLeg(lIdx, { linked_material_ids: next, mass_kg: newMass });
-                    };
-
-                    return (
+                  transport.map((leg, lIdx) => (
                     <div key={lIdx} style={{
                       padding: '12px',
                       backgroundColor: '#FCFAF8',
@@ -871,103 +822,23 @@ export default function UserReviewView() {
                     }}>
                       <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
                         <div style={{ flex: 1 }}>
-                          <label className="form-label" style={{ fontSize: '10px', color: '#5C4E46', fontWeight: 600, margin: '0 0 2px 0' }}>Transport Mode / Vehicle Type</label>
-                          <input
-                            type="text"
-                            value={leg.mode || 'Freight transport'}
-                            onChange={(e) => updateTransportLeg(lIdx, { mode: e.target.value })}
-                            style={{ width: '100%', padding: '4px 6px', fontSize: '12px', border: '1px solid #E2D9D2', borderRadius: '4px', boxSizing: 'border-box' }}
-                          />
-                        </div>
-                        <div>
                           <label className="form-label" style={{ fontSize: '10px', color: '#5C4E46', fontWeight: 600, margin: '0 0 2px 0' }}>Distance (km)</label>
                           <input
                             type="number"
                             min="0"
                             value={leg.dist || leg.distance || 0}
                             onChange={(e) => updateTransportLeg(lIdx, { dist: Math.max(0, parseFloat(e.target.value) || 0), distance: Math.max(0, parseFloat(e.target.value) || 0) })}
-                            style={{ width: '90px', textAlign: 'right', padding: '4px 6px', fontSize: '12px', border: '1px solid #E2D9D2', borderRadius: '4px', fontWeight: 600 }}
+                            style={{ width: '100%', padding: '4px 6px', fontSize: '12px', border: '1px solid #E2D9D2', borderRadius: '4px', fontWeight: 600, boxSizing: 'border-box' }}
                           />
                         </div>
                         <button
                           type="button"
                           onClick={() => deleteTransportLeg(lIdx)}
-                          style={{ background: 'none', border: 'none', color: '#C25A23', cursor: 'pointer', padding: '4px' }}
+                          style={{ background: 'none', border: 'none', color: '#C25A23', cursor: 'pointer', padding: '4px', marginBottom: '2px' }}
                           title="Remove leg"
                         >
                           <TrashIcon size={14} />
                         </button>
-                      </div>
-
-                      {/* Multi-Select: Materials Carried On This Leg */}
-                      <div className="form-group" style={{ margin: '4px 0' }}>
-                        <label className="form-label" style={{ fontSize: '10px', color: '#5C4E46', fontWeight: 600, margin: '0 0 4px 0' }}>
-                          Materials carried on this leg (BOM Components)
-                        </label>
-                        {bom.length > 0 ? (
-                          <div style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '6px',
-                            padding: '6px 8px',
-                            backgroundColor: '#FFFFFF',
-                            border: '1px solid #E2D9D2',
-                            borderRadius: '4px',
-                            maxHeight: '90px',
-                            overflowY: 'auto'
-                          }}>
-                            {bom.map(item => {
-                              const isChecked = selectedMatIds.includes(item.id);
-                              return (
-                                <label key={item.id} style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  fontSize: '11px',
-                                  backgroundColor: isChecked ? '#FAF0E6' : '#F5F5F5',
-                                  color: isChecked ? '#9C5832' : '#5C4E46',
-                                  padding: '2px 6px',
-                                  borderRadius: '4px',
-                                  border: `1px solid ${isChecked ? '#EED8C5' : '#E0E0E0'}`,
-                                  cursor: 'pointer',
-                                  fontWeight: isChecked ? 600 : 400
-                                }}>
-                                  <input
-                                    type="checkbox"
-                                    checked={isChecked}
-                                    onChange={() => toggleMaterial(item.id)}
-                                    style={{ accentColor: '#C25A23', width: '12px', height: '12px' }}
-                                  />
-                                  <span>{item.name || item.id} ({item.mass || 0} kg)</span>
-                                </label>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <div style={{ fontSize: '11px', color: '#8A7A72', italic: 'true' }}>No BOM components available to select</div>
-                        )}
-                      </div>
-
-                      {/* Read-Only: Mass Carried (kg) */}
-                      <div className="form-group" style={{ margin: '2px 0' }}>
-                        <label className="form-label" style={{ fontSize: '10px', color: '#5C4E46', fontWeight: 600, margin: '0 0 2px 0' }}>
-                          Mass carried (kg) – Auto-summed from selected components
-                        </label>
-                        <input
-                          type="number"
-                          readOnly
-                          value={calculatedMass || leg.mass_kg || 0}
-                          style={{
-                            width: '100%',
-                            padding: '4px 8px',
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            color: '#2C221E',
-                            backgroundColor: '#EAEAEA',
-                            border: '1px solid #CCCCCC',
-                            borderRadius: '4px'
-                          }}
-                        />
                       </div>
 
                       {/* Leg-Specific Provider Selection */}
@@ -978,8 +849,7 @@ export default function UserReviewView() {
                         'Transport'
                       )}
                     </div>
-                    );
-                  })
+                  ))
                 ) : (
                   <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '6px', fontSize: '12px', color: '#7A6B63' }}>
                     Defaulting to UL 10010-4 regional standard: <strong>500 km heavy lorry</strong> to plant gate.
@@ -1025,16 +895,6 @@ export default function UserReviewView() {
                     value={manufacturing.natural_gas_mj || ''}
                     onChange={(e) => updateManufacturing({ natural_gas_mj: Math.max(0, parseFloat(e.target.value) || 0) })}
                     placeholder="18500"
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Grid Sub-region</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={manufacturing.grid_region || ''}
-                    onChange={(e) => updateManufacturing({ grid_region: e.target.value })}
-                    placeholder="US_Average"
                   />
                 </div>
                 <div className="form-group">
@@ -1106,16 +966,6 @@ export default function UserReviewView() {
                     placeholder="500"
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Transport Mode</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={installation.transport_mode || ''}
-                    onChange={(e) => updateInstallation({ transport_mode: e.target.value })}
-                    placeholder="Heavy Lorry >32t (EURO 6)"
-                  />
-                </div>
                 {renderProviderSelector(
                   'A4 Delivery Transport Provider',
                   installation.outbound_provider_id || 'ecoinvent_transport_lorry_32t_rer',
@@ -1142,7 +992,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Install Waste (kg)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Commissioning Refrigerant Loss (kg)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -1255,13 +1105,13 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Material/Energy Used per Cycle (kWh)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Consumable Mass per Cycle (kg)</label>
                   <input
                     type="number"
                     className="form-input"
-                    value={operational.scheduled_maintenance_kwh_yr || ''}
-                    onChange={(e) => updateOperational({ scheduled_maintenance_kwh_yr: parseFloat(e.target.value) || 0 })}
-                    placeholder="180.0"
+                    value={maintenance_b2.consumable_mass_kg || ''}
+                    onChange={(e) => updateMaintenanceB2({ consumable_mass_kg: parseFloat(e.target.value) || 0 })}
+                    placeholder="5.0"
                   />
                 </div>
                 {renderProviderSelector(
@@ -1291,42 +1141,16 @@ export default function UserReviewView() {
                 </div>
                 <div className="form-group" style={{ marginBottom: '6px' }}>
                   <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
-                    Replaced Part Name
+                    Part Mass (kg)
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    step="0.1"
                     className="form-input"
-                    value={repair_b3.replaced_part_name || 'Compressor Shaft Seal & Bearing'}
-                    onChange={(e) => updateRepairB3({ replaced_part_name: e.target.value })}
-                    placeholder="Compressor Shaft Seal"
+                    value={repair_b3.part_mass_kg || 18.5}
+                    onChange={(e) => updateRepairB3({ part_mass_kg: parseFloat(e.target.value) || 0 })}
+                    placeholder="18.5"
                   />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '6px' }}>
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
-                      Part Mass (kg)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      className="form-input"
-                      value={repair_b3.part_mass_kg || 18.5}
-                      onChange={(e) => updateRepairB3({ part_mass_kg: parseFloat(e.target.value) || 0 })}
-                      placeholder="18.5"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
-                      Material Type
-                    </label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={repair_b3.material_type || 'Steel, low-alloyed'}
-                      onChange={(e) => updateRepairB3({ material_type: e.target.value })}
-                      placeholder="Steel, low-alloyed"
-                    />
-                  </div>
                 </div>
                 {renderProviderSelector(
                   'Replaced Part Material Provider',
@@ -1370,16 +1194,6 @@ export default function UserReviewView() {
                     Formula: (ESL {replacement_b4.esl_years || 25} yrs ÷ RSL {project_info.lifespan_years || 25} yrs − 1)
                   </div>
                 </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Major Overhaul (Year)</label>
-                  <input
-                    type="number"
-                    className="form-input"
-                    value={operational.major_component_replacement_year || ''}
-                    onChange={(e) => updateOperational({ major_component_replacement_year: parseInt(e.target.value, 10) || 15 })}
-                    placeholder="15"
-                  />
-                </div>
               </div>
 
               {/* B5: Refurbishment */}
@@ -1399,32 +1213,18 @@ export default function UserReviewView() {
                     placeholder="1"
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '6px' }}>
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
-                      Material/Energy Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={refurbishment_b5.material_name || 'Copper Winding Rebuild'}
-                      onChange={(e) => updateRefurbishmentB5({ material_name: e.target.value })}
-                      placeholder="Copper Winding"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
-                      Mass / Qty (kg)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      className="form-input"
-                      value={refurbishment_b5.mass_kg || 45.0}
-                      onChange={(e) => updateRefurbishmentB5({ mass_kg: parseFloat(e.target.value) || 0 })}
-                      placeholder="45.0"
-                    />
-                  </div>
+                <div className="form-group" style={{ marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                    Mass / Qty (kg)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="form-input"
+                    value={refurbishment_b5.mass_kg || 45.0}
+                    onChange={(e) => updateRefurbishmentB5({ mass_kg: parseFloat(e.target.value) || 0 })}
+                    placeholder="45.0"
+                  />
                 </div>
                 {renderProviderSelector(
                   'Refurbishment Material/Energy Provider',
@@ -1463,18 +1263,6 @@ export default function UserReviewView() {
                       placeholder="8760"
                     />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 600 }}>Load basis</label>
-                    <select
-                      className="form-input"
-                      value={operational.load_basis || 'full_load'}
-                      onChange={(e) => updateOperational({ load_basis: e.target.value })}
-                      style={{ fontSize: '11px', padding: '5px' }}
-                    >
-                      <option value="full_load">Full load</option>
-                      <option value="iplv">IPLV</option>
-                    </select>
-                  </div>
                 </div>
 
                 {renderProviderSelector(
@@ -1483,35 +1271,6 @@ export default function UserReviewView() {
                   (val) => updateOperational({ energy_provider_id: val }),
                   'Grids'
                 )}
-
-                {/* City Grid Electricity Provider Selectors */}
-                <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed #EED8C5' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#9C5832', fontWeight: 700, marginBottom: '6px', display: 'block' }}>
-                    City-Specific Grid Electricity Providers (Target Cities)
-                  </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '8px' }}>
-                    {(operational.target_cities || ['Chicago', 'Houston', 'Frankfurt', 'Dubai']).map(city => {
-                      const currentCityProviders = operational.city_grid_providers || {};
-                      const cityPid = currentCityProviders[city] || (city === 'Houston' ? 'ecoinvent_elec_tx' : city === 'Frankfurt' ? 'ecoinvent_elec_de' : city === 'Dubai' ? 'ecoinvent_elec_ae' : 'ecoinvent_elec_mv_us');
-                      return (
-                        <div key={city} style={{ padding: '6px', backgroundColor: '#FFFFFF', borderRadius: '4px', border: '1px solid #E2D9D2' }}>
-                          <div style={{ fontSize: '11px', fontWeight: 700, color: '#2C221E', marginBottom: '2px' }}>{city} Grid Provider</div>
-                          {renderProviderSelector(
-                            `${city} Grid`,
-                            cityPid,
-                            (val) => updateOperational({
-                              city_grid_providers: {
-                                ...(operational.city_grid_providers || {}),
-                                [city]: val
-                              }
-                            }),
-                            'Grids'
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
 
                 <div className="form-group" style={{ marginTop: '10px', marginBottom: '8px' }}>
                   <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Annual Water Use (m³/yr)</label>
