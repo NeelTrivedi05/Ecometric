@@ -25,10 +25,13 @@ from pathlib import Path
 # CONFIG
 # ---------------------------------------------------------------------------
 _REPO_ROOT = Path(__file__).resolve().parent
-PRIMARY_FILE_PATH = str(_REPO_ROOT / "Ecoinvent database" / "ecoinvent 3.12_cut-off_cumulative_lcia_xlsx" / "Cut-off Cumulative LCIA v3.12.xlsx")
-FALLBACK_FILE_PATH = r"/Users/parth/Desktop/Ecometric/Cut-off Cumulative LCIA v3.12.xlsx"
-
-FILE_PATH = PRIMARY_FILE_PATH if os.path.exists(PRIMARY_FILE_PATH) else FALLBACK_FILE_PATH
+CANDIDATE_PATHS = [
+    str(_REPO_ROOT / "Ecoinvent database" / "ecoinvent 3.12_cut-off_cumulative_lcia_xlsx" / "Cut-off Cumulative LCIA v3.12.xlsx"),
+    r"/Users/parth/Desktop/final year project/Cut-off Cumulative LCIA v3.12.xlsx",
+    r"/Users/parth/Desktop/Ecometric/Cut-off Cumulative LCIA v3.12.xlsx",
+    str(_REPO_ROOT / "database" / "ecoinvent_raw" / "LCIA Implementation 3.12.xlsx"),
+]
+FILE_PATH = next((p for p in CANDIDATE_PATHS if os.path.exists(p)), CANDIDATE_PATHS[0])
 
 SHEET_NAME = "LCIA"          # the data sheet (your file also has a "Read me" sheet)
 N_META_COLS = 6               # Activity UUID_Product UUID, Activity Name, Geography,

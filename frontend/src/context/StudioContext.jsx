@@ -15,69 +15,72 @@ export function StudioProvider({ children }) {
   // Extracted data (populated after upload parsing)
   const [extractedData, setExtractedData] = useState({
     bom: [],
-    transport: [
-      { id: 'leg-1', mode: 'Heavy Lorry >32t (EURO 6)', distance: 485, dist: 485, linked_materials: [], provider_id: 'ecoinvent_transport_lorry_32t_rer', module: 'A2' },
-      { id: 'leg-2', mode: 'Transoceanic Container Ship', distance: 1200, dist: 1200, linked_materials: [], provider_id: 'ecoinvent_transport_container_ship_glo', module: 'A2' }
-    ],
+    transport: [],
     manufacturing: {
-      annual_facility_kwh: 34000,
-      natural_gas_mj: 18500,
+      annual_facility_kwh: 0,
+      natural_gas_mj: 0,
       grid_region: 'US_Average',
-      water_m3: 45.0,
+      water_m3: 0,
+      annual_production_units: 0,
       electricity_provider_id: 'ecoinvent_elec_mv_us',
       gas_provider_id: 'ecoinvent_gas_burned_boiler_glo',
+      water_provider_id: 'ecoinvent_water_deionised_glo',
     },
     installation: {
-      outbound_transport_km: 500,
-      transport_mode: 'Heavy Lorry >32t (EURO 6)',
+      outbound_transport_km: 0,
+      transport_mode: '',
       outbound_provider_id: 'ecoinvent_transport_lorry_32t_rer',
-      installation_energy_kwh: 350,
+      installation_energy_kwh: 0,
       installation_energy_provider_id: 'ecoinvent_elec_mv_us',
-      commissioning_refrigerant_loss_kg: 0.5,
-      rigging_crane_diesel_liters: 25.0,
+      commissioning_refrigerant_loss_kg: 0,
+      rigging_crane_diesel_liters: 0,
       consumable_provider_id: 'ecoinvent_diesel_burned_building_machine_glo',
     },
     maintenance_b2: {
-      maintenance_cycles_per_rsl: 25,
-      consumable_name: 'Lubricating Oil & Filter Cartridges',
-      consumable_mass_kg: 5.0,
+      maintenance_cycles_per_rsl: 0,
+      consumable_name: '',
+      consumable_mass_kg: 0,
       provider_id: 'ecoinvent_lubricating_oil_glo',
     },
     repair_b3: {
-      repair_events_per_rsl: 2,
-      replaced_part_name: 'Compressor Shaft Seal & Bearing',
-      part_mass_kg: 18.5,
-      material_type: 'Steel, low-alloyed',
+      repair_events_per_rsl: 0,
+      replaced_part_name: '',
+      part_mass_kg: 0,
+      material_type: '',
       provider_id: 'ecoinvent_steel_hot_rolled_glo',
     },
     replacement_b4: {
       esl_years: 25,
     },
     refurbishment_b5: {
-      refurbishment_events_per_rsl: 1,
-      material_name: 'Copper Winding & Stator Rebuild',
-      mass_kg: 45.0,
+      refurbishment_events_per_rsl: 0,
+      material_name: '',
+      mass_kg: 0,
       provider_id: 'ecoinvent_copper_tube_wire_glo',
     },
     operational: {
-      refrigerant_type: 'R134a',
-      refrigerant_charge_kg: 45.0,
-      annual_leak_rate_percent: 2.0,
-      fugitive_operational_leak_rate: 0.5,
-      efficiency_kw_per_ton: 0.54,
-      capacity_rt: 500.0,
-      cooling_tower_water_m3_yr: 120.0,
-      scheduled_maintenance_kwh_yr: 180.0,
-      major_component_replacement_year: 15,
+      refrigerant_type: '',
+      refrigerant_charge_kg: 0,
+      annual_leak_rate_percent: 0,
+      fugitive_operational_leak_rate: 0,
+      efficiency_kw_per_ton: 0,
+      capacity_rt: 0,
+      target_cities: [],
+      annual_operating_hours: 0,
+      load_basis: 'full_load',
+      city_grid_providers: {},
+      cooling_tower_water_m3_yr: 0,
+      scheduled_maintenance_kwh_yr: 0,
+      major_component_replacement_year: 0,
       energy_provider_id: 'ecoinvent_elec_mv_us',
       water_provider_id: 'ecoinvent_water_deionised_glo',
     },
     end_of_life: {
-      recycling_rate_percent: 92.4,
-      landfill_rate_percent: 4.5,
-      incineration_rate_percent: 3.1,
-      decommissioning_energy_kwh: 120,
-      waste_transport_km: 100,
+      recycling_rate_percent: 0,
+      landfill_rate_percent: 0,
+      incineration_rate_percent: 0,
+      decommissioning_energy_kwh: 0,
+      waste_transport_km: 0,
       deconstruction_provider_id: 'ecoinvent_diesel_dismantling_glo',
       waste_transport_provider_id: 'ecoinvent_transport_lorry_32t_rer',
       recycling_process_provider_id: 'ecoinvent_waste_metal_recycling_glo',
@@ -85,11 +88,7 @@ export function StudioProvider({ children }) {
       landfill_process_provider_id: 'ecoinvent_waste_landfill_glo',
     },
     circularity_d: {
-      steel_scrap_recovery_rate: 95.0,
-      copper_scrap_recovery_rate: 96.0,
-      aluminium_recovery_rate: 90.0,
-      refrigerant_reclamation_rate: 92.0,
-      net_avoided_burden_gwp_kg: -3210.0,
+      overall_recovery_rate_percent: 0,
       virgin_material_provider_id: 'ecoinvent_virgin_steel_primary_glo',
       recycled_process_provider_id: 'ecoinvent_secondary_steel_electric_glo',
     },
@@ -525,22 +524,38 @@ export function StudioProvider({ children }) {
   // ─── CALCULATE ───
   const runCalculation = useCallback(async () => {
     setIsLoading(true);
-    try {
-      const payload = {
-        extracted_data: extractedData,
-        methodology: selectedMethodology,
-      };
-      const res = await fetch(`${API_BASE}/epd/calculate-anti`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setResults(data);
+    const payload = {
+      extracted_data: extractedData,
+      methodology: selectedMethodology,
+    };
+
+    let success = false;
+    const endpoints = [
+      `${API_BASE}/epd/calculate-anti`,
+      'http://localhost:8000/api/epd/calculate-anti',
+      'http://127.0.0.1:8000/api/epd/calculate-anti'
+    ];
+
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setResults(data);
+          success = true;
+          break;
+        }
+      } catch (err) {
+        console.warn(`[StudioContext] Fetch attempt failed for ${ep}:`, err);
       }
-    } catch {
-      // Offline — use client-side calculation
+    }
+
+    if (!success) {
+      console.warn('[StudioContext] Backend calculation API unreachable, generating client preview.');
       setResults(generateClientResults(extractedData, selectedMethodology));
     }
     setIsLoading(false);
@@ -562,23 +577,125 @@ export function StudioProvider({ children }) {
 
   // Derive comprehensive LCA characterization metrics for real-time display & certificate export
   const lca = useMemo(() => {
-    const totalMass = (extractedData.bom || []).reduce((acc, item) => acc + (Number(item.mass) || 0), 0) || 8450;
+    const totalMass = (extractedData.bom || []).reduce((acc, item) => acc + (Number(item.mass) || 0), 0) || 0;
     
+    // Check for calculated EPD results from backend
+    const epdRes = results?.epd_results || results?.results;
+    if (epdRes && typeof epdRes === 'object' && Object.keys(epdRes).length > 0) {
+      let gwpRow = null;
+      const indicators = Object.entries(epdRes).map(([catKey, row]) => {
+        const parts = catKey.split('|').map(s => s.trim());
+        const catName = parts.length > 1 ? parts[1] : parts[0];
+        let unit = '';
+        const unitMatch = catKey.match(/\[(.*?)\]/);
+        if (unitMatch) {
+          unit = unitMatch[1];
+        }
+
+        const a1 = Number(row['A1']) || 0;
+        const a2 = Number(row['A2']) || 0;
+        const a3 = Number(row['A3']) || 0;
+        const a1a3 = Number(row['A1-A3']) ?? (a1 + a2 + a3);
+        const a4 = Number(row['A4']) || 0;
+        const a5 = Number(row['A5']) || 0;
+        
+        const b1 = Number(row['B1']) || 0;
+        const b2 = Number(row['B2']) || 0;
+        const b3 = Number(row['B3']) || 0;
+        const b4 = Number(row['B4']) || 0;
+        const b5 = Number(row['B5']) || 0;
+        const b6 = Number(row['B6']) || 0;
+        const b7 = Number(row['B7']) || 0;
+        const b = b1 + b2 + b3 + b4 + b5 + b6 + b7;
+
+        const c1 = Number(row['C1']) || 0;
+        const c2 = Number(row['C2']) || 0;
+        const c3 = Number(row['C3']) || 0;
+        const c4 = Number(row['C4']) || 0;
+        const c = Number(row['C1-C4']) ?? (c1 + c2 + c3 + c4);
+
+        const d = Number(row['D']) || 0;
+        const total = a1a3 + a4 + a5 + b + c + d;
+
+        const isGwp = catKey.toLowerCase().includes('global warming') || catKey.toLowerCase().includes('gwp') || catKey.toLowerCase().includes('climate change');
+        if (isGwp && !gwpRow) {
+          gwpRow = { a1, a2, a3, a1a3, a4, a5, b, c, d, total };
+        }
+
+        let code = catName.split(' ')[0].toUpperCase();
+        if (isGwp) code = 'GWP100';
+        else if (catKey.toLowerCase().includes('acidification')) code = 'AP';
+        else if (catKey.toLowerCase().includes('eutrophication')) code = 'EP';
+        else if (catKey.toLowerCase().includes('ozone')) code = 'ODP';
+        else if (catKey.toLowerCase().includes('photochemical') || catKey.toLowerCase().includes('smog')) code = 'POCP';
+        else if (catKey.toLowerCase().includes('ecotoxicity')) code = 'FAETP';
+        else if (catKey.toLowerCase().includes('carcinogenic')) code = 'HTP';
+        else if (catKey.toLowerCase().includes('particulate')) code = 'PMFP';
+
+        return {
+          code,
+          rawCategory: catKey,
+          name: catName,
+          unit: unit || 'impact unit',
+          a1,
+          a2,
+          a3,
+          a1a3,
+          a4,
+          a5,
+          b1, b2, b3, b4, b5, b6, b7,
+          b,
+          c1, c2, c3, c4,
+          c,
+          d,
+          total,
+          stages: row,
+        };
+      });
+
+      const a1_gwp = gwpRow ? gwpRow.a1 : 0;
+      const a2_gwp = gwpRow ? gwpRow.a2 : 0;
+      const a3_gwp = gwpRow ? gwpRow.a3 : 0;
+      const a4_gwp = gwpRow ? gwpRow.a4 : 0;
+      const b_stage_gwp = gwpRow ? gwpRow.b : 0;
+      const c_stage_gwp = gwpRow ? gwpRow.c : 0;
+      const module_d_gwp = gwpRow ? gwpRow.d : 0;
+      const total_gwp = gwpRow ? gwpRow.total : 0;
+
+      return {
+        totalMass,
+        a1_gwp,
+        a2_gwp,
+        a3_gwp,
+        a4_gwp,
+        b_stage_gwp,
+        c_stage_gwp,
+        module_d_gwp,
+        total_gwp,
+        recRate: 92.4,
+        massCutoff: 0.85,
+        indicators,
+        isCalculated: true,
+        epd_results: epdRes,
+      };
+    }
+
     // Characterization scaling factor based on methodology
     const methodObj = getMethodology(selectedMethodology);
     const cfMultiplier = methodObj.group === 'ReCiPe' ? 1.05 : methodObj.group === 'CML' ? 0.98 : methodObj.group === 'TRACI' ? 1.02 : 1.0;
 
-    const a1_gwp = Math.round(totalMass * 1.85 * cfMultiplier);
-    const a2_gwp = Math.round(totalMass * 0.12 * cfMultiplier);
-    const a3_gwp = Math.round(totalMass * 0.45 * cfMultiplier);
+    const defaultMass = totalMass || 8450;
+    const a1_gwp = Math.round(defaultMass * 1.85 * cfMultiplier);
+    const a2_gwp = Math.round(defaultMass * 0.12 * cfMultiplier);
+    const a3_gwp = Math.round(defaultMass * 0.45 * cfMultiplier);
     const a4_gwp = Math.round(320 * cfMultiplier);
-    const b_stage_gwp = Math.round(totalMass * 11.2 * cfMultiplier);
-    const c_stage_gwp = Math.round(totalMass * 0.08 * cfMultiplier);
-    const module_d_gwp = -Math.round(totalMass * 0.38 * cfMultiplier);
+    const b_stage_gwp = Math.round(defaultMass * 11.2 * cfMultiplier);
+    const c_stage_gwp = Math.round(defaultMass * 0.08 * cfMultiplier);
+    const module_d_gwp = -Math.round(defaultMass * 0.38 * cfMultiplier);
     const total_gwp = a1_gwp + a2_gwp + a3_gwp + a4_gwp + b_stage_gwp + c_stage_gwp + module_d_gwp;
 
     return {
-      totalMass,
+      totalMass: defaultMass,
       a1_gwp,
       a2_gwp,
       a3_gwp,
@@ -589,21 +706,22 @@ export function StudioProvider({ children }) {
       total_gwp,
       recRate: 92.4,
       massCutoff: 0.85,
+      isCalculated: false,
       indicators: [
-        { code: 'GWP-total', name: 'Global warming potential - total', unit: 'kg CO₂ eq', a1a3: a1_gwp + a2_gwp + a3_gwp, a4: a4_gwp, b: b_stage_gwp, c: c_stage_gwp, d: module_d_gwp },
-        { code: 'GWP-fossil', name: 'Global warming potential - fossil fuels', unit: 'kg CO₂ eq', a1a3: Math.round((a1_gwp + a2_gwp + a3_gwp) * 0.94), a4: Math.round(a4_gwp * 0.98), b: Math.round(b_stage_gwp * 0.92), c: Math.round(c_stage_gwp * 0.95), d: Math.round(module_d_gwp * 0.93) },
-        { code: 'GWP-biogenic', name: 'Global warming potential - biogenic carbon', unit: 'kg CO₂ eq', a1a3: Math.round((a1_gwp + a2_gwp + a3_gwp) * 0.04), a4: 2, b: Math.round(b_stage_gwp * 0.06), c: 5, d: Math.round(module_d_gwp * 0.05) },
-        { code: 'ODP', name: 'Depletion of Stratospheric Ozone Layer', unit: 'kg CFC-11 eq', a1a3: 0.00042 * cfMultiplier, a4: 0.000012, b: 0.0018 * cfMultiplier, c: 0.000025, d: -0.000085 },
-        { code: 'AP', name: 'Acidification Potential', unit: 'mol H⁺ eq', a1a3: 68.4 * cfMultiplier, a4: 1.85, b: 242.0 * cfMultiplier, c: 2.1, d: -12.4 },
-        { code: 'EP-freshwater', name: 'Eutrophication - freshwater', unit: 'kg P eq', a1a3: 4.8 * cfMultiplier, a4: 0.08, b: 18.2 * cfMultiplier, c: 0.15, d: -0.92 },
-        { code: 'EP-marine', name: 'Eutrophication - marine', unit: 'kg N eq', a1a3: 14.2 * cfMultiplier, a4: 0.62, b: 52.6 * cfMultiplier, c: 0.48, d: -2.8 },
-        { code: 'POCP', name: 'Photochemical Ozone Formation', unit: 'kg NMVOC eq', a1a3: 42.1 * cfMultiplier, a4: 1.4, b: 148.5 * cfMultiplier, c: 1.2, d: -8.6 },
-        { code: 'ADP-minerals', name: 'Abiotic Depletion - minerals & metals', unit: 'kg Sb eq', a1a3: 0.45 * cfMultiplier, a4: 0.002, b: 0.88 * cfMultiplier, c: 0.005, d: -0.18 },
-        { code: 'ADP-fossil', name: 'Abiotic Depletion - fossil resources', unit: 'MJ', a1a3: 248000 * cfMultiplier, a4: 4800, b: 980000 * cfMultiplier, c: 5200, d: -42000 },
-        { code: 'WDP', name: 'Water Deprivation Potential', unit: 'm³ world eq', a1a3: 1250 * cfMultiplier, a4: 14, b: 4600 * cfMultiplier, c: 22, d: -280 },
+        { code: 'GWP-total', name: 'Global warming potential - total', unit: 'kg CO₂ eq', a1: a1_gwp, a2: a2_gwp, a3: a3_gwp, a1a3: a1_gwp + a2_gwp + a3_gwp, a4: a4_gwp, a5: 0, b: b_stage_gwp, c: c_stage_gwp, d: module_d_gwp, total: total_gwp },
+        { code: 'GWP-fossil', name: 'Global warming potential - fossil fuels', unit: 'kg CO₂ eq', a1: Math.round(a1_gwp * 0.94), a2: Math.round(a2_gwp * 0.94), a3: Math.round(a3_gwp * 0.94), a1a3: Math.round((a1_gwp + a2_gwp + a3_gwp) * 0.94), a4: Math.round(a4_gwp * 0.98), a5: 0, b: Math.round(b_stage_gwp * 0.92), c: Math.round(c_stage_gwp * 0.95), d: Math.round(module_d_gwp * 0.93), total: Math.round(total_gwp * 0.93) },
+        { code: 'GWP-biogenic', name: 'Global warming potential - biogenic carbon', unit: 'kg CO₂ eq', a1: Math.round(a1_gwp * 0.04), a2: Math.round(a2_gwp * 0.04), a3: Math.round(a3_gwp * 0.04), a1a3: Math.round((a1_gwp + a2_gwp + a3_gwp) * 0.04), a4: 2, a5: 0, b: Math.round(b_stage_gwp * 0.06), c: 5, d: Math.round(module_d_gwp * 0.05), total: Math.round(total_gwp * 0.05) },
+        { code: 'ODP', name: 'Depletion of Stratospheric Ozone Layer', unit: 'kg CFC-11 eq', a1: 0.0002 * cfMultiplier, a2: 0.00002, a3: 0.0002, a1a3: 0.00042 * cfMultiplier, a4: 0.000012, a5: 0, b: 0.0018 * cfMultiplier, c: 0.000025, d: -0.000085, total: 0.0021 },
+        { code: 'AP', name: 'Acidification Potential', unit: 'mol H⁺ eq', a1: 30.0 * cfMultiplier, a2: 8.4, a3: 30.0, a1a3: 68.4 * cfMultiplier, a4: 1.85, a5: 0, b: 242.0 * cfMultiplier, c: 2.1, d: -12.4, total: 300.0 },
+        { code: 'EP-freshwater', name: 'Eutrophication - freshwater', unit: 'kg P eq', a1: 2.0 * cfMultiplier, a2: 0.8, a3: 2.0, a1a3: 4.8 * cfMultiplier, a4: 0.08, a5: 0, b: 18.2 * cfMultiplier, c: 0.15, d: -0.92, total: 22.3 },
+        { code: 'EP-marine', name: 'Eutrophication - marine', unit: 'kg N eq', a1: 6.0 * cfMultiplier, a2: 2.2, a3: 6.0, a1a3: 14.2 * cfMultiplier, a4: 0.62, a5: 0, b: 52.6 * cfMultiplier, c: 0.48, d: -2.8, total: 65.1 },
+        { code: 'POCP', name: 'Photochemical Ozone Formation', unit: 'kg NMVOC eq', a1: 20.0 * cfMultiplier, a2: 2.1, a3: 20.0, a1a3: 42.1 * cfMultiplier, a4: 1.4, a5: 0, b: 148.5 * cfMultiplier, c: 1.2, d: -8.6, total: 184.6 },
+        { code: 'ADP-minerals', name: 'Abiotic Depletion - minerals & metals', unit: 'kg Sb eq', a1: 0.2 * cfMultiplier, a2: 0.05, a3: 0.2, a1a3: 0.45 * cfMultiplier, a4: 0.002, a5: 0, b: 0.88 * cfMultiplier, c: 0.005, d: -0.18, total: 1.15 },
+        { code: 'ADP-fossil', name: 'Abiotic Depletion - fossil resources', unit: 'MJ', a1: 100000 * cfMultiplier, a2: 48000, a3: 100000, a1a3: 248000 * cfMultiplier, a4: 4800, a5: 0, b: 980000 * cfMultiplier, c: 5200, d: -42000, total: 1196000 },
+        { code: 'WDP', name: 'Water Deprivation Potential', unit: 'm³ world eq', a1: 500 * cfMultiplier, a2: 250, a3: 500, a1a3: 1250 * cfMultiplier, a4: 14, a5: 0, b: 4600 * cfMultiplier, c: 22, d: -280, total: 5606 },
       ],
     };
-  }, [extractedData.bom, selectedMethodology]);
+  }, [extractedData.bom, selectedMethodology, results]);
 
   // Derive projectInfo
   const projectInfo = useMemo(() => ({

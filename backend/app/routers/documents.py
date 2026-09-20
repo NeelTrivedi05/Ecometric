@@ -399,12 +399,19 @@ def search_lcia_products(query: str = "", limit: int = 200):
     
     results = []
     for idx, row in matches.head(limit).iterrows():
+        ref_unit = ""
+        try:
+            if "Reference Product Unit" in row:
+                ref_unit = str(row["Reference Product Unit"])
+        except Exception:
+            ref_unit = "kg"
         results.append({
             "option_number": idx,
             "row_index": int(row["index"]),
             "activity_name": str(row["Activity Name"]),
             "geography": str(row["Geography"]),
             "reference_product_name": str(row["Reference Product Name"]),
+            "reference_unit": ref_unit or "kg",
         })
     
     return {

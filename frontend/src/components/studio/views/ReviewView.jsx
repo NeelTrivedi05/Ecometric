@@ -783,7 +783,7 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Thermal Incineration Rate (C4 %)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Thermal Incineration Rate (C3 %)</label>
                 <input
                   type="number"
                   step="0.1"

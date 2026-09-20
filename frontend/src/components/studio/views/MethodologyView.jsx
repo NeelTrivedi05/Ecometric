@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
 import { MethodologyIcon, CheckIcon, ChevronRightIcon, InfoIcon, RefreshCwIcon, SearchIcon } from '../Icons';
-import LciaExtractorSection from '../LciaExtractorSection';
 
 const GROUPS = [
   'All',
@@ -597,24 +596,65 @@ export default function MethodologyView() {
                       )}
                     </div>
 
-                    {/* Footer metadata */}
+                    {/* Footer metadata & Run Calculation trigger */}
                     <div
                       style={{
                         display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+                        flexDirection: 'column',
+                        gap: 8,
                         borderTop: '1px solid var(--border)',
                         paddingTop: 10,
                         marginTop: 6,
                         fontSize: 'var(--text-2xs)',
                       }}
                     >
-                      <span style={{ color: 'var(--text-muted)' }}>
-                        {method.category} · {method.lt}
-                      </span>
-                      <span style={{ fontWeight: 700, fontFamily: 'var(--mono)', color: 'var(--text-primary)' }}>
-                        {method.indicators} {method.category === 'Endpoint' ? 'Endpoints' : 'Categories'}
-                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>
+                          {method.category} · {method.lt}
+                        </span>
+                        <span style={{ fontWeight: 700, fontFamily: 'var(--mono)', color: 'var(--text-primary)' }}>
+                          {method.indicators} {method.category === 'Endpoint' ? 'Endpoints' : 'Categories'}
+                        </span>
+                      </div>
+                      {isSelected && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleApplyAndCalculate();
+                          }}
+                          disabled={isLoading}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            backgroundColor: 'var(--accent)',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            borderRadius: 'var(--radius-sm)',
+                            fontWeight: 700,
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                            marginTop: 4,
+                            boxShadow: '0 2px 6px rgba(184, 80, 66, 0.25)',
+                          }}
+                        >
+                          {isLoading ? (
+                            <>
+                              <RefreshCwIcon size={14} className="spin-anim" />
+                              <span>Running Calculation...</span>
+                            </>
+                          ) : (
+                            <>
+                              <RefreshCwIcon size={14} />
+                              <span>Run Calculation with {method.name}</span>
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </React.Fragment>
@@ -708,9 +748,6 @@ export default function MethodologyView() {
           ))}
         </div>
       </div>
-
-      {/* Optional Live ecoinvent LCIA Extractor for direct ad-hoc exploration */}
-      <LciaExtractorSection />
 
       {/* ── Action Footer ── */}
       <div style={{ marginTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
