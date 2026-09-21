@@ -43,6 +43,12 @@ def healthcheck():
         "ecoinvent_version": "3.12"
     }
 
+@app.post("/api/validate")
+@app.post("/validate")
+def validate_epd_endpoint(payload: dict = None):
+    from app.engines.pcr_validation import validate_epd_compliance
+    return validate_epd_compliance(payload or {})
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

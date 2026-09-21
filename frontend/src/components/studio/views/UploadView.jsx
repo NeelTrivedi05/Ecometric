@@ -123,9 +123,10 @@ export default function UploadView() {
           Drop files here or click to browse
         </div>
         <div className="upload-zone-desc" style={{ fontSize: '13px', color: '#7A6B63' }}>
-          Supports BOM spreadsheets (Excel .xlsx, CSV), utility bills, or JSON declarations
+          Supports ZIP engineering archives, BOM spreadsheets (Excel .xlsx, CSV), utility bills, or JSON declarations
         </div>
         <div className="upload-zone-formats" style={{ marginTop: '12px' }}>
+          <span className="format-tag" style={{ backgroundColor: '#EBF3ED', color: '#275234', fontWeight: 600 }}>ZIP ARCHIVE</span>
           <span className="format-tag">XLSX</span>
           <span className="format-tag">CSV</span>
           <span className="format-tag">PDF</span>
@@ -135,7 +136,7 @@ export default function UploadView() {
           ref={fileInputRef}
           type="file"
           multiple
-          accept=".pdf,.xlsx,.xls,.csv,.json,.xml"
+          accept=".zip,.pdf,.xlsx,.xls,.csv,.json,.xml"
           style={{ display: 'none' }}
           onChange={handleFileSelect}
         />

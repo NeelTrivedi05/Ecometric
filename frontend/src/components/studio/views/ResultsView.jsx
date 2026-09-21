@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
 import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon } from '../Icons';
 
@@ -11,9 +11,18 @@ export default function ResultsView() {
     showNotif,
     isLoading,
     runCalculation,
+    generateNsfDocument,
+    extractedData,
   } = useStudio();
 
   const [showFullBreakdown, setShowFullBreakdown] = useState(false);
+
+  // Auto-run genuine characterization if results not calculated yet but BOM exists
+  useEffect(() => {
+    if (!lca.isCalculated && !isLoading && extractedData?.bom && extractedData.bom.length > 0) {
+      runCalculation();
+    }
+  }, [lca.isCalculated, isLoading, extractedData?.bom, runCalculation]);
 
   const formatValue = (val) => {
     if (typeof val !== 'number' || isNaN(val)) return '—';
@@ -73,6 +82,37 @@ export default function ResultsView() {
           </div>
         </div>
       </div>
+
+      {/* Dynamic Processing Status Banner */}
+      {isLoading && (
+        <div className="card" style={{ padding: '20px 24px', textAlign: 'center', marginBottom: 24, border: '1px solid var(--accent)', background: 'var(--bg-card)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 6 }}>
+            <RefreshCwIcon size={18} className="spin" style={{ color: 'var(--accent)' }} />
+            <span style={{ fontWeight: 700, fontSize: 'var(--text-base)', color: 'var(--text-primary)' }}>
+              Computing Characterization Factors with ecoinvent v3.12...
+            </span>
+          </div>
+          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', margin: 0 }}>
+            Dynamically characterizing all lifecycle modules (A1–A5, B1–B7, C1–C4, Module D) for {currentMethod?.name || selectedMethodology}.
+          </p>
+        </div>
+      )}
+
+      {!isLoading && !lca.isCalculated && (!extractedData?.bom || extractedData.bom.length === 0) && (
+        <div className="card" style={{ padding: '32px 24px', textAlign: 'center', marginBottom: 24, background: 'var(--bg-card2)' }}>
+          <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: 8 }}>Awaiting Equipment Data</h3>
+          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', maxWidth: 500, margin: '0 auto 16px' }}>
+            No bill of materials or equipment specifications are loaded yet. Upload your engineering documents or load sample data in Step 1 to characterize environmental impacts.
+          </p>
+          <button
+            type="button"
+            className="btn btn-sm btn-primary"
+            onClick={() => setActivePhase('upload')}
+          >
+            Go to Upload Documents
+          </button>
+        </div>
+      )}
 
       {/* Top KPI Header Cards */}
       <div
@@ -253,17 +293,34 @@ export default function ResultsView() {
           Change Methodology
         </button>
 
-        <button
-          type="button"
-          className="btn btn-accent btn-lg"
-          onClick={() => {
-            showNotif('Proceeding to EPD Declaration Certificate', 'Results Confirmed');
-            setActivePhase('export');
-          }}
-        >
-          <span>Proceed to Export EPD</span>
-          <ChevronRightIcon size={16} />
-        </button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className="btn btn-primary btn-lg"
+            onClick={async () => {
+              showNotif('Generating official NSF / UL 10010-4 EPD document...', 'Generating EPD');
+              await generateNsfDocument();
+              setActivePhase('export');
+            }}
+            disabled={isLoading}
+            style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+          >
+            <span>Generate Official NSF EPD</span>
+            <ChevronRightIcon size={16} />
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-accent btn-lg"
+            onClick={() => {
+              showNotif('Proceeding to EPD Declaration Certificate', 'Results Confirmed');
+              setActivePhase('export');
+            }}
+          >
+            <span>Proceed to Export</span>
+            <ChevronRightIcon size={16} />
+          </button>
+        </div>
       </div>
     </div>
   );

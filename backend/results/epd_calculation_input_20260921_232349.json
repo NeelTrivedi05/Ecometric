@@ -1,0 +1,317 @@
+{
+  "metadata": {
+    "title": "EPD Calculation Engine Input Payload",
+    "generated_at": "2026-09-21T23:23:49.698021",
+    "methodology": "TRACI 2.1",
+    "database_version": "ecoinvent v3.12 Cut-off",
+    "standard": "EN 15804+A2:2019 / ISO 14025:2006"
+  },
+  "project_info": {
+    "product_name": "Carrier AquaEdge 19DV Centrifugal Chiller",
+    "functional_unit": "1 unit over 25 years reference service life (500.0 RT)",
+    "pcr_ref": "UL 10010-4 Part B & EN 15804+A2",
+    "lifespan_years": 25
+  },
+  "stages_data": {
+    "A1_BOM": [
+      {
+        "id": "pdf-1-1",
+        "name": "Compressor Volute & Casting",
+        "material": "steel_hot_rolled",
+        "mass": 2250.0,
+        "unit": "kg",
+        "ecoinvent_id": "ecoinvent_steel_hot_rolled_glo",
+        "supplier": "Midwest Iron Works",
+        "transport_km": 420.0,
+        "module": "A1",
+        "provider_id": "ecoinvent_steel_hot_rolled_glo",
+        "reference_unit": "kg"
+      },
+      {
+        "id": "pdf-1-2",
+        "name": "Evaporator & Condenser Tubes",
+        "material": "copper_tube_wire",
+        "mass": 720.0,
+        "unit": "kg",
+        "ecoinvent_id": "ecoinvent_copper_tube_wire_glo",
+        "supplier": "Great Lakes Copper Corp",
+        "transport_km": 280.0,
+        "module": "A1",
+        "provider_id": "ecoinvent_copper_tube_wire_glo",
+        "reference_unit": "kg"
+      },
+      {
+        "id": "pdf-1-3",
+        "name": "Semi-Hermetic Induction Motor",
+        "material": "electric_motor_industrial",
+        "mass": 480.0,
+        "unit": "kg",
+        "ecoinvent_id": "ecoinvent_electric_motor_industrial_glo",
+        "supplier": "ElectroMotors Industrial",
+        "transport_km": 650.0,
+        "module": "A1",
+        "provider_id": "ecoinvent_electric_motor_industrial_glo",
+        "reference_unit": "kWh"
+      },
+      {
+        "id": "pdf-1-4",
+        "name": "Shell Thermal PUF Insulation",
+        "material": "insulation_polyurethane_rigid",
+        "mass": 140.0,
+        "unit": "kg",
+        "ecoinvent_id": "ecoinvent_insulation_polyurethane_rigid_glo",
+        "supplier": "FoamTech Insulation",
+        "transport_km": 190.0,
+        "module": "A1",
+        "provider_id": "ecoinvent_insulation_polyurethane_rigid_glo",
+        "reference_unit": "kg"
+      },
+      {
+        "id": "pdf-1-5",
+        "name": "Power Inverter & Solid-State VFD",
+        "material": "electronics_vfd",
+        "mass": 110.0,
+        "unit": "kg",
+        "ecoinvent_id": "ecoinvent_electronics_vfd_glo",
+        "supplier": "Advantech Power Systems",
+        "transport_km": 890.0,
+        "module": "A1",
+        "provider_id": "ecoinvent_electronics_vfd_glo",
+        "reference_unit": "kWh"
+      },
+      {
+        "id": "pdf-1-6",
+        "name": "Microchannel Subcooler Coil",
+        "material": "aluminium_cast_alloy",
+        "mass": 95.0,
+        "unit": "kg",
+        "ecoinvent_id": "ecoinvent_aluminium_cast_alloy_glo",
+        "supplier": "Alloy Heat Exchangers",
+        "transport_km": 350.0,
+        "module": "A1",
+        "provider_id": "ecoinvent_aluminium_cast_alloy_glo",
+        "reference_unit": "kg"
+      },
+      {
+        "id": "pdf-1-7",
+        "name": "Refrigerant High-Pressure Piping",
+        "material": "steel_stainless_304",
+        "mass": 85.0,
+        "unit": "kg",
+        "ecoinvent_id": "ecoinvent_steel_stainless_304_glo",
+        "supplier": "Precision Alloy Tubing",
+        "transport_km": 340.0,
+        "module": "A1",
+        "provider_id": "ecoinvent_steel_stainless_304_glo",
+        "reference_unit": "kg"
+      },
+      {
+        "id": "pdf-1-8",
+        "name": "Base Skid Frame & Mounts",
+        "material": "steel_hot_rolled",
+        "mass": 540.0,
+        "unit": "kg",
+        "ecoinvent_id": "ecoinvent_steel_hot_rolled_glo",
+        "supplier": "ArcelorMittal Midwest",
+        "transport_km": 260.0,
+        "module": "A1",
+        "provider_id": "ecoinvent_steel_hot_rolled_glo",
+        "reference_unit": "kg"
+      }
+    ],
+    "A2_Transport": [],
+    "A3_Manufacturing": {
+      "annual_facility_kwh": 34000.0,
+      "natural_gas_mj": 0.0,
+      "grid_region": "US_Average",
+      "water_m3": 0.0,
+      "electricity_provider_id": "ecoinvent_elec_mv_us",
+      "gas_provider_id": "ecoinvent_gas_burned_boiler_glo",
+      "water_provider_id": "ecoinvent_water_deionised_glo",
+      "annual_production_units": 1000.0,
+      "electricity_provider_id_reference_unit": "kWh",
+      "gas_provider_id_reference_unit": "MJ",
+      "water_provider_id_reference_unit": "m3"
+    },
+    "A4_A5_Installation": {
+      "outbound_provider_id": "ecoinvent_transport_lorry_32t_rer",
+      "installation_energy_provider_id": "ecoinvent_elec_mv_us",
+      "consumable_provider_id": "ecoinvent_diesel_burned_building_machine_glo",
+      "outbound_provider_id_reference_unit": "tkm",
+      "installation_energy_provider_id_reference_unit": "kWh",
+      "consumable_provider_id_reference_unit": "MJ"
+    },
+    "B1_B7_Operational": {
+      "refrigerant_type": "R134A",
+      "refrigerant_charge_kg": 45.0,
+      "efficiency_kw_per_ton": 0.54,
+      "capacity_rt": 500.0,
+      "annual_leak_rate_percent": 2.0,
+      "refrigerant_gwp_cf": 1430.0,
+      "energy_provider_id": "ecoinvent_elec_mv_us",
+      "water_provider_id": "ecoinvent_water_deionised_glo",
+      "energy_provider_id_reference_unit": "kWh",
+      "water_provider_id_reference_unit": "m3",
+      "annual_operating_hours": 8760.0,
+      "load_basis": "full_load",
+      "city_grid_providers": {
+        "Chicago": "ecoinvent_elec_mv_us",
+        "Houston": "ecoinvent_elec_tx",
+        "Frankfurt": "ecoinvent_elec_de",
+        "Dubai": "ecoinvent_elec_ae"
+      },
+      "city_grid_providers_reference_units": {
+        "Chicago": "kWh",
+        "Houston": "kWh",
+        "Frankfurt": "kWh",
+        "Dubai": "kWh"
+      }
+    },
+    "B2_Maintenance": {
+      "provider_id": "ecoinvent_lubricating_oil_glo",
+      "reference_unit": "kg"
+    },
+    "B3_Repair": {
+      "provider_id": "ecoinvent_steel_hot_rolled_glo",
+      "reference_unit": "kg"
+    },
+    "B4_Replacement": {},
+    "B5_Refurbishment": {
+      "provider_id": "ecoinvent_copper_tube_wire_glo",
+      "reference_unit": "kg"
+    },
+    "C1_C4_EndOfLife": {
+      "deconstruction_provider_id": "ecoinvent_diesel_dismantling_glo",
+      "waste_transport_provider_id": "ecoinvent_transport_lorry_32t_rer",
+      "recycling_process_provider_id": "ecoinvent_waste_metal_recycling_glo",
+      "incineration_process_provider_id": "ecoinvent_waste_incineration_glo",
+      "landfill_process_provider_id": "ecoinvent_waste_landfill_glo",
+      "deconstruction_provider_id_reference_unit": "MJ",
+      "waste_transport_provider_id_reference_unit": "tkm",
+      "recycling_process_provider_id_reference_unit": "kg",
+      "incineration_process_provider_id_reference_unit": "kg",
+      "landfill_process_provider_id_reference_unit": "kg"
+    },
+    "D_Circularity": {
+      "virgin_material_provider_id": "ecoinvent_virgin_steel_primary_glo",
+      "recycled_process_provider_id": "ecoinvent_secondary_steel_electric_glo",
+      "overall_recovery_rate_percent": 90.0,
+      "virgin_material_provider_id_reference_unit": "kg",
+      "recycled_process_provider_id_reference_unit": "kWh"
+    }
+  },
+  "full_payload": {
+    "extracted_data": {
+      "project_info": {
+        "product_name": "Carrier AquaEdge 19DV Centrifugal Chiller",
+        "functional_unit": "1 unit over 25 years reference service life (500.0 RT)",
+        "pcr_ref": "UL 10010-4 Part B & EN 15804+A2",
+        "lifespan_years": 25
+      },
+      "bom": [
+        {
+          "id": "pdf-1-1",
+          "name": "Compressor Volute & Casting",
+          "material": "steel_hot_rolled",
+          "mass": 2250.0,
+          "unit": "kg",
+          "ecoinvent_id": "ecoinvent_steel_hot_rolled_glo",
+          "supplier": "Midwest Iron Works",
+          "transport_km": 420.0,
+          "module": "A1"
+        },
+        {
+          "id": "pdf-1-2",
+          "name": "Evaporator & Condenser Tubes",
+          "material": "copper_tube_wire",
+          "mass": 720.0,
+          "unit": "kg",
+          "ecoinvent_id": "ecoinvent_copper_tube_wire_glo",
+          "supplier": "Great Lakes Copper Corp",
+          "transport_km": 280.0,
+          "module": "A1"
+        },
+        {
+          "id": "pdf-1-3",
+          "name": "Semi-Hermetic Induction Motor",
+          "material": "electric_motor_industrial",
+          "mass": 480.0,
+          "unit": "kg",
+          "ecoinvent_id": "ecoinvent_electric_motor_industrial_glo",
+          "supplier": "ElectroMotors Industrial",
+          "transport_km": 650.0,
+          "module": "A1"
+        },
+        {
+          "id": "pdf-1-4",
+          "name": "Shell Thermal PUF Insulation",
+          "material": "insulation_polyurethane_rigid",
+          "mass": 140.0,
+          "unit": "kg",
+          "ecoinvent_id": "ecoinvent_insulation_polyurethane_rigid_glo",
+          "supplier": "FoamTech Insulation",
+          "transport_km": 190.0,
+          "module": "A1"
+        },
+        {
+          "id": "pdf-1-5",
+          "name": "Power Inverter & Solid-State VFD",
+          "material": "electronics_vfd",
+          "mass": 110.0,
+          "unit": "kg",
+          "ecoinvent_id": "ecoinvent_electronics_vfd_glo",
+          "supplier": "Advantech Power Systems",
+          "transport_km": 890.0,
+          "module": "A1"
+        },
+        {
+          "id": "pdf-1-6",
+          "name": "Microchannel Subcooler Coil",
+          "material": "aluminium_cast_alloy",
+          "mass": 95.0,
+          "unit": "kg",
+          "ecoinvent_id": "ecoinvent_aluminium_cast_alloy_glo",
+          "supplier": "Alloy Heat Exchangers",
+          "transport_km": 350.0,
+          "module": "A1"
+        },
+        {
+          "id": "pdf-1-7",
+          "name": "Refrigerant High-Pressure Piping",
+          "material": "steel_stainless_304",
+          "mass": 85.0,
+          "unit": "kg",
+          "ecoinvent_id": "ecoinvent_steel_stainless_304_glo",
+          "supplier": "Precision Alloy Tubing",
+          "transport_km": 340.0,
+          "module": "A1"
+        },
+        {
+          "id": "pdf-1-8",
+          "name": "Base Skid Frame & Mounts",
+          "material": "steel_hot_rolled",
+          "mass": 540.0,
+          "unit": "kg",
+          "ecoinvent_id": "ecoinvent_steel_hot_rolled_glo",
+          "supplier": "ArcelorMittal Midwest",
+          "transport_km": 260.0,
+          "module": "A1"
+        }
+      ],
+      "manufacturing": {
+        "annual_facility_kwh": 34000.0,
+        "natural_gas_mj": 0.0,
+        "grid_region": "US_Average",
+        "water_m3": 0.0
+      },
+      "operational": {
+        "refrigerant_type": "R134A",
+        "refrigerant_charge_kg": 45.0,
+        "efficiency_kw_per_ton": 0.54,
+        "capacity_rt": 500.0,
+        "annual_leak_rate_percent": 2.0
+      }
+    },
+    "methodology": "TRACI 2.1"
+  }
+}

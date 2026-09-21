@@ -58,7 +58,46 @@ def extract_pdf_data(pdf_bytes: bytes) -> Dict[str, Any]:
                 if not table or len(table) < 2:
                     continue
                 
-                # Identify header row
+                # Check if table represents general equipment specifications rather than a parts BOM
+                all_table_text = " ".join(str(cell).lower() for r in table for cell in r if cell)
+                spec_indicators = ['nominal capacity', 'rated input', 'efficiency', 'flow', 'dimensions', 'refrigerant', 'shipping weight', 'operating weight']
+                is_spec_table = sum(1 for ind in spec_indicators if ind in all_table_text) >= 2
+                
+                if is_spec_table:
+                    # Extract specs directly from key-value rows
+                    for r in table:
+                        if not r or len(r) < 2:
+                            continue
+                        k_str = str(r[0]).lower().strip()
+                        v_str = str(r[1]).strip()
+                        if 'shipping weight' in k_str:
+                            w_match = re.search(r'([0-9,.]+)\s*(lb|lbs|kg|tons?|t)?', v_str, re.IGNORECASE)
+                            if w_match:
+                                val = _clean_number(w_match.group(1)) or 0.0
+                                u = (w_match.group(2) or "lb").lower()
+                                if 'lb' in u:
+                                    val *= 0.453592
+                                elif u in ['t', 'tons', 'ton']:
+                                    val *= 1000.0
+                                if val > 0:
+                                    shipping_weight_kg = round(val, 1)
+                        elif 'nominal capacity' in k_str:
+                            c_m = re.search(r'([0-9,.]+)\s*(?:tons?|tr|rt)', v_str, re.IGNORECASE)
+                            if c_m:
+                                capacity_rt = _clean_number(c_m.group(1)) or capacity_rt
+                        elif 'full-load efficiency' in k_str:
+                            eff_m = re.search(r'([0-9,.]+)', v_str)
+                            if eff_m:
+                                eff_val = _clean_number(eff_m.group(1))
+                                if eff_val:
+                                    efficiency_kw_per_ton = eff_val
+                        elif 'refrigerant' in k_str:
+                            ref_m = re.search(r'\b(R-?1233zd(?:\(E\))?|R-?134a|R-?410a|R-?32|R-?1234ze|R-?513a|R-?290|R-?717|R-?454b)\b', v_str, re.IGNORECASE)
+                            if ref_m:
+                                refrigerant_type = ref_m.group(1).upper().replace('-', '')
+                    continue
+
+                # Identify header row for true BOM tables
                 header = [str(c).lower().strip() if c else "" for c in table[0]]
                 col_name_idx = -1
                 col_mass_idx = -1
@@ -130,75 +169,75 @@ def extract_pdf_data(pdf_bytes: bytes) -> Dict[str, Any]:
         product_name = p_match.group(1).strip()[:60]
         
     capacity_rt = 500.0
-    c_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:rt|tons?|tr)\b', full_text, re.IGNORECASE)
+    c_match = re.search(r'(\d+(?:,\d+)?(?:\.\d+)?)\s*(?:rt|tons?|tr)\b', full_text, re.IGNORECASE)
     if c_match:
         try:
-            capacity_rt = float(c_match.group(1))
+            val_clean = str(c_match.group(1)).replace(',', '')
+            capacity_rt = float(val_clean)
         except ValueError:
             pass
 
-    refrigerant_type = "R134a"
-    ref_match = re.search(r'\b(R-?134a|R-?410a|R-?32|R-?1234ze|R-?290|R-?717)\b', full_text, re.IGNORECASE)
+    refrigerant_type = ""
+    ref_match = re.search(r'\b(R-?1233zd(?:\(E\))?|R-?134a|R-?410a|R-?32|R-?1234ze|R-?513a|R-?290|R-?717|R-?454b)\b', full_text, re.IGNORECASE)
     if ref_match:
         refrigerant_type = ref_match.group(1).upper().replace('-', '')
 
-    charge_kg = 45.0
-    charge_match = re.search(r'(?:refrigerant\s*charge|charge)\s*[:=]?\s*(\d+(?:\.\d+)?)\s*(?:kg|lbs)', full_text, re.IGNORECASE)
+    charge_kg = 0.0
+    charge_match = re.search(r'(?:refrigerant\s*charge|charge)\s*[:=]?\s*([0-9,.]+)\s*(?:kg|lbs|kilos)', full_text, re.IGNORECASE)
     if charge_match:
-        charge_kg = _clean_number(charge_match.group(1)) or 45.0
+        c_num = _clean_number(charge_match.group(1)) or 0.0
+        if 'lb' in charge_match.group(0).lower():
+            c_num *= 0.453592
+        charge_kg = round(c_num, 1)
 
-    kwh = 34000
+    # Shipping / Operating weight extraction
+    shipping_weight_kg = 0.0
+    weight_match = re.search(r'(?:shipping\s*weight|operating\s*weight|total\s*weight|weight)\s*[:=]?\s*([0-9,.]+)\s*(lb|lbs|kg|tons?|t)\b', full_text, re.IGNORECASE)
+    if weight_match:
+        w_val = _clean_number(weight_match.group(1)) or 0.0
+        unit = weight_match.group(2).lower()
+        if 'lb' in unit:
+            w_val *= 0.453592
+        elif unit in ['t', 'tons', 'ton']:
+            w_val *= 1000.0
+        shipping_weight_kg = round(w_val, 1)
+
+    kwh = 0.0
     kwh_match = re.search(r'(\d+(?:,\d+)?)\s*kwh', full_text, re.IGNORECASE)
     if kwh_match:
         num = _clean_number(kwh_match.group(1))
-        if num and num > 100:
+        if num and num > 0:
             kwh = num
 
-    return {
+    result_payload: Dict[str, Any] = {
         "project_info": {
-            "product_name": product_name,
-            "functional_unit": f"1 unit over 25 years reference service life ({capacity_rt} RT)",
+            "product_name": product_name or "Uploaded PDF Equipment Model",
+            "functional_unit": f"1 unit over 25 years reference service life ({capacity_rt} RT)" if capacity_rt else "1 unit",
             "pcr_ref": "UL 10010-4 Part B & EN 15804+A2",
             "lifespan_years": 25
         },
         "bom": extracted_bom,
-        "manufacturing": {
+    }
+
+    if shipping_weight_kg > 0:
+        result_payload["_shipping_weight_kg"] = shipping_weight_kg
+
+    if kwh > 0:
+        result_payload["manufacturing"] = {
             "annual_facility_kwh": kwh,
-            "natural_gas_mj": 18500,
+            "natural_gas_mj": 0.0,
             "grid_region": "US_Average",
-            "water_m3": 45.0
-        },
-        "operational": {
+            "water_m3": 0.0
+        }
+
+    if refrigerant_type or charge_kg > 0 or capacity_rt > 0:
+        result_payload["operational"] = {
             "refrigerant_type": refrigerant_type,
             "refrigerant_charge_kg": charge_kg,
-            "efficiency_kw_per_ton": 0.54,
+            "efficiency_kw_per_ton": 0.54 if capacity_rt > 0 else 0.0,
             "capacity_rt": capacity_rt,
-            "annual_leak_rate_percent": 2.0
-        },
-        "transport": [
-            { "mode": "Heavy Lorry >32t (EURO 6)", "distance": 485, "dist": 485, "emission_factor": 0.088, "ef": 0.088, "module": "A2" },
-            { "mode": "Transoceanic Container Ship", "distance": 1200, "dist": 1200, "emission_factor": 0.0145, "ef": 0.0145, "module": "A2" },
-            { "mode": "Heavy Delivery Lorry >32t to Customer Site", "distance": 500, "dist": 500, "emission_factor": 0.088, "ef": 0.088, "module": "A4" }
-        ],
-        "installation": {
-            "outbound_transport_km": 500,
-            "transport_mode": "Heavy Lorry >32t (EURO 6)",
-            "installation_energy_kwh": 350,
-            "commissioning_refrigerant_loss_kg": 0.5,
-            "rigging_crane_diesel_liters": 25.0
-        },
-        "end_of_life": {
-            "recycling_rate_percent": 92.4,
-            "landfill_rate_percent": 4.5,
-            "incineration_rate_percent": 3.1,
-            "decommissioning_energy_kwh": 120,
-            "waste_transport_km": 100
-        },
-        "circularity_d": {
-            "steel_scrap_recovery_rate": 95.0,
-            "copper_scrap_recovery_rate": 96.0,
-            "aluminium_recovery_rate": 90.0,
-            "refrigerant_reclamation_rate": 92.0,
-            "net_avoided_burden_gwp_kg": -3210.0
+            "annual_leak_rate_percent": 2.0 if charge_kg > 0 else 0.0
         }
-    }
+
+    return result_payload
+

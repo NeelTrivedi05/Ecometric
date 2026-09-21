@@ -109,7 +109,8 @@ def generate_report(project_id: str = "demo_project", db: Session = Depends(get_
 
     return report_data
 
-RESULTS_DIR = Path("/Users/parth/Desktop/Ecometric/results")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+RESULTS_DIR = Path(os.getenv("RESULTS_DIR", str(REPO_ROOT / "results")))
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 REFRIGERANT_GWP_CF = {
@@ -203,10 +204,14 @@ def build_enriched_stages_data(extracted_data: dict) -> dict:
     inst = dict(extracted_data.get("installation", {}))
     if not inst.get("outbound_provider_id"):
         inst["outbound_provider_id"] = "ecoinvent_transport_lorry_32t_rer"
+    if not inst.get("outbound_transport_km"):
+        inst["outbound_transport_km"] = 500.0  # UL 10010-4 default: 500 km truck
     if not inst.get("installation_energy_provider_id"):
         inst["installation_energy_provider_id"] = "ecoinvent_elec_mv_us"
     if not inst.get("consumable_provider_id"):
         inst["consumable_provider_id"] = "ecoinvent_diesel_burned_building_machine_glo"
+    if not inst.get("rigging_crane_diesel_liters"):
+        inst["rigging_crane_diesel_liters"] = 37.8  # UL 10010-4: 3 hrs * 12.6 L/hr crane unloading
     inst["outbound_provider_id_reference_unit"] = resolve_reference_unit(inst["outbound_provider_id"], "tkm")
     inst["installation_energy_provider_id_reference_unit"] = resolve_reference_unit(inst["installation_energy_provider_id"], "kWh")
     inst["consumable_provider_id_reference_unit"] = resolve_reference_unit(inst["consumable_provider_id"], "MJ")
@@ -224,6 +229,28 @@ def build_enriched_stages_data(extracted_data: dict) -> dict:
 
     op["annual_operating_hours"] = float(op.get("annual_operating_hours", 8760))
     op["load_basis"] = str(op.get("load_basis", "full_load")).lower()
+
+    # Populate capacity_rt and efficiency_kw_per_ton for B6 calculation
+    cap = (
+        op.get("capacity_rt")
+        or op.get("cooling_capacity_tons")
+        or op.get("capacity_tons")
+        or op.get("rated_capacity_tons")
+        or extracted_data.get("operational_characteristics", {}).get("cooling_capacity_tons")
+    )
+    if not cap:
+        kw = op.get("cooling_capacity_kw") or op.get("capacity_kw") or extracted_data.get("operational_characteristics", {}).get("cooling_capacity_kw")
+        if kw:
+            cap = float(kw) / 3.51685
+    op["capacity_rt"] = float(cap or 800.0)
+
+    eff = (
+        op.get("efficiency_kw_per_ton")
+        or op.get("kw_per_ton")
+        or extracted_data.get("operational_characteristics", {}).get("efficiency_kw_per_ton")
+    )
+    op["efficiency_kw_per_ton"] = float(eff or 0.54)
+    op["rsl_years"] = float(extracted_data.get("project_info", {}).get("lifespan_years") or op.get("rsl_years") or 25.0)
     
     city_grids = op.get("city_grid_providers", {})
     if not isinstance(city_grids, dict) or not city_grids:
@@ -239,6 +266,11 @@ def build_enriched_stages_data(extracted_data: dict) -> dict:
     b2 = dict(extracted_data.get("maintenance_b2", {}))
     if not b2.get("provider_id"):
         b2["provider_id"] = "ecoinvent_lubricating_oil_glo"
+    if not b2.get("maintenance_cycles_per_rsl"):
+        b2["maintenance_cycles_per_rsl"] = 25.0
+    if not b2.get("consumable_mass_kg"):
+        # Refrigerant top-up per UL 10010-4 Table 8: 2% annual leak rate
+        b2["consumable_mass_kg"] = round(float(op.get("refrigerant_charge_kg", 45.0)) * 0.02, 3)
     b2["reference_unit"] = resolve_reference_unit(b2["provider_id"], "kg")
 
     b3 = dict(extracted_data.get("repair_b3", {}))
@@ -247,6 +279,8 @@ def build_enriched_stages_data(extracted_data: dict) -> dict:
     b3["reference_unit"] = resolve_reference_unit(b3["provider_id"], "kg")
 
     b4 = dict(extracted_data.get("replacement_b4", {}))
+    if not b4.get("esl_years"):
+        b4["esl_years"] = float(extracted_data.get("project_info", {}).get("building_esl_years", 75))
 
     b5 = dict(extracted_data.get("refurbishment_b5", {}))
     if not b5.get("provider_id"):
@@ -259,6 +293,12 @@ def build_enriched_stages_data(extracted_data: dict) -> dict:
         eol["deconstruction_provider_id"] = "ecoinvent_diesel_dismantling_glo"
     if not eol.get("waste_transport_provider_id"):
         eol["waste_transport_provider_id"] = "ecoinvent_transport_lorry_32t_rer"
+    if not eol.get("waste_transport_km"):
+        eol["waste_transport_km"] = 100.0  # UL 10010-4 Table 12: 100 km disposal transport
+    if eol.get("recycling_rate_percent") is None:
+        eol["recycling_rate_percent"] = 90.0
+    if eol.get("landfill_rate_percent") is None:
+        eol["landfill_rate_percent"] = 10.0
     if not eol.get("recycling_process_provider_id"):
         eol["recycling_process_provider_id"] = "ecoinvent_waste_metal_recycling_glo"
     if not eol.get("incineration_process_provider_id"):
@@ -349,9 +389,13 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
 
     # Extract EF values directly in-process and embed into calculation_record
     try:
-        excel_path = Path("/Users/parth/Desktop/final year project/Cut-off Cumulative LCIA v3.12.xlsx")
-        if not excel_path.exists():
-            excel_path = Path("/Users/parth/Desktop/Ecometric/database/ecoinvent_raw/LCIA Implementation 3.12.xlsx")
+        candidate_excel_paths = [
+            REPO_ROOT / "Ecoinvent database" / "ecoinvent 3.12_cut-off_cumulative_lcia_xlsx" / "Cut-off Cumulative LCIA v3.12.xlsx",
+            REPO_ROOT / "database" / "ecoinvent_raw" / "LCIA Implementation 3.12.xlsx",
+            Path("/Users/parth/Desktop/final year project/Cut-off Cumulative LCIA v3.12.xlsx"),
+            Path("/Users/parth/Desktop/Ecometric/Cut-off Cumulative LCIA v3.12.xlsx"),
+        ]
+        excel_path = next((p for p in candidate_excel_paths if p.exists()), candidate_excel_paths[0])
 
         if excel_path.exists():
             ef_results = extract_ef_for_payload(calculation_record, str(excel_path), methodology)
@@ -384,7 +428,58 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
 
     res_anti = calculate_anti_lca(extracted_data)
     if calc_out and isinstance(calc_out, dict):
-        res_anti["epd_results"] = calc_out.get("results")
+        epd_res = calc_out.get("results", {})
+        res_anti["epd_results"] = epd_res
         res_anti["epd_metadata"] = calc_out.get("metadata")
         res_anti["epd_warnings"] = calc_out.get("warnings")
+
+        # Synchronize top-level summary metrics with calculated GWP row
+        gwp_key = next((k for k in epd_res.keys() if "global warming" in k.lower() or "climate change" in k.lower()), None)
+        if gwp_key and epd_res.get(gwp_key):
+            row = epd_res[gwp_key]
+            res_anti["a1_gwp"] = round(float(row.get("A1", 0)), 2)
+            res_anti["a2_gwp"] = round(float(row.get("A2", 0)), 2)
+            res_anti["a3_gwp"] = round(float(row.get("A3", 0)), 2)
+            res_anti["a4_gwp"] = round(float(row.get("A4", 0)), 2)
+            res_anti["a5_gwp"] = round(float(row.get("A5", 0)), 2)
+            res_anti["b1_gwp"] = round(float(row.get("B1", 0)), 2)
+            res_anti["b2_gwp"] = round(float(row.get("B2", 0)), 2)
+            res_anti["b3_gwp"] = round(float(row.get("B3", 0)), 2)
+            res_anti["b4_gwp"] = round(float(row.get("B4", 0)), 2)
+            res_anti["b5_gwp"] = round(float(row.get("B5", 0)), 2)
+            res_anti["b6_gwp"] = round(float(row.get("B6", 0)), 2)
+            res_anti["b7_gwp"] = round(float(row.get("B7", 0)), 2)
+            b_tot = sum(float(row.get(f"B{i}", 0)) for i in range(1, 8))
+            res_anti["b_stage_gwp"] = round(b_tot, 2)
+            res_anti["c1_gwp"] = round(float(row.get("C1", 0)), 2)
+            res_anti["c2_gwp"] = round(float(row.get("C2", 0)), 2)
+            res_anti["c3_gwp"] = round(float(row.get("C3", 0)), 2)
+            res_anti["c4_gwp"] = round(float(row.get("C4", 0)), 2)
+            c_tot = sum(float(row.get(f"C{i}", 0)) for i in range(1, 5))
+            res_anti["c_stage_gwp"] = round(c_tot, 2)
+            res_anti["d_gwp"] = round(float(row.get("D", 0)), 2)
+            res_anti["module_d_gwp"] = round(float(row.get("D", 0)), 2)
+            res_anti["total_gwp"] = round(
+                float(row.get("A1-A3", 0)) + float(row.get("A4", 0)) + float(row.get("A5", 0)) + b_tot + c_tot + float(row.get("D", 0)), 2
+            )
+
     return res_anti
+
+
+@router.post("/generate-nsf-document")
+def generate_nsf_document_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Generates a full NSF / UL 10010-4 compliant EPD declaration document
+    and HTML report based on template 'epd_chiller_nsf_ul10010-4_v2'.
+    """
+    from app.engines.epd_document_generator import generate_nsf_chiller_epd
+    data = payload or {}
+    methodology = data.get("methodology", "TRACI 2.1")
+
+    # If calc results not passed directly in payload, calculate them
+    results = data.get("results")
+    if not results or not results.get("epd_results"):
+        results = calculate_anti_endpoint(data)
+
+    doc = generate_nsf_chiller_epd(data, results, methodology)
+    return doc

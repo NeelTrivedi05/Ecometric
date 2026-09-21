@@ -2,12 +2,19 @@ import os
 import io
 import csv
 import json
+import zipfile
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
 from ..engines.ecoinvent_lookup import search_ecoinvent_activities, get_activity_lcia
 from ..engines.pdf_extractor import extract_pdf_data
 from ..engines.excel_extractor import extract_excel_data
+from ..engines.messy_data_parser import (
+    parse_flexible_json,
+    parse_messy_csv,
+    synthesize_bom_from_declared_weight,
+    clean_decimal_number
+)
 
 router = APIRouter(prefix="/api/documents", tags=["Document Ingestion & Gap Analysis"])
 
@@ -123,6 +130,60 @@ SAMPLE_BOM_DATA = {
     }
 }
 
+EMPTY_EXTRACTION_TEMPLATE = {
+    "project_info": {
+        "product_name": "Uploaded Equipment Model",
+        "manufacturer_name": "Declared Manufacturer",
+        "functional_unit": "1 unit over declared reference service life",
+        "declared_unit": "1 piece",
+        "pcr_ref": "UL 10010-4 Part B v2.0 & EN 15804+A2",
+        "geography": "Global",
+        "lifespan_years": 25
+    },
+    "bom": [],
+    "manufacturing": {
+        "annual_facility_kwh": 0,
+        "natural_gas_mj": 0,
+        "grid_region": "US_Average",
+        "water_m3": 0
+    },
+    "transport": [],
+    "installation": {
+        "outbound_transport_km": 0,
+        "transport_mode": "Heavy Lorry >32t (EURO 6)",
+        "installation_energy_kwh": 0,
+        "commissioning_refrigerant_loss_kg": 0,
+        "rigging_crane_diesel_liters": 0
+    },
+    "operational": {
+        "refrigerant_type": "",
+        "refrigerant_charge_kg": 0,
+        "annual_leak_rate_percent": 0,
+        "fugitive_operational_leak_rate": 0,
+        "efficiency_kw_per_ton": 0,
+        "capacity_rt": 0,
+        "target_cities": [],
+        "cooling_tower_water_m3_yr": 0,
+        "scheduled_maintenance_kwh_yr": 0,
+        "major_component_replacement_year": 0
+    },
+    "end_of_life": {
+        "recycling_rate_percent": 0,
+        "landfill_rate_percent": 0,
+        "incineration_rate_percent": 0,
+        "decommissioning_energy_kwh": 0,
+        "waste_transport_km": 0
+    },
+    "circularity_d": {
+        "steel_scrap_recovery_rate": 0,
+        "copper_scrap_recovery_rate": 0,
+        "aluminium_recovery_rate": 0,
+        "refrigerant_reclamation_rate": 0,
+        "net_avoided_burden_gwp_kg": 0
+    }
+}
+
+
 def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str]) -> List[Dict[str, Any]]:
     """
     Audits extracted data against UL 10010-4 and ISO 14025 mandatory declarations.
@@ -133,7 +194,17 @@ def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str]) -> List[D
     total_mass = sum(float(item.get("mass", 0)) for item in bom)
     
     # Gap 1: Total BOM Mass check (ISO 14025 Cut-off gate)
-    if total_mass < 50:
+    if extracted.get("_bom_synthesized"):
+        gaps.append({
+            "id": "notice-bom-synthesized",
+            "module": "A1",
+            "category": "Bill of Materials",
+            "severity": "medium",
+            "title": "BOM Baseline Synthesized from Declared Weight",
+            "message": f"Source document declared equipment shipping weight of {extracted.get('_shipping_weight_kg', 40428):,.0f} kg without component-level breakdown. Baseline bill of materials was synthesized using UL 10010-4 / AHRI standard industrial chiller material distribution.",
+            "action": "Upload engineering BOM export (XLSX/CSV) if Tier-1 primary components are available."
+        })
+    elif total_mass < 50:
         gaps.append({
             "id": "gap-bom-mass",
             "module": "A1",
@@ -200,54 +271,69 @@ def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str]) -> List[D
 
 def build_traceability_flow(extracted: Dict[str, Any], file_names: List[str]) -> Dict[str, Any]:
     """
-    Builds an interactive graph showing which file fed which parameter into which lifecycle stage.
+    Builds a dynamic interactive graph showing which file fed which parameter into which lifecycle stage.
     """
-    primary_file = file_names[0] if file_names else "Product_BOM_Manifest.xlsx"
-    utility_file = file_names[1] if len(file_names) > 1 else "Factory_Energy_Audit.pdf"
-    
+    primary_file = file_names[0] if file_names else "Uploaded_Document"
     nodes = [
-        # Source Files
-        { "id": "doc-1", "type": "document", "label": primary_file, "desc": "Assembly Bill of Materials" },
-        { "id": "doc-2", "type": "document", "label": utility_file, "desc": "Energy & Nameplate Specifications" },
-        
-        # Extracted Parameters
-        { "id": "param-steel", "type": "parameter", "label": "Steel & Casting (2,100 kg)", "module": "A1" },
-        { "id": "param-copper", "type": "parameter", "label": "Copper Tubing (650 kg)", "module": "A1" },
-        { "id": "param-motor", "type": "parameter", "label": "Compressor Motor (450 kg)", "module": "A1" },
-        { "id": "param-freight", "type": "parameter", "label": "Inbound Freight (485 km avg)", "module": "A2" },
-        { "id": "param-elec", "type": "parameter", "label": "Factory Electricity (34,000 kWh)", "module": "A3" },
-        { "id": "param-ref", "type": "parameter", "label": "R134a Charge (45 kg, 2% leak)", "module": "B1-B2" },
-        { "id": "param-eol", "type": "parameter", "label": "Steel & Copper Recovery (92.4%)", "module": "C & D" },
-        
-        # Stages
-        { "id": "stage-a1", "type": "stage", "label": "Module A1: Raw Materials" },
-        { "id": "stage-a2", "type": "stage", "label": "Module A2: Transport" },
-        { "id": "stage-a3", "type": "stage", "label": "Module A3: Manufacturing" },
-        { "id": "stage-b", "type": "stage", "label": "Module B: Operational Use" },
-        { "id": "stage-cd", "type": "stage", "label": "Module C & D: Circularity Credits" },
+        { "id": "doc-1", "type": "document", "label": primary_file, "desc": "Ingested Source Document" }
     ]
-    
-    edges = [
-        # Doc 1 -> Params
-        { "from": "doc-1", "to": "param-steel" },
-        { "from": "doc-1", "to": "param-copper" },
-        { "from": "doc-1", "to": "param-motor" },
-        { "from": "doc-1", "to": "param-freight" },
-        # Doc 2 -> Params
-        { "from": "doc-2", "to": "param-elec" },
-        { "from": "doc-2", "to": "param-ref" },
-        { "from": "doc-1", "to": "param-eol" },
-        
-        # Params -> Stages
-        { "from": "param-steel", "to": "stage-a1" },
-        { "from": "param-copper", "to": "stage-a1" },
-        { "from": "param-motor", "to": "stage-a1" },
-        { "from": "param-freight", "to": "stage-a2" },
-        { "from": "param-elec", "to": "stage-a3" },
-        { "from": "param-ref", "to": "stage-b" },
-        { "from": "param-eol", "to": "stage-cd" },
-    ]
-    
+    edges = []
+
+    bom = extracted.get("bom", [])
+    if bom:
+        nodes.append({ "id": "stage-a1", "type": "stage", "label": "Module A1: Raw Materials" })
+        for i, item in enumerate(bom[:4]):
+            p_id = f"param-bom-{i}"
+            nodes.append({
+                "id": p_id,
+                "type": "parameter",
+                "label": f"{item.get('name', 'Component')} ({item.get('mass', 0)} kg)",
+                "module": "A1"
+            })
+            edges.append({ "from": "doc-1", "to": p_id })
+            edges.append({ "from": p_id, "to": "stage-a1" })
+
+    transport = extracted.get("transport", [])
+    if transport:
+        nodes.append({ "id": "stage-a2", "type": "stage", "label": "Module A2: Transport" })
+        for i, leg in enumerate(transport[:2]):
+            p_id = f"param-tr-{i}"
+            nodes.append({
+                "id": p_id,
+                "type": "parameter",
+                "label": f"{leg.get('mode', 'Freight')} ({leg.get('distance', 0)} km)",
+                "module": "A2"
+            })
+            edges.append({ "from": "doc-1", "to": p_id })
+            edges.append({ "from": p_id, "to": "stage-a2" })
+
+    mfg = extracted.get("manufacturing", {})
+    kwh = float(mfg.get("annual_facility_kwh", 0) or mfg.get("electricity_kwh", 0))
+    if kwh > 0:
+        nodes.append({ "id": "stage-a3", "type": "stage", "label": "Module A3: Manufacturing" })
+        nodes.append({
+            "id": "param-elec",
+            "type": "parameter",
+            "label": f"Facility Electricity ({kwh:,.0f} kWh)",
+            "module": "A3"
+        })
+        edges.append({ "from": "doc-1", "to": "param-elec" })
+        edges.append({ "from": "param-elec", "to": "stage-a3" })
+
+    op = extracted.get("operational", {})
+    ref_type = op.get("refrigerant_type")
+    charge = float(op.get("refrigerant_charge_kg", 0))
+    if ref_type or charge > 0:
+        nodes.append({ "id": "stage-b", "type": "stage", "label": "Module B: Operational Use" })
+        nodes.append({
+            "id": "param-ref",
+            "type": "parameter",
+            "label": f"{ref_type or 'Refrigerant'} ({charge:,.1f} kg)",
+            "module": "B1-B2"
+        })
+        edges.append({ "from": "doc-1", "to": "param-ref" })
+        edges.append({ "from": "param-ref", "to": "stage-b" })
+
     return { "nodes": nodes, "edges": edges }
 
 @router.get("/sample-bom")
@@ -260,108 +346,177 @@ def search_factors(query: str = "", category: Optional[str] = None):
     """Searches the curated ecoinvent seed database."""
     return search_ecoinvent_activities(query=query, category=category)
 
+def process_file_content(filename: str, contents: bytes, extracted: Dict[str, Any], processed_files: List[str]):
+    fname = (filename or "").lower()
+    
+    # ZIP extraction (handles multi-file nested packages)
+    if fname.endswith(".zip"):
+        try:
+            with zipfile.ZipFile(io.BytesIO(contents)) as z:
+                for info in z.infolist():
+                    if info.is_dir():
+                        continue
+                    base_n = os.path.basename(info.filename)
+                    # Ignore macOS metadata or hidden files
+                    if base_n.startswith(".") or base_n.startswith("__"):
+                        continue
+                    sub_contents = z.read(info.filename)
+                    process_file_content(base_n, sub_contents, extracted, processed_files)
+        except Exception as e:
+            print(f"[Documents Router] Error extracting ZIP {filename}: {e}")
+        return
+
+    processed_files.append(filename)
+
+    # PDF parsing via local pdfplumber
+    if fname.endswith(".pdf"):
+        try:
+            pdf_res = extract_pdf_data(contents)
+            if pdf_res.get("bom"):
+                extracted["bom"].extend(pdf_res["bom"])
+            if pdf_res.get("project_info"):
+                extracted["project_info"].update(pdf_res["project_info"])
+            if pdf_res.get("operational"):
+                extracted["operational"].update(pdf_res["operational"])
+            if pdf_res.get("manufacturing"):
+                extracted["manufacturing"].update(pdf_res["manufacturing"])
+            if pdf_res.get("_shipping_weight_kg"):
+                extracted["_shipping_weight_kg"] = pdf_res["_shipping_weight_kg"]
+        except Exception as e:
+            print(f"[Documents Router] Error parsing PDF {filename}: {e}")
+
+    # Excel parsing via openpyxl
+    elif fname.endswith((".xlsx", ".xls")):
+        try:
+            excel_res = extract_excel_data(contents)
+            if excel_res.get("bom"):
+                extracted["bom"].extend(excel_res["bom"])
+        except Exception as e:
+            print(f"[Documents Router] Error parsing Excel {filename}: {e}")
+
+    # CSV / TXT parsing (Intelligent routing for utility summaries, freight manifests, test reports, or BOMs)
+    elif fname.endswith((".csv", ".txt", ".tsv")):
+        try:
+            try:
+                decoded = contents.decode("utf-8-sig")
+            except UnicodeDecodeError:
+                decoded = contents.decode("latin-1", errors="replace")
+                
+            detected_type = parse_messy_csv(decoded, filename, extracted)
+            if detected_type == "unknown":
+                # Fallback: standard BOM CSV
+                reader = csv.DictReader(io.StringIO(decoded))
+                custom_bom = []
+                base_idx = len(extracted.get("bom", []))
+                for idx, row in enumerate(reader):
+                    row_clean = {str(k).strip().lower(): v for k, v in row.items() if k}
+                    name = row_clean.get("name") or row_clean.get("component") or row_clean.get("part") or f"Part {base_idx+idx+1}"
+                    raw_mass = row_clean.get("mass") or row_clean.get("weight") or row_clean.get("mass_kg")
+                    mass = clean_decimal_number(raw_mass) or 10.0
+                    mat = row_clean.get("material") or "steel_hot_rolled"
+                    km = clean_decimal_number(row_clean.get("transport_km") or row_clean.get("distance_km") or 0.0) or 0.0
+                    custom_bom.append({
+                        "id": f"bom-upload-{base_idx+idx+1}",
+                        "name": name,
+                        "material": mat,
+                        "mass": mass,
+                        "unit": "kg",
+                        "ecoinvent_id": f"ecoinvent_{mat}_glo",
+                        "supplier": row_clean.get("supplier") or "Declared Supplier",
+                        "transport_km": km
+                    })
+                if custom_bom:
+                    extracted["bom"].extend(custom_bom)
+        except Exception as e:
+            print(f"[Documents Router] Error parsing CSV {filename}: {e}")
+
+    # JSON parsing (handles standard schemas and messy customer keys)
+    elif fname.endswith(".json"):
+        try:
+            parsed = json.loads(contents.decode("utf-8"))
+            if isinstance(parsed, dict):
+                if "bom" in parsed and isinstance(parsed["bom"], list):
+                    extracted["bom"].extend(parsed["bom"])
+                if "transport" in parsed and isinstance(parsed["transport"], list):
+                    extracted["transport"].extend(parsed["transport"])
+                if "manufacturing" in parsed and isinstance(parsed["manufacturing"], dict):
+                    extracted["manufacturing"].update(parsed["manufacturing"])
+                if "installation" in parsed and isinstance(parsed["installation"], dict):
+                    extracted["installation"].update(parsed["installation"])
+                if "operational" in parsed and isinstance(parsed["operational"], dict):
+                    extracted["operational"].update(parsed["operational"])
+                if "end_of_life" in parsed and isinstance(parsed["end_of_life"], dict):
+                    extracted["end_of_life"].update(parsed["end_of_life"])
+                if "circularity_d" in parsed and isinstance(parsed["circularity_d"], dict):
+                    extracted["circularity_d"].update(parsed["circularity_d"])
+                if "project_info" in parsed and isinstance(parsed["project_info"], dict):
+                    extracted["project_info"].update(parsed["project_info"])
+                
+                # Flexible parser for customer key variants
+                parse_flexible_json(parsed, extracted)
+        except Exception as e:
+            print(f"[Documents Router] Error parsing JSON {filename}: {e}")
+
 @router.post("/upload")
 async def upload_and_extract_documents(
     files: List[UploadFile] = File(...),
     custom_notes: Optional[str] = Form(None)
 ):
     """
-    Parses uploaded files (CSV, JSON, Excel, PDF metadata), performs PCR gap analysis,
+    Parses uploaded files (ZIP archives, CSV, JSON, Excel, PDF), performs PCR gap analysis,
     and returns structured LCA input data with the traceability graph.
     """
-    file_names = [f.filename for f in files]
-    extracted = dict(SAMPLE_BOM_DATA)
+    extracted = json.loads(json.dumps(EMPTY_EXTRACTION_TEMPLATE))
+    processed_files: List[str] = []
     
-    # Process uploaded files
+    # Process uploaded files (unpacking any ZIP files recursively)
     for file in files:
         contents = await file.read()
-        filename = (file.filename or "").lower()
-        
-        # PDF parsing via local pdfplumber
-        if filename.endswith(".pdf"):
-            try:
-                pdf_res = extract_pdf_data(contents)
-                if pdf_res.get("bom"):
-                    extracted["bom"] = pdf_res["bom"]
-                if pdf_res.get("project_info", {}).get("product_name") != "Industrial Product Model":
-                    extracted["project_info"].update(pdf_res["project_info"])
-                if pdf_res.get("operational"):
-                    extracted["operational"].update(pdf_res["operational"])
-                if pdf_res.get("manufacturing"):
-                    extracted["manufacturing"].update(pdf_res["manufacturing"])
-            except Exception as e:
-                pass
-
-        # Excel parsing via openpyxl
-        elif filename.endswith((".xlsx", ".xls")):
-            try:
-                excel_res = extract_excel_data(contents)
-                if excel_res.get("bom"):
-                    extracted["bom"] = excel_res["bom"]
-            except Exception:
-                pass
-
-        # CSV parsing for custom BOMs
-        elif filename.endswith(".csv"):
-            try:
-                decoded = contents.decode("utf-8-sig")
-                reader = csv.DictReader(io.StringIO(decoded))
-                custom_bom = []
-                for idx, row in enumerate(reader):
-                    name = row.get("name") or row.get("Component") or row.get("Part") or f"Part {idx+1}"
-                    mass = float(row.get("mass") or row.get("Weight") or row.get("Mass_kg") or 10.0)
-                    mat = row.get("material") or row.get("Material") or "steel_hot_rolled"
-                    km = float(row.get("transport_km") or row.get("Distance_km") or 350.0)
-                    custom_bom.append({
-                        "id": f"bom-upload-{idx}",
-                        "name": name,
-                        "material": mat,
-                        "mass": mass,
-                        "unit": "kg",
-                        "ecoinvent_id": f"ecoinvent_{mat}_glo",
-                        "supplier": row.get("supplier") or "Uploaded Supplier",
-                        "transport_km": km
-                    })
-                if custom_bom:
-                    extracted["bom"] = custom_bom
-            except Exception:
-                pass
-                
-        # JSON parsing
-        elif filename.endswith(".json"):
-            try:
-                parsed = json.loads(contents.decode("utf-8"))
-                if "bom" in parsed:
-                    extracted["bom"] = parsed["bom"]
-                if "transport" in parsed:
-                    extracted["transport"] = parsed["transport"]
-                if "manufacturing" in parsed:
-                    extracted["manufacturing"] = parsed["manufacturing"]
-                if "installation" in parsed:
-                    extracted["installation"] = parsed["installation"]
-                if "operational" in parsed:
-                    extracted["operational"] = parsed["operational"]
-                if "end_of_life" in parsed:
-                    extracted["end_of_life"] = parsed["end_of_life"]
-                if "circularity_d" in parsed:
-                    extracted["circularity_d"] = parsed["circularity_d"]
-                if "project_info" in parsed:
-                    extracted["project_info"] = parsed["project_info"]
-            except Exception:
-                pass
+        process_file_content(file.filename or "upload", contents, extracted, processed_files)
     
-    gaps = analyze_pcr_gaps(extracted, file_names)
-    traceability = build_traceability_flow(extracted, file_names)
+    # Intelligent baseline BOM synthesis if brochure/JSON lacked raw BOM table but declared equipment mass
+    if len(extracted.get("bom", [])) == 0:
+        declared_weight = extracted.get("_shipping_weight_kg", 0.0)
+        if declared_weight <= 0 and extracted.get("operational", {}).get("capacity_rt", 0) > 0:
+            cap = extracted["operational"]["capacity_rt"]
+            declared_weight = round(cap * 20.214, 1)  # ~40,428 kg for 2000 TR water-cooled centrifugal
+        if declared_weight > 0:
+            extracted["bom"] = synthesize_bom_from_declared_weight(declared_weight)
+            extracted["_shipping_weight_kg"] = declared_weight
+            extracted["_bom_synthesized"] = True
+
+    # Deduplicate IDs in extracted BOM if needed
+    seen_ids = set()
+    deduped_bom = []
+    for i, item in enumerate(extracted.get("bom", [])):
+        item_id = item.get("id") or f"bom-item-{i+1}"
+        if item_id in seen_ids:
+            item_id = f"{item_id}-{i+1}"
+        seen_ids.add(item_id)
+        item_copy = dict(item)
+        item_copy["id"] = item_id
+        deduped_bom.append(item_copy)
+    extracted["bom"] = deduped_bom
+
+    gaps = analyze_pcr_gaps(extracted, processed_files)
+    traceability = build_traceability_flow(extracted, processed_files)
     
     return {
         "status": "success",
-        "files_processed": file_names,
+        "files_processed": processed_files,
         "extracted": extracted,
         "gaps": gaps,
         "gap_count": len(gaps),
         "critical_gaps": len([g for g in gaps if g.get("severity") == "critical"]),
         "traceability_flow": traceability
     }
+
+@router.post("/validate")
+def validate_documents_data(payload: Dict[str, Any] = None):
+    """Audits extracted documents data against PCR and GPI criteria."""
+    from ..engines.pcr_validation import validate_epd_compliance
+    return validate_epd_compliance(payload or {})
+
 
 # ---------------------------------------------------------------------------
 # LCIA Excel Extractor & EPD Calculation API Endpoints

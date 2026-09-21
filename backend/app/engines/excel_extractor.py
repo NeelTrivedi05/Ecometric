@@ -79,8 +79,8 @@ def extract_excel_data(excel_bytes: bytes) -> Dict[str, Any]:
         raw_mat = str(row[col_mat_idx]).strip() if col_mat_idx != -1 and col_mat_idx < len(row) and row[col_mat_idx] is not None else raw_name
         ecoinvent_key = _map_material_to_ecoinvent(raw_mat)
         
-        dist_km = _clean_number(row[col_km_idx]) if col_km_idx != -1 and col_km_idx < len(row) else 450.0
-        supplier = str(row[col_supp_idx]).strip() if col_supp_idx != -1 and col_supp_idx < len(row) and row[col_supp_idx] is not None else "Tier-1 Partner"
+        dist_km = _clean_number(row[col_km_idx]) if col_km_idx != -1 and col_km_idx < len(row) else 0.0
+        supplier = str(row[col_supp_idx]).strip() if col_supp_idx != -1 and col_supp_idx < len(row) and row[col_supp_idx] is not None else "Declared Supplier"
         
         extracted_bom.append({
             "id": f"xlsx-{idx+1}",
@@ -90,53 +90,11 @@ def extract_excel_data(excel_bytes: bytes) -> Dict[str, Any]:
             "unit": "kg",
             "ecoinvent_id": f"ecoinvent_{ecoinvent_key}_glo",
             "supplier": supplier,
-            "transport_km": dist_km or 450.0,
+            "transport_km": dist_km if dist_km is not None else 0.0,
             "module": "A1"
         })
 
     return {
-        "bom": extracted_bom,
-        "manufacturing": {
-            "annual_facility_kwh": 34000,
-            "natural_gas_mj": 18500,
-            "grid_region": "US_Average",
-            "water_m3": 45.0
-        },
-        "transport": [
-            { "mode": "Heavy Lorry >32t (EURO 6)", "distance": 485, "dist": 485, "emission_factor": 0.088, "ef": 0.088, "module": "A2" },
-            { "mode": "Heavy Delivery Lorry >32t to Customer Site", "distance": 500, "dist": 500, "emission_factor": 0.088, "ef": 0.088, "module": "A4" }
-        ],
-        "installation": {
-            "outbound_transport_km": 500,
-            "transport_mode": "Heavy Lorry >32t (EURO 6)",
-            "installation_energy_kwh": 350,
-            "commissioning_refrigerant_loss_kg": 0.5,
-            "rigging_crane_diesel_liters": 25.0
-        },
-        "operational": {
-            "refrigerant_type": "R134a",
-            "refrigerant_charge_kg": 45.0,
-            "annual_leak_rate_percent": 2.0,
-            "fugitive_operational_leak_rate": 0.5,
-            "efficiency_kw_per_ton": 0.54,
-            "capacity_rt": 500.0,
-            "target_cities": ["Chicago", "Houston", "Frankfurt", "Dubai"],
-            "cooling_tower_water_m3_yr": 120.0,
-            "scheduled_maintenance_kwh_yr": 180.0,
-            "major_component_replacement_year": 15
-        },
-        "end_of_life": {
-            "recycling_rate_percent": 92.4,
-            "landfill_rate_percent": 4.5,
-            "incineration_rate_percent": 3.1,
-            "decommissioning_energy_kwh": 120,
-            "waste_transport_km": 100
-        },
-        "circularity_d": {
-            "steel_scrap_recovery_rate": 95.0,
-            "copper_scrap_recovery_rate": 96.0,
-            "aluminium_recovery_rate": 90.0,
-            "refrigerant_reclamation_rate": 92.0,
-            "net_avoided_burden_gwp_kg": -3210.0
-        }
+        "bom": extracted_bom
     }
+

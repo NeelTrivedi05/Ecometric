@@ -109,8 +109,9 @@ INDICATOR_SETS = {
 # ============================================================
 
 def normalize_method_key(name: str) -> str:
-    """'EF v3.1' and 'ef_v3_1' both become 'efv31'."""
-    return re.sub(r"[^a-z0-9]", "", str(name).lower())
+    """'EF v3.1', 'ef_v3_1', 'TRACI v2.1' and 'TRACI 2.1' normalize consistently."""
+    cleaned = re.sub(r"v(?=\d)", "", str(name).lower())
+    return re.sub(r"[^a-z0-9]", "", cleaned)
 
 
 def discover_methods(ef_lookup: dict) -> set:
@@ -630,7 +631,13 @@ def calculate_epd(payload: dict, ef_lookup: dict, methodology_override: str = No
     )
 
     stages = payload["stages_data"]
-    rsl_years = payload.get("project_info", {}).get("lifespan_years", 0)
+    rsl_raw = (
+        payload.get("project_info", {}).get("lifespan_years")
+        or payload.get("project_info", {}).get("rsl")
+        or stages.get("B1_B7_Operational", {}).get("rsl_years")
+        or 25
+    )
+    rsl_years = float(rsl_raw) if rsl_raw else 25.0
 
     bom_items = stages.get("A1_BOM", [])
     transport_entries = stages.get("A2_Transport", [])

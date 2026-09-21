@@ -11,6 +11,7 @@ across EVERY impact category in the Excel (not just one).
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -105,9 +106,36 @@ def is_methodology_match(excel_method: str, target_method: str | None) -> bool:
 
 
 def load_headers_and_data(excel_path: str, target_methodology: str | None = None):
-    """Reads the LCIA sheet raw (no header inference) and splits it into
-    the 4 header rows + the data rows, filtering for target_methodology if specified.
-    Tries multiple sheet names to be resilient across ecoinvent file variants."""
+    """Reads the LCIA data, using precomputed .cache.pkl if available for sub-second loads,
+    otherwise reading the LCIA sheet raw and filtering for target_methodology."""
+    cache_candidates = [
+        excel_path + ".cache.pkl",
+        str(Path(excel_path).with_suffix(".xlsx.cache.pkl")),
+        str(Path(excel_path).parent / (Path(excel_path).name + ".cache.pkl"))
+    ]
+    cache_file = next((c for c in cache_candidates if os.path.exists(c)), None)
+    if cache_file:
+        try:
+            cached_df = pd.read_pickle(cache_file)
+            metadata_names = [col[3] for col in cached_df.columns if col[0] == "META"]
+            indicator_labels = {}
+            for col_idx, col in enumerate(cached_df.columns):
+                if col[0] == "META":
+                    continue
+                method, category, indicator, unit = col
+                if pd.isna(indicator):
+                    continue
+                if target_methodology and not is_methodology_match(str(method), target_methodology):
+                    continue
+                label = f"{method} | {category} | {indicator} [{unit}]"
+                indicator_labels[col_idx] = label
+
+            data = cached_df.copy()
+            data.columns = list(range(cached_df.shape[1]))
+            return metadata_names, indicator_labels, data
+        except Exception as e:
+            print(f"[extract_ef_values] Cache read failed ({e}), falling back to Excel parsing")
+
     raw = None
     for sheet in [SHEET_NAME, "CFs", "Indicators", 1]:
         try:
