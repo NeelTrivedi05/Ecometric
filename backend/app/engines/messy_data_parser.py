@@ -179,18 +179,51 @@ def parse_flexible_json(data: Dict[str, Any], extracted: Dict[str, Any]) -> bool
             op["capacity_rt"] = round(val, 1)
             changed = True
 
-    # 3. Product Weight (Operating or Shipping)
-    weight_data = data.get("weight")
-    if isinstance(weight_data, dict):
-        ship_w = weight_data.get("shipping") or weight_data.get("shipping_weight")
-        if ship_w:
-            w_kg = clean_decimal_number(ship_w) or 0.0
-            if 't' in str(ship_w).lower() and 'ton' not in str(ship_w).lower():
-                w_kg *= 1000.0
-            elif 'lb' in str(ship_w).lower():
-                w_kg *= 0.453592
-            extracted["_shipping_weight_kg"] = round(w_kg, 1)
-            changed = True
+    # 4. End of Life (C1 - C4)
+    eol = extracted.setdefault("end_of_life", {})
+    eol_data = data.get("end_of_life_modules_c") or data.get("end_of_life") or data.get("eol")
+    if isinstance(eol_data, dict):
+        if "c1_deconstruction" in eol_data and isinstance(eol_data["c1_deconstruction"], dict):
+            c1 = eol_data["c1_deconstruction"]
+            if "decommissioning_energy_kwh" in c1:
+                eol["decommissioning_energy_kwh"] = clean_decimal_number(c1["decommissioning_energy_kwh"])
+        elif "decommissioning_energy_kwh" in eol_data:
+            eol["decommissioning_energy_kwh"] = clean_decimal_number(eol_data["decommissioning_energy_kwh"])
+
+        if "c2_waste_transport" in eol_data and isinstance(eol_data["c2_waste_transport"], dict):
+            c2 = eol_data["c2_waste_transport"]
+            if "waste_transport_km" in c2:
+                eol["waste_transport_km"] = clean_decimal_number(c2["waste_transport_km"])
+        elif "waste_transport_km" in eol_data:
+            eol["waste_transport_km"] = clean_decimal_number(eol_data["waste_transport_km"])
+
+        if "c3_waste_processing_sorting" in eol_data and isinstance(eol_data["c3_waste_processing_sorting"], dict):
+            c3 = eol_data["c3_waste_processing_sorting"]
+            if "recycling_rate_percent" in c3:
+                eol["recycling_rate_percent"] = clean_decimal_number(c3["recycling_rate_percent"])
+            if "incineration_rate_percent" in c3:
+                eol["incineration_rate_percent"] = clean_decimal_number(c3["incineration_rate_percent"])
+        elif "recycling_rate_percent" in eol_data:
+            eol["recycling_rate_percent"] = clean_decimal_number(eol_data["recycling_rate_percent"])
+
+        if "c4_final_disposal" in eol_data and isinstance(eol_data["c4_final_disposal"], dict):
+            c4 = eol_data["c4_final_disposal"]
+            if "landfill_rate_percent" in c4:
+                eol["landfill_rate_percent"] = clean_decimal_number(c4["landfill_rate_percent"])
+        elif "landfill_rate_percent" in eol_data:
+            eol["landfill_rate_percent"] = clean_decimal_number(eol_data["landfill_rate_percent"])
+        changed = True
+
+    # 5. Circularity & Avoided Burdens (Module D)
+    circ = extracted.setdefault("circularity_d", {})
+    circ_data = data.get("circularity_module_d") or data.get("circularity_d") or data.get("circularity") or data.get("module_d")
+    if isinstance(circ_data, dict):
+        burdens = circ_data.get("net_avoided_burdens") or circ_data
+        if isinstance(burdens, dict):
+            for k in ["steel_scrap_recovery_rate", "copper_scrap_recovery_rate", "aluminium_recovery_rate", "refrigerant_reclamation_rate", "net_avoided_burden_gwp_kg"]:
+                if k in burdens:
+                    circ[k] = clean_decimal_number(burdens[k])
+        changed = True
 
     return changed
 
@@ -210,7 +243,9 @@ def parse_messy_csv(text_content: str, filename: str, extracted: Dict[str, Any])
     header_keywords = [
         'month', 'date', 'period', 'elec', 'electricity', 'power', 'kwh', 'mwh',
         'gas', 'scm', 'water', 'kl', 'units built', 'supplier', 'dist', 'distance',
-        'load %', 'load', 'cop', 'kw/tr', 'component', 'part', 'material'
+        'load %', 'load', 'cop', 'kw/tr', 'component', 'part', 'material',
+        'stage', 'lifecycle', 'parameter', 'value', 'unit', 'refrigerant',
+        'charge', 'leak', 'recovery', 'decommissioning', 'crane', 'rigging'
     ]
     
     header_line_idx = 0
@@ -299,20 +334,39 @@ def parse_messy_csv(text_content: str, filename: str, extracted: Dict[str, Any])
         transport_legs = []
         for idx, row in enumerate(reader):
             row_vals = {k.strip().lower(): str(v).strip() for k, v in row.items() if k}
-            supplier = row_vals.get('supplier', f'Supplier {idx+1}')
-            dist_raw = row_vals.get('dist') or row_vals.get('distance') or ""
-            mode_raw = row_vals.get('mode') or ""
-            comments = row_vals.get('comments') or row_vals.get('from') or ""
-            
-            km = parse_distance_km(dist_raw or comments)
+            dist_raw = ""
+            mode_raw = ""
+            mass_raw = ""
+            route_raw = ""
+            supplier = row_vals.get('supplier') or ""
+
+            for k, v in row_vals.items():
+                k_l = k.lower()
+                if any(w in k_l for w in ['dist', 'km', 'mile']):
+                    dist_raw = v
+                elif any(w in k_l for w in ['mode', 'vehicle', 'transit']):
+                    mode_raw = v
+                elif any(w in k_l for w in ['mass', 'weight', 'kg', 'ton']):
+                    mass_raw = v
+                elif any(w in k_l for w in ['from', 'origin', 'route', 'destination', 'comment']):
+                    route_raw = v
+                elif 'supplier' in k_l and not supplier:
+                    supplier = v
+
+            if not supplier:
+                supplier = f'Supplier {idx+1}'
+
+            km = parse_distance_km(dist_raw or route_raw)
             if km > 0:
-                mode = detect_transport_mode(mode_raw, comments)
+                mode = detect_transport_mode(mode_raw, route_raw)
+                mass_val = clean_decimal_number(mass_raw) or 0.0
                 transport_legs.append({
                     "id": f"a2-leg-{idx+1}",
-                    "name": f"{supplier} ({comments or 'Inbound'})",
+                    "name": f"{supplier} ({route_raw or 'Inbound'})",
                     "mode": mode,
                     "distance": km,
                     "dist": km,
+                    "mass_kg": mass_val,
                     "emission_factor": 0.088 if "lorry" in mode.lower() else (0.0145 if "ship" in mode.lower() else 0.035),
                     "ef": 0.088 if "lorry" in mode.lower() else (0.0145 if "ship" in mode.lower() else 0.035),
                     "module": "A2"
@@ -339,7 +393,135 @@ def parse_messy_csv(text_content: str, filename: str, extracted: Dict[str, Any])
         op["iplv_kw_per_ton"] = round(iplv, 3)
         return "test_report"
 
-    # 4. Standard BOM Check
+    # Check if this is a key-value parameter sheet (e.g. Parameter Name / Value columns)
+    is_kv_sheet = any(k in header_str for k in ['parameter', 'metric', 'indicator', 'lifecycle stage', 'param']) and \
+                  any(k in header_str for k in ['value', 'reading', 'val', 'quantity', 'amount'])
+
+    # 4. Classification: Job Site Installation & Rigging (A4 / A5)
+    if any(k in header_str for k in ['crane', 'rigging', 'outbound', 'commissioning', 'diesel', 'pad', 'staging', 'unloading']) or \
+       (is_kv_sheet and any(k in text_content.lower() for k in ['crane diesel', 'rigging diesel', 'commissioning electricity', 'refrigerant test loss'])):
+        inst = extracted.setdefault("installation", {})
+        for row in reader:
+            row_vals = {k.strip().lower(): str(v).strip() for k, v in row.items() if k}
+            p_name = ""
+            p_val = ""
+            for k, v in row_vals.items():
+                if any(w in k for w in ['param', 'metric', 'indicator', 'name', 'item']) and 'stage' not in k:
+                    p_name = v.lower()
+                elif any(w in k for w in ['val', 'reading', 'quantity', 'amount']):
+                    p_val = v
+
+            eval_pairs = []
+            if p_name:
+                eval_pairs.append((p_name, p_val, clean_decimal_number(p_val)))
+            for k, v in row_vals.items():
+                eval_pairs.append((k.lower(), v, clean_decimal_number(v)))
+
+            for k_lower, v_str, val in eval_pairs:
+                if not val or val <= 0:
+                    continue
+                if any(w in k_lower for w in ['crane', 'diesel', 'fuel', 'hydraulic']):
+                    inst["rigging_crane_diesel_liters"] = round(val, 1)
+                elif any(w in k_lower for w in ['outbound', 'transit', 'delivery distance', 'distance']):
+                    inst["outbound_transport_km"] = round(val, 1)
+                elif any(w in k_lower for w in ['energy', 'kwh', 'power', 'commissioning elec']):
+                    inst["installation_energy_kwh"] = round(val, 1)
+                elif any(w in k_lower for w in ['loss', 'refrigerant loss', 'test loss', 'test charge']):
+                    inst["commissioning_refrigerant_loss_kg"] = round(val, 2)
+        return "installation"
+
+    # 5. Classification: Operational Life & Maintenance Schedule (B1–B7)
+    if any(k in header_str for k in ['refrigerant', 'charge', 'leak', 'cooling tower', 'lubricant', 'oil change', 'overhaul', 'replacement', 'operational']) or \
+       (is_kv_sheet and any(k in text_content.lower() for k in ['refrigerant', 'leak rate', 'cooling tower', 'kw / tr', 'kw/tr', 'part load', 'poe lubricant'])):
+        op = extracted.setdefault("operational", {})
+        for row in reader:
+            row_vals = {k.strip().lower(): str(v).strip() for k, v in row.items() if k}
+            p_name = ""
+            p_val = ""
+            for k, v in row_vals.items():
+                if any(w in k for w in ['param', 'metric', 'indicator', 'name', 'item']) and 'stage' not in k:
+                    p_name = v.lower()
+                elif any(w in k for w in ['val', 'reading', 'quantity', 'amount']):
+                    p_val = v
+
+            val = clean_decimal_number(p_val)
+            eval_pairs = []
+            if p_name:
+                eval_pairs.append((p_name, p_val, val))
+            for k, v in row_vals.items():
+                eval_pairs.append((k.lower(), v, clean_decimal_number(v)))
+
+            for k_lower, v_str, num_val in eval_pairs:
+                if any(w in k_lower for w in ['refrigerant type', 'gas type']):
+                    m = re.search(r'\b(R-?1233zd(?:\(E\))?|R-?134a|R-?410a|R-?32|R-?1234ze|R-?513a|R-?290|R-?717)\b', v_str, re.I)
+                    if m:
+                        op["refrigerant_type"] = m.group(1).upper().replace('-', '')
+                elif any(w in k_lower for w in ['charge', 'refrigerant mass']) and num_val:
+                    op["refrigerant_charge_kg"] = round(num_val, 2)
+                elif any(w in k_lower for w in ['leak rate', 'leakage', 'annual leak']) and num_val is not None:
+                    op["annual_leak_rate_percent"] = round(num_val, 2)
+                elif any(w in k_lower for w in ['water', 'cooling tower', 'evaporation']) and num_val:
+                    op["cooling_tower_water_m3_yr"] = round(num_val, 1)
+                elif any(w in k_lower for w in ['oil', 'lubricant', 'poe']) and num_val:
+                    b2 = extracted.setdefault("maintenance_b2", {})
+                    b2["consumable_mass_kg"] = round(num_val, 2)
+                    b2["provider_id"] = "ecoinvent_lubricating_oil_glo"
+                elif any(w in k_lower for w in ['maintenance energy', 'maintenance electricity', 'maintenance kwh']) and num_val:
+                    op["scheduled_maintenance_kwh_yr"] = round(num_val, 1)
+                elif any(w in k_lower for w in ['overhaul', 'replacement year', 'major replacement']) and num_val:
+                    op["major_component_replacement_year"] = int(num_val)
+                elif any(w in k_lower for w in ['rated capacity', 'chilling capacity']) and num_val:
+                    op["capacity_rt"] = round(num_val, 1)
+                elif any(w in k_lower for w in ['full load', '100% full load', 'fl efficiency']) and num_val:
+                    op["efficiency_kw_per_ton"] = round(num_val, 3)
+                elif any(w in k_lower for w in ['iplv', 'part load value', 'part load rating']) and num_val:
+                    op["iplv_kw_per_ton"] = round(num_val, 3)
+        return "operational"
+
+    # 6. Classification: End of Life & Circularity Recovery (C1–C4, Module D)
+    if any(k in header_str for k in ['decommissioning', 'scrap', 'waste transport', 'recovery rate', 'landfill rate', 'recycling rate', 'circularity']) or \
+       (is_kv_sheet and any(k in text_content.lower() for k in ['recycling rate', 'landfill rate', 'decommissioning', 'steel scrap'])):
+        eol = extracted.setdefault("end_of_life", {})
+        circ = extracted.setdefault("circularity_d", {})
+        for row in reader:
+            row_vals = {k.strip().lower(): str(v).strip() for k, v in row.items() if k}
+            p_name = ""
+            p_val = ""
+            for k, v in row_vals.items():
+                if any(w in k for w in ['param', 'metric', 'indicator', 'name', 'item', 'stream']):
+                    p_name = v.lower()
+                elif any(w in k for w in ['val', 'reading', 'quantity', 'amount', 'rate']):
+                    p_val = v
+
+            val = clean_decimal_number(p_val)
+            eval_pairs = []
+            if p_name:
+                eval_pairs.append((p_name, p_val, val))
+            for k, v in row_vals.items():
+                eval_pairs.append((k.lower(), v, clean_decimal_number(v)))
+
+            for k_lower, v_str, num_val in eval_pairs:
+                if num_val is None:
+                    continue
+                if 'recycl' in k_lower:
+                    eol["recycling_rate_percent"] = round(num_val, 1)
+                elif 'landfill' in k_lower:
+                    eol["landfill_rate_percent"] = round(num_val, 1)
+                elif 'incinerat' in k_lower:
+                    eol["incineration_rate_percent"] = round(num_val, 1)
+                elif any(w in k_lower for w in ['decommission', 'dismantl']):
+                    eol["decommissioning_energy_kwh"] = round(num_val, 1)
+                elif any(w in k_lower for w in ['waste trans', 'shredder dist']):
+                    eol["waste_transport_km"] = round(num_val, 1)
+                elif 'steel' in k_lower and 'recov' in k_lower:
+                    circ["steel_scrap_recovery_rate"] = round(num_val, 1)
+                elif 'copper' in k_lower and 'recov' in k_lower:
+                    circ["copper_scrap_recovery_rate"] = round(num_val, 1)
+                elif 'alumin' in k_lower and 'recov' in k_lower:
+                    circ["aluminium_recovery_rate"] = round(num_val, 1)
+        return "end_of_life"
+
+    # 7. Standard BOM Check
     if any(k in header_str for k in ['component', 'part', 'material', 'mass', 'weight']):
         custom_bom = []
         base_idx = len(extracted.get("bom", []))

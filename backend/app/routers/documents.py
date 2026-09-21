@@ -19,34 +19,92 @@ from ..engines.messy_data_parser import (
 router = APIRouter(prefix="/api/documents", tags=["Document Ingestion & Gap Analysis"])
 
 SAMPLES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "samples"))
+TEST_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "test"))
 
 @router.get("/samples")
 def list_sample_files():
-    """List available test sample files that can be used for verification."""
+    """List available test sample files covering all cradle-to-grave lifecycle stages."""
     samples = [
+        {
+            "filename": "06_multimodal_inbound_logistics_manifest_A2.csv",
+            "type": "CSV",
+            "module": "A2",
+            "title": "Multi-Modal Inbound Logistics Manifest (Module A2)",
+            "description": "Multi-modal supply chain legs: Sea shipping (6,200 km), Freight rail (900 km), and Heavy lorry (450 km) linked to suppliers.",
+            "url": "/api/documents/samples/06_multimodal_inbound_logistics_manifest_A2.csv",
+            "stages": ["A2"]
+        },
+        {
+            "filename": "07_jobsite_installation_and_rigging_A4_A5.xlsx",
+            "type": "Excel (XLSX)",
+            "module": "A4/A5",
+            "title": "Job Site Installation, Crane Rigging & Commissioning (A4/A5)",
+            "description": "Outbound transit (750 km), 50-ton hydraulic mobile crane diesel (37.8 L), commissioning electricity (350 kWh), and test loss (0.5 kg).",
+            "url": "/api/documents/samples/07_jobsite_installation_and_rigging_A4_A5.xlsx",
+            "stages": ["A4", "A5"]
+        },
+        {
+            "filename": "08_operational_use_and_maintenance_B1_to_B7.csv",
+            "type": "CSV",
+            "module": "B1-B7",
+            "title": "Operational Life & Maintenance Schedule (Modules B1–B7)",
+            "description": "R134a/R1233zd refrigerant fugitive leakage (B1), synthetic POE lubricant lube cycles (B2), AHRI 550/590 part-load kW/ton (B6), and cooling tower water (B7).",
+            "url": "/api/documents/samples/08_operational_use_and_maintenance_B1_to_B7.csv",
+            "stages": ["B1", "B2", "B3", "B4", "B6", "B7"]
+        },
+        {
+            "filename": "09_end_of_life_and_circularity_C1_to_D.json",
+            "type": "JSON",
+            "module": "C1-C4 & D",
+            "title": "End of Life Deconstruction & Circularity Recovery (C & D)",
+            "description": "Deconstruction electricity (120 kWh), scrap transport (100 km), 92.4% metal recycling sorting, and Module D virgin steel/copper displacement credits.",
+            "url": "/api/documents/samples/09_end_of_life_and_circularity_C1_to_D.json",
+            "stages": ["C1", "C2", "C3", "C4", "D"]
+        },
+        {
+            "filename": "11_water_cooled_centrifugal_multitab_master.xlsx",
+            "type": "Excel (XLSX)",
+            "module": "Full (A1-D)",
+            "title": "Master Multi-Tab Chiller Engineering Workbook (Cradle-to-Grave)",
+            "description": "Complete multi-tab workbook with BOM (A1), Freight (A2), Utilities (A3), Rigging (A4/A5), Operations (B), and Recycling (C/D) sheets.",
+            "url": "/api/documents/samples/11_water_cooled_centrifugal_multitab_master.xlsx",
+            "stages": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B6", "B7", "C1", "C2", "C3", "C4", "D"]
+        },
+        {
+            "filename": "10_complete_enterprise_chiller_package.zip",
+            "type": "ZIP Archive",
+            "module": "Full Suite",
+            "title": "Complete Enterprise Chiller Documentation Package (.zip)",
+            "description": "Multi-file engineering archive bundling BOM, logistics manifest, utility summary, AHRI test report, and rigging cut sheets.",
+            "url": "/api/documents/samples/10_complete_enterprise_chiller_package.zip",
+            "stages": ["A1", "A2", "A3", "A4", "A5", "B1-B7", "C1-C4", "D"]
+        },
         {
             "filename": "sample_chiller_spec.pdf",
             "type": "PDF",
-            "title": "Technical Specification PDF (HVAC Chiller)",
-            "description": "Contains technical specs, refrigerant R134a 45kg, annual power 34,000 kWh, and 6-part BOM table.",
+            "module": "A1/B1",
+            "title": "Technical Specification PDF (Carrier AquaEdge Cutsheet)",
+            "description": "Vector PDF with technical specs, nameplate data, R134a refrigerant charge, and 8-component parts list.",
             "url": "/api/documents/samples/sample_chiller_spec.pdf",
-            "expected_items": 6
+            "stages": ["A1", "A3", "B1"]
         },
         {
             "filename": "sample_chiller_bom.xlsx",
             "type": "Excel (XLSX)",
-            "title": "Engineering Bill of Materials (.xlsx)",
-            "description": "Multi-column engineering BOM with Component, Material, Mass (kg), Supplier, and Freight Distance.",
+            "module": "A1",
+            "title": "Standard Bill of Materials Spreadsheet (.xlsx)",
+            "description": "Tabular BOM with component description, material classification, mass (kg), and Tier-1 suppliers.",
             "url": "/api/documents/samples/sample_chiller_bom.xlsx",
-            "expected_items": 6
+            "stages": ["A1"]
         },
         {
             "filename": "sample_chiller_bom.csv",
             "type": "CSV",
-            "title": "Standard BOM (.csv)",
-            "description": "Comma-separated BOM with part names, masses, and material classes ready for instant table ingestion.",
+            "module": "A1",
+            "title": "Standard Bill of Materials (.csv)",
+            "description": "Comma-separated parts list ready for instant table parsing and ecoinvent activity matching.",
             "url": "/api/documents/samples/sample_chiller_bom.csv",
-            "expected_items": 6
+            "stages": ["A1"]
         }
     ]
     return {"samples": samples}
@@ -54,17 +112,52 @@ def list_sample_files():
 @router.get("/samples/{filename}")
 def get_sample_file(filename: str):
     safe_filename = os.path.basename(filename)
+    # Check in SAMPLES_DIR first, then TEST_DIR
     file_path = os.path.join(SAMPLES_DIR, safe_filename)
+    if not os.path.isfile(file_path):
+        file_path = os.path.join(TEST_DIR, safe_filename)
     if not os.path.isfile(file_path):
         raise HTTPException(status_code=404, detail="Sample file not found")
     
     media_types = {
         ".pdf": "application/pdf",
         ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ".csv": "text/csv"
+        ".xls": "application/vnd.ms-excel",
+        ".csv": "text/csv",
+        ".json": "application/json",
+        ".zip": "application/zip",
+        ".txt": "text/plain"
     }
     _, ext = os.path.splitext(safe_filename)
     return FileResponse(file_path, media_type=media_types.get(ext.lower(), "application/octet-stream"), filename=safe_filename)
+
+@router.post("/load-sample/{filename}")
+def load_sample_file(filename: str):
+    """Parses a sample test file and returns live extracted data and PCR gap analysis."""
+    safe_filename = os.path.basename(filename)
+    file_path = os.path.join(SAMPLES_DIR, safe_filename)
+    if not os.path.isfile(file_path):
+        file_path = os.path.join(TEST_DIR, safe_filename)
+    if not os.path.isfile(file_path):
+        raise HTTPException(status_code=404, detail="Sample file not found")
+    
+    with open(file_path, "rb") as f:
+        contents = f.read()
+
+    extracted = json.loads(json.dumps(EMPTY_EXTRACTION_TEMPLATE))
+    processed_files = []
+    process_file_content(safe_filename, contents, extracted, processed_files)
+
+    gaps = analyze_pcr_gaps(extracted, processed_files)
+    flow = build_traceability_flow(extracted, processed_files)
+
+    return {
+        "extracted": extracted,
+        "gaps": gaps,
+        "traceability_flow": flow,
+        "processed_files": processed_files,
+        "filename": safe_filename
+    }
 
 
 SAMPLE_BOM_DATA = {
@@ -391,6 +484,22 @@ def process_file_content(filename: str, contents: bytes, extracted: Dict[str, An
             excel_res = extract_excel_data(contents)
             if excel_res.get("bom"):
                 extracted["bom"].extend(excel_res["bom"])
+            if excel_res.get("transport"):
+                extracted.setdefault("transport", []).extend(excel_res["transport"])
+            if excel_res.get("manufacturing"):
+                extracted.setdefault("manufacturing", {}).update(excel_res["manufacturing"])
+            if excel_res.get("installation"):
+                extracted.setdefault("installation", {}).update(excel_res["installation"])
+            if excel_res.get("operational"):
+                extracted.setdefault("operational", {}).update(excel_res["operational"])
+            if excel_res.get("end_of_life"):
+                extracted.setdefault("end_of_life", {}).update(excel_res["end_of_life"])
+            if excel_res.get("circularity_d"):
+                extracted.setdefault("circularity_d", {}).update(excel_res["circularity_d"])
+            if excel_res.get("project_info"):
+                extracted.setdefault("project_info", {}).update(excel_res["project_info"])
+            if excel_res.get("maintenance_b2"):
+                extracted.setdefault("maintenance_b2", {}).update(excel_res["maintenance_b2"])
         except Exception as e:
             print(f"[Documents Router] Error parsing Excel {filename}: {e}")
 

@@ -1,0 +1,85 @@
+{
+  "metadata": {
+    "title": "HVAC Chiller End-of-Life & Circularity Inventory",
+    "standard": "ISO 21930:2017 / EN 15804+A2 Module C & Module D",
+    "equipment": "500 RT Centrifugal Water-Cooled Chiller",
+    "total_deconstruction_mass_kg": 4380.0
+  },
+  "end_of_life_modules_c": {
+    "c1_deconstruction": {
+      "decommissioning_energy_kwh": 120.0,
+      "refrigerant_recovery_pump_power_kwh": 35.0,
+      "onsite_torch_cutting_energy_kwh": 85.0,
+      "ecoinvent_provider": "ecoinvent_elec_mv_us",
+      "description": "Safe recovery of fluorinated refrigerant into DOT cylinders and structural steel flame-cutting"
+    },
+    "c2_waste_transport": {
+      "waste_transport_km": 100.0,
+      "vehicle_type": "Heavy Lorry >32t (EURO 6)",
+      "ecoinvent_provider": "ecoinvent_transport_lorry_32t_rer",
+      "destination": "Certified Regional Metals Scrap Shredder & Recycling Facility"
+    },
+    "c3_waste_processing_sorting": {
+      "recycling_rate_percent": 92.4,
+      "incineration_rate_percent": 3.1,
+      "materials_sorted": [
+        {
+          "material": "Structural Steel & Cast Iron",
+          "mass_kg": 2790.0,
+          "route": "Electric Arc Furnace (EAF) Scrap Re-melting"
+        },
+        {
+          "material": "Copper Tubes & Electrical Windings",
+          "mass_kg": 720.0,
+          "route": "Electrolytic Copper Smelting Refining"
+        },
+        {
+          "material": "Aluminium Microchannels & Impellers",
+          "mass_kg": 95.0,
+          "route": "Secondary Aluminium Ingot Re-smelting"
+        },
+        {
+          "material": "R134a Recovered Refrigerant",
+          "mass_kg": 41.4,
+          "route": "AHRI 700 Reclamation & Certified Distillation"
+        }
+      ]
+    },
+    "c4_final_disposal": {
+      "landfill_rate_percent": 4.5,
+      "landfilled_mass_kg": 197.1,
+      "materials": [
+        "Degraded elastomeric PUF insulation foam",
+        "Cured synthetic oil sludge",
+        "Miscellaneous gasket seals"
+      ],
+      "ecoinvent_provider": "ecoinvent_waste_plastic_mixture_landfill"
+    }
+  },
+  "circularity_module_d": {
+    "net_avoided_burdens": {
+      "steel_scrap_recovery_rate": 95.0,
+      "copper_scrap_recovery_rate": 96.0,
+      "aluminium_recovery_rate": 90.0,
+      "refrigerant_reclamation_rate": 92.0,
+      "net_avoided_burden_gwp_kg": -3210.0,
+      "displacement_credits": [
+        {
+          "material": "Secondary Steel Scrap",
+          "displaces": "Blast Furnace Primary Hot-Rolled Steel",
+          "credit_gwp_kg": -1850.0
+        },
+        {
+          "material": "Secondary Copper",
+          "displaces": "Primary Electrolytic Copper Cathode",
+          "credit_gwp_kg": -980.0
+        },
+        {
+          "material": "Secondary Aluminium",
+          "displaces": "Primary Smelted Ingot",
+          "credit_gwp_kg": -380.0
+        }
+      ]
+    }
+  }
+}

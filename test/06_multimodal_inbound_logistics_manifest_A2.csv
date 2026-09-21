@@ -1,0 +1,10 @@
+Supplier,Origin,Destination,Mode,Distance (km),Component Linked,Allocated Mass (kg)
+Zurich Foundry Ltd,"Zurich, Switzerland","Genoa Port, Italy",Freight Train (Electric/Diesel),450,Compressor Volute & Impeller,2250
+Mediterranean Shipping Co,"Genoa, Italy","Port of New York, USA",Transoceanic Container Ship,6200,Compressor Volute & Impeller,2250
+Great Lakes Intermodal,"Port of NY, USA","Assembly Plant, Chicago IL",Freight Train (Electric/Diesel),900,Compressor Volute & Impeller,2250
+Wieland Copper Mill,"Ulm, Germany","Rotterdam Port, Netherlands",Heavy Lorry >32t (EURO 6),620,Evaporator & Condenser Tubes,720
+Atlantic Carrier Line,"Rotterdam, Netherlands","Montreal Port, Canada",Transoceanic Container Ship,5850,Evaporator & Condenser Tubes,720
+Advantech Electronics,"Kaohsiung, Taiwan","Long Beach Port, USA",Transoceanic Container Ship,10800,Solid-State Variable Frequency Drive,110
+US Pacific Trucking,"Long Beach, CA","Assembly Plant, Chicago IL",Heavy Lorry >32t (EURO 6),3250,Solid-State Variable Frequency Drive,110
+ArcelorMittal Midwest,"Burns Harbor, IN","Assembly Plant, Chicago IL",Heavy Lorry >32t (EURO 6),85,Base Skid & Structural Frame,540
+Armacell Polymer Systems,"Mebane, NC","Assembly Plant, Chicago IL",Heavy Lorry >32t (EURO 6),1120,Thermal Insulation Blankets,140

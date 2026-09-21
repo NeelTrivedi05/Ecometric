@@ -1,0 +1,16 @@
+Lifecycle Stage,Parameter Name,Value,Unit,PCR Reference / Engineering Description
+B1 (Fugitive Emissions),Refrigerant Type,R134a,Type,"1,1,1,2-Tetrafluoroethane (GWP100 = 1430 kg CO2e/kg)"
+B1 (Fugitive Emissions),Refrigerant Charge,45.0,kg,Initial nameplate refrigerant charge sealed in factory
+B1 (Fugitive Emissions),Annual Leak Rate,2.0,% / year,UL 10010-4 Table 8 benchmark fugitive rate (0.90 kg/yr)
+B2 (Maintenance),Synthetic POE Lubricant,25.0,kg / cycle,Polyolester compressor oil replacement every 2 years
+B2 (Maintenance),Maintenance Cycles per RSL,12,Cycles,12 oil changes over 25-year Reference Service Life
+B3 (Repair),Condenser Brush Re-Tubing,45.0,kg Copper,Tube cleaning & sacrificial zinc anode replacement every 5 yrs
+B4 (Replacement),Major Overhaul Year,15,Year,Motor bearing rebuild and expansion valve replacement at yr 15
+B6 (Operational Energy),Rated Capacity,500.0,RT,"Water-cooled nominal chilling capacity (1,758 kW thermal)"
+B6 (Operational Energy),100% Full Load Efficiency,0.580,kW / TR,Full load rated power consumption at standard conditions
+B6 (Operational Energy),75% Part Load Efficiency,0.440,kW / TR,AHRI 550/590 Standard Part-Load rating (Weight: 42%)
+B6 (Operational Energy),50% Part Load Efficiency,0.380,kW / TR,AHRI 550/590 Standard Part-Load rating (Weight: 45%)
+B6 (Operational Energy),25% Part Load Efficiency,0.490,kW / TR,AHRI 550/590 Standard Part-Load rating (Weight: 12%)
+B6 (Operational Energy),Integrated Part-Load Value (IPLV),0.435,kW / TR,Weighted AHRI 550/590 seasonal efficiency formula
+B6 (Operational Energy),Annual Operating Hours,8760,Hours / year,Continuous commercial data-center / hospital duty
+B7 (Operational Water),Cooling Tower Water Evaporation,120.0,m3 / year,Make-up water consumed for heat rejection drift and blowdown

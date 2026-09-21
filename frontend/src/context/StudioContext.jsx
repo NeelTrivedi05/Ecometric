@@ -322,6 +322,53 @@ export function StudioProvider({ children }) {
     setIsLoading(false);
   }, [showNotif]);
 
+  // Load specific sample file directly from backend sample library
+  const loadSpecificSample = useCallback(async (filename, title) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/documents/load-sample/${encodeURIComponent(filename)}`, {
+        method: 'POST'
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const ext = data.extracted || {};
+        setExtractedData(prev => ({
+          ...prev,
+          ...ext,
+          project_info: { ...prev.project_info, ...(ext.project_info || {}) },
+          manufacturing: { ...prev.manufacturing, ...(ext.manufacturing || {}) },
+          installation: { ...prev.installation, ...(ext.installation || {}) },
+          operational: { ...prev.operational, ...(ext.operational || {}) },
+          end_of_life: { ...prev.end_of_life, ...(ext.end_of_life || {}) },
+          circularity_d: { ...prev.circularity_d, ...(ext.circularity_d || {}) },
+          maintenance_b2: { ...prev.maintenance_b2, ...(ext.maintenance_b2 || {}) },
+          bom: ext.bom && ext.bom.length > 0 ? ext.bom : prev.bom,
+          transport: ext.transport && ext.transport.length > 0 ? ext.transport : prev.transport,
+        }));
+
+        setUploadedFiles([
+          { id: `sample-${Date.now()}`, name: filename, size: 85000, type: filename.split('.').pop(), status: 'done' }
+        ]);
+
+        if (data.pcr_gaps && data.pcr_gaps.gaps) {
+          setGaps(data.pcr_gaps.gaps);
+        }
+
+        showNotif(`Loaded: ${title || filename}`, 'Dataset Loaded');
+        return true;
+      } else {
+        showNotif(`Failed to load ${filename}`, 'Error');
+        return false;
+      }
+    } catch (err) {
+      console.error("Error loading sample:", err);
+      showNotif(`Network error loading ${filename}`, 'Error');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [showNotif]);
+
   // ─── USER REVIEW MUTATIONS (CRUD & Provider Selection) ───
   const updateBomItem = useCallback((indexOrId, updatedFields) => {
     setExtractedData(prev => {
@@ -837,6 +884,7 @@ export function StudioProvider({ children }) {
         isFlowModalOpen,
         setIsFlowModalOpen,
         loadSampleData,
+        loadSpecificSample,
         notification,
         showNotif,
         isSidebarOpen,
