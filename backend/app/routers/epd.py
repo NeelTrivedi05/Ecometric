@@ -422,7 +422,7 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
     try:
         from app.engines.calculate_epd import run_epd_calculation
         calc_out = run_epd_calculation(str(results_file), out_dir=str(RESULTS_DIR))
-        print(f"[EPD Router] Automatically generated EPD calculation results:\n  CSV: {calc_out.get('csv_path')}\n  JSON: {calc_out.get('json_path')}\n  TXT: {calc_out.get('txt_path')}")
+        print(f"[EPD Router] Automatically generated EPD calculation results:\n  CSV: {calc_out.get('csv_path')}\n  CSV (exp): {calc_out.get('csv_exp_path')}\n  JSON: {calc_out.get('json_path')}\n  TXT: {calc_out.get('txt_path')}")
     except Exception as e:
         print(f"[EPD Router] Warning: EPD calculation failed (non-blocking): {e}")
 

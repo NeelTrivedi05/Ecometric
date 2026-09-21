@@ -122,17 +122,6 @@ export default function BomView() {
                 />
               </div>
               <div className="form-field">
-                <label>Module</label>
-                <select
-                  value={newComp.mod}
-                  onChange={(e) => setNewComp({ ...newComp, mod: e.target.value })}
-                >
-                  <option value="A1">A1 (Raw Material)</option>
-                  <option value="A2">A2 (Transport)</option>
-                  <option value="A3">A3 (Manufacturing)</option>
-                </select>
-              </div>
-              <div className="form-field">
                 <label>GWP Factor (kg CO₂e/kg)</label>
                 <input
                   type="number"

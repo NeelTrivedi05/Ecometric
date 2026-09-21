@@ -463,16 +463,6 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Grid Sub-region</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={manufacturing.grid_region || ''}
-                    onChange={(e) => updateManufacturing({ grid_region: e.target.value })}
-                    placeholder="US_Average"
-                  />
-                </div>
-                <div className="form-group">
                   <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Process Water (m³)</label>
                   <input
                     type="number"
@@ -516,16 +506,6 @@ export default function ReviewView() {
                     value={installation.outbound_transport_km || ''}
                     onChange={(e) => updateInstallation({ outbound_transport_km: Number(e.target.value) })}
                     placeholder="500"
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Transport Mode & Fleet Type</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={installation.transport_mode || ''}
-                    onChange={(e) => updateInstallation({ transport_mode: e.target.value })}
-                    placeholder="Heavy Lorry >32t (EURO 6)"
                   />
                 </div>
                 <div style={{ padding: '8px 12px', backgroundColor: '#FCFAF8', borderRadius: '6px', fontSize: '12px', color: '#7A6B63' }}>
@@ -661,16 +641,6 @@ export default function ReviewView() {
               <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
                   Module B4 & B5: Overhaul & Refurbishment
-                </div>
-                <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Major Replacement Milestone (Year)</label>
-                  <input
-                    type="number"
-                    className="form-input"
-                    value={operational.major_component_replacement_year || ''}
-                    onChange={(e) => updateOperational({ major_component_replacement_year: Number(e.target.value) })}
-                    placeholder="15"
-                  />
                 </div>
                 <div className="form-group">
                   <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Reference Service Life (RSL Years)</label>
