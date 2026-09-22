@@ -411,7 +411,6 @@ export default function ReviewView() {
                       <tr>
                         <th style={{ textAlign: 'left', padding: '8px' }}>Transport Mode</th>
                         <th style={{ textAlign: 'right', padding: '8px' }}>Distance</th>
-                        <th style={{ textAlign: 'left', padding: '8px' }}>Emission Factor</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -420,9 +419,6 @@ export default function ReviewView() {
                           <td style={{ padding: '8px', fontWeight: 500 }}>{leg.mode || 'Freight transport'}</td>
                           <td style={{ padding: '8px', textAlign: 'right', fontWeight: 600 }}>
                             {leg.dist || leg.distance ? `${leg.dist || leg.distance} km` : '—'}
-                          </td>
-                          <td style={{ padding: '8px', color: '#7A6B63' }}>
-                            {leg.ef || leg.emission_factor || '0.088 kg CO2e/tkm'}
                           </td>
                         </tr>
                       ))}
