@@ -1,5 +1,5 @@
 EPD CALCULATION REPORT
-Generated: 2026-09-24T11:26:14
+Generated: 2026-09-24T13:05:55
 EF data: payload.extracted_ef_values
 Methodology: TRACI v2.1 (payload value 'TRACI 2.1', read from metadata.methodology)
 

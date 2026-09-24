@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Response
 from sqlalchemy.orm import Session
 from typing import Dict, Any, Optional
 
@@ -575,3 +575,100 @@ def generate_nsf_document_endpoint(payload: Dict[str, Any] = Body(default_factor
 
     doc = generate_nsf_chiller_epd(data, results, methodology)
     return doc
+
+
+# =========================================================================
+# Phase 4: DQR Scoring, openEPD Serializer & Third-Party Verification Bundle
+# =========================================================================
+
+@router.post("/dqr-evaluation")
+def evaluate_dqr_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Evaluates Data Quality Rating (DQR) according to PEF 3.0 / EN 15804+A2 guidelines
+    across TeR, GeR, TiR, and P for all lifecycle stages.
+    """
+    from app.engines.dqr_engine import DqrEngine
+    data = payload or {}
+    extracted = data.get("extracted_data", data)
+    results = data.get("results")
+    
+    engine = DqrEngine()
+    report = engine.evaluate_dqr(extracted, results)
+    return report
+
+
+@router.post("/openepd")
+def generate_openepd_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Serializes LCA/EPD results into official openEPD standard v2.0 JSON format.
+    """
+    from app.engines.openepd_serializer import serialize_openepd_json
+    from app.engines.dqr_engine import DqrEngine
+
+    data = payload or {}
+    extracted = data.get("extracted_data", data)
+    methodology = data.get("methodology", "TRACI 2.1")
+
+    results = data.get("results")
+    if not results or not results.get("epd_results"):
+        results = calculate_anti_endpoint(data)
+
+    dqr_engine = DqrEngine()
+    dqr_report = dqr_engine.evaluate_dqr(extracted, results)
+
+    openepd_doc = serialize_openepd_json(extracted, results, dqr_report, methodology)
+    return openepd_doc
+
+
+@router.post("/export-verification-bundle")
+def export_verification_bundle_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Generates and returns an audited Third-Party Verification ZIP package containing:
+    1. 01_openepd_declaration_v2.json
+    2. 02_nsf_ul10010_4_declaration.json
+    3. 03_lcia_characterization_matrix.csv
+    4. 04_data_quality_rating_pef3.json
+    5. 05_pre_audit_quality_gates.json
+    6. 06_official_epd_report.html
+    7. checksums_sha256.txt
+    """
+    from app.engines.verification_package import build_verification_bundle
+    from app.engines.pcr_rules_engine import PcrRulesEngine
+    from app.database import SessionLocal
+
+    data = payload or {}
+    extracted = data.get("extracted_data", data)
+    methodology = data.get("methodology", "TRACI 2.1")
+    pcr_rule_id = data.get("pcr_rule_id", "rule-ul10010-4-traci")
+
+    results = data.get("results")
+    if not results or not results.get("epd_results"):
+        results = calculate_anti_endpoint(data)
+
+    db_sess = SessionLocal()
+    try:
+        pcr_engine = PcrRulesEngine(db_sess)
+        pcr_evaluation = pcr_engine.evaluate_compliance(pcr_rule_id, results, extracted.get("bom", []))
+    finally:
+        db_sess.close()
+
+    zip_bytes, filename, manifest = build_verification_bundle(
+        extracted_data=extracted,
+        results_payload=results,
+        pcr_evaluation=pcr_evaluation,
+        methodology=methodology
+    )
+
+    headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "X-Bundle-Hash": manifest["bundle_hash"],
+        "X-Lineage-Hash": manifest["lineage_hash"],
+        "X-Files-Count": str(manifest["file_count"])
+    }
+
+    return Response(
+        content=zip_bytes,
+        media_type="application/zip",
+        headers=headers
+    )
+

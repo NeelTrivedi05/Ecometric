@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T11:26:14",
+  "generated_at": "2026-09-24T13:05:55",
   "methodology": {
     "label": "TRACI v2.1",
     "payload_key": "TRACI 2.1",
@@ -604,9 +604,9 @@
     ],
     "mandatory_row_names": [
       "ozone depletion | ozone depletion potential (ODP)",
-      "climate change | global warming potential (GWP100)",
+      "eutrophication | eutrophication potential",
       "acidification | acidification potential (AP)",
-      "eutrophication | eutrophication potential"
+      "climate change | global warming potential (GWP100)"
     ],
     "total_indicators_calculated": 9,
     "methodology_label": "TRACI v2.1",

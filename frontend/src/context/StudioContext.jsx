@@ -120,6 +120,8 @@ export function StudioProvider({ children }) {
   // Characterized results from backend
   const [results, setResults] = useState(null);
   const [nsfDocument, setNsfDocument] = useState(null);
+  const [dqrReport, setDqrReport] = useState(null);
+  const [openepdDocument, setOpenepdDocument] = useState(null);
 
   // PCR & GPI Rules state (Phase 3)
   const [pcrRules, setPcrRules] = useState([]);
@@ -1033,6 +1035,112 @@ export function StudioProvider({ children }) {
     }
   }, [nsfDocument]);
 
+  // ─── DQR DATA QUALITY ASSESSMENT (Phase 4) ───
+  const generateDqrReport = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/epd/dqr-evaluation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          extracted_data: extractedData,
+          results: results
+        })
+      });
+      if (res.ok) {
+        const dqr = await res.json();
+        setDqrReport(dqr);
+        showNotif(`DQR Rating: ${dqr.overall_dqr} (${dqr.quality_rating})`, 'DQR Evaluated');
+        return dqr;
+      }
+    } catch (err) {
+      console.error('DQR evaluation error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+    return null;
+  }, [extractedData, results, showNotif]);
+
+  // ─── openEPD v2.0 GENERATOR (Phase 4) ───
+  const generateOpenEpdDocument = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/epd/openepd`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          extracted_data: extractedData,
+          methodology: selectedMethodology,
+          results: results
+        })
+      });
+      if (res.ok) {
+        const doc = await res.json();
+        setOpenepdDocument(doc);
+        showNotif('Official openEPD v2.0 specification generated', 'openEPD Ready');
+        return doc;
+      }
+    } catch (err) {
+      console.error('openEPD generation error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+    return null;
+  }, [extractedData, selectedMethodology, results, showNotif]);
+
+  const downloadOpenEpdJson = useCallback((docToDownload) => {
+    const doc = docToDownload || openepdDocument;
+    if (!doc) return;
+    const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `openEPD_${(projectInfo.productName || 'Declaration').replace(/\s+/g, '_')}_v2.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showNotif('openEPD standard JSON downloaded', 'Downloaded');
+  }, [openepdDocument, projectInfo, showNotif]);
+
+  // ─── VERIFICATION AUDIT ZIP BUNDLE (Phase 4) ───
+  const downloadVerificationBundle = useCallback(async () => {
+    setIsLoading(true);
+    showNotif('Packaging third-party verification bundle...', 'Generating Archive');
+    try {
+      const res = await fetch(`${API_BASE}/epd/export-verification-bundle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          extracted_data: extractedData,
+          methodology: selectedMethodology,
+          pcr_rule_id: selectedPcrRule,
+          results: results
+        })
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const dispHeader = res.headers.get('Content-Disposition') || '';
+        let filename = 'EcoMetric_Third_Party_Verification_Bundle.zip';
+        const match = dispHeader.match(/filename="?([^";]+)"?/i);
+        if (match && match[1]) filename = match[1];
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+        showNotif('Verification Audit Bundle (.zip) downloaded', 'Package Exported');
+      } else {
+        throw new Error('Server returned error during verification bundle export');
+      }
+    } catch (err) {
+      console.error('Verification bundle export error:', err);
+      showNotif('Failed to download verification bundle', 'Export Error');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [extractedData, selectedMethodology, selectedPcrRule, results, showNotif]);
+
   return (
     <StudioContext.Provider
       value={{
@@ -1073,6 +1181,14 @@ export function StudioProvider({ children }) {
         generateNsfDocument,
         downloadNsfJson,
         openNsfHtmlReport,
+        dqrReport,
+        setDqrReport,
+        generateDqrReport,
+        openepdDocument,
+        setOpenepdDocument,
+        generateOpenEpdDocument,
+        downloadOpenEpdJson,
+        downloadVerificationBundle,
         gaps,
         setGaps,
         traceabilityFlow,

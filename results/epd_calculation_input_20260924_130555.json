@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "EPD Calculation Engine Input Payload",
-    "generated_at": "2026-09-24T11:26:14.384633",
+    "generated_at": "2026-09-24T13:05:55.805054",
     "methodology": "TRACI 2.1",
     "database_version": "ecoinvent v3.12 Cut-off",
     "standard": "EN 15804+A2:2019 / ISO 14025:2006"
@@ -95,7 +95,8 @@
   },
   "full_payload": {
     "extracted_data": {},
-    "methodology": "TRACI 2.1"
+    "methodology": "TRACI 2.1",
+    "pcr_rule_id": "rule-ul10010-4-traci"
   },
   "extracted_ef_values": {
     "ecoinvent_diesel_burned_building_machine_glo": {

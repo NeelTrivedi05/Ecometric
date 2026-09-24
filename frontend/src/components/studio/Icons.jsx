@@ -230,6 +230,7 @@ export function DocumentTextIcon({ size = 16, className = "", style = {} }) {
     </svg>
   );
 }
+
 export function LayersIcon({ size = 16, className = "", style = {} }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={{ width: size, height: size, flexShrink: 0, ...style }}>
@@ -244,9 +245,18 @@ export function TruckIcon({ size = 16, className = "", style = {} }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={{ width: size, height: size, flexShrink: 0, ...style }}>
       <rect x="1" y="3" width="15" height="13" />
-      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+      <polygon points="16 8 20 8 23 11 23 16 16 16 8" />
       <circle cx="5.5" cy="18.5" r="2.5" />
       <circle cx="18.5" cy="18.5" r="2.5" />
+    </svg>
+  );
+}
+
+export function ShieldCheckIcon({ size = 16, className = "", style = {} }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={{ width: size, height: size, flexShrink: 0, ...style }}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <polyline points="9 12 11 14 15 10" />
     </svg>
   );
 }
