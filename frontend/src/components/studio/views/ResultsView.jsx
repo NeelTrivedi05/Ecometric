@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
 import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon } from '../Icons';
 import LciaSearchFilter from '../LciaSearchFilter';
+import ProcessFlowModal from '../ProcessFlowModal';
 
 export default function ResultsView() {
   const {
@@ -20,6 +21,7 @@ export default function ResultsView() {
   const [viewMode, setViewMode] = useState('pcr'); // 'pcr' | 'all'
   const [displayedIndicators, setDisplayedIndicators] = useState([]);
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
+  const [isFlowModalOpen, setIsFlowModalOpen] = useState(false);
 
   // Auto-run genuine characterization if results not calculated yet but BOM exists
   useEffect(() => {
@@ -84,6 +86,26 @@ export default function ResultsView() {
             >
               <RefreshCwIcon size={14} className={isLoading ? 'spin' : ''} />
               Recalculate EPD
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-sm"
+              onClick={() => setIsFlowModalOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                backgroundColor: '#FAF0E6',
+                color: '#9C5832',
+                border: '1px solid #E8DDD0',
+                fontWeight: 700,
+                cursor: 'pointer',
+                padding: '6px 12px',
+                borderRadius: 'var(--radius-sm)'
+              }}
+            >
+              <span>⛓️ Supply Chain Entanglement & PCR Audit</span>
             </button>
 
             {/* Interactive Quick Methodology Switcher */}
@@ -384,6 +406,12 @@ export default function ResultsView() {
           </button>
         </div>
       </div>
+
+      {/* Supply Chain Entanglement & PCR Audit Modal */}
+      <ProcessFlowModal
+        isOpen={isFlowModalOpen}
+        onClose={() => setIsFlowModalOpen(false)}
+      />
     </div>
   );
 }

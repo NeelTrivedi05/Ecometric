@@ -249,6 +249,26 @@ def validate_epd_compliance(payload: Dict[str, Any]) -> Dict[str, Any]:
     gpi_pass = all(c["passed"] or not c["critical"] for c in gpi_checks)
     overall_pass = all(c["passed"] or not c["critical"] for c in all_checks)
 
+    # Optional dynamic evaluation against pcr_gpi_indicator_rules table
+    rule_matrix_audit = None
+    try:
+        from app.database import SessionLocal
+        from app.engines.pcr_rules_engine import PcrRulesEngine
+        db = SessionLocal()
+        try:
+            pcr_engine = PcrRulesEngine(db)
+            rule_id = payload.get("rule_id", "rule-ul10010-4-traci")
+            results_payload = payload.get("results", payload.get("epd_results", {}))
+            rule_matrix_audit = pcr_engine.evaluate_compliance(
+                rule_id=rule_id,
+                results_payload=results_payload,
+                bom_items=bom
+            )
+        finally:
+            db.close()
+    except Exception:
+        pass
+
     return {
         "pcr_checks": pcr_checks,
         "gpi_checks": gpi_checks,
@@ -256,6 +276,7 @@ def validate_epd_compliance(payload: Dict[str, Any]) -> Dict[str, Any]:
         "pcr_pass": pcr_pass,
         "gpi_pass": gpi_pass,
         "overall_pass": overall_pass,
+        "rule_matrix_audit": rule_matrix_audit,
         "run_at": datetime.now().isoformat(),
         "summary": {
             "total_checks": len(all_checks),

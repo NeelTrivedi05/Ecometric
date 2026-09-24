@@ -1,12 +1,12 @@
 import logging
-from typing import Dict, Any, List, Optional, Set
+from typing import Dict, Any, List, Optional, Set, Tuple
 from sqlalchemy.orm import Session
 from app.models import ProcessNode, ProcessEntanglementEdge, EcoinventDatabase, PcrGpiIndicatorRule
 from app.engines.ecoinvent_lookup import get_activity_lcia, search_ecoinvent_activities
 
 logger = logging.getLogger(__name__)
 
-# Base representative default LCIA characterization factors for typical steel processes if uncharacterized in raw seed
+# Base representative default LCIA characterization factors for typical processes
 FALLBACK_LCIA_FACTORS: Dict[str, Dict[str, Dict[str, float]]] = {
     "proc-steel-converter-parent": {
         "traci21": {"global warming potential": 2.45, "acidification potential": 0.012, "eutrophication potential": 0.003, "smog formation potential": 0.085, "ozone depletion potential": 1.2e-8},
@@ -62,8 +62,8 @@ FALLBACK_LCIA_FACTORS: Dict[str, Dict[str, Dict[str, float]]] = {
 class ProcessChainEngine:
     """
     Multi-tier Supply Chain Entanglement and Process Chaining Engine.
-    Traverses process DAGs, propagates scaling and loss rates, and computes
-    upstream/downstream multi-indicator environmental footprint allocations.
+    Traverses process DAGs, detects cycles, propagates scaling, allocation,
+    and loss margins, verifies mass/energy balance, and computes aggregated LCIA footprints.
     """
 
     def __init__(self, db: Session):
@@ -92,12 +92,17 @@ class ProcessChainEngine:
         root_process_id: str,
         methodology: str = "traci21",
         base_quantity: float = 1.0,
-        max_depth: int = 5
+        max_depth: int = 5,
+        overrides: Optional[Dict[str, Dict[str, float]]] = None
     ) -> Dict[str, Any]:
         """
         Traverse the DAG starting from root_process_id.
-        Resolves up to 10+ chained child processes across upstream, downstream,
-        energy, and transport links with cumulative scaling factors.
+        Features:
+        - Recursive N-tier scaling factor propagation
+        - Dynamic user parameter overrides for what-if simulations
+        - Cycle detection with path tracking to prevent circular loops
+        - Mass and energy balance verification
+        - Stage-wise and multi-indicator environmental footprint rollup
         """
         root_node = self.db.query(ProcessNode).filter_by(id=root_process_id).first()
         if not root_node:
@@ -110,9 +115,11 @@ class ProcessChainEngine:
         else:
             method_key = "traci21"
 
+        overrides = overrides or {}
         visited_nodes: Set[str] = set()
         chained_nodes: List[Dict[str, Any]] = []
         chained_edges: List[Dict[str, Any]] = []
+        detected_cycles: List[Dict[str, Any]] = []
 
         # Totals by stage
         breakdown_by_relationship: Dict[str, Dict[str, float]] = {
@@ -139,20 +146,28 @@ class ProcessChainEngine:
             "reference_product": root_node.reference_product,
             "geography": root_node.geography,
             "unit": root_node.unit,
+            "sector": root_node.sector or "Core",
             "tier": 1,
             "is_root": True,
             "quantity": base_quantity,
             "cumulative_scaling": 1.0,
+            "relationship_type": "direct",
             "lcia_impacts": direct_impacts
         }
         chained_nodes.append(root_dict)
         visited_nodes.add(root_node.id)
 
-        # 2. Traverse BFS / DFS edges
-        queue = [(root_node.id, 1.0, 1)]  # (node_id, current_cumulative_scaling, current_depth)
+        # 2. Queue for traversal: (node_id, cumulative_scale, depth, current_path)
+        queue: List[Tuple[str, float, int, List[str]]] = [(root_node.id, 1.0, 1, [root_node.id])]
+
+        # Mass & Energy Balance Trackers
+        mass_inputs_kg = 0.0
+        mass_outputs_kg = base_quantity if root_node.unit == "kg" else 0.0
+        energy_inputs_kwh = 0.0
+        scrap_loss_kg = 0.0
 
         while queue:
-            current_id, current_scale, depth = queue.pop(0)
+            current_id, current_scale, depth, path = queue.pop(0)
             if depth > max_depth:
                 continue
 
@@ -162,8 +177,24 @@ class ProcessChainEngine:
                 if not child:
                     continue
 
-                # Effective scaling = current_scale * edge.scaling * edge.allocation * (1 + loss_rate)
-                edge_effective_scale = current_scale * edge.scaling_factor * edge.allocation_factor * (1.0 + edge.loss_rate)
+                # Cycle Detection: if child is already in current path, cycle exists!
+                if child.id in path:
+                    detected_cycles.append({
+                        "from_node": current_id,
+                        "to_node": child.id,
+                        "cycle_path": path + [child.id],
+                        "status": "CIRCULARITY_CONTAINED"
+                    })
+                    continue
+
+                # Apply user overrides if present for this edge
+                edge_override = overrides.get(edge.id, {})
+                scaling_factor = float(edge_override.get("scaling_factor", edge.scaling_factor))
+                allocation_factor = float(edge_override.get("allocation_factor", edge.allocation_factor))
+                loss_rate = float(edge_override.get("loss_rate", edge.loss_rate))
+
+                # Effective scaling = current_scale * scaling * allocation * (1 + loss_rate)
+                edge_effective_scale = current_scale * scaling_factor * allocation_factor * (1.0 + loss_rate)
                 child_quantity = base_quantity * edge_effective_scale
 
                 child_factors = self._get_node_lcia_factors(child.id, method_key)
@@ -178,14 +209,22 @@ class ProcessChainEngine:
                         breakdown_by_relationship[rel_type] = {}
                     breakdown_by_relationship[rel_type][ind] = breakdown_by_relationship[rel_type].get(ind, 0.0) + imp
 
+                # Balance accounting
+                if child.unit == "kg":
+                    if rel_type == "upstream_manufacturing":
+                        mass_inputs_kg += child_quantity
+                    scrap_loss_kg += child_quantity * loss_rate
+                elif child.unit == "kWh":
+                    energy_inputs_kwh += child_quantity
+
                 chained_edges.append({
                     "id": edge.id,
                     "parent_process_id": edge.parent_process_id,
                     "child_process_id": edge.child_process_id,
-                    "relationship_type": edge.relationship_type,
-                    "scaling_factor": edge.scaling_factor,
-                    "allocation_factor": edge.allocation_factor,
-                    "loss_rate": edge.loss_rate,
+                    "relationship_type": rel_type,
+                    "scaling_factor": round(scaling_factor, 4),
+                    "allocation_factor": round(allocation_factor, 4),
+                    "loss_rate": round(loss_rate, 4),
                     "effective_scaling": round(edge_effective_scale, 4),
                     "tier_level": edge.tier_level
                 })
@@ -204,12 +243,27 @@ class ProcessChainEngine:
                         "quantity": round(child_quantity, 4),
                         "cumulative_scaling": round(edge_effective_scale, 4),
                         "relationship_type": rel_type,
+                        "loss_rate": round(loss_rate, 4),
+                        "allocation_factor": round(allocation_factor, 4),
                         "lcia_impacts": child_impacts
                     })
-                    queue.append((child.id, edge_effective_scale, depth + 1))
+                    queue.append((child.id, edge_effective_scale, depth + 1, path + [child.id]))
 
         # Sort nodes by tier then name
         chained_nodes.sort(key=lambda x: (x["tier"], x["name"]))
+
+        # Compute Mass & Energy Balance Audit
+        yield_ratio = round(mass_outputs_kg / mass_inputs_kg, 4) if mass_inputs_kg > 0 else 1.0
+        mass_balance_audit = {
+            "total_mass_input_kg": round(mass_inputs_kg, 3),
+            "product_output_kg": round(mass_outputs_kg, 3),
+            "yield_ratio": yield_ratio,
+            "scrap_and_loss_kg": round(scrap_loss_kg, 3),
+            "total_electricity_kwh": round(energy_inputs_kwh, 3),
+            "balance_status": "CONSERVED" if mass_inputs_kg >= mass_outputs_kg else "PHYSICAL_DEFICIT",
+            "cycle_detected_count": len(detected_cycles),
+            "detected_cycles": detected_cycles
+        }
 
         return {
             "root_process": root_dict,
@@ -220,7 +274,62 @@ class ProcessChainEngine:
             "nodes": chained_nodes,
             "edges": chained_edges,
             "breakdown_by_relationship": breakdown_by_relationship,
-            "cumulative_lcia_totals": cumulative_lcia_totals
+            "cumulative_lcia_totals": cumulative_lcia_totals,
+            "mass_balance_audit": mass_balance_audit
+        }
+
+    def resolve_bom_entanglement(
+        self,
+        bom_items: List[Dict[str, Any]],
+        methodology: str = "traci21"
+    ) -> Dict[str, Any]:
+        """
+        Batch-resolves an entire Bill of Materials (BOM) through the multi-tier entanglement engine.
+        Each material is mapped to its matching process node in the database, recursively resolved,
+        and rolled up into the cumulative Module A1 impact vector.
+        """
+        resolved_components = []
+        cumulative_bom_lcia: Dict[str, float] = {}
+        total_mass_kg = 0.0
+
+        for item in bom_items:
+            mat_name = item.get("material", item.get("name", "Steel"))
+            mass = float(item.get("mass", item.get("quantity", 1.0)))
+            total_mass_kg += mass
+
+            # Match to a process node
+            node = self.db.query(ProcessNode).filter(
+                (ProcessNode.reference_product.ilike(f"%{mat_name}%")) |
+                (ProcessNode.activity_name.ilike(f"%{mat_name}%"))
+            ).first()
+
+            if not node:
+                # Default to steel parent node if specific node not matched
+                node = self.db.query(ProcessNode).filter_by(id="proc-steel-converter-parent").first()
+
+            if node:
+                resolved = self.resolve_process_entanglement(
+                    root_process_id=node.id,
+                    methodology=methodology,
+                    base_quantity=mass
+                )
+                for ind, val in resolved["cumulative_lcia_totals"].items():
+                    cumulative_bom_lcia[ind] = cumulative_bom_lcia.get(ind, 0.0) + val
+
+                resolved_components.append({
+                    "material": mat_name,
+                    "mass_kg": mass,
+                    "matched_process": node.activity_name,
+                    "process_id": node.id,
+                    "sub_nodes_count": resolved["total_nodes_count"],
+                    "component_lcia": resolved["cumulative_lcia_totals"]
+                })
+
+        return {
+            "total_declared_mass_kg": round(total_mass_kg, 2),
+            "components_count": len(resolved_components),
+            "components": resolved_components,
+            "cumulative_bom_lcia": cumulative_bom_lcia
         }
 
     def _get_node_lcia_factors(self, node_id: str, method_key: str) -> Dict[str, float]:
@@ -230,7 +339,6 @@ class ProcessChainEngine:
         if node_id in FALLBACK_LCIA_FACTORS:
             return FALLBACK_LCIA_FACTORS[node_id].get(method_key, FALLBACK_LCIA_FACTORS[node_id].get("traci21", {}))
         
-        # Generic default factor if not specifically listed
         return {
             "global warming potential": 0.10,
             "acidification potential": 0.001,

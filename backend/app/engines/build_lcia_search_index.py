@@ -402,10 +402,11 @@ def build_search_registry(raw_items: List[Dict[str, str]], source_file: str) -> 
 
         indicator_obj = {
             "id": indicator_id,
+            "name": indicator,
+            "indicator": indicator,
             "methodology": method,
             "methodology_key": method_key,
             "category": category,
-            "indicator": indicator,
             "unit": unit,
             "canonical_key": canonical_key,
             "is_no_lt": is_no_lt,
@@ -641,6 +642,19 @@ def main():
         json.dump(registry, f, indent=2, ensure_ascii=False)
 
     print(f"Successfully generated: {output_file} ({output_file.stat().st_size / 1024:.1f} KB)")
+
+    parquet_file = output_file.parent / "lcia_3.12.parquet"
+    try:
+        import pandas as pd
+        df = pd.DataFrame(registry["indicators"])
+        if "acronym_matches" in df.columns:
+            df["acronym_matches"] = df["acronym_matches"].astype(str)
+        if "search_tokens" in df.columns:
+            df["search_tokens"] = df["search_tokens"].astype(str)
+        df.to_parquet(str(parquet_file), index=False)
+        print(f"Successfully generated Parquet store: {parquet_file} ({parquet_file.stat().st_size / 1024:.1f} KB)")
+    except Exception as e:
+        print(f"Notice: Parquet export skipped: {e}")
 
 if __name__ == "__main__":
     main()
