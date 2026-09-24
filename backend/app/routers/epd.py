@@ -429,9 +429,23 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
     res_anti = calculate_anti_lca(extracted_data)
     if calc_out and isinstance(calc_out, dict):
         epd_res = calc_out.get("results", {})
+        mandatory_pcr = calc_out.get("mandatory_pcr_indicators", epd_res)
+        all_indicators = calc_out.get("all_available_indicators", epd_res)
+
         res_anti["epd_results"] = epd_res
+        res_anti["mandatory_pcr_indicators"] = mandatory_pcr
+        res_anti["all_available_indicators"] = all_indicators
+        res_anti["total_indicators_count"] = len(all_indicators)
+        res_anti["mandatory_indicators_count"] = len(mandatory_pcr)
         res_anti["epd_metadata"] = calc_out.get("metadata")
         res_anti["epd_warnings"] = calc_out.get("warnings")
+
+        # Allow user to request custom indicator subset
+        selected_keys = data.get("selected_indicator_keys", [])
+        if selected_keys and isinstance(selected_keys, list):
+            res_anti["custom_selected_indicators"] = {
+                k: all_indicators[k] for k in selected_keys if k in all_indicators
+            }
 
         # Synchronize top-level summary metrics with calculated GWP row
         gwp_key = next((k for k in epd_res.keys() if "global warming" in k.lower() or "climate change" in k.lower()), None)
@@ -464,6 +478,64 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
             )
 
     return res_anti
+
+
+@router.get("/lcia/search")
+def search_lcia_indicators_endpoint(
+    q: str = "",
+    methodology: Optional[str] = None,
+    category: Optional[str] = None,
+    mandatory_only: bool = False,
+    include_no_lt: bool = False,
+    limit: int = 50,
+):
+    """
+    Auto-suggest & fuzzy search across all ~633 LCIA indicators.
+    Supports partial queries, canonical acronyms (GWP, CO2, ODP, AP, Smog, POCP),
+    and returns indicators grouped by methodology and category in <2ms.
+    """
+    from app.engines.build_lcia_search_index import search_lcia_indicators
+
+    results = search_lcia_indicators(
+        query=q,
+        methodology=methodology,
+        category=category,
+        mandatory_only=mandatory_only,
+        include_no_lt=include_no_lt,
+        limit=limit,
+    )
+
+    by_category = {}
+    by_methodology = {}
+    for ind in results:
+        cat = ind.get("category", "General")
+        meth = ind.get("methodology", "Unknown")
+        by_category.setdefault(cat, []).append(ind)
+        by_methodology.setdefault(meth, []).append(ind)
+
+    return {
+        "query": q,
+        "methodology": methodology,
+        "total_found": len(results),
+        "indicators": results,
+        "grouped_by_category": by_category,
+        "grouped_by_methodology": by_methodology,
+    }
+
+
+@router.get("/lcia/methodologies")
+def get_lcia_methodologies_endpoint():
+    """
+    Returns all 46 supported LCIA methodologies with indicator counts and metadata.
+    """
+    from app.engines.build_lcia_search_index import get_registry
+    registry = get_registry()
+    return {
+        "total_methodologies": registry.get("metadata", {}).get("total_methodologies", 0),
+        "total_indicators": registry.get("metadata", {}).get("total_indicators", 0),
+        "methodologies": registry.get("methodologies", {}),
+        "acronym_definitions": registry.get("acronym_definitions", {}),
+    }
 
 
 @router.post("/generate-nsf-document")

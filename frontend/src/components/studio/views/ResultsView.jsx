@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
 import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon } from '../Icons';
+import LciaSearchFilter from '../LciaSearchFilter';
 
 export default function ResultsView() {
   const {
@@ -16,6 +17,9 @@ export default function ResultsView() {
   } = useStudio();
 
   const [showFullBreakdown, setShowFullBreakdown] = useState(false);
+  const [viewMode, setViewMode] = useState('pcr'); // 'pcr' | 'all'
+  const [displayedIndicators, setDisplayedIndicators] = useState([]);
+  const [activeSearchTerm, setActiveSearchTerm] = useState('');
 
   // Auto-run genuine characterization if results not calculated yet but BOM exists
   useEffect(() => {
@@ -33,6 +37,28 @@ export default function ResultsView() {
   };
 
   const currentMethod = getMethodology(selectedMethodology);
+
+  const highlightMatch = (text, query) => {
+    if (!query || !text) return text;
+    try {
+      const cleanQ = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${cleanQ})`, 'gi');
+      const parts = String(text).split(regex);
+      return parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark key={i} style={{ background: 'rgba(230, 162, 60, 0.4)', color: 'var(--text-primary)', padding: '0 3px', borderRadius: '3px', fontWeight: 700 }}>
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      );
+    } catch {
+      return text;
+    }
+  };
+
+  const activeRows = displayedIndicators.length > 0 || activeSearchTerm ? displayedIndicators : lca.indicators;
 
   return (
     <div className="view-container">
@@ -179,13 +205,26 @@ export default function ResultsView() {
         </div>
       </div>
 
+      {/* Dynamic LCIA Search, Fuzzy Acronym Lookup, & Matrix Toggle */}
+      <LciaSearchFilter
+        indicators={lca.indicators || []}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onFilteredIndicatorsChange={(filtered, query) => {
+          setDisplayedIndicators(filtered);
+          setActiveSearchTerm(query);
+        }}
+      />
+
       {/* Characterized Matrix Table */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <span style={{ fontWeight: 700, fontSize: 'var(--text-base)' }}>EPD Environmental Results Matrix</span>
+            <span style={{ fontWeight: 700, fontSize: 'var(--text-base)' }}>
+              {viewMode === 'pcr' ? 'Standard PCR Environmental Matrix' : 'Full LCIA Environmental Matrix'}
+            </span>
             <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', marginLeft: 8 }}>
-              ({currentMethod.name})
+              ({currentMethod.name} — {activeRows.length} displayed)
             </span>
           </div>
           
@@ -235,49 +274,72 @@ export default function ResultsView() {
               </tr>
             </thead>
             <tbody>
-              {lca.indicators.map((ind) => {
-                const isGwp = ind.code === 'GWP100' || ind.name.toLowerCase().includes('global warming');
+              {activeRows.length === 0 ? (
+                <tr>
+                  <td colSpan={23} style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '24px', marginBottom: 8 }}>🔍</div>
+                    <div style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--text-primary)' }}>
+                      No matching indicators found for "{activeSearchTerm}"
+                    </div>
+                    <div style={{ fontSize: 'var(--text-xs)', marginTop: 4 }}>
+                      Try adjusting your search query, selecting a different category, or switching to Full LCIA Matrix View.
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                activeRows.map((ind) => {
+                  const isGwp = ind.code === 'GWP100' || ind.name.toLowerCase().includes('global warming');
 
-                return (
-                  <tr key={ind.rawCategory || ind.code} style={{ background: isGwp ? 'var(--accent-dim)' : undefined }}>
-                    <td style={{ sticky: 'left', background: 'var(--bg-card)', zIndex: 1 }}>
-                      <span style={{ fontFamily: 'var(--mono)', fontWeight: 700, fontSize: 'var(--text-2xs)', color: 'var(--accent)' }}>
-                        {ind.code}
-                      </span>
-                    </td>
-                    <td>
-                      <span style={{ fontWeight: isGwp ? 600 : 400 }}>{ind.name}</span>
-                    </td>
-                    <td>
-                      <span className="item-badge" style={{ fontSize: '0.65rem' }}>{ind.unit}</span>
-                    </td>
-                    <td className="num">{formatValue(ind.a1)}</td>
-                    <td className="num">{formatValue(ind.a2)}</td>
-                    <td className="num">{formatValue(ind.a3)}</td>
-                    <td className="num" style={{ fontWeight: 700, background: 'rgba(255,255,255,0.02)' }}>{formatValue(ind.a1a3)}</td>
-                    <td className="num">{formatValue(ind.a4)}</td>
-                    <td className="num">{formatValue(ind.a5)}</td>
-                    <td className="num">{formatValue(ind.b1)}</td>
-                    <td className="num">{formatValue(ind.b2)}</td>
-                    <td className="num">{formatValue(ind.b3)}</td>
-                    <td className="num">{formatValue(ind.b4)}</td>
-                    <td className="num">{formatValue(ind.b5)}</td>
-                    <td className="num">{formatValue(ind.b6)}</td>
-                    <td className="num">{formatValue(ind.b7)}</td>
-                    <td className="num">{formatValue(ind.c1)}</td>
-                    <td className="num">{formatValue(ind.c2)}</td>
-                    <td className="num">{formatValue(ind.c3)}</td>
-                    <td className="num">{formatValue(ind.c4)}</td>
-                    <td className="num" style={{ fontWeight: 700, background: 'rgba(255,255,255,0.02)' }}>{formatValue(ind.c)}</td>
-                    <td className="num" style={{ color: ind.d < 0 ? 'var(--success)' : undefined }}>
-                      {formatValue(ind.d)}
-                    </td>
-                    <td className="num" style={{ fontWeight: 800, color: 'var(--text-primary)' }}>
-                      {formatValue(ind.total)}
-                    </td>
-                  </tr>
-                );
-              })}
+                  return (
+                    <tr key={ind.rawCategory || ind.code} style={{ background: isGwp ? 'var(--accent-dim)' : undefined }}>
+                      <td style={{ sticky: 'left', background: 'var(--bg-card)', zIndex: 1 }}>
+                        <span style={{ fontFamily: 'var(--mono)', fontWeight: 700, fontSize: 'var(--text-2xs)', color: 'var(--accent)' }}>
+                          {highlightMatch(ind.code, activeSearchTerm)}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontWeight: isGwp ? 600 : 400 }}>
+                            {highlightMatch(ind.name, activeSearchTerm)}
+                          </span>
+                          {ind.category && ind.category !== 'General' && ind.category !== ind.name && (
+                            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+                              Category: {highlightMatch(ind.category, activeSearchTerm)}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <span className="item-badge" style={{ fontSize: '0.65rem' }}>{ind.unit}</span>
+                      </td>
+                      <td className="num">{formatValue(ind.a1)}</td>
+                      <td className="num">{formatValue(ind.a2)}</td>
+                      <td className="num">{formatValue(ind.a3)}</td>
+                      <td className="num" style={{ fontWeight: 700, background: 'rgba(255,255,255,0.02)' }}>{formatValue(ind.a1a3)}</td>
+                      <td className="num">{formatValue(ind.a4)}</td>
+                      <td className="num">{formatValue(ind.a5)}</td>
+                      <td className="num">{formatValue(ind.b1)}</td>
+                      <td className="num">{formatValue(ind.b2)}</td>
+                      <td className="num">{formatValue(ind.b3)}</td>
+                      <td className="num">{formatValue(ind.b4)}</td>
+                      <td className="num">{formatValue(ind.b5)}</td>
+                      <td className="num">{formatValue(ind.b6)}</td>
+                      <td className="num">{formatValue(ind.b7)}</td>
+                      <td className="num">{formatValue(ind.c1)}</td>
+                      <td className="num">{formatValue(ind.c2)}</td>
+                      <td className="num">{formatValue(ind.c3)}</td>
+                      <td className="num">{formatValue(ind.c4)}</td>
+                      <td className="num" style={{ fontWeight: 700, background: 'rgba(255,255,255,0.02)' }}>{formatValue(ind.c)}</td>
+                      <td className="num" style={{ color: ind.d < 0 ? 'var(--success)' : undefined }}>
+                        {formatValue(ind.d)}
+                      </td>
+                      <td className="num" style={{ fontWeight: 800, color: 'var(--text-primary)' }}>
+                        {formatValue(ind.total)}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>

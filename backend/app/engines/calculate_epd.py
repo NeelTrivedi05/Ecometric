@@ -180,12 +180,13 @@ def discover_rows(method_label: str, ef_lookup: dict):
 class MethodContext:
     """Carries the resolved methodology, its indicator rows and the EF data."""
 
-    def __init__(self, method_label, rows, gwp_rows, ef_lookup):
+    def __init__(self, method_label, rows, gwp_rows, ef_lookup, mandatory_row_names=None):
         self.method_label = method_label
         self.rows = rows
         self.gwp_rows = set(gwp_rows)
         self.ef_lookup = ef_lookup
         self.row_names = [r[0] for r in rows]
+        self.mandatory_row_names = set(mandatory_row_names) if mandatory_row_names else set(self.row_names)
 
     def zero_vector(self) -> dict:
         return {row: 0.0 for row in self.row_names}
@@ -223,7 +224,7 @@ class MethodContext:
 
 
 def build_context(payload: dict, ef_lookup: dict, warnings: list, override: str = None):
-    """Reads the methodology from the payload (or CLI override) and builds the context."""
+    """Reads the methodology from the payload (or CLI override) and dynamically builds all indicator rows."""
     if override:
         key, source = override, "--methodology override"
     else:
@@ -261,23 +262,37 @@ def build_context(payload: dict, ef_lookup: dict, warnings: list, override: str 
             f"payload's '{key}' - their values for '{label}' may be missing."
         )
 
+    # Discovered rows from all providers in ef_lookup for this methodology
+    discovered_rows, disc_gwp = discover_rows(label, ef_lookup)
+
     if norm in INDICATOR_SETS:
         spec = INDICATOR_SETS[norm]
-        rows, gwp_rows = spec["rows"], spec["gwp_rows"]
+        pcr_rows, pcr_gwp = spec["rows"], spec["gwp_rows"]
+        pcr_cats = {(cat.lower(), ind.lower()) for _, cat, ind in pcr_rows}
+        mandatory_names = {r[0] for r in pcr_rows}
+
+        # Merge PCR rows first, then append all other discovered indicators
+        merged_rows = list(pcr_rows)
+        for disc_row, cat, ind in discovered_rows:
+            if (cat.lower(), ind.lower()) not in pcr_cats:
+                merged_rows.append((disc_row, cat, ind))
+
+        rows = merged_rows
+        gwp_rows = pcr_gwp | disc_gwp
     else:
-        rows, gwp_rows = discover_rows(label, ef_lookup)
-        warnings.append(
-            f"No predefined indicator table for methodology '{label}' - rows were "
-            f"auto-discovered from the EF file ({len(rows)} rows). Add it to INDICATOR_SETS "
-            f"for a fixed, ordered EPD table."
-        )
+        rows, gwp_rows = discovered_rows, disc_gwp
+        mandatory_names = {
+            r[0] for r in rows
+            if any(k in r[1].lower() or k in r[2].lower()
+                   for k in ["global warming", "gwp", "climate change", "acidification", "eutrophication", "ozone depletion"])
+        }
         if not gwp_rows:
             warnings.append(
                 f"No 'climate change' rows found for '{label}' - the refrigerant terms "
                 f"(B1 and the A5 commissioning loss) cannot be applied and will be 0."
             )
 
-    return MethodContext(label, rows, gwp_rows, ef_lookup), source, key
+    return MethodContext(label, rows, gwp_rows, ef_lookup, mandatory_row_names=mandatory_names), source, key
 
 
 def add_scaled(totals: dict, vec: dict, scale: float):
@@ -764,6 +779,8 @@ def calculate_epd(payload: dict, ef_lookup: dict, methodology_override: str = No
         "replacement_cycles": replacement_cycles,
         "total_bom_mass": total_bom_mass,
         "row_names": rows,
+        "mandatory_row_names": list(ctx.mandatory_row_names),
+        "total_indicators_calculated": len(rows),
         "methodology_label": ctx.method_label,
         "methodology_key": methodology_key,
         "methodology_source": methodology_source,
@@ -948,6 +965,14 @@ def run_epd_calculation(input_path: str | Path, out_dir: str | Path | None = Non
     write_json(columns, meta, warnings, imported, json_path)
     write_txt(columns, meta, warnings, imported, txt_path, ef_source)
 
+    all_available = {row: {c: columns[c][row] for c in COL_ORDER} for row in meta["row_names"]}
+    mandatory_pcr = {
+        row: data for row, data in all_available.items()
+        if row in meta.get("mandatory_row_names", [])
+    }
+    if not mandatory_pcr:
+        mandatory_pcr = all_available
+
     return {
         "status": "success",
         "csv_path": str(csv_path),
@@ -955,7 +980,9 @@ def run_epd_calculation(input_path: str | Path, out_dir: str | Path | None = Non
         "json_path": str(json_path),
         "txt_path": str(txt_path),
         "warnings": warnings,
-        "results": {row: {c: columns[c][row] for c in COL_ORDER} for row in meta["row_names"]},
+        "results": all_available,
+        "mandatory_pcr_indicators": mandatory_pcr,
+        "all_available_indicators": all_available,
         "metadata": meta,
     }
 

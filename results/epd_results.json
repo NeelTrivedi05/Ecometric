@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T10:17:44",
+  "generated_at": "2026-09-24T09:01:10",
   "methodology": {
     "label": "EF v3.1",
     "payload_key": "ef31",
@@ -124,7 +124,6 @@
     ]
   },
   "warnings": [
-    "No predefined indicator table for methodology 'EF v3.1' - rows were auto-discovered from the EF file (25 rows). Add it to INDICATOR_SETS for a fixed, ordered EPD table.",
     "UNITS: the EF data has no reference-unit field, so EFs are assumed to be per kg (materials, waste), per kWh (electricity), per MJ (gas), per m3 (water), per litre (diesel) and per tonne-km (transport). Check that each matched activity really uses that unit.",
     "A2: no per-leg linked mass in payload - using total BOM mass (4420.0 kg) on every A2 leg (total_bom_mass fallback). This likely overcounts if materials actually split across legs.",
     "A3: annual facility totals divided by annual_production_units (1000) to get per-unit inputs.",

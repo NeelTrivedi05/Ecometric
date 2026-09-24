@@ -632,9 +632,19 @@ export function StudioProvider({ children }) {
     const epdRes = results?.epd_results || results?.results;
     if (epdRes && typeof epdRes === 'object' && Object.keys(epdRes).length > 0) {
       let gwpRow = null;
+      const mandatoryLookup = results?.mandatory_pcr_indicators || {};
+      const hasMandatorySplit = Object.keys(mandatoryLookup).length > 0;
+
       const indicators = Object.entries(epdRes).map(([catKey, row]) => {
         const parts = catKey.split('|').map(s => s.trim());
-        const catName = parts.length > 1 ? parts[1] : parts[0];
+        let category = parts.length > 1 ? parts[0] : 'General';
+        let catName = parts.length > 1 ? parts[1] : parts[0];
+        if (parts.length >= 3) {
+          // Format: Methodology | Category | Indicator [Unit]
+          category = parts[1];
+          catName = parts[2].split('[')[0].trim();
+        }
+
         let unit = '';
         const unitMatch = catKey.match(/\[(.*?)\]/);
         if (unitMatch) {
@@ -674,20 +684,49 @@ export function StudioProvider({ children }) {
         }
 
         let code = catName.split(' ')[0].toUpperCase();
-        if (isGwp) code = 'GWP100';
-        else if (catKey.toLowerCase().includes('acidification')) code = 'AP';
-        else if (catKey.toLowerCase().includes('eutrophication')) code = 'EP';
-        else if (catKey.toLowerCase().includes('ozone')) code = 'ODP';
-        else if (catKey.toLowerCase().includes('photochemical') || catKey.toLowerCase().includes('smog')) code = 'POCP';
-        else if (catKey.toLowerCase().includes('ecotoxicity')) code = 'FAETP';
-        else if (catKey.toLowerCase().includes('carcinogenic')) code = 'HTP';
-        else if (catKey.toLowerCase().includes('particulate')) code = 'PMFP';
+        const acronyms = [];
+        if (isGwp) {
+          code = 'GWP100';
+          acronyms.push('GWP', 'CO2', 'Carbon', 'GHG');
+        } else if (catKey.toLowerCase().includes('acidification')) {
+          code = 'AP';
+          acronyms.push('AP', 'Acid Rain', 'SO2');
+        } else if (catKey.toLowerCase().includes('eutrophication')) {
+          code = 'EP';
+          acronyms.push('EP', 'Nutrients', 'PO4');
+        } else if (catKey.toLowerCase().includes('ozone')) {
+          code = 'ODP';
+          acronyms.push('ODP', 'CFC', 'Ozone');
+        } else if (catKey.toLowerCase().includes('photochemical') || catKey.toLowerCase().includes('smog')) {
+          code = 'POCP';
+          acronyms.push('POCP', 'Smog', 'NMVOC', 'Ozone Formation');
+        } else if (catKey.toLowerCase().includes('abiotic') || catKey.toLowerCase().includes('resource')) {
+          code = 'ADP';
+          acronyms.push('ADP', 'Minerals', 'Fossil', 'Depletion');
+        } else if (catKey.toLowerCase().includes('water')) {
+          code = 'WDP';
+          acronyms.push('Water', 'WSI', 'Scarcity');
+        } else if (catKey.toLowerCase().includes('ecotoxicity')) {
+          code = 'FAETP';
+          acronyms.push('Ecotoxicity', 'FAETP');
+        } else if (catKey.toLowerCase().includes('carcinogenic') || catKey.toLowerCase().includes('toxicity')) {
+          code = 'HTP';
+          acronyms.push('Toxicity', 'HTP', 'Human Health');
+        } else if (catKey.toLowerCase().includes('particulate')) {
+          code = 'PM';
+          acronyms.push('PM', 'PM2.5', 'Dust');
+        }
+
+        const isMandatory = hasMandatorySplit ? Boolean(mandatoryLookup[catKey]) : true;
 
         return {
           code,
           rawCategory: catKey,
+          category,
           name: catName,
           unit: unit || 'impact unit',
+          isMandatory,
+          acronyms,
           a1,
           a2,
           a3,
@@ -713,6 +752,8 @@ export function StudioProvider({ children }) {
       const module_d_gwp = gwpRow ? gwpRow.d : 0;
       const total_gwp = gwpRow ? gwpRow.total : 0;
 
+      const mandatoryIndicators = indicators.filter(i => i.isMandatory);
+
       return {
         totalMass,
         a1_gwp,
@@ -726,6 +767,9 @@ export function StudioProvider({ children }) {
         recRate: 92.4,
         massCutoff: 0.85,
         indicators,
+        mandatoryIndicators,
+        totalIndicatorsCount: indicators.length,
+        mandatoryIndicatorsCount: mandatoryIndicators.length,
         isCalculated: true,
         epd_results: epdRes,
       };
