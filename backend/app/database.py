@@ -4,7 +4,11 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import create_engine, or_, and_, desc
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ecometric.db")
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+DEFAULT_DB_FILE = REPO_ROOT / "ecometric.db"
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_DB_FILE.as_posix()}")
 
 # SQLite specific connect args
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}

@@ -1247,3 +1247,212 @@ textarea.form-input {
 @media (max-width: 767px) {
   .hide-compact { display: none !important; }
 }
+
+/* ==========================================================================
+   Phase 3: Pre-Audit Quality Gates & Compliance Verification (AuditView)
+   ========================================================================== */
+.audit-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.audit-verdict-banner {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 24px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease-in-out;
+}
+
+.verdict-pass {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #bbf7d0;
+  color: #14532d;
+}
+
+.verdict-pass .verdict-icon {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.verdict-pass .score-num {
+  color: #15803d;
+}
+
+.verdict-warn {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fde68a;
+  color: #78350f;
+}
+
+.verdict-warn .verdict-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.verdict-warn .score-num {
+  color: #b45309;
+}
+
+.verdict-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.verdict-body {
+  flex: 1;
+}
+
+.verdict-heading {
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.01em;
+}
+
+.verdict-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.verdict-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  min-width: 90px;
+}
+
+.verdict-score .score-num {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.verdict-score .score-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+.audit-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.audit-gate-card {
+  background: #ffffff;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  padding: 18px 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.audit-gate-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.audit-gate-card.gate-pass {
+  border-left: 5px solid #10b981;
+}
+
+.audit-gate-card.gate-fail {
+  border-left: 5px solid #f59e0b;
+}
+
+.gate-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.gate-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gate-id {
+  font-family: var(--mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.gate-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.gate-status-pill {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.pill-pass {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.pill-fail {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.gate-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  padding: 6px 0 10px 0;
+  border-bottom: 1px dashed var(--border, #e2e8f0);
+  margin-bottom: 10px;
+}
+
+.gate-standard {
+  font-weight: 500;
+}
+
+.gate-metric {
+  color: var(--text-primary, #0f172a);
+}
+
+.gate-desc {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-secondary, #475569);
+  margin: 0;
+}

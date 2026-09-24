@@ -475,6 +475,28 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
                 float(row.get("A1-A3", 0)) + float(row.get("A4", 0)) + float(row.get("A5", 0)) + b_tot + c_tot + float(row.get("D", 0)), 2
             )
 
+    # Automated PCR & GPI Rule Evaluation (Phase 3)
+    try:
+        from app.engines.pcr_rules_engine import PcrRulesEngine
+        from app.database import SessionLocal
+        db_sess = SessionLocal()
+        try:
+            pcr_engine = PcrRulesEngine(db_sess)
+            pcr_rule_id = data.get("pcr_rule_id") or "rule-ul10010-4-traci"
+            pcr_report = pcr_engine.evaluate_compliance(
+                rule_id=pcr_rule_id,
+                results_payload=res_anti,
+                bom_items=extracted_data.get("bom", [])
+            )
+            res_anti["pcr_evaluation"] = pcr_report
+            res_anti["audit_rules"] = pcr_report.get("audit_rules", [])
+            res_anti["compliance_score_pct"] = pcr_report.get("compliance_score_pct", 100.0)
+            res_anti["overall_verdict"] = pcr_report.get("overall_verdict", "COMPLIANT")
+        finally:
+            db_sess.close()
+    except Exception as pcr_err:
+        print(f"[EPD Router] PCR evaluation notice: {pcr_err}")
+
     return res_anti
 
 

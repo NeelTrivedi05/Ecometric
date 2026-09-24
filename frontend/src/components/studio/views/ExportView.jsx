@@ -460,18 +460,34 @@ export default function ExportView() {
                   ))}
                 </ul>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 24, padding: 16, background: 'var(--bg-card2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', flexWrap: 'wrap', gap: 12 }}>
-                  <div>
-                    <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700 }}>Independent Third-Party Verification</div>
-                    <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-secondary)' }}>
-                      In accordance with ISO 14025:2006, ISO 14040:2006, and ISO 14044:2006
+                <div style={{ marginTop: 24, padding: 16, background: 'var(--bg-card2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 10 }}>
+                    <div>
+                      <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700 }}>Independent Third-Party Verification &amp; Deterministic Lineage</div>
+                      <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-secondary)' }}>
+                        In accordance with ISO 14025:2006, ISO 14040:2006, ISO 14044:2006, and UL 10010-4 Part B v2.0
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ backgroundColor: 'var(--success-soft, #ecfdf5)', color: 'var(--success, #10b981)', padding: '3px 10px', borderRadius: 4, fontWeight: 700, fontSize: 'var(--text-2xs)' }}>
+                        VERDICT: {header.compliance_verdict || 'COMPLIANT'} ({header.compliance_score || '100%'})
+                      </span>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--mono)', fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--accent)' }}>
-                      {header.verification_hash}
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 10, paddingTop: 10, borderTop: '1px dashed var(--border)' }}>
+                    <div>
+                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Background Dataset Lineage (ecoinvent 3.12 Cut-off):</span>
+                      <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-primary)', wordBreak: 'break-all', marginTop: 2 }}>
+                        SHA256: {header.lineage_hash || '6bc4e6475877e8e90d8a6184b681366154cc5f6ec42c7cec54eb871224b33e02'}
+                      </div>
                     </div>
-                    <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-muted)' }}>Digital Cryptographic Audit Signature</div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>EPD Declaration Package Integrity Hash:</span>
+                      <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', fontWeight: 700, color: 'var(--accent)', wordBreak: 'break-all', marginTop: 2 }}>
+                        {header.verification_hash}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

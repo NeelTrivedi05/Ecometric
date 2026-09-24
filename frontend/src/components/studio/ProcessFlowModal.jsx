@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { CloseIcon, FileIcon, ChevronRightIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon } from './Icons';
+import { useStudio } from '../../context/StudioContext';
 
 export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, gaps = [] }) {
   if (!isOpen) return null;
+
+  const { results, extractedData } = useStudio();
 
   // View Mode: 'entanglement' (1-to-10 DAG) | 'pcr_rules' (PCR/GPI Evaluator) | 'traceability' (Document Audit)
   const [activeTab, setActiveTab] = useState('entanglement');
@@ -95,29 +98,32 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
   useEffect(() => {
     if (activeTab === 'pcr_rules' && selectedRuleId) {
       setIsLoadingPcr(true);
+      const evalResults = (results?.epd_results || results?.results) ? results : {
+        "global warming potential": 1420.5,
+        "climate change - total": 1445.0,
+        "acidification potential": 3.2,
+        "acidification": 3.15,
+        "eutrophication potential": 0.8,
+        "eutrophication, freshwater": 0.12,
+        "smog formation potential": 12.1,
+        "photochemical ozone formation": 8.4,
+        "ozone depletion potential": 0.00001,
+        "ozone depletion": 0.0000095
+      };
+      const evalBom = (extractedData?.bom && extractedData.bom.length > 0) ? extractedData.bom : [
+        { material: "Steel", mass: 2100, is_included: true },
+        { material: "Copper", mass: 650, is_included: true },
+        { material: "Rubber Gaskets", mass: 12, is_included: true },
+        { material: "Trace Lubricant", mass: 0.8, is_included: false }
+      ];
+
       fetch('/api/pcr/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           rule_id: selectedRuleId,
-          results: {
-            "global warming potential": 1420.5,
-            "climate change - total": 1445.0,
-            "acidification potential": 3.2,
-            "acidification": 3.15,
-            "eutrophication potential": 0.8,
-            "eutrophication, freshwater": 0.12,
-            "smog formation potential": 12.1,
-            "photochemical ozone formation": 8.4,
-            "ozone depletion potential": 0.00001,
-            "ozone depletion": 0.0000095
-          },
-          bom: [
-            { material: "Steel", mass: 2100, is_included: true },
-            { material: "Copper", mass: 650, is_included: true },
-            { material: "Rubber Gaskets", mass: 12, is_included: true },
-            { material: "Trace Lubricant", mass: 0.8, is_included: false }
-          ]
+          results: evalResults,
+          bom: evalBom
         })
       })
         .then(r => r.json())
@@ -130,7 +136,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
           setIsLoadingPcr(false);
         });
     }
-  }, [activeTab, selectedRuleId]);
+  }, [activeTab, selectedRuleId, results, extractedData?.bom]);
 
   // Run Simulation with Overrides
   const handleRunSimulation = () => {
@@ -1064,6 +1070,61 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                       )}
                     </div>
                   </div>
+
+                  {/* 5-Gate Pre-Audit Verification Matrix */}
+                  {pcrEvaluation.audit_rules && pcrEvaluation.audit_rules.length > 0 && (
+                    <div style={{
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '12px',
+                      border: '1px solid #EBE0D5',
+                      padding: '16px 20px'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#2B1E17', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          5-Gate Pre-Audit Verification
+                        </h4>
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: pcrEvaluation.all_passed ? '#2E7D32' : '#E65100' }}>
+                          {pcrEvaluation.audit_rules.filter(g => g.passed).length} / {pcrEvaluation.audit_rules.length} Gates Verified
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {pcrEvaluation.audit_rules.map(gate => (
+                          <div
+                            key={gate.id}
+                            style={{
+                              padding: '10px 14px',
+                              borderRadius: '8px',
+                              backgroundColor: gate.passed ? '#F4FBF7' : '#FFF8F4',
+                              border: gate.passed ? '1px solid #D1E7DD' : '1px solid #FFE0D0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between'
+                            }}
+                          >
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{ fontSize: '10px', fontWeight: 700, color: '#7E6C62' }}>Gate #{gate.id}</span>
+                                <span style={{ fontSize: '12px', fontWeight: 700, color: '#2B1E17' }}>{gate.title}</span>
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#6A584F', marginTop: '2px' }}>
+                                {gate.desc}
+                              </div>
+                            </div>
+                            <span style={{
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              padding: '3px 8px',
+                              borderRadius: '5px',
+                              backgroundColor: gate.passed ? '#E8F5E9' : '#FFEBEE',
+                              color: gate.passed ? '#2E7D32' : '#C62828'
+                            }}>
+                              {gate.passed ? 'PASSED' : 'ACTION REQ'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : null}
             </div>

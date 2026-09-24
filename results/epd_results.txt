@@ -1,39 +1,92 @@
 EPD CALCULATION REPORT
-Generated: 2026-09-24T10:05:52
+Generated: 2026-09-24T11:26:14
 EF data: payload.extracted_ef_values
 Methodology: TRACI v2.1 (payload value 'TRACI 2.1', read from metadata.methodology)
 
-BOM imported (7 items, total 3880 kg):
-  - Compressor Volute & Impeller: 2250 kg  [ecoinvent_steel_hot_rolled_glo]
-  - Evaporator & Condenser Tubes: 720 kg  [ecoinvent_copper_tube_wire_glo]
-  - Semi-Hermetic Induction Motor: 480 kg  [ecoinvent_electric_motor_industrial_glo]
-  - Thermal PUF Insulation Jackets: 140 kg  [ecoinvent_insulation_pu_rigid_rer]
-  - Solid-State Variable Frequency Drive: 110 kg  [ecoinvent_electronics_vfd_glo]
-  - Subcooler Microchannel Coils: 95 kg  [ecoinvent_aluminium_cast_alloy_glo]
-  - Refrigerant High-Pressure Piping: 85 kg  [ecoinvent_steel_stainless_304_glo]
-EF providers loaded: 23
+BOM imported (0 items, total 0 kg):
+EF providers loaded: 11 | MISSING: ['ecoinvent_copper_tube_wire_glo', 'ecoinvent_diesel_dismantling_glo', 'ecoinvent_gas_burned_boiler_glo', 'ecoinvent_steel_hot_rolled_glo', 'ecoinvent_waste_incineration_glo', 'ecoinvent_water_deionised_glo']
 Derived replacement cycles (B4): 2.0
 
-=== 10 ASSUMPTION/WARNING(S) - review before trusting the numbers ===
+=== 70 ASSUMPTION/WARNING(S) - review before trusting the numbers ===
   - UNITS: the EF data has no reference-unit field, so EFs are assumed to be per kg (materials, waste), per kWh (electricity), per MJ (gas), per m3 (water), per litre (diesel) and per tonne-km (transport). Check that each matched activity really uses that unit.
-  - A2: no per-leg linked mass in payload - using total BOM mass (3880.0 kg) on every A2 leg (total_bom_mass fallback). This likely overcounts if materials actually split across legs.
   - A3: annual facility totals divided by annual_production_units (1000) to get per-unit inputs.
-  - A4: no explicit finished-product mass field in payload - using sum of A1 BOM mass (3880.0 kg) as product mass.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - A4: no explicit finished-product mass field in payload - using sum of A1 BOM mass (0.0 kg) as product mass.
   - B1/A5: the refrigerant CF is a GWP100 factor, so it is added only to the GWP100 total/fossil rows. All other rows (GWP20, GWP500, GTP, biogenic, land use, ...) exclude refrigerant emissions.
   - A5 crane diesel: converted 37.8 L -> 1353.24 MJ (x35.8) to match the provider's reference unit. Diesel energy content is an assumption (DIESEL_MJ_PER_LITRE).
-  - A5: commissioning_refrigerant_loss_kg has no ecoinvent provider - applying the B1 refrigerant GWP CF to GWP rows only, as an assumption.
-  - C1 deconstruction energy: converted 120 kWh -> 432 MJ (x3.6) to match the provider's reference unit.
-  - C2: no explicit end-of-life mass field - using sum of A1 BOM mass (3880.0 kg) as waste mass.
-  - D: one virgin/recycled provider pair is applied to the WHOLE recovered mass. Steel is 60% of the BOM mass, so copper, aluminium, foam and electronics are credited as if they were steel (approximation).
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - C2: no explicit end-of-life mass field - using sum of A1 BOM mass (0.0 kg) as waste mass.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - D: one virgin/recycled provider pair is applied to the WHOLE recovered mass. Steel is 0% of the BOM mass, so copper, aluminium, foam and electronics are credited as if they were steel (approximation).
 
 Impact category                                                              |         A1 |         A2 |         A3 |      A1-A3 |         A4 |         A5 |         B1 |         B2 |         B3 |         B4 |         B5 |         B6 |         B7 |      C1-C4 |         C1 |         C2 |         C3 |         C4 |          D
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-acidification | acidification potential (AP)                                 |  1.168e+02 |  1.777e+00 |  2.381e-01 |  1.188e+02 |  1.009e+00 |  1.169e+01 |  0.000e+00 |  1.845e-01 |  0.000e+00 |  2.630e+02 |  0.000e+00 |  1.005e+05 |  2.460e+01 |  3.551e+01 |  3.542e+00 |  1.552e-01 |  3.038e+01 |  1.432e+00 |  0.000e+00
-climate change | global warming potential (GWP100)                           |  1.548e+04 |  2.308e+02 |  5.980e+01 |  1.577e+04 |  2.194e+02 |  3.745e+03 |  3.218e+04 |  4.815e+01 |  0.000e+00 |  3.947e+04 |  0.000e+00 |  2.265e+07 |  6.420e+03 |  9.261e+03 |  9.245e+02 |  3.376e+01 |  7.930e+03 |  3.736e+02 |  0.000e+00
-ecotoxicity: freshwater | ecotoxicity: freshwater                            |  2.719e+03 |  1.271e+01 |  5.001e+00 |  2.736e+03 |  1.135e+01 |  2.662e+02 |  0.000e+00 |  4.275e+00 |  0.000e+00 |  6.028e+03 |  0.000e+00 |  1.537e+06 |  5.700e+02 |  8.210e+02 |  8.208e+01 |  1.746e+00 |  7.040e+02 |  3.317e+01 |  0.000e+00
-eutrophication | eutrophication potential                                    |  2.126e+01 |  4.170e-01 |  5.804e-02 |  2.174e+01 |  2.262e-01 |  3.095e+00 |  0.000e+00 |  4.973e-02 |  0.000e+00 |  5.012e+01 |  0.000e+00 |  1.768e+04 |  6.630e+00 |  9.564e+00 |  9.547e-01 |  3.480e-02 |  8.189e+00 |  3.859e-01 |  0.000e+00
-human toxicity: carcinogenic | human toxicity: carcinogenic                  |  7.359e-01 |  2.970e-03 |  7.630e-04 |  7.396e-01 |  2.295e-03 |  4.191e-02 |  0.000e+00 |  6.773e-04 |  0.000e+00 |  1.568e+00 |  0.000e+00 |  1.987e+02 |  9.030e-02 |  1.301e-01 |  1.300e-02 |  3.531e-04 |  1.115e-01 |  5.255e-03 |  0.000e+00
-human toxicity: non-carcinogenic | human toxicity: non-carcinogenic          |  7.359e-01 |  2.970e-03 |  7.630e-04 |  7.396e-01 |  2.295e-03 |  4.191e-02 |  0.000e+00 |  6.773e-04 |  0.000e+00 |  1.568e+00 |  0.000e+00 |  1.987e+02 |  9.030e-02 |  1.301e-01 |  1.300e-02 |  3.531e-04 |  1.115e-01 |  5.255e-03 |  0.000e+00
-ozone depletion | ozone depletion potential (ODP)                            |  1.583e-06 |  4.786e-08 |  5.997e-09 |  1.637e-06 |  4.792e-08 |  3.217e-07 |  0.000e+00 |  5.175e-09 |  0.000e+00 |  4.013e-06 |  0.000e+00 |  1.774e-03 |  6.900e-07 |  9.991e-07 |  9.936e-08 |  7.372e-09 |  8.522e-07 |  4.016e-08 |  0.000e+00
-particulate matter formation | particulate matter formation potential (PMFP) |  1.401e+01 |  2.114e-01 |  2.857e-02 |  1.425e+01 |  1.211e-01 |  1.403e+00 |  0.000e+00 |  2.214e-02 |  0.000e+00 |  3.155e+01 |  0.000e+00 |  1.206e+04 |  2.952e+00 |  4.262e+00 |  4.251e-01 |  1.862e-02 |  3.646e+00 |  1.718e-01 |  0.000e+00
-photochemical oxidant formation | maximum incremental reactivity (MIR)       |  6.644e+01 |  1.263e+00 |  1.746e-01 |  6.788e+01 |  7.566e-01 |  9.139e+00 |  0.000e+00 |  1.462e-01 |  0.000e+00 |  1.556e+02 |  0.000e+00 |  5.795e+04 |  1.950e+01 |  2.814e+01 |  2.808e+00 |  1.164e-01 |  2.409e+01 |  1.135e+00 |  0.000e+00
+acidification | acidification potential (AP)                                 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  1.110e+01 |  0.000e+00 |  1.845e-01 |  0.000e+00 |  2.219e+01 |  0.000e+00 |  1.608e+05 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+climate change | global warming potential (GWP100)                           |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.896e+03 |  0.000e+00 |  4.815e+01 |  0.000e+00 |  5.792e+03 |  0.000e+00 |  3.623e+07 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+ecotoxicity: freshwater | ecotoxicity: freshwater                            |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.571e+02 |  0.000e+00 |  4.275e+00 |  0.000e+00 |  5.142e+02 |  0.000e+00 |  2.460e+06 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+eutrophication | eutrophication potential                                    |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.991e+00 |  0.000e+00 |  4.973e-02 |  0.000e+00 |  5.981e+00 |  0.000e+00 |  2.829e+04 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+human toxicity: carcinogenic | human toxicity: carcinogenic                  |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  4.073e-02 |  0.000e+00 |  6.773e-04 |  0.000e+00 |  8.147e-02 |  0.000e+00 |  3.179e+02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+human toxicity: non-carcinogenic | human toxicity: non-carcinogenic          |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  4.073e-02 |  0.000e+00 |  6.773e-04 |  0.000e+00 |  8.147e-02 |  0.000e+00 |  3.179e+02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+ozone depletion | ozone depletion potential (ODP)                            |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  3.112e-07 |  0.000e+00 |  5.175e-09 |  0.000e+00 |  6.225e-07 |  0.000e+00 |  2.838e-03 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+particulate matter formation | particulate matter formation potential (PMFP) |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  1.332e+00 |  0.000e+00 |  2.214e-02 |  0.000e+00 |  2.663e+00 |  0.000e+00 |  1.930e+04 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+photochemical oxidant formation | maximum incremental reactivity (MIR)       |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  8.796e+00 |  0.000e+00 |  1.462e-01 |  0.000e+00 |  1.759e+01 |  0.000e+00 |  9.272e+04 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
