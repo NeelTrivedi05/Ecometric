@@ -31,27 +31,26 @@ class StudioErrorBoundary extends Component {
       return (
         <div style={{ padding: '40px 24px', maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
           <div style={{
-            padding: '24px',
-            backgroundColor: '#FFF8F2',
-            borderRadius: '12px',
-            border: '1px solid #F5DEC8',
-            boxShadow: '0 4px 12px rgba(184,83,29,0.06)'
+            padding: '32px 24px',
+            backgroundColor: '#f5f5f7',
+            borderRadius: '18px',
+            border: '1px solid #d2d2d7'
           }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#9C5832', margin: '0 0 8px 0' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px 0', letterSpacing: '-0.01em' }}>
               Workspace View Recovered
             </h2>
-            <p style={{ fontSize: '13px', color: '#5C4E46', margin: '0 0 16px 0' }}>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary, #86868b)', margin: '0 0 16px 0', lineHeight: 1.47 }}>
               An unexpected render issue occurred in this view. Your uploaded files and calculations remain intact.
             </p>
             <div style={{
               fontSize: '11px',
-              fontFamily: 'monospace',
-              color: '#8F4A14',
+              fontFamily: 'SFMono-Regular, Consolas, monospace',
+              color: '#ff3b30',
               backgroundColor: '#FFFFFF',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              border: '1px solid #EED8C5',
-              marginBottom: '16px',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              border: '1px solid #e5e5ea',
+              marginBottom: '18px',
               textAlign: 'left',
               wordBreak: 'break-all'
             }}>

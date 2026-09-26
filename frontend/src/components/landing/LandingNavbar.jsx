@@ -3,49 +3,64 @@ import { LeafIcon, ChevronRightIcon } from '../studio/Icons';
 
 export default function LandingNavbar({ onLaunchApp }) {
   return (
-    <header className="lp-nav">
-      <div className="lp-container lp-nav-inner">
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '8px',
-            backgroundColor: '#C25A23',
-            color: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 6px rgba(194, 90, 35, 0.25)'
-          }}>
-            <LeafIcon size={18} />
+    <>
+      {/* Tier 1: Apple Global Nav (44px, pure black #000000, 12px text, -0.12px tracking) */}
+      <nav className="apple-global-nav" aria-label="Global Navigation">
+        <div className="lp-container apple-global-nav-inner">
+          <a href="#product" className="apple-nav-brand">
+            <LeafIcon size={14} style={{ color: '#ffffff' }} />
+            <span>EcoMetric</span>
+          </a>
+
+          <div className="apple-global-links">
+            <a href="#product" className="apple-global-link">Overview</a>
+            <a href="#solution" className="apple-global-link">LCA Pipeline</a>
+            <a href="#stages" className="apple-global-link">Modules A1–D</a>
+            <a href="#how-it-works" className="apple-global-link">Methodology</a>
+            <a href="#features" className="apple-global-link">Capabilities</a>
+            <a href="#epds" className="apple-global-link">openEPD & Standards</a>
+            <a href="#faq" className="apple-global-link">Verification FAQ</a>
           </div>
-          <div className="lp-logo">
-            EcoMetric
+
+          <div className="apple-nav-utility">
+            <button
+              type="button"
+              onClick={onLaunchApp}
+              className="apple-btn-dark-utility"
+              title="Open Calculation Studio"
+            >
+              Sign In
+            </button>
           </div>
         </div>
+      </nav>
 
-        {/* Links: Product, How it works, EPDs, Pricing */}
-        <nav className="lp-nav-links">
-          <a href="#product" className="lp-nav-link">Product</a>
-          <a href="#how-it-works" className="lp-nav-link">How it works</a>
-          <a href="#epds" className="lp-nav-link">EPDs</a>
-          <a href="#pricing" className="lp-nav-link">Pricing</a>
-        </nav>
+      {/* Tier 2: Apple Sub-Nav Frosted Glass (52px, parchment 80% with blur, sticky) */}
+      <header className="apple-sub-nav" aria-label="Product Navigation">
+        <div className="lp-container apple-sub-nav-inner">
+          <a href="#product" className="apple-subnav-title">
+            EcoMetric Studio
+          </a>
 
-        {/* Action Button: Get Started */}
-        <div>
-          <button
-            type="button"
-            onClick={onLaunchApp}
-            className="btn-lp-primary"
-            style={{ padding: '9px 20px', fontSize: '13px' }}
-          >
-            <span>Get Started</span>
-            <ChevronRightIcon size={14} />
-          </button>
+          <div className="apple-subnav-links">
+            <a href="#product" className="apple-subnav-link">Overview</a>
+            <a href="#solution" className="apple-subnav-link">Pipeline</a>
+            <a href="#stages" className="apple-subnav-link">Modules</a>
+            <a href="#how-it-works" className="apple-subnav-link">How it works</a>
+            <a href="#faq" className="apple-subnav-link">FAQ</a>
+
+            <button
+              type="button"
+              onClick={onLaunchApp}
+              className="btn-apple-primary"
+              style={{ padding: '8px 18px', fontSize: '13px' }}
+            >
+              <span>Launch Studio</span>
+              <ChevronRightIcon size={13} />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

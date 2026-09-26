@@ -96,13 +96,14 @@ export default function ResultsView() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                backgroundColor: '#FAF0E6',
-                color: '#9C5832',
-                border: '1px solid #E8DDD0',
-                fontWeight: 700,
+                backgroundColor: 'rgba(0, 102, 204, 0.08)',
+                color: 'var(--accent, #0066cc)',
+                border: '1px solid rgba(0, 102, 204, 0.2)',
+                fontWeight: 600,
                 cursor: 'pointer',
-                padding: '6px 12px',
-                borderRadius: 'var(--radius-sm)'
+                padding: '6px 14px',
+                borderRadius: '9999px',
+                transition: 'all 0.15s ease'
               }}
             >
               <span>⛓️ Supply Chain Entanglement & PCR Audit</span>

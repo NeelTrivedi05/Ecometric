@@ -44,10 +44,10 @@ export default function ReviewView() {
       <div className="view-container">
         <h1 className="view-title">Review Extracted Data</h1>
         <div className="empty-state" style={{ padding: '40px 20px', textAlign: 'center' }}>
-          <div className="empty-state-title" style={{ fontSize: '18px', fontWeight: 700, color: '#2C221E' }}>
+          <div className="empty-state-title" style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
             No Data Extracted Yet
           </div>
-          <div className="empty-state-desc" style={{ fontSize: '13px', color: '#7A6B63', maxWidth: '440px', margin: '8px auto 20px auto' }}>
+          <div className="empty-state-desc" style={{ fontSize: '13px', color: 'var(--text-secondary, #86868b)', maxWidth: '440px', margin: '8px auto 20px auto' }}>
             Upload and extract your product engineering files first, or load the verified sample dataset to inspect the full cradle-to-grave lifecycle data.
           </div>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
@@ -110,13 +110,14 @@ export default function ReviewView() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <span style={{
-              backgroundColor: '#FAF0E6',
-              color: '#9C5832',
+              backgroundColor: '#e8f2ff',
+              color: 'var(--accent, #0066cc)',
               fontSize: '11px',
-              fontWeight: 700,
-              padding: '2px 8px',
-              borderRadius: '4px',
-              textTransform: 'uppercase'
+              fontWeight: 600,
+              padding: '2px 10px',
+              borderRadius: '9999px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em'
             }}>
               Phase 2
             </span>
@@ -148,82 +149,58 @@ export default function ReviewView() {
         </div>
       </div>
 
-      {/* ── LIFECYCLE KPI SUMMARY STRIP ── */}
+      {/* ── LIFECYCLE KPI SUMMARY STRIP (Store utility cards: 18px radius, 1px hairline, no shadow) ── */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-        gap: '12px',
-        marginBottom: '20px'
+        gap: '14px',
+        marginBottom: '24px'
       }}>
         {/* Metric 1: Total Mass */}
-        <div style={{
-          backgroundColor: '#FFF',
-          border: '1px solid #EED8C5',
-          borderRadius: '10px',
-          padding: '14px 16px',
-          boxShadow: '0 2px 6px rgba(44,34,30,0.03)'
-        }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: '#8A7A72', textTransform: 'uppercase' }}>Declared Product Mass (A1)</div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: '#C25A23', marginTop: '4px' }}>
-            {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 500, color: '#7A6B63' }}>kg</span>
+        <div className="card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Declared Product Mass (A1)</div>
+          <div style={{ fontSize: '22px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginTop: '4px', letterSpacing: '-0.2px' }}>
+            {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary)' }}>kg</span>
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>{bom.length} BOM components extracted</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>{bom.length} BOM components extracted</div>
         </div>
 
         {/* Metric 2: Total Logistics */}
-        <div style={{
-          backgroundColor: '#FFF',
-          border: '1px solid #EED8C5',
-          borderRadius: '10px',
-          padding: '14px 16px',
-          boxShadow: '0 2px 6px rgba(44,34,30,0.03)'
-        }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: '#8A7A72', textTransform: 'uppercase' }}>Total Logistics Scope (A2 & A4)</div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: '#2C221E', marginTop: '4px' }}>
-            {totalLogisticsKm.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 500, color: '#7A6B63' }}>km</span>
+        <div className="card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Logistics Scope (A2 & A4)</div>
+          <div style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.2px' }}>
+            {totalLogisticsKm.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary)' }}>km</span>
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Inbound + {outboundFreightKm}km delivery</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Inbound + {outboundFreightKm}km delivery</div>
         </div>
 
         {/* Metric 3: Operational Energy */}
-        <div style={{
-          backgroundColor: '#FFF',
-          border: '1px solid #EED8C5',
-          borderRadius: '10px',
-          padding: '14px 16px',
-          boxShadow: '0 2px 6px rgba(44,34,30,0.03)'
-        }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: '#8A7A72', textTransform: 'uppercase' }}>Annual Grid Energy (A3 & B6)</div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: '#2C221E', marginTop: '4px' }}>
-            {((annualFactoryKwh + annualOperationalKwh) / 1000).toFixed(1)} <span style={{ fontSize: '13px', fontWeight: 500, color: '#7A6B63' }}>MWh/yr</span>
+        <div className="card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Annual Grid Energy (A3 & B6)</div>
+          <div style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.2px' }}>
+            {((annualFactoryKwh + annualOperationalKwh) / 1000).toFixed(1)} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary)' }}>MWh/yr</span>
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Plant: {annualFactoryKwh.toLocaleString()} kWh | B6: {annualOperationalKwh.toLocaleString()} kWh</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Plant: {annualFactoryKwh.toLocaleString()} kWh | B6: {annualOperationalKwh.toLocaleString()} kWh</div>
         </div>
 
         {/* Metric 4: Circularity & Recovery */}
-        <div style={{
-          backgroundColor: '#FFF',
-          border: '1px solid #EED8C5',
-          borderRadius: '10px',
-          padding: '14px 16px',
-          boxShadow: '0 2px 6px rgba(44,34,30,0.03)'
-        }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: '#8A7A72', textTransform: 'uppercase' }}>Circularity & Recovery (C3 & D)</div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: '#2E7D32', marginTop: '4px' }}>
-            {recyclingRate}% <span style={{ fontSize: '12px', fontWeight: 600, color: '#2E7D32' }}>({avoidedBurdenCo2e.toLocaleString()} kg CO₂e)</span>
+        <div className="card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Circularity & Recovery (C3 & D)</div>
+          <div style={{ fontSize: '22px', fontWeight: 600, color: '#28cd41', marginTop: '4px', letterSpacing: '-0.2px' }}>
+            {recyclingRate}% <span style={{ fontSize: '12px', fontWeight: 600, color: '#28cd41' }}>({avoidedBurdenCo2e.toLocaleString()} kg CO₂e)</span>
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Net avoided burden virgin offset</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Net avoided burden virgin offset</div>
         </div>
       </div>
 
-      {/* ── STAGE FILTER TABS ── */}
+      {/* ── STAGE FILTER TABS (Apple configurator option chip grammar) ── */}
       <div style={{
         display: 'flex',
         gap: '8px',
         overflowX: 'auto',
-        paddingBottom: '6px',
+        paddingBottom: '8px',
         marginBottom: '20px',
-        borderBottom: '1px solid #EED8C5'
+        borderBottom: '1px solid var(--border)'
       }}>
         {tabs.map(tab => {
           const isActive = activeTab === tab.id;
@@ -233,29 +210,28 @@ export default function ReviewView() {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               style={{
-                padding: '8px 14px',
-                borderRadius: '8px 8px 0 0',
-                border: isActive ? '1px solid #EED8C5' : '1px solid transparent',
-                borderBottom: isActive ? '2px solid #C25A23' : 'none',
-                backgroundColor: isActive ? '#FFF' : 'transparent',
-                color: isActive ? '#C25A23' : '#7A6B63',
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-pill)',
+                border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
+                backgroundColor: isActive ? 'var(--accent-dim)' : '#FFFFFF',
+                color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
                 fontSize: '13px',
-                fontWeight: isActive ? 700 : 500,
+                fontWeight: isActive ? 600 : 400,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
                 whiteSpace: 'nowrap',
                 transition: 'all 0.15s ease'
               }}
             >
               <span>{tab.label}</span>
               <span style={{
-                fontSize: '10px',
-                padding: '1px 6px',
-                borderRadius: '10px',
-                backgroundColor: isActive ? '#FAF0E6' : '#F2EBE5',
-                color: isActive ? '#9C5832' : '#8A7A72',
+                fontSize: '11px',
+                padding: '1px 7px',
+                borderRadius: 'var(--radius-pill)',
+                backgroundColor: isActive ? 'var(--accent)' : 'var(--border)',
+                color: isActive ? '#FFFFFF' : 'var(--text-secondary)',
                 fontWeight: 600
               }}>
                 {tab.badge}
@@ -267,13 +243,13 @@ export default function ReviewView() {
 
       {/* ── PROJECT INFORMATION CARD (Always Visible) ── */}
       <div className="card" style={{ marginBottom: '20px' }}>
-        <div className="card-title" style={{ fontSize: '14px', fontWeight: 700, color: '#2C221E', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LayersIcon size={16} style={{ color: '#C25A23' }} />
+        <div className="card-title" style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LayersIcon size={16} style={{ color: 'var(--accent)' }} />
           <span>Project Scope & Reference Declarations</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
           <div className="form-group">
-            <label className="form-label" style={{ fontSize: '12px', fontWeight: 600, color: '#5C4E46' }}>Product Name</label>
+            <label className="form-label" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)' }}>Product Name</label>
             <input
               className="form-input"
               type="text"
@@ -283,7 +259,7 @@ export default function ReviewView() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label" style={{ fontSize: '12px', fontWeight: 600, color: '#5C4E46' }}>Manufacturer</label>
+            <label className="form-label" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)' }}>Manufacturer</label>
             <input
               className="form-input"
               type="text"
@@ -293,7 +269,7 @@ export default function ReviewView() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label" style={{ fontSize: '12px', fontWeight: 600, color: '#5C4E46' }}>Functional / Declared Unit</label>
+            <label className="form-label" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)' }}>Functional / Declared Unit</label>
             <input
               className="form-input"
               type="text"
@@ -303,7 +279,7 @@ export default function ReviewView() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label" style={{ fontSize: '12px', fontWeight: 600, color: '#5C4E46' }}>PCR Standard Reference</label>
+            <label className="form-label" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)' }}>PCR Standard Reference</label>
             <input
               className="form-input"
               type="text"
@@ -319,10 +295,10 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'a1_a3') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#FAF0E6', color: '#9C5832', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               STAGE A1–A3
             </span>
-            <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Upstream Production & Manufacturing Stage
             </h2>
           </div>
@@ -331,11 +307,11 @@ export default function ReviewView() {
           <div className="card" style={{ marginBottom: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
-                <div className="card-title" style={{ fontSize: '14px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+                <div className="card-title" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
                   Module A1: Raw Materials Bill of Materials (BOM) — {bom.length} Components
                 </div>
-                <div style={{ fontSize: '12px', color: '#7A6B63', marginTop: '2px' }}>
-                  Total Declared Product Mass: <strong style={{ color: '#C25A23' }}>{totalMass.toLocaleString()} kg</strong>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
+                  Total Declared Product Mass: <strong style={{ color: 'var(--accent, #0066cc)' }}>{totalMass.toLocaleString()} kg</strong>
                 </div>
               </div>
             </div>
@@ -356,10 +332,10 @@ export default function ReviewView() {
                   <tbody>
                     {bom.map((item, idx) => (
                       <tr key={item.id || idx}>
-                        <td style={{ fontWeight: 600, color: '#2C221E', padding: '10px 12px' }}>
+                        <td style={{ fontWeight: 600, color: 'var(--text-primary)', padding: '10px 12px' }}>
                           {item.name || item.comp || item.component || `Component ${idx + 1}`}
                         </td>
-                        <td style={{ color: '#5C4E46', padding: '10px 12px' }}>
+                        <td style={{ color: 'var(--text-secondary, #86868b)', padding: '10px 12px' }}>
                           {item.material || item.mat || '—'}
                         </td>
                         <td className="num" style={{ textAlign: 'right', fontWeight: 600, padding: '10px 12px' }}>
@@ -367,10 +343,10 @@ export default function ReviewView() {
                         </td>
                         <td style={{ textAlign: 'center', padding: '10px 12px' }}>
                           <span style={{
-                            backgroundColor: '#FAF0E6',
-                            color: '#9C5832',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
+                            backgroundColor: '#e8f2ff',
+                            color: 'var(--accent, #0066cc)',
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
                             fontSize: '11px',
                             fontWeight: 600
                           }}>
@@ -390,7 +366,7 @@ export default function ReviewView() {
               </div>
             ) : (
               <div className="empty-state" style={{ padding: '24px', textAlign: 'center' }}>
-                <div className="empty-state-desc" style={{ color: '#7A6B63', fontSize: '13px' }}>
+                <div className="empty-state-desc" style={{ color: 'var(--text-secondary, #86868b)', fontSize: '13px' }}>
                   No BOM components extracted yet.
                 </div>
               </div>
@@ -401,7 +377,7 @@ export default function ReviewView() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '18px' }}>
             {/* Module A2: Inbound Freight */}
             <div className="card">
-              <div className="card-title" style={{ fontSize: '14px', fontWeight: 700, color: '#2C221E', marginBottom: '12px' }}>
+              <div className="card-title" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
                 Module A2: Inbound Logistics & Transport
               </div>
               {transport.filter(t => !t.module || t.module === 'A2').length > 0 ? (
@@ -426,7 +402,7 @@ export default function ReviewView() {
                   </table>
                 </div>
               ) : (
-                <div style={{ padding: '16px', backgroundColor: '#FCFAF8', borderRadius: '8px', fontSize: '12px', color: '#7A6B63' }}>
+                <div style={{ padding: '16px', backgroundColor: '#f5f5f7', borderRadius: '8px', fontSize: '12px', color: 'var(--text-secondary, #86868b)' }}>
                   Defaulting to UL 10010-4 regional standard: <strong>500 km heavy lorry</strong> transport to assembly plant.
                 </div>
               )}
@@ -434,12 +410,12 @@ export default function ReviewView() {
 
             {/* Module A3: Manufacturing Utilities */}
             <div className="card">
-              <div className="card-title" style={{ fontSize: '14px', fontWeight: 700, color: '#2C221E', marginBottom: '12px' }}>
+              <div className="card-title" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
                 Module A3: Manufacturing & Assembly Utilities
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Annual Grid Electricity (kWh)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Annual Grid Electricity (kWh)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -449,7 +425,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Natural Gas (MJ)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Natural Gas (MJ)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -459,7 +435,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Process Water (m³)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Process Water (m³)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -478,10 +454,10 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'a4_a5') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#FAF0E6', color: '#9C5832', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               STAGE A4–A5
             </span>
-            <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Construction & Installation Stage
             </h2>
           </div>
@@ -489,13 +465,13 @@ export default function ReviewView() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '18px' }}>
             {/* Module A4: Outbound Transport */}
             <div className="card">
-              <div className="card-title" style={{ fontSize: '14px', fontWeight: 700, color: '#2C221E', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <TruckIcon size={16} style={{ color: '#C25A23' }} />
+              <div className="card-title" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <TruckIcon size={16} style={{ color: 'var(--accent, #0066cc)' }} />
                 <span>Module A4: Outbound Transport to Customer Site</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Delivery Distance to Installation Site (km)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Delivery Distance to Installation Site (km)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -504,7 +480,7 @@ export default function ReviewView() {
                     placeholder="500"
                   />
                 </div>
-                <div style={{ padding: '8px 12px', backgroundColor: '#FCFAF8', borderRadius: '6px', fontSize: '12px', color: '#7A6B63' }}>
+                <div style={{ padding: '8px 12px', backgroundColor: '#f5f5f7', borderRadius: '8px', fontSize: '12px', color: 'var(--text-secondary, #86868b)' }}>
                   Standard emission factor: <strong>0.088 kg CO₂e / t·km</strong> (ecoinvent v3.12 market for transport, freight, lorry &gt;32 metric ton, EURO6).
                 </div>
               </div>
@@ -512,12 +488,12 @@ export default function ReviewView() {
 
             {/* Module A5: Installation & Rigging */}
             <div className="card">
-              <div className="card-title" style={{ fontSize: '14px', fontWeight: 700, color: '#2C221E', marginBottom: '12px' }}>
+              <div className="card-title" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', letterSpacing: '-0.01em' }}>
                 Module A5: Installation, Rigging & Commissioning
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>On-Site Installation Energy (kWh)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>On-Site Installation Energy (kWh)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -527,7 +503,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Commissioning Refrigerant Loss (kg)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Commissioning Refrigerant Loss (kg)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -538,7 +514,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Rigging Crane Mobile Diesel (liters)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Rigging Crane Mobile Diesel (liters)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -557,10 +533,10 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'b1_b7') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#FAF0E6', color: '#9C5832', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               STAGE B1–B7
             </span>
-            <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Operational Use Stage (25-Year Reference Service Life)
             </h2>
           </div>
@@ -568,12 +544,12 @@ export default function ReviewView() {
           <div className="card" style={{ marginBottom: '16px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
               {/* B1: Fugitive Leaks */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '16px', backgroundColor: 'var(--bg-base, #f5f5f7)', borderRadius: 'var(--radius-lg, 18px)', border: '1px solid var(--border, #e0e0e0)' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '10px' }}>
                   Module B1: Direct Fugitive Emissions
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Refrigerant Designation</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Refrigerant Designation</label>
                   <input
                     type="text"
                     className="form-input"
@@ -583,7 +559,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Initial Charge (kg)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Initial Charge (kg)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -593,7 +569,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Annual Leak Rate (%/yr)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Annual Leak Rate (%/yr)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -606,12 +582,12 @@ export default function ReviewView() {
               </div>
 
               {/* B2 & B3: Maintenance & Repair */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '16px', backgroundColor: 'var(--bg-base, #f5f5f7)', borderRadius: 'var(--radius-lg, 18px)', border: '1px solid var(--border, #e0e0e0)' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '10px' }}>
                   Module B2 & B3: Servicing & Repair
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Maintenance Power (kWh/yr)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Maintenance Power (kWh/yr)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -621,7 +597,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Operational Leak Rate (%/yr)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Operational Leak Rate (%/yr)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -634,12 +610,12 @@ export default function ReviewView() {
               </div>
 
               {/* B4 & B5: Replacement & Refurbishment */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '16px', backgroundColor: 'var(--bg-base, #f5f5f7)', borderRadius: 'var(--radius-lg, 18px)', border: '1px solid var(--border, #e0e0e0)' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '10px' }}>
                   Module B4 & B5: Overhaul & Refurbishment
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Reference Service Life (RSL Years)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Reference Service Life (RSL Years)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -651,12 +627,12 @@ export default function ReviewView() {
               </div>
 
               {/* B6 & B7: Operational Energy & Water */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '16px', backgroundColor: 'var(--bg-base, #f5f5f7)', borderRadius: 'var(--radius-lg, 18px)', border: '1px solid var(--border, #e0e0e0)' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '10px' }}>
                   Module B6 & B7: Operational Energy & Water
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Equipment Rated Efficiency (kW/ton)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Equipment Rated Efficiency (kW/ton)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -667,7 +643,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Equipment Rated Capacity (RT)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Equipment Rated Capacity (RT)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -677,7 +653,7 @@ export default function ReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Cooling Tower Water Makeup (m³/yr)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Cooling Tower Water Makeup (m³/yr)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -696,10 +672,10 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'c1_c4') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#FAF0E6', color: '#9C5832', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               STAGE C1–C4
             </span>
-            <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               End of Life Stage (Decommissioning & Waste Disposal)
             </h2>
           </div>
@@ -707,7 +683,7 @@ export default function ReviewView() {
           <div className="card">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Decommissioning Energy (C1 kWh)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Decommissioning Energy (C1 kWh)</label>
                 <input
                   type="number"
                   className="form-input"
@@ -717,7 +693,7 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Waste Transport to Processing (C2 km)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Waste Transport to Processing (C2 km)</label>
                 <input
                   type="number"
                   className="form-input"
@@ -727,7 +703,7 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Recycling & Recovery Rate (C3 %)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Recycling & Recovery Rate (C3 %)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -738,7 +714,7 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Sanitary Landfill Fraction (C4 %)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Sanitary Landfill Fraction (C4 %)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -749,7 +725,7 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Thermal Incineration Rate (C3 %)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Thermal Incineration Rate (C3 %)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -768,22 +744,22 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'd') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#E8F5E9', color: '#2E7D32', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: 'rgba(52, 199, 89, 0.12)', color: '#28cd41', padding: '3px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600 }}>
               MODULE D
             </span>
-            <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Benefits & Loads Beyond System Boundary (Circularity Credits)
             </h2>
           </div>
 
-          <div className="card" style={{ borderLeft: '4px solid #2E7D32' }}>
-            <div style={{ fontSize: '13px', color: '#5C4E46', marginBottom: '14px' }}>
+          <div className="card" style={{ borderLeft: '4px solid #28cd41' }}>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary, #86868b)', marginBottom: '14px' }}>
               ISO 21930 & EN 15804+A2 require explicit accounting of exported secondary materials, avoided virgin production credits, and refrigerant reclamation.
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Steel Scrap Recovery Rate (%)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Steel Scrap Recovery Rate (%)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -794,7 +770,7 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Copper Scrap Recovery Rate (%)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Copper Scrap Recovery Rate (%)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -805,7 +781,7 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Aluminium Recovery Rate (%)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Aluminium Recovery Rate (%)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -816,7 +792,7 @@ export default function ReviewView() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Refrigerant Reclamation Rate (%)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Refrigerant Reclamation Rate (%)</label>
                 <input
                   type="number"
                   step="0.1"

@@ -10,33 +10,35 @@ export default function Faq() {
   };
 
   return (
-    <section id="faq" style={{ padding: '80px 0', backgroundColor: '#FAF6F0' }}>
+    <section className="product-tile-parchment" id="faq">
       <div className="lp-container">
-        <div className="section-header">
-          <div className="section-badge">
-            <span>Regulatory Knowledge Base</span>
+        <div className="apple-section-header">
+          <div className="apple-section-eyebrow">
+            Regulatory Knowledge Base
           </div>
-          <h2 className="section-title">Frequently Asked Questions</h2>
-          <p className="section-subtitle">
-            Everything you need to know about ISO 14025, EN 15804+A2, ecoinvent v3.12, and third-party verification.
+          <h2 className="apple-section-title">
+            Frequently Asked Questions
+          </h2>
+          <p className="apple-section-subtitle">
+            Essential facts on ISO 14025, EN 15804+A2, ecoinvent v3.12, and third-party verification.
           </p>
         </div>
 
-        <div style={{ maxWidth: '780px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <div key={idx} className="faq-item">
+              <div key={idx} className="apple-disclosure-item">
                 <button
                   type="button"
-                  className="faq-question"
+                  className="apple-disclosure-trigger"
                   onClick={() => toggle(idx)}
                 >
                   <span>{faq.q}</span>
                   <span style={{
                     transform: isOpen ? 'rotate(90deg)' : 'none',
                     transition: 'transform 0.2s ease',
-                    color: '#C25A23',
+                    color: 'var(--apple-primary)',
                     display: 'flex',
                     alignItems: 'center'
                   }}>
@@ -44,7 +46,7 @@ export default function Faq() {
                   </span>
                 </button>
                 {isOpen && (
-                  <div className="faq-answer">
+                  <div className="apple-disclosure-content">
                     {faq.a}
                   </div>
                 )}

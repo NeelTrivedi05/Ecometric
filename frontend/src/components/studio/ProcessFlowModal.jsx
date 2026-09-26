@@ -390,11 +390,11 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{
                       fontSize: '11px',
-                      fontWeight: 700,
-                      color: deltaGwpPct > 0 ? '#C25A23' : '#2E7D32',
-                      backgroundColor: deltaGwpPct > 0 ? '#FDF2EB' : '#E8F5E9',
-                      padding: '3px 8px',
-                      borderRadius: '6px'
+                      fontWeight: 600,
+                      color: deltaGwpPct > 0 ? '#ff3b30' : '#34c759',
+                      backgroundColor: deltaGwpPct > 0 ? 'rgba(255, 59, 48, 0.1)' : 'rgba(52, 199, 89, 0.1)',
+                      padding: '3px 10px',
+                      borderRadius: '9999px'
                     }}>
                       GWP {deltaGwpPct >= 0 ? '+' : ''}{deltaGwpPct.toFixed(2)}% vs Baseline
                     </span>
@@ -1149,15 +1149,16 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                 onClick={() => setSelectedStage('all')}
                 style={{
                   padding: '6px 14px',
-                  borderRadius: '20px',
+                  borderRadius: '9999px',
                   border: '1px solid',
-                  borderColor: selectedStage === 'all' ? '#D47A47' : '#E8DDD4',
-                  backgroundColor: selectedStage === 'all' ? '#FDF5F0' : '#FFFFFF',
-                  color: selectedStage === 'all' ? '#C25A23' : '#6A584F',
+                  borderColor: selectedStage === 'all' ? 'var(--accent, #0066cc)' : '#d2d2d7',
+                  backgroundColor: selectedStage === 'all' ? 'var(--accent, #0066cc)' : '#FFFFFF',
+                  color: selectedStage === 'all' ? '#FFFFFF' : 'var(--text-primary)',
                   fontSize: '12px',
                   fontWeight: 600,
                   cursor: 'pointer',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 All Life Cycle Stages ({params.length})
@@ -1168,15 +1169,16 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                   onClick={() => setSelectedStage(stg.id)}
                   style={{
                     padding: '6px 14px',
-                    borderRadius: '20px',
+                    borderRadius: '9999px',
                     border: '1px solid',
-                    borderColor: selectedStage === stg.id ? '#D47A47' : '#E8DDD4',
-                    backgroundColor: selectedStage === stg.id ? '#FDF5F0' : '#FFFFFF',
-                    color: selectedStage === stg.id ? '#C25A23' : '#6A584F',
+                    borderColor: selectedStage === stg.id ? 'var(--accent, #0066cc)' : '#d2d2d7',
+                    backgroundColor: selectedStage === stg.id ? 'var(--accent, #0066cc)' : '#FFFFFF',
+                    color: selectedStage === stg.id ? '#FFFFFF' : 'var(--text-primary)',
                     fontSize: '12px',
                     fontWeight: 600,
                     cursor: 'pointer',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.15s ease'
                   }}
                 >
                   {stg.label} ({stg.title})
@@ -1212,20 +1214,20 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                         <div style={{
                           width: '28px',
                           height: '28px',
-                          borderRadius: '6px',
-                          backgroundColor: '#FAF0E6',
-                          color: '#C25A23',
+                          borderRadius: '8px',
+                          backgroundColor: 'rgba(0, 102, 204, 0.08)',
+                          color: 'var(--accent, #0066cc)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center'
                         }}>
                           <FileIcon size={16} />
                         </div>
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', wordBreak: 'break-all' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', wordBreak: 'break-all' }}>
                           {doc.label}
                         </div>
                       </div>
-                      <div style={{ fontSize: '11px', color: '#8A7A72', paddingLeft: '36px' }}>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', paddingLeft: '36px' }}>
                         {doc.desc}
                       </div>
                       <div style={{
@@ -1234,7 +1236,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                         alignItems: 'center',
                         gap: '4px',
                         fontSize: '11px',
-                        color: '#2E7D32',
+                        color: '#34c759',
                         paddingLeft: '36px'
                       }}>
                         <CheckCircleIcon size={13} />
@@ -1247,7 +1249,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
 
               {/* Column 2: Extracted Engineering Parameters */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#8A7A72', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.04em' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.04em' }}>
                   2. Extracted Attributes ({filteredParams.length})
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1255,22 +1257,21 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                     <div key={param.id} style={{
                       padding: '12px 14px',
                       backgroundColor: '#FFFFFF',
-                      borderRadius: '10px',
-                      border: '1px solid #EBE2D8',
-                      boxShadow: '0 2px 5px rgba(0,0,0,0.03)',
+                      borderRadius: '11px',
+                      border: '1px solid #e5e5ea',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between'
                     }}>
                       <div>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#2C221E' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                           {param.label}
                         </div>
-                        <div style={{ fontSize: '11px', color: '#9C5832', marginTop: '2px', fontWeight: 500 }}>
+                        <div style={{ fontSize: '11px', color: 'var(--accent, #0066cc)', marginTop: '2px', fontWeight: 500 }}>
                           Assigned to {param.module}
                         </div>
                       </div>
-                      <ChevronRightIcon size={16} color="#B0A299" />
+                      <ChevronRightIcon size={16} color="#86868b" />
                     </div>
                   ))}
                 </div>
@@ -1278,35 +1279,34 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
 
               {/* Column 3: Lifecycle Stage Aggregation */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#8A7A72', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.04em' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.04em' }}>
                   3. EN 15804+A2 Modules
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {stages.map(stg => (
                     <div key={stg.id} style={{
                       padding: '14px',
-                      backgroundColor: selectedStage === stg.id || selectedStage === 'all' ? '#FFFFFF' : '#F5EFEA',
-                      borderRadius: '10px',
+                      backgroundColor: selectedStage === stg.id || selectedStage === 'all' ? '#FFFFFF' : '#f5f5f7',
+                      borderRadius: '11px',
                       border: '1px solid',
-                      borderColor: selectedStage === stg.id ? '#D47A47' : '#EBE2D8',
-                      boxShadow: '0 2px 5px rgba(0,0,0,0.03)'
+                      borderColor: selectedStage === stg.id ? 'var(--accent, #0066cc)' : '#e5e5ea'
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                           {stg.label}
                         </span>
                         <span style={{
                           fontSize: '11px',
                           padding: '2px 8px',
-                          borderRadius: '12px',
-                          backgroundColor: '#FAF0E6',
-                          color: '#C25A23',
+                          borderRadius: '9999px',
+                          backgroundColor: 'rgba(0, 102, 204, 0.08)',
+                          color: 'var(--accent, #0066cc)',
                           fontWeight: 600
                         }}>
                           {stg.count} parameters
                         </span>
                       </div>
-                      <div style={{ fontSize: '12px', color: '#7A6B63', marginTop: '4px' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '4px' }}>
                         {stg.title}
                       </div>
                     </div>

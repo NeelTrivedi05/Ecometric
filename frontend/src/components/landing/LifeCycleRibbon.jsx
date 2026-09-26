@@ -8,103 +8,117 @@ export default function LifeCycleRibbon() {
   const currentStage = LCA_STAGES.find(s => s.id === activeStageId) || LCA_STAGES[0];
 
   return (
-    <section id="stages" style={{ padding: '80px 0', backgroundColor: '#FAF6F0' }}>
+    <section className="product-tile-dark-2" id="stages">
       <div className="lp-container">
-        <div className="section-header">
-          <div className="section-badge">
-            <span>Modular Scoping (EN 15804+A2)</span>
+        <div className="apple-section-header">
+          <div className="apple-section-eyebrow on-dark">
+            Modular Scoping (EN 15804+A2)
           </div>
-          <h2 className="section-title">The Complete Cradle-to-Grave Life Cycle</h2>
-          <p className="section-subtitle">
-            Under EN 15804+A2 and PCR 2019:14, EPDs require comprehensive lifecycle accounting across all 5 standard modules. Click any stage to inspect its boundaries.
+          <h2 className="apple-section-title" style={{ color: 'var(--apple-body-on-dark)' }}>
+            The Complete Cradle-to-Grave Life Cycle
+          </h2>
+          <p className="apple-section-subtitle">
+            Under EN 15804+A2 and PCR 2019:14, EPDs require comprehensive lifecycle accounting across all standard modules. Select any module to inspect its system boundaries.
           </p>
         </div>
 
-        <div className="ribbon-container">
-          {/* Stage Node Selector */}
-          <div className="ribbon-track">
-            {LCA_STAGES.map((stg) => {
-              const isActive = stg.id === activeStageId;
-              return (
-                <div
-                  key={stg.id}
-                  className={`ribbon-node ${isActive ? 'active' : ''}`}
-                  onClick={() => setActiveStageId(stg.id)}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <span style={{
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      backgroundColor: isActive ? '#C25A23' : '#EFE4D8',
-                      color: isActive ? '#FFFFFF' : '#5C4E46',
-                    }}>
-                      {stg.code}
-                    </span>
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#8A7A72' }}>
-                      {stg.gwpShare}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E' }}>
-                    {stg.name}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#7A6B63', marginTop: '4px' }}>
-                    {stg.boundary}
-                  </div>
+        {/* Stage Node Selector Chips */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '12px',
+          marginBottom: '32px'
+        }}>
+          {LCA_STAGES.map((stg) => {
+            const isActive = stg.id === activeStageId;
+            return (
+              <div
+                key={stg.id}
+                onClick={() => setActiveStageId(stg.id)}
+                style={{
+                  backgroundColor: isActive ? 'var(--apple-surface-tile-1)' : 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid',
+                  borderColor: isActive ? 'var(--apple-primary-on-dark)' : 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: 'var(--apple-radius-lg)',
+                  padding: '16px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    padding: '2px 8px',
+                    borderRadius: 'var(--apple-radius-sm)',
+                    backgroundColor: isActive ? 'var(--apple-primary-on-dark)' : 'rgba(255, 255, 255, 0.12)',
+                    color: isActive ? '#000000' : '#ffffff'
+                  }}>
+                    {stg.code}
+                  </span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--apple-primary-on-dark)', fontFamily: 'var(--apple-font-mono)' }}>
+                    {stg.gwpShare}
+                  </span>
                 </div>
-              );
-            })}
+                <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--apple-body-on-dark)', letterSpacing: '-0.2px' }}>
+                  {stg.name}
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--apple-body-muted)', marginTop: '4px' }}>
+                  {stg.boundary}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Selected Stage Detail Panel */}
+        <div style={{
+          backgroundColor: 'var(--apple-surface-tile-1)',
+          borderRadius: 'var(--apple-radius-lg)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          padding: '32px'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--apple-primary-on-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              System Boundary Detail • {currentStage.code}
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--apple-body-muted)' }}>
+              ecoinvent v3.12 Cut-off Allocation
+            </div>
           </div>
 
-          {/* SVG Connector Graphic */}
-          <div style={{ margin: '16px 0 24px 0', textAlign: 'center' }}>
-            <svg width="100%" height="24" viewBox="0 0 800 24" fill="none" style={{ maxWidth: '800px', display: 'block', margin: '0 auto' }}>
-              <line x1="10" y1="12" x2="790" y2="12" stroke="#E5D6C8" strokeWidth="2" strokeDasharray="6 6" />
-              <circle cx="80" cy="12" r="5" fill="#C25A23" />
-              <circle cx="240" cy="12" r="5" fill="#C25A23" />
-              <circle cx="400" cy="12" r="5" fill="#C25A23" />
-              <circle cx="560" cy="12" r="5" fill="#C25A23" />
-              <circle cx="720" cy="12" r="5" fill="#2E7D32" />
-            </svg>
-          </div>
-
-          {/* Detailed Stage Telemetry Card */}
-          <div style={{
-            backgroundColor: '#FAF5EE',
-            borderRadius: '12px',
-            border: '1px solid #EAE0D5',
-            padding: '24px 28px',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '20px'
+          <h3 style={{
+            fontFamily: 'var(--apple-font-display)',
+            fontSize: '24px',
+            fontWeight: 600,
+            color: 'var(--apple-body-on-dark)',
+            marginBottom: '12px'
           }}>
-            <div>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#C25A23', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Stage Specification
-              </div>
-              <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#2C221E', margin: '4px 0 8px 0' }}>
-                {currentStage.code}: {currentStage.name}
-              </h3>
-              <p style={{ fontSize: '13px', color: '#5C4E46', lineHeight: '1.6' }}>
-                {currentStage.desc}
-              </p>
-            </div>
+            {currentStage.name} ({currentStage.code})
+          </h3>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: '#FFFFFF', borderRadius: '6px', border: '1px solid #EFE4D8', fontSize: '12px' }}>
-                <span style={{ color: '#8A7A72' }}>Standard Mandate:</span>
-                <strong style={{ color: '#2C221E' }}>{currentStage.standard}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: '#FFFFFF', borderRadius: '6px', border: '1px solid #EFE4D8', fontSize: '12px' }}>
-                <span style={{ color: '#8A7A72' }}>System Boundary:</span>
-                <strong style={{ color: '#2C221E' }}>{currentStage.boundary}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: '#FFFFFF', borderRadius: '6px', border: '1px solid #EFE4D8', fontSize: '12px' }}>
-                <span style={{ color: '#8A7A72' }}>Typical HVAC GWP Share:</span>
-                <strong style={{ color: '#C25A23' }}>{currentStage.gwpShare}</strong>
-              </div>
-            </div>
+          <p style={{
+            fontSize: '17px',
+            color: 'var(--apple-body-muted)',
+            lineHeight: '1.47',
+            marginBottom: '20px'
+          }}>
+            {currentStage.desc}
+          </p>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingTop: '20px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            fontSize: '13px',
+            color: '#a1a1a6',
+            flexWrap: 'wrap',
+            gap: '8px'
+          }}>
+            <span>Boundary: <strong style={{ color: '#ffffff' }}>{currentStage.boundary}</strong></span>
+            <span>Typical Benchmark GWP Impact: <strong style={{ color: 'var(--apple-primary-on-dark)', fontFamily: 'var(--apple-font-mono)' }}>{currentStage.gwpShare}</strong></span>
           </div>
         </div>
       </div>
