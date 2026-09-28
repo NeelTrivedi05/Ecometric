@@ -75,6 +75,71 @@ class Report(Base):
     generated_at = Column(DateTime, default=datetime.utcnow)
 
     project = relationship("Project", back_populates="reports")
+    report_details = relationship("ReportDetails", back_populates="project", uselist=False, cascade="all, delete-orphan")
+
+class ReportDetails(Base):
+    __tablename__ = "report_details"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    project_id = Column(String, ForeignKey("projects.id"), unique=True, nullable=False, index=True)
+    company_name = Column(String, nullable=True)
+    company_address = Column(Text, nullable=True)
+    company_logo = Column(Text, nullable=True)  # Base64 or URL
+    company_website = Column(String, nullable=True)
+    description_of_company = Column(Text, nullable=True)
+    product_name = Column(String, nullable=True)
+    product_description = Column(Text, nullable=True)
+    product_image = Column(Text, nullable=True)  # Base64 or URL
+    csi_code = Column(String, default="23 64 16.16 Water-Cooled Centrifugal Chiller")
+    technical_data_bullets = Column(JSON, default=list)
+    intended_application = Column(Text, nullable=True)
+    markets = Column(String, default="North America, Global")
+    declaration_number = Column(String, nullable=True)
+    date_of_issue = Column(String, nullable=True)
+    validity_period = Column(String, default="5 Years from the date of issue")
+    program_operator_name = Column(String, nullable=True)
+    program_operator_address = Column(Text, nullable=True)
+    program_operator_website = Column(String, nullable=True)
+    program_operator_logo = Column(Text, nullable=True)
+    general_program_instructions = Column(String, default="Part A: Life Cycle Assessment Calculations and Report Requirements Version 4.0")
+    reference_pcr = Column(Text, default="Part A: Life Cycle Assessment Calculation Rules and Report Requirements (UL Environment, V4.0, 2022)\nPart B: Water Cooled Chiller EPD Requirements (UL Environment V2.0, 2018)")
+    pcr_review_panel = Column(JSON, default=list)
+    lca_practitioner_name = Column(String, nullable=True)
+    lca_practitioner_org = Column(String, nullable=True)
+    is_verified = Column(Boolean, default=False)
+    verification_type = Column(String, default="EXTERNAL")
+    verifier_name = Column(String, nullable=True)
+    verifier_org = Column(String, nullable=True)
+    verifier_email = Column(String, nullable=True)
+    verifier_signature = Column(Text, nullable=True)
+    limitations_text = Column(Text, nullable=True)
+    assumptions_limitations_text = Column(Text, nullable=True)
+    hazardous_substances_statement = Column(Text, nullable=True)
+    cutoff_criteria_text = Column(Text, nullable=True)
+    allocation_text = Column(Text, nullable=True)
+    data_quality_text = Column(Text, nullable=True)
+    extra_references = Column(JSON, default=list)
+    save_as_company_defaults = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    project = relationship("Project", back_populates="report_details")
+
+class CompanyDefaults(Base):
+    __tablename__ = "company_defaults"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    company_name = Column(String, nullable=False, unique=True)
+    company_address = Column(Text, nullable=True)
+    company_logo = Column(Text, nullable=True)
+    company_website = Column(String, nullable=True)
+    description_of_company = Column(Text, nullable=True)
+    lca_practitioner_name = Column(String, nullable=True)
+    lca_practitioner_org = Column(String, nullable=True)
+    limitations_text = Column(Text, nullable=True)
+    assumptions_limitations_text = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class LCIAIndicator(Base):

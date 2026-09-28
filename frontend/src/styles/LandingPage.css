@@ -581,15 +581,19 @@
   .landing-page-root .apple-global-links {
     display: none;
   }
+
   .landing-page-root .apple-subnav-links {
     display: none;
   }
+
   .landing-page-root .apple-hero-headline {
     font-size: 40px;
   }
+
   .landing-page-root .apple-section-title {
     font-size: 30px;
   }
+
   .landing-page-root .apple-footer-grid {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -600,14 +604,54 @@
   .landing-page-root .apple-hero-headline {
     font-size: 34px;
   }
+
   .landing-page-root .apple-hero-tagline {
     font-size: 17px;
   }
+
   .landing-page-root .product-tile-light,
   .landing-page-root .product-tile-parchment,
   .landing-page-root .product-tile-dark,
   .landing-page-root .product-tile-dark-2,
   .landing-page-root .product-tile-dark-3 {
     padding: 56px 0;
+  }
+}
+
+.landing-page-root .cohere-hero-media-grid {
+  grid-template-columns: 1fr;
+}
+
+.landing-page-root .cohere-footer-columns {
+  grid-template-columns: 1fr 1fr;
+}
+
+.landing-page-root .cohere-footer-newsletter {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 768px) {
+  .landing-page-root .cohere-hero-headline {
+    font-size: 40px;
+    letter-spacing: -0.8px;
+  }
+
+  .landing-page-root .cohere-nav-links {
+    display: none;
+  }
+
+  .landing-page-root .research-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .landing-page-root .cohere-footer-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-page-root .cohere-footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
   }
 }

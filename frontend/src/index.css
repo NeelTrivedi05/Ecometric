@@ -2,26 +2,40 @@
 
 :root {
   /* Apple Design Tokens — DESIGN-apple.md */
-  --bg-base: #F5F5F7;           /* canvas-parchment */
-  --bg-card: #FFFFFF;           /* canvas */
-  --bg-card2: #FAFAFC;          /* surface-pearl */
+  --bg-base: #F5F5F7;
+  /* canvas-parchment */
+  --bg-card: #FFFFFF;
+  /* canvas */
+  --bg-card2: #FAFAFC;
+  /* surface-pearl */
   --bg-hover: #F0F0F2;
-  --bg-sidebar: #F5F5F7;        /* canvas-parchment */
+  --bg-sidebar: #F5F5F7;
+  /* canvas-parchment */
 
-  --border: #E0E0E0;            /* hairline */
-  --border-bright: #D2D2D7;     /* surface-chip-translucent base */
-  --border-focus: #0071E3;      /* primary-focus */
+  --border: #E0E0E0;
+  /* hairline */
+  --border-bright: #D2D2D7;
+  /* surface-chip-translucent base */
+  --border-focus: #0071E3;
+  /* primary-focus */
 
-  --text-primary: #1D1D1F;      /* ink / body */
-  --text-secondary: #333333;    /* ink-muted-80 */
-  --text-muted: #7A7A7A;        /* ink-muted-48 */
+  --text-primary: #1D1D1F;
+  /* ink / body */
+  --text-secondary: #333333;
+  /* ink-muted-80 */
+  --text-muted: #7A7A7A;
+  /* ink-muted-48 */
 
-  --accent: #0066CC;            /* Action Blue (#0066cc) */
-  --accent-hover: #0071E3;      /* Focus Blue (#0071e3) */
+  --accent: #0066CC;
+  /* Action Blue (#0066cc) */
+  --accent-hover: #0071E3;
+  /* Focus Blue (#0071e3) */
   --accent-soft: rgba(0, 102, 204, 0.08);
-  --accent-gradient: #0066CC;   /* Zero decorative gradients per Apple specification */
+  --accent-gradient: #0066CC;
+  /* Zero decorative gradients per Apple specification */
   --accent-dim: rgba(0, 102, 204, 0.12);
-  --accent-on-dark: #2997FF;    /* Sky Link Blue (#2997ff) */
+  --accent-on-dark: #2997FF;
+  /* Sky Link Blue (#2997ff) */
 
   --success: #28CD41;
   --success-soft: rgba(40, 205, 65, 0.12);
@@ -36,18 +50,25 @@
 
   /* Shapes & Radii scale from DESIGN-apple.md */
   --radius-xs: 5px;
-  --radius-sm: 8px;             /* rounded.sm */
-  --radius-md: 11px;            /* rounded.md */
-  --radius-lg: 18px;            /* rounded.lg */
-  --radius-full: 9999px;        /* rounded.pill */
+  --radius-sm: 8px;
+  /* rounded.sm */
+  --radius-md: 11px;
+  /* rounded.md */
+  --radius-lg: 18px;
+  /* rounded.lg */
+  --radius-full: 9999px;
+  /* rounded.pill */
 
   --text-2xs: 0.6875rem;
-  --text-xs:  0.75rem;
-  --text-sm:  0.8125rem;
-  --text-base:0.875rem;
-  --text-md:  1.0625rem;        /* 17px body */
-  --text-lg:  1.3125rem;        /* 21px tagline */
-  --text-xl:  1.75rem;         /* 28px lead */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1.0625rem;
+  /* 17px body */
+  --text-lg: 1.3125rem;
+  /* 21px tagline */
+  --text-xl: 1.75rem;
+  /* 28px lead */
 
   /* NO drop shadows on UI chrome; signature drop shadow only for product renders */
   --shadow-sm: none;
@@ -56,7 +77,9 @@
   --shadow-product: 3px 5px 30px 0 rgba(0, 0, 0, 0.22);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -81,19 +104,53 @@ svg {
   max-width: 100%;
 }
 
-.w-3 { width: 12px !important; }
-.w-3\.5 { width: 14px !important; }
-.w-4 { width: 16px !important; }
-.w-5 { width: 20px !important; }
-.w-6 { width: 24px !important; }
-.w-8 { width: 32px !important; }
+.w-3 {
+  width: 12px !important;
+}
 
-.h-3 { height: 12px !important; }
-.h-3\.5 { height: 14px !important; }
-.h-4 { height: 16px !important; }
-.h-5 { height: 20px !important; }
-.h-6 { height: 24px !important; }
-.h-8 { height: 32px !important; }
+.w-3\.5 {
+  width: 14px !important;
+}
+
+.w-4 {
+  width: 16px !important;
+}
+
+.w-5 {
+  width: 20px !important;
+}
+
+.w-6 {
+  width: 24px !important;
+}
+
+.w-8 {
+  width: 32px !important;
+}
+
+.h-3 {
+  height: 12px !important;
+}
+
+.h-3\.5 {
+  height: 14px !important;
+}
+
+.h-4 {
+  height: 16px !important;
+}
+
+.h-5 {
+  height: 20px !important;
+}
+
+.h-6 {
+  height: 24px !important;
+}
+
+.h-8 {
+  height: 32px !important;
+}
 
 .num-font {
   font-family: var(--mono);
@@ -171,7 +228,8 @@ svg {
   color: var(--text-muted);
 }
 
-.crumb-pcr, .crumb-lcia {
+.crumb-pcr,
+.crumb-lcia {
   color: var(--text-secondary);
 }
 
@@ -860,7 +918,7 @@ svg {
   position: relative;
 }
 
-.flow-step + .flow-step {
+.flow-step+.flow-step {
   margin-top: -1px;
 }
 
@@ -1099,8 +1157,15 @@ textarea.form-input {
 }
 
 @keyframes toastSlideIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ─── BACKDROP ─── */
@@ -1214,7 +1279,9 @@ textarea.form-input {
     display: flex;
   }
 
-  .hide-tablet { display: none !important; }
+  .hide-tablet {
+    display: none !important;
+  }
 
   .studio-main-workspace {
     padding: 20px;
@@ -1236,7 +1303,9 @@ textarea.form-input {
     height: 48px;
   }
 
-  .hide-mobile { display: none !important; }
+  .hide-mobile {
+    display: none !important;
+  }
 
   .studio-main-workspace {
     padding: 16px 12px 32px;
@@ -1275,7 +1344,9 @@ textarea.form-input {
 
 /* Large compact (<768px) */
 @media (max-width: 767px) {
-  .hide-compact { display: none !important; }
+  .hide-compact {
+    display: none !important;
+  }
 }
 
 /* ==========================================================================

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStudio } from '../../../context/StudioContext';
 import { DownloadIcon, LeafIcon, CheckIcon, RefreshCwIcon, ChevronRightIcon, InfoIcon, ShieldCheckIcon } from '../Icons';
+import ReportDetailsModal from '../ReportDetailsModal';
 
 export default function ExportView() {
   const {
@@ -21,9 +22,13 @@ export default function ExportView() {
     downloadVerificationBundle,
     isLoading,
     selectedMethodology,
+    setIsReportDetailsModalOpen,
+    exportEpdPdf,
+    reportDetails,
   } = useStudio();
 
   const [activeTab, setActiveTab] = useState('nsf'); // 'nsf' | 'cert' | 'openepd' | 'dqr' | 'json'
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Auto-generate NSF document on first load if not present
   useEffect(() => {
@@ -52,6 +57,19 @@ export default function ExportView() {
     showNotif('EPD verification cryptographic hash copied to clipboard', 'Hash Copied');
   };
 
+  const handleDirectPdfExport = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      showNotif('Compiling 13-page EPD publication PDF via Chromium...', 'Compiling PDF');
+      await exportEpdPdf(reportDetails);
+    } catch (err) {
+      console.error('Direct PDF export failed:', err);
+      showNotif('PDF Export failed: ' + (err.message || 'Unknown error'), 'Export Error');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   const genInfo = nsfDocument?.general_information || {};
   const lcaRules = nsfDocument?.lca_methodology || {};
   const lciaRes = nsfDocument?.lcia_results || {};
@@ -59,143 +77,338 @@ export default function ExportView() {
   const header = nsfDocument?.header || {};
 
   return (
-    <div className="phase-container export-view" style={{ maxWidth: 1240, margin: '0 auto' }}>
-      {/* Top Header & Actions */}
+    <div className="phase-container export-view" style={{ maxWidth: 1240, margin: '0 auto', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif' }}>
+      {/* Top Header & Navigation Breadcrumb */}
       <div className="view-section no-print" style={{ marginBottom: 20 }}>
-        <div className="section-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+        <div className="section-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <h2 className="section-title" style={{ fontSize: 'var(--text-xl)', fontWeight: 800 }}>
-              7. Export EPD &amp; Verification Publishing Suite
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#0071E3', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Phase 7 • Publication &amp; Delivery
+              </span>
+            </div>
+            <h2 className="section-title" style={{
+              fontSize: 26,
+              fontWeight: 600,
+              letterSpacing: '-0.4px',
+              color: '#1D1D1F',
+              margin: 0,
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif'
+            }}>
+              Export EPD &amp; Verification Publishing Suite
             </h2>
-            <p className="section-subtitle" style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+            <p className="section-subtitle" style={{ color: '#86868B', fontSize: 13, marginTop: 4, marginBottom: 0 }}>
               Official NSF / UL 10010-4 Declaration, openEPD® digital standard, PEF 3.0 DQR scoring, and audited 7-file verification ZIP package.
             </p>
           </div>
+
           <div className="export-action-group" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             <button
               type="button"
-              className="btn btn-outline"
+              className="btn"
               onClick={() => setActivePhase('results')}
-              style={{ fontSize: '13px' }}
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #D2D2D7',
+                borderRadius: 9999,
+                padding: '6px 14px',
+                color: '#1D1D1F',
+                cursor: 'pointer'
+              }}
             >
-              Back to View Results
+              ← Back to Results
             </button>
             <button
               type="button"
-              className="btn btn-ghost"
+              className="btn"
               onClick={handleCopyHash}
               title="Copy audit hash"
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #D2D2D7',
+                borderRadius: 9999,
+                padding: '6px 14px',
+                color: '#1D1D1F',
+                cursor: 'pointer'
+              }}
             >
               Copy Hash
             </button>
             <button
               type="button"
-              className="btn btn-ghost"
+              className="btn"
               onClick={handlePrint}
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #D2D2D7',
+                borderRadius: 9999,
+                padding: '6px 14px',
+                color: '#1D1D1F',
+                cursor: 'pointer'
+              }}
             >
-              Print / Save PDF
+              Print / Save View
             </button>
             <button
               type="button"
-              className="btn btn-outline"
+              className="btn"
               onClick={() => openNsfHtmlReport()}
               disabled={!nsfDocument || isLoading}
               title="Open standalone verified HTML report in new tab"
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #D2D2D7',
+                borderRadius: 9999,
+                padding: '6px 14px',
+                color: '#1D1D1F',
+                cursor: 'pointer'
+              }}
             >
               Preview Official HTML
             </button>
             <button
               type="button"
-              className="btn btn-outline"
+              className="btn"
               onClick={() => downloadOpenEpdJson()}
               disabled={isLoading}
               title="Download openEPD v2.0 JSON format"
-              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #D2D2D7',
+                borderRadius: 9999,
+                padding: '6px 14px',
+                color: '#1D1D1F',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                cursor: 'pointer'
+              }}
             >
               <DownloadIcon className="w-3.5 h-3.5" />
               <span>openEPD (JSON)</span>
             </button>
             <button
               type="button"
-              className="btn btn-outline"
+              className="btn"
               onClick={() => downloadNsfJson()}
               disabled={!nsfDocument || isLoading}
-              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #D2D2D7',
+                borderRadius: 9999,
+                padding: '6px 14px',
+                color: '#1D1D1F',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                cursor: 'pointer'
+              }}
             >
               <DownloadIcon className="w-3.5 h-3.5" />
               <span>NSF EPD (JSON)</span>
             </button>
-            <button
-              type="button"
-              className="btn btn-accent"
-              onClick={() => downloadVerificationBundle()}
-              disabled={isLoading}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700 }}
-              title="Export complete 7-file audited verification package"
-            >
-              <DownloadIcon className="w-4 h-4" />
-              <span>Verification Bundle (ZIP)</span>
-            </button>
           </div>
         </div>
 
-        {/* View Switcher Tabs */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 18, borderBottom: '1px solid var(--border)', paddingBottom: 10, flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeTab === 'nsf' ? 'btn-accent' : 'btn-ghost'}`}
-            onClick={() => setActiveTab('nsf')}
-            style={{ fontWeight: 700 }}
-          >
-            Official NSF / UL 10010-4 Declaration
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeTab === 'cert' ? 'btn-accent' : 'btn-ghost'}`}
-            onClick={() => setActiveTab('cert')}
-            style={{ fontWeight: 700 }}
-          >
-            EN 15804+A2 Summary Certificate
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeTab === 'openepd' ? 'btn-accent' : 'btn-ghost'}`}
-            onClick={() => setActiveTab('openepd')}
-            style={{ fontWeight: 700 }}
-          >
-            openEPD® Standard (v2.0)
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeTab === 'dqr' ? 'btn-accent' : 'btn-ghost'}`}
-            onClick={() => setActiveTab('dqr')}
-            style={{ fontWeight: 700 }}
-          >
-            PEF 3.0 Data Quality Rating (DQR)
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeTab === 'json' ? 'btn-accent' : 'btn-ghost'}`}
-            onClick={() => setActiveTab('json')}
-            style={{ fontWeight: 700 }}
-          >
-            Compliant JSON Inspector
-          </button>
+        {/* APPLE HERO ACTION CARD: DIRECT 1-CLICK EPD PDF PUBLICATION */}
+        <div style={{
+          marginTop: 20,
+          backgroundColor: '#FFFFFF',
+          borderRadius: 20,
+          border: '1px solid #E5E5EA',
+          padding: '24px 28px',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.04)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 20
+        }}>
+          <div style={{ maxWidth: 680 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+              <div style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                backgroundColor: '#E8F2FE',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#0071E3'
+              }}>
+                <ShieldCheckIcon className="w-4 h-4" />
+              </div>
+              <h3 style={{
+                margin: 0,
+                fontSize: 17,
+                fontWeight: 600,
+                color: '#1D1D1F',
+                letterSpacing: '-0.3px',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif'
+              }}>
+                Official EPD Publication Document (EPD11017 Reference Standard)
+              </h3>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 600,
+                backgroundColor: '#E8F2FE',
+                color: '#0071E3',
+                padding: '2px 8px',
+                borderRadius: 9999
+              }}>
+                13 Pages High-DPI
+              </span>
+            </div>
 
-          <button
-            type="button"
-            className="btn btn-sm btn-outline"
-            onClick={() => {
-              generateNsfDocument();
-              if (activeTab === 'dqr') generateDqrReport();
-              if (activeTab === 'openepd') generateOpenEpdDocument();
-            }}
-            disabled={isLoading}
-            style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}
-          >
-            <RefreshCwIcon size={14} className={isLoading ? 'spin' : ''} />
-            Regenerate Package
-          </button>
+            <p style={{ margin: '0 0 12px 0', fontSize: 13, color: '#636366', lineHeight: 1.45 }}>
+              Generates the publication-grade Environmental Product Declaration conforming to UL 10010-4 Part B v2.0, EN 15804+A2, and ISO 14025. Includes 16 life cycle stages (A1–D), TRACI 2.1 &amp; PEF parameter matrices, and verifier credentials.
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {['16 Life Cycle Stages (A1–D)', 'Carrier AquaEdge® 19DV Benchmark', 'TRACI 2.1 & EN 15804+A2', 'Cryptographic Seal'].map((chip, idx) => (
+                <span key={idx} style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  backgroundColor: '#F2F2F7',
+                  color: '#1D1D1F',
+                  padding: '3px 10px',
+                  borderRadius: 9999
+                }}>
+                  {chip}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={handleDirectPdfExport}
+              disabled={isGeneratingPdf || isLoading}
+              style={{
+                backgroundColor: isGeneratingPdf ? '#E5E5EA' : '#0071E3',
+                color: isGeneratingPdf ? '#86868B' : '#FFFFFF',
+                border: 'none',
+                borderRadius: 9999,
+                padding: '12px 26px',
+                fontSize: 14,
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                cursor: isGeneratingPdf ? 'not-allowed' : 'pointer',
+                boxShadow: isGeneratingPdf ? 'none' : '0 4px 16px rgba(0, 113, 227, 0.3)',
+                transition: 'all 0.15s ease-in-out'
+              }}
+            >
+              {isGeneratingPdf ? (
+                <>
+                  <RefreshCwIcon size={16} className="spin" />
+                  <span>Compiling PDF via Chromium...</span>
+                </>
+              ) : (
+                <>
+                  <DownloadIcon className="w-4 h-4" />
+                  <span>Download Publication PDF</span>
+                </>
+              )}
+            </button>
+
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={() => setIsReportDetailsModalOpen(true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#0071E3',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  padding: '4px 8px'
+                }}
+              >
+                Configure Report Details &amp; Verifier...
+              </button>
+
+              <span style={{ color: '#D2D2D7' }}>•</span>
+
+              <button
+                type="button"
+                onClick={() => downloadVerificationBundle()}
+                disabled={isLoading}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#636366',
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  padding: '4px 8px'
+                }}
+              >
+                Download Verification Bundle (ZIP)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* APPLE SEGMENTED CONTROL TABS */}
+        <div style={{ marginTop: 22 }}>
+          <div style={{
+            backgroundColor: '#E5E5EA',
+            padding: 3,
+            borderRadius: 12,
+            display: 'inline-flex',
+            gap: 2,
+            width: '100%',
+            overflowX: 'auto'
+          }}>
+            {[
+              { id: 'nsf', label: 'Official NSF / UL 10010-4 Declaration' },
+              { id: 'cert', label: 'EN 15804+A2 Summary Certificate' },
+              { id: 'openepd', label: 'openEPD® Standard (v2.0)' },
+              { id: 'dqr', label: 'PEF 3.0 Data Quality Rating (DQR)' },
+              { id: 'json', label: 'Compliant JSON Inspector' },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  style={{
+                    flex: 1,
+                    minWidth: 'max-content',
+                    padding: '8px 16px',
+                    fontSize: 12,
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? '#1D1D1F' : '#636366',
+                    backgroundColor: isActive ? '#FFFFFF' : 'transparent',
+                    borderRadius: 9,
+                    border: 'none',
+                    boxShadow: isActive ? '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.06)' : 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease-in-out',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -826,6 +1039,9 @@ export default function ExportView() {
           </pre>
         </div>
       )}
+
+      {/* Report Details Pre-Export Modal */}
+      <ReportDetailsModal />
     </div>
   );
 }
