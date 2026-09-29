@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { ALL_METHODOLOGIES, METHODOLOGIES, getMethodology } from '../data/lciaMethodologies';
+import { PRESET_DATASETS } from '../data/presetDatasets';
 
 const API_BASE = '/api';
 
@@ -8,6 +9,7 @@ const StudioContext = createContext(null);
 export function StudioProvider({ children }) {
   // Navigation
   const [activePhase, setActivePhase] = useState('upload');
+  const [currentPresetId, setCurrentPresetId] = useState('aquaedge_500rt');
 
   // Upload state
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -436,52 +438,84 @@ export function StudioProvider({ children }) {
     setIsLoading(false);
   }, [showNotif]);
 
-  // Load specific sample file directly from backend sample library
+  // Load specific sample file directly from backend sample library, with instant offline preset support
   const loadSpecificSample = useCallback(async (filename, title) => {
     setIsLoading(true);
+    const matchedPreset = Object.values(PRESET_DATASETS).find(
+      p => p.filename === filename || p.id === filename || p.title === title
+    );
+
+    if (matchedPreset) {
+      setCurrentPresetId(matchedPreset.id);
+    }
+
+    const applyData = (ext, sampleName, gapList) => {
+      setExtractedData(prev => ({
+        ...prev,
+        ...ext,
+        project_info: { ...prev.project_info, ...(ext.project_info || {}) },
+        manufacturing: { ...prev.manufacturing, ...(ext.manufacturing || {}) },
+        installation: { ...prev.installation, ...(ext.installation || {}) },
+        operational: { ...prev.operational, ...(ext.operational || {}) },
+        end_of_life: { ...prev.end_of_life, ...(ext.end_of_life || {}) },
+        circularity_d: { ...prev.circularity_d, ...(ext.circularity_d || {}) },
+        maintenance_b2: { ...prev.maintenance_b2, ...(ext.maintenance_b2 || {}) },
+        bom: ext.bom && ext.bom.length > 0 ? ext.bom : prev.bom,
+        transport: ext.transport && ext.transport.length > 0 ? ext.transport : prev.transport,
+      }));
+
+      setUploadedFiles([
+        { id: `sample-${Date.now()}`, name: sampleName, size: 85000, type: sampleName.split('.').pop(), status: 'done' }
+      ]);
+
+      if (gapList) {
+        setGaps(gapList);
+      } else if (matchedPreset?.id === 'incomplete_gap_analysis') {
+        setGaps([
+          { id: 'gap-trans', module: 'A2', category: 'Logistics Manifest', severity: 'critical', title: 'Missing Inbound Logistics Manifest', message: 'No Tier-1 freight legs declared for raw materials. UL 10010-4 requires freight manifest.', action: 'Add multimodal freight legs.' },
+          { id: 'gap-outbound', module: 'A4', category: 'Installation', severity: 'high', title: 'Missing Outbound Transit Distance', message: 'Delivery distance to job site not specified.', action: 'Specify outbound transit km.' },
+          { id: 'gap-b1', module: 'B1', category: 'Operation', severity: 'critical', title: 'Missing Refrigerant Factory Charge', message: 'Refrigerant charge is 0 kg. B1 fugitive emissions cannot be calculated.', action: 'Provide nameplate charge.' },
+          { id: 'gap-cutoff', module: 'A1', category: 'Cut-off Rule', severity: 'critical', title: 'Cut-Off Mass Threshold Exceeded (>5%)', message: 'BOM mass covers only 47.7% of declared weight (1,050 kg of 2,200 kg). Violates 95% PCR completeness rule.', action: 'Supply remaining BOM assemblies.' }
+        ]);
+      } else {
+        setGaps([]);
+      }
+    };
+
     try {
       const res = await fetch(`${API_BASE}/documents/load-sample/${encodeURIComponent(filename)}`, {
         method: 'POST'
       });
       if (res.ok) {
         const data = await res.json();
-        const ext = data.extracted || {};
-        setExtractedData(prev => ({
-          ...prev,
-          ...ext,
-          project_info: { ...prev.project_info, ...(ext.project_info || {}) },
-          manufacturing: { ...prev.manufacturing, ...(ext.manufacturing || {}) },
-          installation: { ...prev.installation, ...(ext.installation || {}) },
-          operational: { ...prev.operational, ...(ext.operational || {}) },
-          end_of_life: { ...prev.end_of_life, ...(ext.end_of_life || {}) },
-          circularity_d: { ...prev.circularity_d, ...(ext.circularity_d || {}) },
-          maintenance_b2: { ...prev.maintenance_b2, ...(ext.maintenance_b2 || {}) },
-          bom: ext.bom && ext.bom.length > 0 ? ext.bom : prev.bom,
-          transport: ext.transport && ext.transport.length > 0 ? ext.transport : prev.transport,
-        }));
-
-        setUploadedFiles([
-          { id: `sample-${Date.now()}`, name: filename, size: 85000, type: filename.split('.').pop(), status: 'done' }
-        ]);
-
-        if (data.pcr_gaps && data.pcr_gaps.gaps) {
-          setGaps(data.pcr_gaps.gaps);
-        }
-
+        applyData(data.extracted || {}, filename, data.pcr_gaps?.gaps);
         showNotif(`Loaded: ${title || filename}`, 'Dataset Loaded');
+        setIsLoading(false);
         return true;
-      } else {
-        showNotif(`Failed to load ${filename}`, 'Error');
-        return false;
       }
     } catch (err) {
-      console.error("Error loading sample:", err);
-      showNotif(`Network error loading ${filename}`, 'Error');
-      return false;
-    } finally {
-      setIsLoading(false);
+      console.warn('[StudioContext] Backend load-sample offline fallback:', err);
     }
+
+    if (matchedPreset) {
+      applyData(matchedPreset.extracted, matchedPreset.filename);
+      showNotif(`Loaded preset: ${matchedPreset.title}`, 'Preset Ready');
+      setIsLoading(false);
+      return true;
+    }
+
+    showNotif(`Could not load ${filename}`, 'Notice');
+    setIsLoading(false);
+    return false;
   }, [showNotif]);
+
+  // Load verified preset chiller model
+  const loadPreset = useCallback(async (presetId) => {
+    const preset = PRESET_DATASETS[presetId];
+    if (!preset) return false;
+    setCurrentPresetId(presetId);
+    return await loadSpecificSample(preset.filename, preset.title);
+  }, [loadSpecificSample]);
 
   // ─── USER REVIEW MUTATIONS (CRUD & Provider Selection) ───
   const updateBomItem = useCallback((indexOrId, updatedFields) => {
@@ -1411,6 +1445,10 @@ export function StudioProvider({ children }) {
         setIsFlowModalOpen,
         loadSampleData,
         loadSpecificSample,
+        loadPreset,
+        currentPresetId,
+        setCurrentPresetId,
+        PRESET_DATASETS,
         notification,
         showNotif,
         isSidebarOpen,

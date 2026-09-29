@@ -248,12 +248,12 @@ def generate_material_contribution_chart(bom_items: List[Dict[str, Any]], produc
             name = "Steel"
         elif "stainless" in m_lower:
             name = "Stainless steel"
+        elif "alum" in m_lower:
+            name = "Aluminium"
         elif "iron" in m_lower or "cast" in m_lower:
             name = "Cast iron"
         elif "copper" in m_lower:
             name = "Copper"
-        elif "alum" in m_lower:
-            name = "Aluminium"
         elif "rubber" in m_lower or "polyurethane" in m_lower or "puf" in m_lower or "insulation" in m_lower:
             name = "Synthetic rubber"
         elif "polyvinyl" in m_lower or "pvf" in m_lower:

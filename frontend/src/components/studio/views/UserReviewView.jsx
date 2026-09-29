@@ -228,8 +228,13 @@ export default function UserReviewView() {
     ecoinvent_id: 'ecoinvent_steel_hot_rolled_glo',
   });
 
-  // Calculate live total mass
+  // Calculate live total mass and cut-off coverage per UL 10010-4 / GPI v4.0
   const totalMass = bom.reduce((sum, item) => sum + (Number(item.mass) || 0), 0);
+  const coveredMass = bom
+    .filter(item => item.provider_id || item.ecoinvent_id || item.dataset)
+    .reduce((sum, item) => sum + (Number(item.mass) || 0), 0);
+  const cutoffPct = totalMass > 0 ? (coveredMass / totalMass) * 100 : (bom.length === 0 ? 100 : 0);
+  const isCutoffPassed = cutoffPct >= 95.0 || bom.length === 0;
 
   // Auto-match all BOM items to their best ecoinvent database match
   const autoMatchAllProviders = async () => {
@@ -420,48 +425,35 @@ export default function UserReviewView() {
   };
 
   return (
-    <div className="view-content-wrapper" style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Top Banner */}
-      <div style={{
-        backgroundColor: '#f5f5f7',
-        border: '1px solid #d2d2d7',
-        borderRadius: '18px',
-        padding: '24px 28px',
-        marginBottom: '24px'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <span style={{
-                backgroundColor: 'var(--accent, #0066cc)',
-                color: '#FFF',
-                fontSize: '11px',
-                fontWeight: 600,
-                padding: '3px 10px',
-                borderRadius: '9999px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em'
-              }}>
-                Phase 3: Interactive Workbench
-              </span>
-              <span style={{ fontSize: '13px', color: 'var(--accent, #0066cc)', fontWeight: 600 }}>
-                Editable User Review & Provider Selection
-              </span>
-            </div>
-            <h1 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>
-              Verify & Refine Extracted Engineering Data
-            </h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary, #86868b)', margin: 0, maxWidth: '820px', lineHeight: 1.47 }}>
-              If any extracted values, weights, material classifications, or transport distances require corrections, you can edit them directly below. You can also pick or change the exact <strong>ecoinvent database activity / dataset provider</strong> for each material.
-            </p>
-          </div>
+    <div className="view-content-wrapper" style={{ padding: '24px', maxWidth: '1240px', margin: '0 auto' }}>
+      {/* Apple View Header */}
+      <div className="apple-view-header">
+        <div>
+          <span className="apple-eyebrow">Phase 3 • Interactive Workbench</span>
+          <h1 className="view-title" style={{ margin: 0, fontFamily: 'var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif)', letterSpacing: '-0.022em' }}>
+            Verify &amp; Refine Extracted Engineering Data
+          </h1>
+          <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
+            Directly modify components, verify material classification order, and map ecoinvent v3.12 background activity providers.
+          </p>
+        </div>
+
+        <div className="apple-header-action-group">
           <button
             type="button"
-            className="btn btn-secondary"
-            onClick={() => setIsAddModalOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', padding: '8px 16px', borderRadius: '9999px' }}
+            className="btn-apple-secondary-pill"
+            onClick={autoMatchAllProviders}
+            disabled={isAutoMatching}
           >
-            <PlusIcon size={15} />
+            <RefreshCwIcon size={13} className={isAutoMatching ? 'spin' : ''} />
+            <span>{isAutoMatching ? 'Auto-matching...' : 'Auto-Match ecoinvent'}</span>
+          </button>
+          <button
+            type="button"
+            className="btn-apple-action-blue"
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            <PlusIcon size={14} />
             <span>Add Component</span>
           </button>
         </div>
@@ -470,105 +462,118 @@ export default function UserReviewView() {
       {/* Summary KPI Strip */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '16px',
-        marginBottom: '24px'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+        gap: '14px',
+        marginBottom: '20px'
       }}>
-        <div className="card" style={{ padding: '18px 20px', borderLeft: '4px solid var(--accent, #0066cc)' }}>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Declared Product Mass</div>
-          <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.02em' }}>
-            {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>kg</span>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Declared Product Mass</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#1d1d1f', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+            {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: '#86868b' }}>kg</span>
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>Sum of {bom.length} declared components</div>
+          <div style={{ fontSize: '11px', color: '#86868b', marginTop: '2px' }}>Sum of {bom.length} declared components</div>
         </div>
 
-        <div className="card" style={{ padding: '18px 20px', borderLeft: '4px solid #34c759' }}>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Database Providers Mapped</div>
-          <div style={{ fontSize: '24px', fontWeight: 600, color: '#34c759', marginTop: '4px', letterSpacing: '-0.02em' }}>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Database Providers Mapped</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#28cd41', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
             {bom.filter(b => b.ecoinvent_id || b.dataset).length} / {bom.length}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>ecoinvent v3.12 Cutoff linked</div>
+          <div style={{ fontSize: '11px', color: '#86868b', marginTop: '2px' }}>ecoinvent v3.12 Cutoff linked</div>
         </div>
 
-        <div className="card" style={{ padding: '18px 20px', borderLeft: '4px solid #5856d6' }}>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Inbound Freight Legs</div>
-          <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.02em' }}>
-            {transport.length || 1} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>leg(s)</span>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Inbound Freight Legs</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#1d1d1f', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+            {transport.length || 1} <span style={{ fontSize: '13px', fontWeight: 400, color: '#86868b' }}>leg(s)</span>
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>Module A2 transport routes</div>
+          <div style={{ fontSize: '11px', color: '#86868b', marginTop: '2px' }}>Module A2 transport routes</div>
         </div>
 
-        <div className="card" style={{ padding: '18px 20px', borderLeft: '4px solid #ff9500' }}>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Plant Utility Power</div>
-          <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.02em' }}>
-            {manufacturing.annual_facility_kwh ? Number(manufacturing.annual_facility_kwh).toLocaleString() : '34,000'} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>kWh/yr</span>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Plant Utility Power</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#1d1d1f', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+            {manufacturing.annual_facility_kwh ? Number(manufacturing.annual_facility_kwh).toLocaleString() : '34,000'} <span style={{ fontSize: '13px', fontWeight: 400, color: '#86868b' }}>kWh/yr</span>
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Module A3 factory electricity</div>
+          <div style={{ fontSize: '11px', color: '#86868b', marginTop: '2px' }}>Module A3 factory electricity</div>
         </div>
 
-        <div className="card" style={{ padding: '16px 20px', borderLeft: '4px solid #2E7D32' }}>
-          <div style={{ fontSize: '11px', color: '#8A7A72', fontWeight: 600, textTransform: 'uppercase' }}>Circularity & Avoided Burden</div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: '#2E7D32', marginTop: '4px' }}>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Circularity &amp; Avoided Burden</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#28cd41', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
             {end_of_life.recycling_rate_percent || 92.4}%
           </div>
-          <div style={{ fontSize: '11px', color: '#2E7D32', marginTop: '2px' }}>{circularity_d.net_avoided_burden_gwp_kg || -3210} kg CO₂e offset</div>
+          <div style={{ fontSize: '11px', color: '#28cd41', marginTop: '2px' }}>{circularity_d.net_avoided_burden_gwp_kg || -3210} kg CO₂e offset</div>
         </div>
       </div>
 
-      {/* Stage Filter Tabs */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        overflowX: 'auto',
-        paddingBottom: '6px',
-        marginBottom: '20px',
-        borderBottom: '1px solid #d2d2d7'
-      }}>
-        {[
-          { id: 'all', label: 'All Modules (A1–D)', badge: 'Full Scope' },
-          { id: 'a1_a3', label: 'A1–A3 Production', badge: 'BOM, Freight & Plant' },
-          { id: 'a4_a5', label: 'A4–A5 Construction', badge: 'Outbound & Rigging' },
-          { id: 'b1_b7', label: 'B1–B7 Operational', badge: 'Use Stage' },
-          { id: 'c1_c4', label: 'C1–C4 End of Life', badge: 'Decommissioning' },
-          { id: 'd', label: 'Module D Circularity', badge: 'Net Credits' },
-        ].map(tab => {
-          const isActive = activeStageTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveStageTab(tab.id)}
+      {/* PCR Cut-Off Compliance Bar & Material Classification Guard Card */}
+      <div className="apple-card" style={{ padding: '16px 20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, backgroundColor: isCutoffPassed ? '#fbfdfb' : '#fffcf7' }}>
+        <div style={{ flex: 1, minWidth: '280px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#1d1d1f' }}>
+              Cut-off Criteria Coverage (UL 10010-4 §2.7 &amp; GPI v4.0 §4.3)
+            </span>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: isCutoffPassed ? '#28cd41' : '#ff9f0a' }}>
+              {cutoffPct.toFixed(1)}% of Mass Mapped (Threshold: ≥ 95.0%)
+            </span>
+          </div>
+          <div style={{ width: '100%', height: 6, backgroundColor: '#e0e0e0', borderRadius: 9999, overflow: 'hidden' }}>
+            <div
               style={{
-                padding: '8px 16px',
-                borderRadius: '9999px',
-                border: '1px solid',
-                borderColor: isActive ? 'var(--accent, #0066cc)' : 'transparent',
-                backgroundColor: isActive ? 'var(--accent, #0066cc)' : 'transparent',
-                color: isActive ? '#FFFFFF' : 'var(--text-secondary, #86868b)',
-                fontSize: '13px',
-                fontWeight: isActive ? 600 : 400,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.15s ease'
+                width: `${Math.min(100, Math.max(0, cutoffPct))}%`,
+                height: '100%',
+                backgroundColor: isCutoffPassed ? '#28cd41' : '#ff9f0a',
+                transition: 'width 0.3s ease'
               }}
-            >
-              <span>{tab.label}</span>
-              <span style={{
-                fontSize: '10px',
-                padding: '1px 8px',
-                borderRadius: '9999px',
-                backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)',
-                color: isActive ? '#FFFFFF' : 'var(--text-secondary, #86868b)',
-                fontWeight: 600
-              }}>
-                {tab.badge}
-              </span>
-            </button>
-          );
-        })}
+            />
+          </div>
+          <div style={{ fontSize: '11px', color: '#86868b', marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span>✓ Material Classification Order: <strong>"Aluminium"</strong> alloys evaluated before <strong>"Cast Iron"</strong> to prevent misclassification.</span>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <span style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            padding: '3px 10px',
+            borderRadius: '9999px',
+            backgroundColor: isCutoffPassed ? 'rgba(40, 205, 65, 0.12)' : 'rgba(255, 159, 10, 0.12)',
+            color: isCutoffPassed ? '#28cd41' : '#ff9f0a'
+          }}>
+            {isCutoffPassed ? '≥95% PCR COMPLIANT' : 'CUT-OFF GAP DETECTED'}
+          </span>
+        </div>
+      </div>
+
+      {/* Stage Filter Tabs (Apple Segmented Bar) */}
+      <div style={{ marginBottom: '20px' }}>
+        <div className="apple-segmented-tabs">
+          {[
+            { id: 'all', label: 'All Modules (A1–D)', badge: 'Full Scope' },
+            { id: 'a1_a3', label: 'A1–A3 Production', badge: 'BOM, Freight & Plant' },
+            { id: 'a4_a5', label: 'A4–A5 Construction', badge: 'Outbound & Rigging' },
+            { id: 'b1_b7', label: 'B1–B7 Operational', badge: 'Use Stage' },
+            { id: 'c1_c4', label: 'C1–C4 End of Life', badge: 'Decommissioning' },
+            { id: 'd', label: 'Module D Circularity', badge: 'Net Credits' },
+          ].map(tab => {
+            const isActive = activeStageTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                className={`apple-segmented-tab ${isActive ? 'active' : ''}`}
+                onClick={() => setActiveStageTab(tab.id)}
+              >
+                <span>{tab.label}</span>
+                <span className="apple-tab-badge">
+                  {tab.badge}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* ── SECTION 1: EDITABLE BILL OF MATERIALS (BOM) & PROVIDER MAPPING (A1) ── */}

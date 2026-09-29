@@ -95,10 +95,10 @@ def run_tests():
 
     # Verify company name propagation
     assert "EcoMetric Thermal Systems Inc." in html_content
-    # Verify expected numbers formatted in scientific notation
-    assert "1.65E+02" in html_content, "Expected GWP A1-A3 1.65E+02 rendered"
-    assert "3.59E+04" in html_content, "Expected GWP B6 3.59E+04 rendered"
-    assert "1.31E+00" in html_content, "Expected AP A1-A3 1.31E+00 rendered"
+    # Verify expected numbers formatted in scientific notation per functional unit (divided by capacity_rt 500)
+    assert "3.30E-01" in html_content, "Expected GWP A1-A3 3.30E-01 rendered"
+    assert "7.18E+01" in html_content, "Expected GWP B6 7.18E+01 rendered"
+    assert "2.62E-03" in html_content, "Expected AP A1-A3 2.62E-03 rendered"
     assert "0.00E+00" in html_content, "Expected real zeroes rendered as 0.00E+00"
     print("  [PASS] Result values verified in scientific notation with 2 decimals")
 

@@ -1,66 +1,321 @@
 EPD CALCULATION REPORT
-Generated: 2026-09-29T08:18:30
+Generated: 2026-09-29T08:59:18
 EF data: payload.extracted_ef_values
 Methodology: EF v3.1 (payload value 'ef31', read from metadata.methodology)
 
-BOM imported (18 items, total 7775 kg):
-  - Twin-Screw Compressor Casing: 1450 kg  [ecoinvent_steel_hot_rolled_glo]
-  - Condenser Heat Exchanger Tubes: 580 kg  [ecoinvent_copper_tube_wire_glo]
-  - Condenser Fan Blades & Shrouds: 210 kg  [ecoinvent_aluminium_cast_alloy_glo]
-  - Dual Inverter Drive System: 135 kg  [ecoinvent_electronics_vfd_glo]
-  - Dual Induction Fan Motors: 320 kg  [ecoinvent_electric_motor_industrial_glo]
-  - Acoustic PUF Enclosure Panels: 95 kg  [ecoinvent_insulation_polyurethane_rigid_glo]
-  - High-Pressure Suction Manifold: 65 kg  [ecoinvent_steel_stainless_304_glo]
-  - Structural Base Skid & C-Channels: 880 kg  [ecoinvent_steel_hot_rolled_glo]
-  - Oil Separator & Coalescent Vessel: 140 kg  [ecoinvent_steel_hot_rolled_glo]
-  - Control Circuit Board: 10 kg  [ecoinvent_Power Electronics_glo]
-  - Small Bracket: 10 kg  [ecoinvent_Structural Steel_glo]
-  - Compressor Volute & Impeller: 2250 kg  [ecoinvent_steel_hot_rolled_glo]
-  - Evaporator & Condenser Tubes: 720 kg  [ecoinvent_copper_tube_wire_glo]
-  - Semi-Hermetic Induction Motor: 480 kg  [ecoinvent_electric_motor_industrial_glo]
-  - Thermal PUF Insulation Jackets: 140 kg  [ecoinvent_insulation_pu_rigid_rer]
-  - Solid-State Variable Frequency Drive: 110 kg  [ecoinvent_electronics_vfd_glo]
-  - Subcooler Microchannel Coils: 95 kg  [ecoinvent_aluminium_cast_alloy_glo]
-  - Refrigerant High-Pressure Piping: 85 kg  [ecoinvent_steel_stainless_304_glo]
-EF providers loaded: 27
-Derived replacement cycles (B4): 2.0
+BOM imported (0 items, total 0 kg):
+EF providers loaded: 7 | MISSING: ['ecoinvent_copper_tube_wire_glo', 'ecoinvent_diesel_dismantling_glo', 'ecoinvent_gas_burned_boiler_glo', 'ecoinvent_secondary_steel_electric_glo', 'ecoinvent_steel_hot_rolled_glo', 'ecoinvent_virgin_steel_primary_glo', 'ecoinvent_waste_incineration_glo', 'ecoinvent_waste_landfill_glo', 'ecoinvent_waste_metal_recycling_glo', 'ecoinvent_water_deionised_glo']
+Derived replacement cycles (B4): 0
 
-=== 10 ASSUMPTION/WARNING(S) - review before trusting the numbers ===
+=== 283 ASSUMPTION/WARNING(S) - review before trusting the numbers ===
   - UNITS: the EF data has no reference-unit field, so EFs are assumed to be per kg (materials, waste), per kWh (electricity), per MJ (gas), per m3 (water), per litre (diesel) and per tonne-km (transport). Check that each matched activity really uses that unit.
-  - A2: no per-leg linked mass in payload - using total BOM mass (7775.0 kg) on every A2 leg (total_bom_mass fallback). This likely overcounts if materials actually split across legs.
-  - A3: annual facility totals divided by annual_production_units (1000) to get per-unit inputs.
-  - A4: no explicit finished-product mass field in payload - using sum of A1 BOM mass (7775.0 kg) as product mass.
+  - A3: annual_production_units missing or zero - facility totals used as-is per unit. If they are facility-wide, A3 is overstated.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_gas_burned_boiler_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - A4: no explicit finished-product mass field in payload - using sum of A1 BOM mass (0.0 kg) as product mass.
   - B1/A5: the refrigerant CF is a GWP100 factor, so it is added only to the GWP100 total/fossil rows. All other rows (GWP20, GWP500, GTP, biogenic, land use, ...) exclude refrigerant emissions.
   - A5 crane diesel: converted 37.8 L -> 1353.24 MJ (x35.8) to match the provider's reference unit. Diesel energy content is an assumption (DIESEL_MJ_PER_LITRE).
-  - A5: commissioning_refrigerant_loss_kg has no ecoinvent provider - applying the B1 refrigerant GWP CF to GWP rows only, as an assumption.
-  - C1 deconstruction energy: converted 120 kWh -> 432 MJ (x3.6) to match the provider's reference unit.
-  - C2: no explicit end-of-life mass field - using sum of A1 BOM mass (7775.0 kg) as waste mass.
-  - D: one virgin/recycled provider pair is applied to the WHOLE recovered mass. Steel is 63% of the BOM mass, so copper, aluminium, foam and electronics are credited as if they were steel (approximation).
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_steel_hot_rolled_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_copper_tube_wire_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_water_deionised_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_diesel_dismantling_glo' - treated as 0.
+  - C2: no explicit end-of-life mass field - using sum of A1 BOM mass (0.0 kg) as waste mass.
+  - C3/C4: recycling + incineration + landfill = 0%, not 100% - part of the end-of-life mass is unaccounted for.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_metal_recycling_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_incineration_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_waste_landfill_glo' - treated as 0.
+  - D: one virgin/recycled provider pair is applied to the WHOLE recovered mass. Steel is 0% of the BOM mass, so copper, aluminium, foam and electronics are credited as if they were steel (approximation).
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_virgin_steel_primary_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
+  - No EF data at all for provider_id='ecoinvent_secondary_steel_electric_glo' - treated as 0.
 
 Impact category                                                                                       |         A1 |         A2 |         A3 |      A1-A3 |         A4 |         A5 |         B1 |         B2 |         B3 |         B4 |         B5 |         B6 |         B7 |      C1-C4 |         C1 |         C2 |         C3 |         C4 |          D
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-acidification | accumulated exceedance (AE)                                                           |  2.133e+02 |  8.161e+01 |  2.258e-01 |  2.951e+02 |  2.216e+00 |  1.112e+01 |  0.000e+00 |  4.875e+00 |  3.510e-01 |  6.169e+02 |  8.160e+00 |  1.016e+05 |  2.340e+01 |  6.431e+01 |  3.370e+00 |  2.954e-01 |  5.792e+01 |  2.729e+00 |  0.000e+00
-climate change | global warming potential (GWP100)                                                    |  3.129e+04 |  1.252e+04 |  6.008e+01 |  4.387e+04 |  5.131e+02 |  3.759e+03 |  3.218e+04 |  1.344e+03 |  9.675e+01 |  9.628e+04 |  6.504e+02 |  2.445e+07 |  6.450e+03 |  1.771e+04 |  9.288e+02 |  6.842e+01 |  1.596e+04 |  7.522e+02 |  0.000e+00
-climate change: biogenic | global warming potential (GWP100)                                          |  2.833e+02 |  1.078e+02 |  5.365e-01 |  3.917e+02 |  4.665e+00 |  2.811e+01 |  0.000e+00 |  1.250e+01 |  9.000e-01 |  8.489e+02 |  6.000e+00 |  1.905e+05 |  6.000e+01 |  1.648e+02 |  8.640e+00 |  6.220e-01 |  1.485e+02 |  6.998e+00 |  0.000e+00
-climate change: fossil | global warming potential (GWP100)                                            |  3.089e+04 |  1.237e+04 |  5.930e+01 |  4.332e+04 |  5.073e+02 |  3.717e+03 |  3.218e+04 |  1.325e+03 |  9.540e+01 |  9.508e+04 |  6.420e+02 |  2.420e+07 |  6.360e+03 |  1.747e+04 |  9.158e+02 |  6.764e+01 |  1.574e+04 |  7.417e+02 |  0.000e+00
-climate change: land use and land use change | global warming potential (GWP100)                      |  1.562e+02 |  6.327e+01 |  2.984e-01 |  2.198e+02 |  2.333e+00 |  1.514e+01 |  0.000e+00 |  6.688e+00 |  4.815e-01 |  4.745e+02 |  3.252e+00 |  1.207e+05 |  3.210e+01 |  8.813e+01 |  4.622e+00 |  3.110e-01 |  7.945e+01 |  3.744e+00 |  0.000e+00
-ecotoxicity: freshwater | comparative toxic unit for ecosystems (CTUe)                                |  5.101e+03 |  6.269e+02 |  4.713e+00 |  5.733e+03 |  2.449e+01 |  2.520e+02 |  0.000e+00 |  1.125e+02 |  8.100e+00 |  1.202e+04 |  1.740e+02 |  1.524e+06 |  5.400e+02 |  1.481e+03 |  7.776e+01 |  3.265e+00 |  1.337e+03 |  6.298e+01 |  0.000e+00
-ecotoxicity: freshwater, inorganics | comparative toxic unit for ecosystems (CTUe)                    |  5.101e+03 |  6.269e+02 |  4.713e+00 |  5.733e+03 |  2.449e+01 |  2.520e+02 |  0.000e+00 |  1.125e+02 |  8.100e+00 |  1.202e+04 |  1.740e+02 |  1.524e+06 |  5.400e+02 |  1.481e+03 |  7.776e+01 |  3.265e+00 |  1.337e+03 |  6.298e+01 |  0.000e+00
-ecotoxicity: freshwater, organics | comparative toxic unit for ecosystems (CTUe)                      |  5.101e+03 |  6.269e+02 |  4.713e+00 |  5.733e+03 |  2.449e+01 |  2.520e+02 |  0.000e+00 |  1.125e+02 |  8.100e+00 |  1.202e+04 |  1.740e+02 |  1.524e+06 |  5.400e+02 |  1.481e+03 |  7.776e+01 |  3.265e+00 |  1.337e+03 |  6.298e+01 |  0.000e+00
-energy resources: non-renewable | abiotic depletion potential (ADP): fossil fuels                     |  4.315e+05 |  1.774e+05 |  8.087e+02 |  6.097e+05 |  7.231e+03 |  4.046e+04 |  0.000e+00 |  1.781e+04 |  1.282e+03 |  1.315e+06 |  8.688e+03 |  3.442e+08 |  8.550e+04 |  2.349e+05 |  1.231e+04 |  9.641e+02 |  2.116e+05 |  9.971e+03 |  0.000e+00
-eutrophication: freshwater | fraction of nutrients reaching freshwater end compartment (P)            |  1.302e+01 |  1.861e+00 |  1.275e-02 |  1.490e+01 |  6.997e-02 |  6.387e-01 |  0.000e+00 |  2.812e-01 |  2.025e-02 |  3.121e+01 |  4.920e-01 |  5.398e+03 |  1.350e+00 |  3.702e+00 |  1.944e-01 |  9.330e-03 |  3.341e+00 |  1.574e-01 |  0.000e+00
-eutrophication: marine | fraction of nutrients reaching marine end compartment (N)                    |  3.026e+01 |  1.435e+01 |  4.177e-02 |  4.465e+01 |  3.790e-01 |  2.239e+00 |  0.000e+00 |  1.000e+00 |  7.200e-02 |  9.454e+01 |  9.360e-01 |  1.334e+04 |  4.800e+00 |  1.318e+01 |  6.912e-01 |  5.054e-02 |  1.188e+01 |  5.598e-01 |  0.000e+00
-eutrophication: terrestrial | accumulated exceedance (AE)                                             |  3.934e+01 |  1.865e+01 |  5.430e-02 |  5.805e+01 |  4.927e-01 |  2.910e+00 |  0.000e+00 |  1.300e+00 |  9.360e-02 |  1.229e+02 |  1.217e+00 |  1.734e+04 |  6.240e+00 |  1.714e+01 |  8.986e-01 |  6.570e-02 |  1.544e+01 |  7.277e-01 |  0.000e+00
-human toxicity: carcinogenic | comparative toxic unit for human (CTUh)                                |  1.356e+00 |  1.385e-01 |  7.255e-04 |  1.495e+00 |  4.898e-03 |  3.994e-02 |  0.000e+00 |  1.794e-02 |  1.291e-03 |  3.080e+00 |  5.208e-02 |  2.001e+02 |  8.610e-02 |  2.362e-01 |  1.240e-02 |  6.531e-04 |  2.131e-01 |  1.004e-02 |  0.000e+00
-human toxicity: carcinogenic, inorganics | comparative toxic unit for human (CTUh)                    |  2.559e+01 |  9.800e+00 |  2.710e-02 |  3.542e+01 |  2.682e-01 |  1.334e+00 |  0.000e+00 |  5.850e-01 |  4.212e-02 |  7.404e+01 |  9.792e-01 |  1.219e+04 |  2.808e+00 |  7.718e+00 |  4.044e-01 |  3.576e-02 |  6.950e+00 |  3.275e-01 |  0.000e+00
-human toxicity: carcinogenic, organics | comparative toxic unit for human (CTUh)                      |  1.356e+00 |  1.385e-01 |  7.255e-04 |  1.495e+00 |  4.898e-03 |  3.994e-02 |  0.000e+00 |  1.794e-02 |  1.291e-03 |  3.080e+00 |  5.208e-02 |  2.001e+02 |  8.610e-02 |  2.362e-01 |  1.240e-02 |  6.531e-04 |  2.131e-01 |  1.004e-02 |  0.000e+00
-human toxicity: non-carcinogenic | comparative toxic unit for human (CTUh)                            |  1.356e+00 |  1.385e-01 |  7.255e-04 |  1.495e+00 |  4.898e-03 |  3.994e-02 |  0.000e+00 |  1.794e-02 |  1.291e-03 |  3.080e+00 |  5.208e-02 |  2.001e+02 |  8.610e-02 |  2.362e-01 |  1.240e-02 |  6.531e-04 |  2.131e-01 |  1.004e-02 |  0.000e+00
-human toxicity: non-carcinogenic, inorganics | comparative toxic unit for human (CTUh)                |  2.559e+01 |  9.800e+00 |  2.710e-02 |  3.542e+01 |  2.682e-01 |  1.334e+00 |  0.000e+00 |  5.850e-01 |  4.212e-02 |  7.404e+01 |  9.792e-01 |  1.219e+04 |  2.808e+00 |  7.718e+00 |  4.044e-01 |  3.576e-02 |  6.950e+00 |  3.275e-01 |  0.000e+00
-human toxicity: non-carcinogenic, organics | comparative toxic unit for human (CTUh)                  |  1.356e+00 |  1.385e-01 |  7.255e-04 |  1.495e+00 |  4.898e-03 |  3.994e-02 |  0.000e+00 |  1.794e-02 |  1.291e-03 |  3.080e+00 |  5.208e-02 |  2.001e+02 |  8.610e-02 |  2.362e-01 |  1.240e-02 |  6.531e-04 |  2.131e-01 |  1.004e-02 |  0.000e+00
-ionising radiation: human health | human exposure efficiency relative to u235                         |  6.472e+02 |  2.661e+02 |  1.213e+00 |  9.146e+02 |  1.085e+01 |  6.070e+01 |  0.000e+00 |  2.672e+01 |  1.924e+00 |  1.972e+03 |  1.303e+01 |  5.163e+05 |  1.282e+02 |  3.523e+02 |  1.847e+01 |  1.446e+00 |  3.174e+02 |  1.496e+01 |  0.000e+00
-land use | soil quality index                                                                         |  2.503e+02 |  1.004e+02 |  4.807e-01 |  3.512e+02 |  4.082e+00 |  2.435e+01 |  0.000e+00 |  1.075e+01 |  7.740e-01 |  7.593e+02 |  5.203e+00 |  1.956e+05 |  5.160e+01 |  1.417e+02 |  7.430e+00 |  5.443e-01 |  1.277e+02 |  6.018e+00 |  0.000e+00
-material resources: metals/minerals | abiotic depletion potential (ADP): elements (ultimate reserves) |  1.937e+00 |  1.991e-01 |  1.036e-03 |  2.137e+00 |  6.997e-03 |  5.706e-02 |  0.000e+00 |  2.563e-02 |  1.845e-03 |  4.403e+00 |  7.440e-02 |  2.858e+02 |  1.230e-01 |  3.374e-01 |  1.771e-02 |  9.330e-04 |  3.044e-01 |  1.434e-02 |  0.000e+00
-ozone depletion | ozone depletion potential (ODP)                                                     |  2.964e-06 |  2.454e-06 |  5.499e-09 |  5.423e-06 |  1.050e-07 |  2.940e-07 |  0.000e+00 |  1.312e-07 |  9.450e-09 |  1.164e-05 |  5.760e-08 |  1.778e-03 |  6.300e-07 |  1.737e-06 |  9.072e-08 |  1.399e-08 |  1.559e-06 |  7.347e-08 |  0.000e+00
-particulate matter formation | impact on human health                                                 |  2.559e+01 |  9.800e+00 |  2.710e-02 |  3.542e+01 |  2.682e-01 |  1.334e+00 |  0.000e+00 |  5.850e-01 |  4.212e-02 |  7.404e+01 |  9.792e-01 |  1.219e+04 |  2.808e+00 |  7.718e+00 |  4.044e-01 |  3.576e-02 |  6.950e+00 |  3.275e-01 |  0.000e+00
-photochemical oxidant formation: human health | tropospheric ozone concentration increase             |  2.964e-06 |  2.454e-06 |  5.499e-09 |  5.423e-06 |  1.050e-07 |  2.940e-07 |  0.000e+00 |  1.312e-07 |  9.450e-09 |  1.164e-05 |  5.760e-08 |  1.778e-03 |  6.300e-07 |  1.737e-06 |  9.072e-08 |  1.399e-08 |  1.559e-06 |  7.347e-08 |  0.000e+00
-water use | user deprivation potential (deprivation-weighted water consumption)                       |  5.101e+03 |  6.269e+02 |  4.713e+00 |  5.733e+03 |  2.449e+01 |  2.520e+02 |  0.000e+00 |  1.125e+02 |  8.100e+00 |  1.202e+04 |  1.740e+02 |  1.524e+06 |  5.400e+02 |  1.481e+03 |  7.776e+01 |  3.265e+00 |  1.337e+03 |  6.298e+01 |  0.000e+00
+acidification | accumulated exceedance (AE)                                                           |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  1.056e+01 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+climate change | global warming potential (GWP100)                                                    |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.909e+03 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+climate change: biogenic | global warming potential (GWP100)                                          |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.706e+01 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+climate change: fossil | global warming potential (GWP100)                                            |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.869e+03 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+climate change: land use and land use change | global warming potential (GWP100)                      |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  1.448e+01 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+ecotoxicity: freshwater | comparative toxic unit for ecosystems (CTUe)                                |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.436e+02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+ecotoxicity: freshwater, inorganics | comparative toxic unit for ecosystems (CTUe)                    |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.436e+02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+ecotoxicity: freshwater, organics | comparative toxic unit for ecosystems (CTUe)                      |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.436e+02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+energy resources: non-renewable | abiotic depletion potential (ADP): fossil fuels                     |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  3.857e+04 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+eutrophication: freshwater | fraction of nutrients reaching freshwater end compartment (P)            |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  6.090e-01 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+eutrophication: marine | fraction of nutrients reaching marine end compartment (N)                    |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.165e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+eutrophication: terrestrial | accumulated exceedance (AE)                                             |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.815e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+human toxicity: carcinogenic | comparative toxic unit for human (CTUh)                                |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  3.884e-02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+human toxicity: carcinogenic, inorganics | comparative toxic unit for human (CTUh)                    |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  1.267e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+human toxicity: carcinogenic, organics | comparative toxic unit for human (CTUh)                      |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  3.884e-02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+human toxicity: non-carcinogenic | comparative toxic unit for human (CTUh)                            |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  3.884e-02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+human toxicity: non-carcinogenic, inorganics | comparative toxic unit for human (CTUh)                |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  1.267e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+human toxicity: non-carcinogenic, organics | comparative toxic unit for human (CTUh)                  |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  3.884e-02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+ionising radiation: human health | human exposure efficiency relative to u235                         |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  5.785e+01 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+land use | soil quality index                                                                         |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.328e+01 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+material resources: metals/minerals | abiotic depletion potential (ADP): elements (ultimate reserves) |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  5.548e-02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+ozone depletion | ozone depletion potential (ODP)                                                     |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.842e-07 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+particulate matter formation | impact on human health                                                 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  1.267e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+photochemical oxidant formation: human health | tropospheric ozone concentration increase             |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.842e-07 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00
+water use | user deprivation potential (deprivation-weighted water consumption)                       |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  2.436e+02 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00 |  0.000e+00

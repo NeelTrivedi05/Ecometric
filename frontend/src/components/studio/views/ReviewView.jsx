@@ -105,51 +105,38 @@ export default function ReviewView() {
 
   return (
     <div className="view-container">
-      {/* Header & Status */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
+      {/* Apple View Header */}
+      <div className="apple-view-header">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{
-              backgroundColor: '#e8f2ff',
-              color: 'var(--accent, #0066cc)',
-              fontSize: '11px',
-              fontWeight: 600,
-              padding: '2px 10px',
-              borderRadius: '9999px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em'
-            }}>
-              Phase 2
-            </span>
-            <h1 className="view-title" style={{ margin: 0 }}>Extracted Lifecycle Inventory (Modules A–D)</h1>
-          </div>
-          <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0 }}>
-            Mandatory ISO 14025 & EN 15804+A2 data coverage from raw material extraction (A1) through circularity offsets (Module D).
+          <span className="apple-eyebrow">Phase 2 • Lifecycle Inventory</span>
+          <h1 className="view-title" style={{ margin: 0, fontFamily: 'var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif)', letterSpacing: '-0.022em' }}>
+            Extracted Lifecycle Inventory (Modules A–D)
+          </h1>
+          <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
+            Mandatory ISO 14025 & EN 15804+A2 data coverage normalized per 1 ton chilling capacity over 25-yr RSL.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div className="apple-header-action-group">
           <button
             type="button"
-            className="btn btn-secondary btn-sm"
+            className="btn-apple-secondary-pill"
             onClick={() => setActivePhase('upload')}
-            style={{ fontSize: '12px' }}
           >
             Upload More Files
           </button>
           <button
             type="button"
-            className="btn btn-primary btn-sm"
+            className="btn-apple-action-blue"
             onClick={() => setActivePhase('user_review')}
-            style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <span>Proceed to User Review & Providers</span>
+            <span>User Review & Providers</span>
             <ChevronRightIcon size={14} />
           </button>
         </div>
       </div>
 
-      {/* ── LIFECYCLE KPI SUMMARY STRIP (Store utility cards: 18px radius, 1px hairline, no shadow) ── */}
+      {/* ── LIFECYCLE KPI SUMMARY STRIP (Apple store utility cards) ── */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
@@ -157,88 +144,64 @@ export default function ReviewView() {
         marginBottom: '24px'
       }}>
         {/* Metric 1: Total Mass */}
-        <div className="card" style={{ padding: '16px 20px', margin: 0 }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Declared Product Mass (A1)</div>
-          <div style={{ fontSize: '22px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginTop: '4px', letterSpacing: '-0.2px' }}>
-            {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary)' }}>kg</span>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted, #86868b)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Declared Product Mass (A1)</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#0066cc', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+            {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>kg</span>
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>{bom.length} BOM components extracted</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted, #86868b)', marginTop: '4px' }}>
+            {(totalMass / Math.max(1, capacityRt)).toFixed(2)} kg / ton chilling capacity
+          </div>
         </div>
 
         {/* Metric 2: Total Logistics */}
-        <div className="card" style={{ padding: '16px 20px', margin: 0 }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Logistics Scope (A2 & A4)</div>
-          <div style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.2px' }}>
-            {totalLogisticsKm.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary)' }}>km</span>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted, #86868b)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Logistics Scope (A2 & A4)</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#1d1d1f', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+            {totalLogisticsKm.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>km</span>
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Inbound + {outboundFreightKm}km delivery</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted, #86868b)', marginTop: '4px' }}>Inbound + {outboundFreightKm}km delivery</div>
         </div>
 
         {/* Metric 3: Operational Energy */}
-        <div className="card" style={{ padding: '16px 20px', margin: 0 }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Annual Grid Energy (A3 & B6)</div>
-          <div style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.2px' }}>
-            {((annualFactoryKwh + annualOperationalKwh) / 1000).toFixed(1)} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary)' }}>MWh/yr</span>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted, #86868b)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Annual Grid Energy (A3 & B6)</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#1d1d1f', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+            {((annualFactoryKwh + annualOperationalKwh) / 1000).toFixed(1)} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>MWh/yr</span>
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Plant: {annualFactoryKwh.toLocaleString()} kWh | B6: {annualOperationalKwh.toLocaleString()} kWh</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted, #86868b)', marginTop: '4px' }}>Plant: {annualFactoryKwh.toLocaleString()} kWh | B6: {annualOperationalKwh.toLocaleString()} kWh</div>
         </div>
 
         {/* Metric 4: Circularity & Recovery */}
-        <div className="card" style={{ padding: '16px 20px', margin: 0 }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Circularity & Recovery (C3 & D)</div>
-          <div style={{ fontSize: '22px', fontWeight: 600, color: '#28cd41', marginTop: '4px', letterSpacing: '-0.2px' }}>
+        <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted, #86868b)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Circularity & Recovery (C3 & D)</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#28cd41', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
             {recyclingRate}% <span style={{ fontSize: '12px', fontWeight: 600, color: '#28cd41' }}>({avoidedBurdenCo2e.toLocaleString()} kg CO₂e)</span>
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Net avoided burden virgin offset</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted, #86868b)', marginTop: '4px' }}>Net avoided burden virgin offset</div>
         </div>
       </div>
 
-      {/* ── STAGE FILTER TABS (Apple configurator option chip grammar) ── */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        overflowX: 'auto',
-        paddingBottom: '8px',
-        marginBottom: '20px',
-        borderBottom: '1px solid var(--border)'
-      }}>
-        {tabs.map(tab => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                padding: '8px 16px',
-                borderRadius: 'var(--radius-pill)',
-                border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
-                backgroundColor: isActive ? 'var(--accent-dim)' : '#FFFFFF',
-                color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
-                fontSize: '13px',
-                fontWeight: isActive ? 600 : 400,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <span>{tab.label}</span>
-              <span style={{
-                fontSize: '11px',
-                padding: '1px 7px',
-                borderRadius: 'var(--radius-pill)',
-                backgroundColor: isActive ? 'var(--accent)' : 'var(--border)',
-                color: isActive ? '#FFFFFF' : 'var(--text-secondary)',
-                fontWeight: 600
-              }}>
-                {tab.badge}
-              </span>
-            </button>
-          );
-        })}
+      {/* ── STAGE FILTER TABS (Apple Segmented Bar) ── */}
+      <div style={{ marginBottom: '20px' }}>
+        <div className="apple-segmented-tabs">
+          {tabs.map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                className={`apple-segmented-tab ${isActive ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                <span>{tab.label}</span>
+                <span className="apple-tab-badge">
+                  {tab.badge}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* ── PROJECT INFORMATION CARD (Always Visible) ── */}
