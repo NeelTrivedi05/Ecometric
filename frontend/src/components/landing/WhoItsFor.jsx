@@ -5,7 +5,7 @@ export default function WhoItsFor() {
   const groups = [
     {
       title: "Manufacturers",
-      desc: "Accelerate portfolio-wide environmental declarations to qualify for procurement contracts and green building tenders."
+      desc: "Accelerate portfolio-wide environmental declarations to qualify for public procurement contracts and green building tenders."
     },
     {
       title: "LCA consultants",
@@ -16,36 +16,47 @@ export default function WhoItsFor() {
       desc: "Model product carbon footprints across complex assemblies with complete data lineage and auditable calculations."
     },
     {
-      title: "Construction companies",
+      title: "Building developers",
       desc: "Quickly verify and compare supplier EPD claims to achieve LEED v4.1, BREEAM, and DGNB project certification credits."
     }
   ];
 
   return (
-    <section style={{ padding: '80px 0', backgroundColor: '#FAF6F0' }}>
+    <section className="product-tile-light" id="who-its-for">
       <div className="lp-container">
-        <div className="section-header">
-          <div className="section-badge">
-            <span>Target Audience</span>
+        <div className="apple-section-header">
+          <div className="apple-section-eyebrow">
+            Target Audience
           </div>
-          <h2 className="section-title">Who It's For</h2>
-          <p className="section-subtitle">
-            Engineered for professionals requiring auditable, standard-compliant environmental disclosures.
+          <h2 className="apple-section-title">
+            Built for professionals across the supply chain
+          </h2>
+          <p className="apple-section-subtitle">
+            Engineered for practitioners requiring auditable, standard-compliant environmental disclosures without consulting overhead.
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+        <div className="store-utility-grid">
           {groups.map((grp, idx) => (
-            <div key={idx} className="lp-card" style={{ padding: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ color: '#2E7D32', display: 'flex', alignItems: 'center' }}>
-                  <CheckCircleIcon size={18} />
-                </span>
-                <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <div key={idx} className="store-utility-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                <CheckCircleIcon size={18} style={{ color: 'var(--apple-primary)' }} />
+                <h3 style={{
+                  fontSize: '17px',
+                  fontWeight: 600,
+                  color: 'var(--apple-ink)',
+                  margin: 0,
+                  letterSpacing: '-0.374px'
+                }}>
                   {grp.title}
                 </h3>
               </div>
-              <p style={{ fontSize: '13px', color: '#5C4E46', lineHeight: '1.6', margin: 0 }}>
+              <p style={{
+                fontSize: '15px',
+                color: '#6e6e73',
+                lineHeight: '1.47',
+                margin: 0
+              }}>
                 {grp.desc}
               </p>
             </div>

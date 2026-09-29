@@ -121,7 +121,7 @@ export default function UserReviewView() {
 
     return (
       <div className="form-group" style={{ marginTop: '6px', minWidth: 0 }}>
-        <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 600 }}>
+        <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
           {label || 'Emission Factor Provider / Dataset'}
         </label>
         <div style={{
@@ -129,8 +129,8 @@ export default function UserReviewView() {
           flexDirection: 'column',
           gap: '6px',
           padding: '8px 10px',
-          border: '1px solid #E2D9D2',
-          borderRadius: '6px',
+          border: '1px solid #d2d2d7',
+          borderRadius: '8px',
           backgroundColor: '#FFFFFF',
           minWidth: 0,
           width: '100%',
@@ -140,7 +140,7 @@ export default function UserReviewView() {
             <div style={{
               fontSize: '12px',
               fontWeight: 600,
-              color: '#2C221E',
+              color: 'var(--text-primary)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -148,17 +148,17 @@ export default function UserReviewView() {
             }} title={info.name}>
               {info.name}
             </div>
-            <div style={{ fontSize: '10px', color: '#8A7A72', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px', flexWrap: 'wrap', minWidth: 0 }}>
+            <div style={{ fontSize: '10px', color: 'var(--text-secondary, #86868b)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px', flexWrap: 'wrap', minWidth: 0 }}>
               <span>ID:</span>
-              <code style={{ backgroundColor: '#FAF0E6', padding: '1px 4px', borderRadius: '3px', color: '#9C5832', fontSize: '9px', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%', display: 'inline-block', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>
+              <code style={{ backgroundColor: 'rgba(0,0,0,0.04)', padding: '1px 6px', borderRadius: '4px', color: 'var(--text-primary)', fontSize: '9px', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%', display: 'inline-block', whiteSpace: 'nowrap', verticalAlign: 'middle', border: '1px solid #e5e5ea' }}>
                 {info.id || 'ecoinvent_proxy'}
               </code>
               {info.geography && (
-                <span style={{ backgroundColor: '#E8F5E9', color: '#2E7D32', padding: '1px 5px', borderRadius: '3px', fontWeight: 700, fontSize: '9px', flexShrink: 0 }}>
+                <span style={{ backgroundColor: 'rgba(52, 199, 89, 0.1)', color: '#34c759', padding: '1px 6px', borderRadius: '4px', fontWeight: 600, fontSize: '9px', flexShrink: 0 }}>
                   {info.geography}
                 </span>
               )}
-              <span style={{ backgroundColor: '#E3F2FD', color: '#1565C0', padding: '1px 5px', borderRadius: '3px', fontWeight: 700, fontSize: '9px', flexShrink: 0 }} title="Read-only reference unit">
+              <span style={{ backgroundColor: 'rgba(0, 102, 204, 0.08)', color: 'var(--accent, #0066cc)', padding: '1px 6px', borderRadius: '4px', fontWeight: 600, fontSize: '9px', flexShrink: 0 }} title="Read-only reference unit">
                 Ref Unit: {info.unit}
               </span>
             </div>
@@ -170,11 +170,11 @@ export default function UserReviewView() {
               handleGenericImmediateSearch(searchHint);
             }}
             style={{
-              padding: '5px 10px',
-              backgroundColor: '#FAF0E6',
-              color: '#9C5832',
-              border: '1px solid #EED8C5',
-              borderRadius: '4px',
+              padding: '4px 12px',
+              backgroundColor: 'rgba(0, 102, 204, 0.08)',
+              color: 'var(--accent, #0066cc)',
+              border: '1px solid rgba(0, 102, 204, 0.2)',
+              borderRadius: '9999px',
               fontSize: '11px',
               fontWeight: 600,
               cursor: 'pointer',
@@ -182,6 +182,7 @@ export default function UserReviewView() {
               alignItems: 'center',
               gap: '4px',
               alignSelf: 'flex-start',
+              transition: 'all 0.15s ease'
             }}
             title="Click to choose a provider from ecoinvent database"
           >
@@ -422,36 +423,35 @@ export default function UserReviewView() {
     <div className="view-content-wrapper" style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
       {/* Top Banner */}
       <div style={{
-        backgroundColor: '#FFF8F2',
-        border: '1px solid #F5DEC8',
-        borderRadius: '12px',
-        padding: '20px 24px',
-        marginBottom: '24px',
-        boxShadow: '0 2px 8px rgba(184,83,29,0.04)'
+        backgroundColor: '#f5f5f7',
+        border: '1px solid #d2d2d7',
+        borderRadius: '18px',
+        padding: '24px 28px',
+        marginBottom: '24px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <span style={{
-                backgroundColor: '#C25A23',
+                backgroundColor: 'var(--accent, #0066cc)',
                 color: '#FFF',
                 fontSize: '11px',
-                fontWeight: 700,
-                padding: '3px 8px',
-                borderRadius: '4px',
+                fontWeight: 600,
+                padding: '3px 10px',
+                borderRadius: '9999px',
                 textTransform: 'uppercase',
-                letterSpacing: '0.5px'
+                letterSpacing: '0.04em'
               }}>
                 Phase 3: Interactive Workbench
               </span>
-              <span style={{ fontSize: '13px', color: '#9C5832', fontWeight: 600 }}>
+              <span style={{ fontSize: '13px', color: 'var(--accent, #0066cc)', fontWeight: 600 }}>
                 Editable User Review & Provider Selection
               </span>
             </div>
-            <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#2C221E', margin: '0 0 6px 0' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>
               Verify & Refine Extracted Engineering Data
             </h1>
-            <p style={{ fontSize: '13px', color: '#5C4E46', margin: 0, maxWidth: '820px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary, #86868b)', margin: 0, maxWidth: '820px', lineHeight: 1.47 }}>
               If any extracted values, weights, material classifications, or transport distances require corrections, you can edit them directly below. You can also pick or change the exact <strong>ecoinvent database activity / dataset provider</strong> for each material.
             </p>
           </div>
@@ -459,7 +459,7 @@ export default function UserReviewView() {
             type="button"
             className="btn btn-secondary"
             onClick={() => setIsAddModalOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', padding: '8px 14px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', padding: '8px 16px', borderRadius: '9999px' }}
           >
             <PlusIcon size={15} />
             <span>Add Component</span>
@@ -474,34 +474,34 @@ export default function UserReviewView() {
         gap: '16px',
         marginBottom: '24px'
       }}>
-        <div className="card" style={{ padding: '16px 20px', borderLeft: '4px solid #C25A23' }}>
-          <div style={{ fontSize: '11px', color: '#8A7A72', fontWeight: 600, textTransform: 'uppercase' }}>Declared Product Mass</div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: '#2C221E', marginTop: '4px' }}>
-            {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 500 }}>kg</span>
+        <div className="card" style={{ padding: '18px 20px', borderLeft: '4px solid var(--accent, #0066cc)' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Declared Product Mass</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.02em' }}>
+            {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>kg</span>
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Sum of {bom.length} declared components</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>Sum of {bom.length} declared components</div>
         </div>
 
-        <div className="card" style={{ padding: '16px 20px', borderLeft: '4px solid #2B6E4F' }}>
-          <div style={{ fontSize: '11px', color: '#8A7A72', fontWeight: 600, textTransform: 'uppercase' }}>Database Providers Mapped</div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: '#2B6E4F', marginTop: '4px' }}>
+        <div className="card" style={{ padding: '18px 20px', borderLeft: '4px solid #34c759' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Database Providers Mapped</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: '#34c759', marginTop: '4px', letterSpacing: '-0.02em' }}>
             {bom.filter(b => b.ecoinvent_id || b.dataset).length} / {bom.length}
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>ecoinvent v3.12 Cutoff linked</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>ecoinvent v3.12 Cutoff linked</div>
         </div>
 
-        <div className="card" style={{ padding: '16px 20px', borderLeft: '4px solid #D9822B' }}>
-          <div style={{ fontSize: '11px', color: '#8A7A72', fontWeight: 600, textTransform: 'uppercase' }}>Inbound Freight Legs</div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: '#2C221E', marginTop: '4px' }}>
-            {transport.length || 1} <span style={{ fontSize: '13px', fontWeight: 500 }}>leg(s)</span>
+        <div className="card" style={{ padding: '18px 20px', borderLeft: '4px solid #5856d6' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Inbound Freight Legs</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.02em' }}>
+            {transport.length || 1} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>leg(s)</span>
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Module A2 transport routes</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>Module A2 transport routes</div>
         </div>
 
-        <div className="card" style={{ padding: '16px 20px', borderLeft: '4px solid #5C4E46' }}>
-          <div style={{ fontSize: '11px', color: '#8A7A72', fontWeight: 600, textTransform: 'uppercase' }}>Plant Utility Power</div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: '#2C221E', marginTop: '4px' }}>
-            {manufacturing.annual_facility_kwh ? Number(manufacturing.annual_facility_kwh).toLocaleString() : '34,000'} <span style={{ fontSize: '13px', fontWeight: 500 }}>kWh/yr</span>
+        <div className="card" style={{ padding: '18px 20px', borderLeft: '4px solid #ff9500' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Plant Utility Power</div>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', letterSpacing: '-0.02em' }}>
+            {manufacturing.annual_facility_kwh ? Number(manufacturing.annual_facility_kwh).toLocaleString() : '34,000'} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>kWh/yr</span>
           </div>
           <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Module A3 factory electricity</div>
         </div>
@@ -522,7 +522,7 @@ export default function UserReviewView() {
         overflowX: 'auto',
         paddingBottom: '6px',
         marginBottom: '20px',
-        borderBottom: '1px solid #EED8C5'
+        borderBottom: '1px solid #d2d2d7'
       }}>
         {[
           { id: 'all', label: 'All Modules (A1–D)', badge: 'Full Scope' },
@@ -539,14 +539,14 @@ export default function UserReviewView() {
               type="button"
               onClick={() => setActiveStageTab(tab.id)}
               style={{
-                padding: '8px 14px',
-                borderRadius: '8px 8px 0 0',
-                border: isActive ? '1px solid #EED8C5' : '1px solid transparent',
-                borderBottom: isActive ? '2px solid #C25A23' : 'none',
-                backgroundColor: isActive ? '#FFF' : 'transparent',
-                color: isActive ? '#C25A23' : '#7A6B63',
+                padding: '8px 16px',
+                borderRadius: '9999px',
+                border: '1px solid',
+                borderColor: isActive ? 'var(--accent, #0066cc)' : 'transparent',
+                backgroundColor: isActive ? 'var(--accent, #0066cc)' : 'transparent',
+                color: isActive ? '#FFFFFF' : 'var(--text-secondary, #86868b)',
                 fontSize: '13px',
-                fontWeight: isActive ? 700 : 500,
+                fontWeight: isActive ? 600 : 400,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -558,10 +558,10 @@ export default function UserReviewView() {
               <span>{tab.label}</span>
               <span style={{
                 fontSize: '10px',
-                padding: '1px 6px',
-                borderRadius: '10px',
-                backgroundColor: isActive ? '#FAF0E6' : '#F2EBE5',
-                color: isActive ? '#9C5832' : '#8A7A72',
+                padding: '1px 8px',
+                borderRadius: '9999px',
+                backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)',
+                color: isActive ? '#FFFFFF' : 'var(--text-secondary, #86868b)',
                 fontWeight: 600
               }}>
                 {tab.badge}
@@ -576,11 +576,11 @@ export default function UserReviewView() {
         <div className="card" style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
           <div>
-            <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <DatabaseIcon size={18} style={{ color: '#C25A23' }} />
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.01em' }}>
+              <DatabaseIcon size={18} style={{ color: 'var(--accent, #0066cc)' }} />
               <span>Bill of Materials (BOM) & Database Activity Provider Selection</span>
             </h2>
-            <div style={{ fontSize: '12px', color: '#7A6B63', marginTop: '3px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '3px' }}>
               By default, each component is auto-matched to the best ecoinvent v3.12 provider as per keyword. Click <strong>"Select Provider"</strong> to explore and customize providers.
             </div>
           </div>
@@ -632,11 +632,11 @@ export default function UserReviewView() {
                         style={{
                           width: '100%',
                           padding: '6px 8px',
-                          border: '1px solid #E2D9D2',
-                          borderRadius: '4px',
+                          border: '1px solid #d2d2d7',
+                          borderRadius: '8px',
                           fontSize: '13px',
                           fontWeight: 600,
-                          color: '#2C221E',
+                          color: 'var(--text-primary)',
                           backgroundColor: '#FFF'
                         }}
                       />
@@ -651,10 +651,10 @@ export default function UserReviewView() {
                         style={{
                           width: '100%',
                           padding: '6px 8px',
-                          border: '1px solid #E2D9D2',
-                          borderRadius: '4px',
+                          border: '1px solid #d2d2d7',
+                          borderRadius: '8px',
                           fontSize: '12px',
-                          color: '#5C4E46',
+                          color: 'var(--text-secondary, #86868b)',
                           backgroundColor: '#FFF'
                         }}
                       />
@@ -667,20 +667,20 @@ export default function UserReviewView() {
                           <div style={{
                             fontSize: '12px',
                             fontWeight: 600,
-                            color: '#2C221E',
+                            color: 'var(--text-primary)',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis'
                           }}>
                             {item.dataset || item.name || 'Select Database Provider'}
                           </div>
-                          <div style={{ fontSize: '10px', color: '#8A7A72', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                          <div style={{ fontSize: '10px', color: 'var(--text-secondary, #86868b)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
                             <span>ID:</span>
-                            <code style={{ backgroundColor: '#FAF0E6', padding: '1px 4px', borderRadius: '3px', color: '#9C5832' }}>
+                            <code style={{ backgroundColor: 'rgba(0,0,0,0.04)', padding: '1px 6px', borderRadius: '4px', color: 'var(--text-primary)', border: '1px solid #e5e5ea' }}>
                               {item.ecoinvent_id || 'ecoinvent_proxy'}
                             </code>
                             {item.ecoinvent_geography && (
-                              <span style={{ backgroundColor: '#E8F5E9', color: '#2E7D32', padding: '1px 5px', borderRadius: '3px', fontWeight: 700, fontSize: '9px' }}>
+                              <span style={{ backgroundColor: 'rgba(52, 199, 89, 0.1)', color: '#34c759', padding: '1px 6px', borderRadius: '4px', fontWeight: 600, fontSize: '9px' }}>
                                 {item.ecoinvent_geography}
                               </span>
                             )}
@@ -694,18 +694,19 @@ export default function UserReviewView() {
                             handleImmediateSearch(cleanKw);
                           }}
                           style={{
-                            padding: '4px 8px',
-                            backgroundColor: '#FAF0E6',
-                            color: '#9C5832',
-                            border: '1px solid #EED8C5',
-                            borderRadius: '4px',
+                            padding: '4px 12px',
+                            backgroundColor: 'rgba(0, 102, 204, 0.08)',
+                            color: 'var(--accent, #0066cc)',
+                            border: '1px solid rgba(0, 102, 204, 0.2)',
+                            borderRadius: '9999px',
                             fontSize: '11px',
                             fontWeight: 600,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '4px',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            transition: 'all 0.15s ease'
                           }}
                           title="Click to choose a different provider from ecoinvent database"
                         >
@@ -726,11 +727,11 @@ export default function UserReviewView() {
                           width: '90px',
                           textAlign: 'right',
                           padding: '6px 8px',
-                          border: '1px solid #E2D9D2',
-                          borderRadius: '4px',
+                          border: '1px solid #d2d2d7',
+                          borderRadius: '8px',
                           fontSize: '13px',
                           fontWeight: 700,
-                          color: '#2C221E',
+                          color: 'var(--text-primary)',
                           backgroundColor: '#FFF'
                         }}
                       />
@@ -744,7 +745,7 @@ export default function UserReviewView() {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#C25A23',
+                          color: '#ff3b30',
                           cursor: 'pointer',
                           padding: '4px 6px',
                           borderRadius: '4px'
@@ -760,10 +761,10 @@ export default function UserReviewView() {
             </table>
           </div>
         ) : (
-          <div style={{ padding: '32px', textAlign: 'center', backgroundColor: '#FCFAF8', borderRadius: '8px' }}>
-            <AlertTriangleIcon size={24} style={{ color: '#D9822B', marginBottom: '8px' }} />
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#2C221E' }}>No BOM Components Available</div>
-            <p style={{ fontSize: '12px', color: '#7A6B63', margin: '4px 0 16px 0' }}>
+          <div style={{ padding: '32px', textAlign: 'center', backgroundColor: '#f5f5f7', borderRadius: '18px' }}>
+            <AlertTriangleIcon size={24} style={{ color: '#ff9500', marginBottom: '8px' }} />
+            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>No BOM Components Available</div>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', margin: '4px 0 16px 0' }}>
               Upload engineering documents or click below to manually add components.
             </p>
             <button
@@ -782,10 +783,10 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'a1_a3') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#FAF0E6', color: '#9C5832', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               MODULE A2 & A3
             </span>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Inbound Transport & Assembly Plant Utilities
             </h3>
           </div>
@@ -794,8 +795,8 @@ export default function UserReviewView() {
             {/* Logistics & Inbound Transport */}
             <div className="card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <TruckIcon size={15} style={{ color: '#C25A23' }} />
+                <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <TruckIcon size={15} style={{ color: 'var(--accent, #0066cc)' }} />
                   <span>Module A2: Inbound Logistics Legs</span>
                 </h4>
                 <button
@@ -812,29 +813,29 @@ export default function UserReviewView() {
                 {transport.length > 0 ? (
                   transport.map((leg, lIdx) => (
                     <div key={lIdx} style={{
-                      padding: '12px',
-                      backgroundColor: '#FCFAF8',
-                      borderRadius: '6px',
-                      border: '1px solid #EED8C5',
+                      padding: '14px',
+                      backgroundColor: '#f5f5f7',
+                      borderRadius: '11px',
+                      border: '1px solid #e5e5ea',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '8px'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
                         <div style={{ flex: 1 }}>
-                          <label className="form-label" style={{ fontSize: '10px', color: '#5C4E46', fontWeight: 600, margin: '0 0 2px 0' }}>Distance (km)</label>
+                          <label className="form-label" style={{ fontSize: '10px', color: 'var(--text-secondary, #86868b)', fontWeight: 600, margin: '0 0 2px 0' }}>Distance (km)</label>
                           <input
                             type="number"
                             min="0"
                             value={leg.dist || leg.distance || 0}
                             onChange={(e) => updateTransportLeg(lIdx, { dist: Math.max(0, parseFloat(e.target.value) || 0), distance: Math.max(0, parseFloat(e.target.value) || 0) })}
-                            style={{ width: '100%', padding: '4px 6px', fontSize: '12px', border: '1px solid #E2D9D2', borderRadius: '4px', fontWeight: 600, boxSizing: 'border-box' }}
+                            style={{ width: '100%', padding: '6px 8px', fontSize: '12px', border: '1px solid #d2d2d7', borderRadius: '6px', fontWeight: 600, boxSizing: 'border-box' }}
                           />
                         </div>
                         <button
                           type="button"
                           onClick={() => deleteTransportLeg(lIdx)}
-                          style={{ background: 'none', border: 'none', color: '#C25A23', cursor: 'pointer', padding: '4px', marginBottom: '2px' }}
+                          style={{ background: 'none', border: 'none', color: '#ff3b30', cursor: 'pointer', padding: '4px', marginBottom: '2px' }}
                           title="Remove leg"
                         >
                           <TrashIcon size={14} />
@@ -851,7 +852,7 @@ export default function UserReviewView() {
                     </div>
                   ))
                 ) : (
-                  <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '6px', fontSize: '12px', color: '#7A6B63' }}>
+                  <div style={{ padding: '12px', backgroundColor: '#f5f5f7', borderRadius: '8px', fontSize: '12px', color: 'var(--text-secondary, #86868b)' }}>
                     Defaulting to UL 10010-4 regional standard: <strong>500 km heavy lorry</strong> to plant gate.
                   </div>
                 )}
@@ -860,12 +861,12 @@ export default function UserReviewView() {
 
             {/* Manufacturing Energy & Utilities */}
             <div className="card">
-              <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', margin: '0 0 12px 0' }}>
+              <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 12px 0' }}>
                 Module A3: Factory Utilities & Consumables
               </h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Annual production volume (units/year)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Annual production volume (units/year)</label>
                   <input
                     type="number"
                     min="0"
@@ -876,7 +877,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Energy Used – Electricity (kWh)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Energy Used – Electricity (kWh)</label>
                   <input
                     type="number"
                     min="0"
@@ -887,7 +888,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Energy Used – Fuel/Gas (MJ)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Energy Used – Fuel/Gas (MJ)</label>
                   <input
                     type="number"
                     min="0"
@@ -898,7 +899,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Auxiliary Input – Process Water (m³)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Auxiliary Input – Process Water (m³)</label>
                   <input
                     type="number"
                     min="0"
@@ -911,7 +912,7 @@ export default function UserReviewView() {
               </div>
 
               {/* A3 Providers: Electricity, Fuel, and Process Water */}
-              <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #EED8C5', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', minWidth: 0 }}>
+              <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #e5e5ea', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', minWidth: 0 }}>
                 {renderProviderSelector(
                   'Grid Electricity Provider',
                   manufacturing.electricity_provider_id || 'ecoinvent_elec_mv_us',
@@ -940,10 +941,10 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'a4_a5') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#FAF0E6', color: '#9C5832', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               MODULE A4 & A5
             </span>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Outbound Logistics & On-Site Installation / Rigging
             </h3>
           </div>
@@ -951,13 +952,13 @@ export default function UserReviewView() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
             {/* Module A4 */}
             <div className="card">
-              <div className="card-title" style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <TruckIcon size={15} style={{ color: '#C25A23' }} />
+              <div className="card-title" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <TruckIcon size={15} style={{ color: 'var(--accent, #0066cc)' }} />
                 <span>Module A4: Delivery to Installation Site</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Distance (km)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Distance (km)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -977,12 +978,12 @@ export default function UserReviewView() {
 
             {/* Module A5 */}
             <div className="card">
-              <div className="card-title" style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', marginBottom: '12px' }}>
+              <div className="card-title" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px' }}>
                 Module A5: Rigging & Commissioning
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Install Energy (kWh)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Install Energy (kWh)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -992,7 +993,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Commissioning Refrigerant Loss (kg)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Commissioning Refrigerant Loss (kg)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -1003,7 +1004,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Install Consumables (liters)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Install Consumables (liters)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -1013,7 +1014,7 @@ export default function UserReviewView() {
                   />
                 </div>
               </div>
-              <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #EED8C5', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px', minWidth: 0 }}>
+              <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #e5e5ea', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px', minWidth: 0 }}>
                 {renderProviderSelector(
                   'Installation Energy Provider',
                   installation.installation_energy_provider_id || 'ecoinvent_elec_mv_us',
@@ -1036,10 +1037,10 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'b1_b7') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#FAF0E6', color: '#9C5832', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               MODULE B1–B7
             </span>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Operational Use Stage (Fugitive Leaks, Maintenance, Repair, Replacement, Refurbishment & Energy)
             </h3>
           </div>
@@ -1047,16 +1048,16 @@ export default function UserReviewView() {
           <div className="card">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
               {/* B1: Fugitive Leaks */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   B1: Fugitive Refrigerant
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Refrigerant Type</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Refrigerant Type</label>
                   <select
                     value={operational.refrigerant_type || 'R134a'}
                     onChange={(e) => updateOperational({ refrigerant_type: e.target.value })}
-                    style={{ width: '100%', padding: '4px 6px', fontSize: '11px', border: '1px solid #E2D9D2', borderRadius: '4px' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: '11px', border: '1px solid #d2d2d7', borderRadius: '6px' }}
                   >
                     <option value="R134a">R134a (GWP 1430)</option>
                     <option value="R1234ze">R1234ze (GWP 1.37)</option>
@@ -1065,7 +1066,7 @@ export default function UserReviewView() {
                   </select>
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Charge (kg)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Charge (kg)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -1075,7 +1076,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Annual Leak Rate (%/yr)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Annual Leak Rate (%/yr)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -1088,12 +1089,12 @@ export default function UserReviewView() {
               </div>
 
               {/* B2: Maintenance */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   B2: Maintenance
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
                     Maintenance Cycles (per RSL)
                   </label>
                   <input
@@ -1105,7 +1106,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Consumable Mass per Cycle (kg)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Consumable Mass per Cycle (kg)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -1123,12 +1124,12 @@ export default function UserReviewView() {
               </div>
 
               {/* B3: Repair */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   B3: Repair (Repeatable Row)
                 </div>
                 <div className="form-group" style={{ marginBottom: '6px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
                     Repair Events (per RSL)
                   </label>
                   <input
@@ -1140,7 +1141,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '6px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
                     Part Mass (kg)
                   </label>
                   <input
@@ -1161,12 +1162,12 @@ export default function UserReviewView() {
               </div>
 
               {/* B4: Replacement */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   B4: Replacement
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
                     Estimated Service Life (ESL, years)
                   </label>
                   <input
@@ -1179,30 +1180,30 @@ export default function UserReviewView() {
                 </div>
                 {/* Replacement Cycles Derived Display: (ESL ÷ RSL − 1) */}
                 <div style={{
-                  padding: '8px 10px',
-                  backgroundColor: '#FAF0E6',
-                  borderRadius: '6px',
-                  border: '1px solid #EED8C5',
+                  padding: '10px 12px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '8px',
+                  border: '1px solid #e5e5ea',
                   fontSize: '11px',
                   marginBottom: '8px'
                 }}>
-                  <div style={{ color: '#7A6B63', fontWeight: 600 }}>Derived Replacement Cycles:</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#C25A23' }}>
+                  <div style={{ color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>Derived Replacement Cycles:</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent, #0066cc)' }}>
                     {Math.max(0, (replacement_b4.esl_years || project_info.lifespan_years || 25) / (project_info.lifespan_years || 25) - 1).toFixed(2)} cycle(s)
                   </div>
-                  <div style={{ fontSize: '10px', color: '#8A7A72' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--text-secondary, #86868b)' }}>
                     Formula: (ESL {replacement_b4.esl_years || 25} yrs ÷ RSL {project_info.lifespan_years || 25} yrs − 1)
                   </div>
                 </div>
               </div>
 
               {/* B5: Refurbishment */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   B5: Refurbishment (Repeatable Row)
                 </div>
                 <div className="form-group" style={{ marginBottom: '6px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
                     Refurbishment Events (per RSL)
                   </label>
                   <input
@@ -1214,7 +1215,7 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group" style={{ marginBottom: '6px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
                     Mass / Qty (kg)
                   </label>
                   <input
@@ -1235,13 +1236,13 @@ export default function UserReviewView() {
               </div>
 
               {/* B6 & B7: Power & Water */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   B6 & B7: Operational Energy & Water
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '8px' }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Rated Efficiency (kW/ton)</label>
+                    <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Rated Efficiency (kW/ton)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -1253,7 +1254,7 @@ export default function UserReviewView() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 600 }}>Annual operating hours (h/year)</label>
+                    <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>Annual operating hours (h/year)</label>
                     <input
                       type="number"
                       min="0"
@@ -1273,7 +1274,7 @@ export default function UserReviewView() {
                 )}
 
                 <div className="form-group" style={{ marginTop: '10px', marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Annual Water Use (m³/yr)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Annual Water Use (m³/yr)</label>
                   <input
                     type="number"
                     min="0"
@@ -1299,10 +1300,10 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'c1_c4') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#FAF0E6', color: '#9C5832', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               MODULE C1–C4
             </span>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               End of Life Decommissioning, Waste Transport, Processing & Disposal
             </h3>
           </div>
@@ -1310,12 +1311,12 @@ export default function UserReviewView() {
           <div className="card">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
               {/* C1 & C2 */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   C1 Deconstruction & C2 Waste Transport
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Deconstruction Energy (kWh)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Deconstruction Energy (kWh)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -1331,7 +1332,7 @@ export default function UserReviewView() {
                   'Decommissioning'
                 )}
                 <div className="form-group" style={{ marginTop: '8px', marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Distance to Waste Processing (km)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Distance to Waste Processing (km)</label>
                   <input
                     type="number"
                     className="form-input"
@@ -1349,8 +1350,8 @@ export default function UserReviewView() {
               </div>
 
               {/* C3 & C4 */}
-              <div style={{ padding: '12px', backgroundColor: '#FCFAF8', borderRadius: '8px', border: '1px solid #EED8C5' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#C25A23', marginBottom: '8px' }}>
+              <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   C3 Waste Processing & C4 Final Disposal
                 </div>
 
@@ -1387,7 +1388,7 @@ export default function UserReviewView() {
                 })()}
 
                 <div className="form-group" style={{ marginBottom: '6px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Recycling Rate (C3 %)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Recycling Rate (C3 %)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -1407,7 +1408,7 @@ export default function UserReviewView() {
                 )}
 
                 <div className="form-group" style={{ marginTop: '8px', marginBottom: '6px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Thermal Incineration (C3 %)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Thermal Incineration (C3 %)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -1427,7 +1428,7 @@ export default function UserReviewView() {
                 )}
 
                 <div className="form-group" style={{ marginTop: '8px', marginBottom: '6px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Sanitary Landfill (C4 %)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Sanitary Landfill (C4 %)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -1455,19 +1456,19 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'd') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#E8F5E9', color: '#2E7D32', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+            <span style={{ backgroundColor: 'rgba(52, 199, 89, 0.12)', color: '#28cd41', padding: '3px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600 }}>
               MODULE D
             </span>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Circularity & Loads Beyond System Boundary (Net Avoided Burdens)
             </h3>
           </div>
 
-          <div className="card" style={{ borderLeft: '4px solid #2E7D32' }}>
+          <div className="card" style={{ borderLeft: '4px solid #28cd41' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
               {/* Single Overall Recovery Rate (%) Field */}
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>Overall recovery rate (%)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>Overall recovery rate (%)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -1481,7 +1482,7 @@ export default function UserReviewView() {
               </div>
 
               {/* Module D Provider Selectors: Virgin Material vs Secondary Recycled Process */}
-              <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', paddingTop: '8px', borderTop: '1px solid #C8E6C9' }}>
+              <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', paddingTop: '8px', borderTop: '1px solid #e5e5ea' }}>
                 {renderProviderSelector(
                   'Module D Virgin Material Provider (Displaced Primary)',
                   circularity_d.virgin_material_provider_id || 'ecoinvent_virgin_steel_primary_glo',
@@ -1502,7 +1503,7 @@ export default function UserReviewView() {
       <div style={{
         marginTop: '28px',
         paddingTop: '20px',
-        borderTop: '1px solid #EED8C5',
+        borderTop: '1px solid #d2d2d7',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -1547,8 +1548,8 @@ export default function UserReviewView() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(44,34,30,0.5)',
-          backdropFilter: 'blur(3px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(10px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -1557,47 +1558,47 @@ export default function UserReviewView() {
         }}>
           <div style={{
             backgroundColor: '#FFF',
-            borderRadius: '12px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+            borderRadius: '18px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
             width: '100%',
             maxWidth: '680px',
             maxHeight: '85vh',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            border: '1px solid #EED8C5'
+            border: '1px solid #d2d2d7'
           }}>
             {/* Modal Header */}
             <div style={{
-              padding: '16px 20px',
-              borderBottom: '1px solid #EED8C5',
+              padding: '18px 24px',
+              borderBottom: '1px solid #d2d2d7',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: '#FFF8F2'
+              backgroundColor: '#f5f5f7'
             }}>
               <div>
-                <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <DatabaseIcon size={18} style={{ color: '#C25A23' }} />
+                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.01em' }}>
+                  <DatabaseIcon size={18} style={{ color: 'var(--accent, #0066cc)' }} />
                   <span>Select ecoinvent Database Provider</span>
                 </h3>
-                <div style={{ fontSize: '12px', color: '#7A6B63', marginTop: '2px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
                   Component: <strong>{bom[providerModalItemIndex]?.name || 'Component'}</strong> (Extracted Keyword: "{bom[providerModalItemIndex]?.material}")
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setProviderModalItemIndex(null)}
-                style={{ background: 'none', border: 'none', color: '#7A6B63', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: 'var(--text-secondary, #86868b)', cursor: 'pointer' }}
               >
                 <CloseIcon size={18} />
               </button>
             </div>
 
             {/* Search Input & Quick Keyword Chips */}
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid #EED8C5', backgroundColor: '#FCFAF8' }}>
-              <div style={{ position: 'relative', marginBottom: '10px' }}>
-                <SearchIcon size={16} style={{ position: 'absolute', left: '12px', top: '11px', color: '#7A6B63' }} />
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid #d2d2d7', backgroundColor: '#FFFFFF' }}>
+              <div style={{ position: 'relative', marginBottom: '12px' }}>
+                <SearchIcon size={16} style={{ position: 'absolute', left: '14px', top: '11px', color: 'var(--text-secondary, #86868b)' }} />
                 <input
                   type="text"
                   placeholder="Search 26,533 ecoinvent activities (e.g., steel, copper, motor, polyurethane, inverter)..."
@@ -1605,16 +1606,16 @@ export default function UserReviewView() {
                   onChange={(e) => handleSearchInputChange(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '8px 58px 8px 36px',
-                    border: '1px solid #E2D9D2',
-                    borderRadius: '6px',
+                    padding: '8px 58px 8px 38px',
+                    border: '1px solid #d2d2d7',
+                    borderRadius: '9999px',
                     fontSize: '13px'
                   }}
                   autoFocus
                 />
-                <div style={{ position: 'absolute', right: '10px', top: '7px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ position: 'absolute', right: '12px', top: '7px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {isSearchingDb && (
-                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: '#C25A23' }} />
+                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: 'var(--accent, #0066cc)' }} />
                   )}
                   {providerSearchQuery && (
                     <button
@@ -1623,7 +1624,7 @@ export default function UserReviewView() {
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#7A6B63',
+                        color: 'var(--text-secondary, #86868b)',
                         cursor: 'pointer',
                         fontSize: '14px',
                         padding: '2px'
@@ -1638,21 +1639,23 @@ export default function UserReviewView() {
 
               {/* Suggested Quick Keywords */}
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: '#7A6B63', fontWeight: 600 }}>Quick search:</span>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>Quick search:</span>
                 {['steel', 'copper', 'motor', 'polyurethane', 'inverter', 'stainless steel', 'aluminium', 'refrigerant'].map(tag => (
                   <button
                     key={tag}
                     type="button"
                     onClick={() => handleImmediateSearch(tag)}
                     style={{
-                      padding: '2px 8px',
-                      borderRadius: '12px',
+                      padding: '3px 10px',
+                      borderRadius: '9999px',
                       fontSize: '11px',
-                      border: '1px solid #EED8C5',
-                      backgroundColor: providerSearchQuery.toLowerCase() === tag ? '#FAF0E6' : '#FFF',
-                      color: providerSearchQuery.toLowerCase() === tag ? '#9C5832' : '#5C4E46',
-                      fontWeight: providerSearchQuery.toLowerCase() === tag ? 700 : 500,
-                      cursor: 'pointer'
+                      border: '1px solid',
+                      borderColor: providerSearchQuery.toLowerCase() === tag ? 'var(--accent, #0066cc)' : '#d2d2d7',
+                      backgroundColor: providerSearchQuery.toLowerCase() === tag ? 'var(--accent, #0066cc)' : '#f5f5f7',
+                      color: providerSearchQuery.toLowerCase() === tag ? '#FFFFFF' : 'var(--text-primary)',
+                      fontWeight: providerSearchQuery.toLowerCase() === tag ? 600 : 400,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
                     }}
                   >
                     {tag}
@@ -1672,11 +1675,11 @@ export default function UserReviewView() {
                   pointerEvents: isSearchingDb ? 'none' : 'auto'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C5832', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.04em' }}>
                       <span>Live ecoinvent Search Results (Showing {Math.min(visibleMatchesCount, liveSearchResults.length)} of {liveSearchResults.length})</span>
-                      {isSearchingDb && <span style={{ fontSize: '10px', color: '#C25A23', fontWeight: 500 }}>(updating...)</span>}
+                      {isSearchingDb && <span style={{ fontSize: '10px', color: 'var(--accent, #0066cc)', fontWeight: 500 }}>(updating...)</span>}
                     </div>
-                    <div style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 600 }}>
+                    <div style={{ fontSize: '11px', color: '#34c759', fontWeight: 600 }}>
                       ★ Best match ranked first
                     </div>
                   </div>
@@ -1698,36 +1701,35 @@ export default function UserReviewView() {
                             reference_product_name: res.reference_product_name,
                           })}
                           style={{
-                            padding: '12px 14px',
+                            padding: '12px 16px',
                             border: isCurrentlySelected
-                              ? '2px solid #2E7D32'
+                              ? '2px solid #34c759'
                               : isBestMatch
-                              ? '2px solid #C25A23'
-                              : '1px solid #EED8C5',
-                            borderRadius: '8px',
+                              ? '2px solid var(--accent, #0066cc)'
+                              : '1px solid #e5e5ea',
+                            borderRadius: '11px',
                             cursor: 'pointer',
                             backgroundColor: isCurrentlySelected
-                              ? '#F1F8F2'
+                              ? 'rgba(52, 199, 89, 0.05)'
                               : isBestMatch
-                              ? '#FFFBF8'
+                              ? 'rgba(0, 102, 204, 0.04)'
                               : '#FFF',
                             transition: 'all 0.15s ease',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            gap: '12px',
-                            boxShadow: isBestMatch ? '0 2px 8px rgba(194,90,35,0.12)' : 'none'
+                            gap: '12px'
                           }}
                           onMouseEnter={(e) => {
                             if (!isCurrentlySelected && !isBestMatch) {
-                              e.currentTarget.style.backgroundColor = '#FFF8F2';
-                              e.currentTarget.style.borderColor = '#C25A23';
+                              e.currentTarget.style.backgroundColor = '#f5f5f7';
+                              e.currentTarget.style.borderColor = 'var(--accent, #0066cc)';
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (!isCurrentlySelected && !isBestMatch) {
                               e.currentTarget.style.backgroundColor = '#FFF';
-                              e.currentTarget.style.borderColor = '#EED8C5';
+                              e.currentTarget.style.borderColor = '#e5e5ea';
                             }
                           }}
                         >
@@ -1735,12 +1737,12 @@ export default function UserReviewView() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                               {isBestMatch && (
                                 <span style={{
-                                  backgroundColor: '#FAF0E6',
-                                  color: '#C25A23',
+                                  backgroundColor: 'rgba(0, 102, 204, 0.08)',
+                                  color: 'var(--accent, #0066cc)',
                                   fontSize: '9px',
-                                  fontWeight: 800,
-                                  padding: '1px 6px',
-                                  borderRadius: '3px',
+                                  fontWeight: 600,
+                                  padding: '2px 8px',
+                                  borderRadius: '9999px',
                                   textTransform: 'uppercase',
                                   letterSpacing: '0.04em'
                                 }}>
@@ -1749,12 +1751,12 @@ export default function UserReviewView() {
                               )}
                               {isCurrentlySelected && (
                                 <span style={{
-                                  backgroundColor: '#E8F5E9',
-                                  color: '#2E7D32',
+                                  backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                                  color: '#34c759',
                                   fontSize: '9px',
-                                  fontWeight: 800,
-                                  padding: '1px 6px',
-                                  borderRadius: '3px',
+                                  fontWeight: 600,
+                                  padding: '2px 8px',
+                                  borderRadius: '9999px',
                                   textTransform: 'uppercase'
                                 }}>
                                   ✓ Selected
@@ -1762,45 +1764,47 @@ export default function UserReviewView() {
                               )}
                               <span style={{
                                 fontSize: '10px',
-                                color: '#8A7A72',
-                                fontFamily: 'monospace'
+                                color: 'var(--text-secondary, #86868b)',
+                                fontFamily: 'SFMono-Regular, Consolas, monospace'
                               }}>
                                 Row #{res.row_index}
                               </span>
                             </div>
-                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', lineHeight: 1.3 }}>
+                            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>
                               {res.activity_name}
                             </div>
-                            <div style={{ fontSize: '11px', color: '#7A6B63', marginTop: '2px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
                               Reference Product: <strong>{res.reference_product_name}</strong>
                             </div>
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                             <span style={{
-                              backgroundColor: '#FAF0E6',
-                              color: '#9C5832',
-                              padding: '3px 8px',
-                              borderRadius: '4px',
+                              backgroundColor: '#f5f5f7',
+                              color: 'var(--text-secondary, #86868b)',
+                              border: '1px solid #e5e5ea',
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
                               fontSize: '11px',
-                              fontWeight: 700
+                              fontWeight: 600
                             }}>
                               {res.geography}
                             </span>
                             <button
                               type="button"
                               style={{
-                                padding: '4px 10px',
-                                backgroundColor: isCurrentlySelected ? '#2E7D32' : isBestMatch ? '#C25A23' : '#FAF0E6',
-                                color: isCurrentlySelected || isBestMatch ? '#FFF' : '#9C5832',
+                                padding: '5px 14px',
+                                backgroundColor: isCurrentlySelected ? '#34c759' : isBestMatch ? 'var(--accent, #0066cc)' : 'rgba(0, 102, 204, 0.08)',
+                                color: isCurrentlySelected || isBestMatch ? '#FFF' : 'var(--accent, #0066cc)',
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '9999px',
                                 fontSize: '11px',
-                                fontWeight: 700,
+                                fontWeight: 600,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '4px'
+                                gap: '4px',
+                                transition: 'all 0.15s ease'
                               }}
                             >
                               {isCurrentlySelected ? 'Selected' : 'Select'}
@@ -1839,7 +1843,7 @@ export default function UserReviewView() {
 
               {/* If no search results */}
               {!isSearchingDb && providerSearchQuery && liveSearchResults.length === 0 && (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#7A6B63', fontSize: '13px', backgroundColor: '#FFF', borderRadius: '8px', border: '1px dashed #EED8C5', marginBottom: '16px' }}>
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary, #86868b)', fontSize: '13px', backgroundColor: '#FFF', borderRadius: '11px', border: '1px dashed #d2d2d7', marginBottom: '16px' }}>
                   No exact ecoinvent activities found for "{providerSearchQuery}".
                   <div style={{ fontSize: '11px', marginTop: '4px' }}>
                     Try searching for broader keywords like <code>steel</code>, <code>copper</code>, <code>motor</code>, or select from the core industrial providers below.
@@ -1849,7 +1853,7 @@ export default function UserReviewView() {
 
               {/* Standard Curated Database Providers */}
               <div>
-                <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C5832', textTransform: 'uppercase', marginBottom: '8px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em' }}>
                   Standard Core ecoinvent v3.12 Industrial Providers
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -1860,29 +1864,31 @@ export default function UserReviewView() {
                         key={p.id}
                         onClick={() => handleSelectProvider(providerModalItemIndex, p)}
                         style={{
-                          padding: '10px 12px',
-                          border: '1px solid #EED8C5',
-                          borderRadius: '6px',
+                          padding: '12px 16px',
+                          border: '1px solid #e5e5ea',
+                          borderRadius: '11px',
                           cursor: 'pointer',
                           backgroundColor: '#FFF',
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center'
+                          alignItems: 'center',
+                          transition: 'all 0.15s ease'
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FFF8F2'; e.currentTarget.style.borderColor = '#C25A23'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFF'; e.currentTarget.style.borderColor = '#EED8C5'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f7'; e.currentTarget.style.borderColor = 'var(--accent, #0066cc)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFF'; e.currentTarget.style.borderColor = '#e5e5ea'; }}
                       >
                         <div>
-                          <div style={{ fontSize: '13px', fontWeight: 600, color: '#2C221E' }}>{p.name}</div>
-                          <div style={{ fontSize: '11px', color: '#7A6B63' }}>{p.category} • Default Factor: {p.defaultEf} kg CO₂e/{p.unit}</div>
+                          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>{p.category} • Default Factor: {p.defaultEf} kg CO₂e/{p.unit}</div>
                         </div>
                         <span style={{
-                          backgroundColor: '#FAF0E6',
-                          color: '#9C5832',
+                          backgroundColor: '#f5f5f7',
+                          color: 'var(--text-secondary, #86868b)',
+                          border: '1px solid #e5e5ea',
                           padding: '2px 8px',
-                          borderRadius: '4px',
+                          borderRadius: '9999px',
                           fontSize: '11px',
-                          fontWeight: 700
+                          fontWeight: 600
                         }}>
                           {p.geography}
                         </span>
@@ -1893,7 +1899,7 @@ export default function UserReviewView() {
             </div>
 
             {/* Modal Footer */}
-            <div style={{ padding: '12px 20px', borderTop: '1px solid #EED8C5', backgroundColor: '#FCFAF8', textAlign: 'right' }}>
+            <div style={{ padding: '12px 20px', borderTop: '1px solid #d2d2d7', backgroundColor: '#f5f5f7', textAlign: 'right' }}>
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
@@ -1914,8 +1920,8 @@ export default function UserReviewView() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(44,34,30,0.5)',
-          backdropFilter: 'blur(3px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(10px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -1924,47 +1930,47 @@ export default function UserReviewView() {
         }}>
           <div style={{
             backgroundColor: '#FFF',
-            borderRadius: '12px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+            borderRadius: '18px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
             width: '100%',
             maxWidth: '680px',
             maxHeight: '85vh',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            border: '1px solid #EED8C5'
+            border: '1px solid #d2d2d7'
           }}>
             {/* Modal Header */}
             <div style={{
-              padding: '16px 20px',
-              borderBottom: '1px solid #EED8C5',
+              padding: '18px 24px',
+              borderBottom: '1px solid #d2d2d7',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: '#FFF8F2'
+              backgroundColor: '#f5f5f7'
             }}>
               <div>
-                <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <DatabaseIcon size={18} style={{ color: '#C25A23' }} />
+                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.01em' }}>
+                  <DatabaseIcon size={18} style={{ color: 'var(--accent, #0066cc)' }} />
                   <span>Select ecoinvent Database Provider</span>
                 </h3>
-                <div style={{ fontSize: '12px', color: '#7A6B63', marginTop: '2px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
                   Field: <strong>{genericProviderModal.label || 'Provider'}</strong>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => { setGenericProviderModal(null); setGenericSearchQuery(''); setGenericSearchResults([]); }}
-                style={{ background: 'none', border: 'none', color: '#7A6B63', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: 'var(--text-secondary, #86868b)', cursor: 'pointer' }}
               >
                 <CloseIcon size={18} />
               </button>
             </div>
 
             {/* Search Input & Quick Keyword Chips */}
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid #EED8C5', backgroundColor: '#FCFAF8' }}>
-              <div style={{ position: 'relative', marginBottom: '10px' }}>
-                <SearchIcon size={16} style={{ position: 'absolute', left: '12px', top: '11px', color: '#7A6B63' }} />
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid #d2d2d7', backgroundColor: '#FFFFFF' }}>
+              <div style={{ position: 'relative', marginBottom: '12px' }}>
+                <SearchIcon size={16} style={{ position: 'absolute', left: '14px', top: '11px', color: 'var(--text-secondary, #86868b)' }} />
                 <input
                   type="text"
                   placeholder="Search 26,533 ecoinvent activities (e.g., steel, copper, transport, electricity, diesel)..."
@@ -1972,16 +1978,16 @@ export default function UserReviewView() {
                   onChange={(e) => handleGenericSearchInputChange(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '8px 58px 8px 36px',
-                    border: '1px solid #E2D9D2',
-                    borderRadius: '6px',
+                    padding: '8px 58px 8px 38px',
+                    border: '1px solid #d2d2d7',
+                    borderRadius: '9999px',
                     fontSize: '13px'
                   }}
                   autoFocus
                 />
-                <div style={{ position: 'absolute', right: '10px', top: '7px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ position: 'absolute', right: '12px', top: '7px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {isGenericSearching && (
-                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: '#C25A23' }} />
+                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: 'var(--accent, #0066cc)' }} />
                   )}
                   {genericSearchQuery && (
                     <button
@@ -1990,7 +1996,7 @@ export default function UserReviewView() {
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#7A6B63',
+                        color: 'var(--text-secondary, #86868b)',
                         cursor: 'pointer',
                         fontSize: '14px',
                         padding: '2px'
@@ -2005,21 +2011,23 @@ export default function UserReviewView() {
 
               {/* Suggested Quick Keywords */}
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: '#7A6B63', fontWeight: 600 }}>Quick search:</span>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>Quick search:</span>
                 {['steel', 'copper', 'transport', 'electricity', 'diesel', 'aluminium', 'water', 'waste', 'incineration', 'landfill', 'recycling', 'lubricating oil'].map(tag => (
                   <button
                     key={tag}
                     type="button"
                     onClick={() => handleGenericImmediateSearch(tag)}
                     style={{
-                      padding: '2px 8px',
-                      borderRadius: '12px',
+                      padding: '3px 10px',
+                      borderRadius: '9999px',
                       fontSize: '11px',
-                      border: '1px solid #EED8C5',
-                      backgroundColor: genericSearchQuery.toLowerCase() === tag ? '#FAF0E6' : '#FFF',
-                      color: genericSearchQuery.toLowerCase() === tag ? '#9C5832' : '#5C4E46',
-                      fontWeight: genericSearchQuery.toLowerCase() === tag ? 700 : 500,
-                      cursor: 'pointer'
+                      border: '1px solid',
+                      borderColor: genericSearchQuery.toLowerCase() === tag ? 'var(--accent, #0066cc)' : '#d2d2d7',
+                      backgroundColor: genericSearchQuery.toLowerCase() === tag ? 'var(--accent, #0066cc)' : '#f5f5f7',
+                      color: genericSearchQuery.toLowerCase() === tag ? '#FFFFFF' : 'var(--text-primary)',
+                      fontWeight: genericSearchQuery.toLowerCase() === tag ? 600 : 400,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
                     }}
                   >
                     {tag}
@@ -2039,11 +2047,11 @@ export default function UserReviewView() {
                   pointerEvents: isGenericSearching ? 'none' : 'auto'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C5832', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.04em' }}>
                       <span>Live ecoinvent Search Results (Showing {Math.min(genericVisibleCount, genericSearchResults.length)} of {genericSearchResults.length})</span>
-                      {isGenericSearching && <span style={{ fontSize: '10px', color: '#C25A23', fontWeight: 500 }}>(updating...)</span>}
+                      {isGenericSearching && <span style={{ fontSize: '10px', color: 'var(--accent, #0066cc)', fontWeight: 500 }}>(updating...)</span>}
                     </div>
-                    <div style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 600 }}>
+                    <div style={{ fontSize: '11px', color: '#34c759', fontWeight: 600 }}>
                       ★ Best match ranked first
                     </div>
                   </div>
@@ -2063,36 +2071,35 @@ export default function UserReviewView() {
                             reference_product_name: res.reference_product_name,
                           })}
                           style={{
-                            padding: '12px 14px',
+                            padding: '12px 16px',
                             border: isCurrentlySelected
-                              ? '2px solid #2E7D32'
+                              ? '2px solid #34c759'
                               : isBestMatch
-                              ? '2px solid #C25A23'
-                              : '1px solid #EED8C5',
-                            borderRadius: '8px',
+                              ? '2px solid var(--accent, #0066cc)'
+                              : '1px solid #e5e5ea',
+                            borderRadius: '11px',
                             cursor: 'pointer',
                             backgroundColor: isCurrentlySelected
-                              ? '#F1F8F2'
+                              ? 'rgba(52, 199, 89, 0.05)'
                               : isBestMatch
-                              ? '#FFFBF8'
+                              ? 'rgba(0, 102, 204, 0.04)'
                               : '#FFF',
                             transition: 'all 0.15s ease',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            gap: '12px',
-                            boxShadow: isBestMatch ? '0 2px 8px rgba(194,90,35,0.12)' : 'none'
+                            gap: '12px'
                           }}
                           onMouseEnter={(e) => {
                             if (!isCurrentlySelected && !isBestMatch) {
-                              e.currentTarget.style.backgroundColor = '#FFF8F2';
-                              e.currentTarget.style.borderColor = '#C25A23';
+                              e.currentTarget.style.backgroundColor = '#f5f5f7';
+                              e.currentTarget.style.borderColor = 'var(--accent, #0066cc)';
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (!isCurrentlySelected && !isBestMatch) {
                               e.currentTarget.style.backgroundColor = '#FFF';
-                              e.currentTarget.style.borderColor = '#EED8C5';
+                              e.currentTarget.style.borderColor = '#e5e5ea';
                             }
                           }}
                         >
@@ -2100,12 +2107,12 @@ export default function UserReviewView() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                               {isBestMatch && (
                                 <span style={{
-                                  backgroundColor: '#FAF0E6',
-                                  color: '#C25A23',
+                                  backgroundColor: 'rgba(0, 102, 204, 0.08)',
+                                  color: 'var(--accent, #0066cc)',
                                   fontSize: '9px',
-                                  fontWeight: 800,
-                                  padding: '1px 6px',
-                                  borderRadius: '3px',
+                                  fontWeight: 600,
+                                  padding: '2px 8px',
+                                  borderRadius: '9999px',
                                   textTransform: 'uppercase',
                                   letterSpacing: '0.04em'
                                 }}>
@@ -2114,12 +2121,12 @@ export default function UserReviewView() {
                               )}
                               {isCurrentlySelected && (
                                 <span style={{
-                                  backgroundColor: '#E8F5E9',
-                                  color: '#2E7D32',
+                                  backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                                  color: '#34c759',
                                   fontSize: '9px',
-                                  fontWeight: 800,
-                                  padding: '1px 6px',
-                                  borderRadius: '3px',
+                                  fontWeight: 600,
+                                  padding: '2px 8px',
+                                  borderRadius: '9999px',
                                   textTransform: 'uppercase'
                                 }}>
                                   ✓ Selected
@@ -2127,45 +2134,47 @@ export default function UserReviewView() {
                               )}
                               <span style={{
                                 fontSize: '10px',
-                                color: '#8A7A72',
-                                fontFamily: 'monospace'
+                                color: 'var(--text-secondary, #86868b)',
+                                fontFamily: 'SFMono-Regular, Consolas, monospace'
                               }}>
                                 Row #{res.row_index}
                               </span>
                             </div>
-                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', lineHeight: 1.3 }}>
+                            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>
                               {res.activity_name}
                             </div>
-                            <div style={{ fontSize: '11px', color: '#7A6B63', marginTop: '2px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
                               Reference Product: <strong>{res.reference_product_name}</strong>
                             </div>
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                             <span style={{
-                              backgroundColor: '#FAF0E6',
-                              color: '#9C5832',
-                              padding: '3px 8px',
-                              borderRadius: '4px',
+                              backgroundColor: '#f5f5f7',
+                              color: 'var(--text-secondary, #86868b)',
+                              border: '1px solid #e5e5ea',
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
                               fontSize: '11px',
-                              fontWeight: 700
+                              fontWeight: 600
                             }}>
                               {res.geography}
                             </span>
                             <button
                               type="button"
                               style={{
-                                padding: '4px 10px',
-                                backgroundColor: isCurrentlySelected ? '#2E7D32' : isBestMatch ? '#C25A23' : '#FAF0E6',
-                                color: isCurrentlySelected || isBestMatch ? '#FFF' : '#9C5832',
+                                padding: '5px 14px',
+                                backgroundColor: isCurrentlySelected ? '#34c759' : isBestMatch ? 'var(--accent, #0066cc)' : 'rgba(0, 102, 204, 0.08)',
+                                color: isCurrentlySelected || isBestMatch ? '#FFF' : 'var(--accent, #0066cc)',
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '9999px',
                                 fontSize: '11px',
-                                fontWeight: 700,
+                                fontWeight: 600,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '4px'
+                                gap: '4px',
+                                transition: 'all 0.15s ease'
                               }}
                             >
                               {isCurrentlySelected ? 'Selected' : 'Select'}
@@ -2204,7 +2213,7 @@ export default function UserReviewView() {
 
               {/* No results message */}
               {!isGenericSearching && genericSearchQuery && genericSearchResults.length === 0 && (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#7A6B63', fontSize: '13px', backgroundColor: '#FFF', borderRadius: '8px', border: '1px dashed #EED8C5', marginBottom: '16px' }}>
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary, #86868b)', fontSize: '13px', backgroundColor: '#FFF', borderRadius: '11px', border: '1px dashed #d2d2d7', marginBottom: '16px' }}>
                   No ecoinvent activities found for "{genericSearchQuery}".
                   <div style={{ fontSize: '11px', marginTop: '4px' }}>
                     Try broader keywords like <code>steel</code>, <code>transport</code>, <code>electricity</code>.
@@ -2214,7 +2223,7 @@ export default function UserReviewView() {
 
               {/* Standard Curated Providers Fallback */}
               <div>
-                <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C5832', textTransform: 'uppercase', marginBottom: '8px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em' }}>
                   Standard Core ecoinvent v3.12 Industrial Providers
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -2225,29 +2234,31 @@ export default function UserReviewView() {
                         key={p.id}
                         onClick={() => handleGenericSelectProvider(p)}
                         style={{
-                          padding: '10px 12px',
-                          border: '1px solid #EED8C5',
-                          borderRadius: '6px',
+                          padding: '12px 16px',
+                          border: '1px solid #e5e5ea',
+                          borderRadius: '11px',
                           cursor: 'pointer',
                           backgroundColor: '#FFF',
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center'
+                          alignItems: 'center',
+                          transition: 'all 0.15s ease'
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FFF8F2'; e.currentTarget.style.borderColor = '#C25A23'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFF'; e.currentTarget.style.borderColor = '#EED8C5'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f7'; e.currentTarget.style.borderColor = 'var(--accent, #0066cc)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFF'; e.currentTarget.style.borderColor = '#e5e5ea'; }}
                       >
                         <div>
-                          <div style={{ fontSize: '13px', fontWeight: 600, color: '#2C221E' }}>{p.name}</div>
-                          <div style={{ fontSize: '11px', color: '#7A6B63' }}>{p.category} • Default Factor: {p.defaultEf} kg CO₂e/{p.unit}</div>
+                          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>{p.category} • Default Factor: {p.defaultEf} kg CO₂e/{p.unit}</div>
                         </div>
                         <span style={{
-                          backgroundColor: '#FAF0E6',
-                          color: '#9C5832',
+                          backgroundColor: '#f5f5f7',
+                          color: 'var(--text-secondary, #86868b)',
+                          border: '1px solid #e5e5ea',
                           padding: '2px 8px',
-                          borderRadius: '4px',
+                          borderRadius: '9999px',
                           fontSize: '11px',
-                          fontWeight: 700
+                          fontWeight: 600
                         }}>
                           {p.geography}
                         </span>
@@ -2258,7 +2269,7 @@ export default function UserReviewView() {
             </div>
 
             {/* Modal Footer */}
-            <div style={{ padding: '12px 20px', borderTop: '1px solid #EED8C5', backgroundColor: '#FCFAF8', textAlign: 'right' }}>
+            <div style={{ padding: '12px 20px', borderTop: '1px solid #d2d2d7', backgroundColor: '#f5f5f7', textAlign: 'right' }}>
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
@@ -2279,8 +2290,8 @@ export default function UserReviewView() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(44,34,30,0.5)',
-          backdropFilter: 'blur(3px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(10px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -2291,61 +2302,61 @@ export default function UserReviewView() {
             onSubmit={handleCreateComponent}
             style={{
               backgroundColor: '#FFF',
-              borderRadius: '12px',
+              borderRadius: '18px',
               width: '100%',
               maxWidth: '520px',
               overflow: 'hidden',
-              border: '1px solid #EED8C5',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+              border: '1px solid #d2d2d7',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
             }}
           >
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #EED8C5', backgroundColor: '#FFF8F2', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#2C221E', margin: 0 }}>Add Custom Component to BOM</h3>
-              <button type="button" onClick={() => setIsAddModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7A6B63' }}>
+            <div style={{ padding: '18px 24px', borderBottom: '1px solid #d2d2d7', backgroundColor: '#f5f5f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>Add Custom Component to BOM</h3>
+              <button type="button" onClick={() => setIsAddModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary, #86868b)' }}>
                 <CloseIcon size={18} />
               </button>
             </div>
 
             <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#5C4E46', marginBottom: '4px' }}>Component Name</label>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', marginBottom: '4px' }}>Component Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Copper Cooling Coil or Control Board"
                   value={newComp.name}
                   onChange={(e) => setNewComp({ ...newComp, name: e.target.value })}
                   required
-                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #E2D9D2', borderRadius: '6px', fontSize: '13px' }}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #d2d2d7', borderRadius: '8px', fontSize: '13px' }}
                 />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#5C4E46', marginBottom: '4px' }}>Material Keyword</label>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', marginBottom: '4px' }}>Material Keyword</label>
                   <input
                     type="text"
                     placeholder="e.g. Copper, Steel, Aluminum"
                     value={newComp.material}
                     onChange={(e) => setNewComp({ ...newComp, material: e.target.value })}
-                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #E2D9D2', borderRadius: '6px', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #d2d2d7', borderRadius: '8px', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#5C4E46', marginBottom: '4px' }}>Mass (kg)</label>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', marginBottom: '4px' }}>Mass (kg)</label>
                   <input
                     type="number"
                     step="any"
                     value={newComp.mass}
                     onChange={(e) => setNewComp({ ...newComp, mass: parseFloat(e.target.value) || 0 })}
                     required
-                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #E2D9D2', borderRadius: '6px', fontSize: '13px', fontWeight: 600 }}
+                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #d2d2d7', borderRadius: '8px', fontSize: '13px', fontWeight: 600 }}
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#5C4E46', marginBottom: '4px' }}>Initial Database Provider</label>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', marginBottom: '4px' }}>Initial Database Provider</label>
                 <select
                   value={newComp.ecoinvent_id}
                   onChange={(e) => {
@@ -2359,7 +2370,7 @@ export default function UserReviewView() {
                       });
                     }
                   }}
-                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #E2D9D2', borderRadius: '6px', fontSize: '12px' }}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #d2d2d7', borderRadius: '8px', fontSize: '12px' }}
                 >
                   {STANDARD_DATABASE_PROVIDERS.map(p => (
                     <option key={p.id} value={p.id}>{p.name} [{p.geography}]</option>
@@ -2369,11 +2380,11 @@ export default function UserReviewView() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#5C4E46', marginBottom: '4px' }}>Life Cycle Module</label>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', marginBottom: '4px' }}>Life Cycle Module</label>
                   <select
                     value={newComp.module}
                     onChange={(e) => setNewComp({ ...newComp, module: e.target.value })}
-                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #E2D9D2', borderRadius: '6px', fontSize: '12px' }}
+                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #d2d2d7', borderRadius: '8px', fontSize: '12px' }}
                   >
                     <option value="A1">Module A1: Raw Materials</option>
                     <option value="A2">Module A2: Transport</option>
@@ -2384,19 +2395,19 @@ export default function UserReviewView() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#5C4E46', marginBottom: '4px' }}>Supplier / Origin</label>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', marginBottom: '4px' }}>Supplier / Origin</label>
                   <input
                     type="text"
                     placeholder="e.g. Tier-1 OEM"
                     value={newComp.supplier}
                     onChange={(e) => setNewComp({ ...newComp, supplier: e.target.value })}
-                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #E2D9D2', borderRadius: '6px', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #d2d2d7', borderRadius: '8px', fontSize: '13px' }}
                   />
                 </div>
               </div>
             </div>
 
-            <div style={{ padding: '14px 20px', borderTop: '1px solid #EED8C5', backgroundColor: '#FCFAF8', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            <div style={{ padding: '14px 20px', borderTop: '1px solid #d2d2d7', backgroundColor: '#f5f5f7', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button type="button" className="btn btn-secondary btn-sm" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
               <button type="submit" className="btn btn-primary btn-sm">Add Component</button>
             </div>

@@ -42,7 +42,7 @@ export const LCA_STAGES = [
     desc: "Raw material extraction, inbound logistics to factory & component manufacturing.",
     standard: "EN 15804+A2 Clause 6.2.2 (Mandatory)",
     gwpShare: "43%",
-    badgeColor: "#C25A23"
+    badgeColor: "#0066CC"
   },
   {
     id: "a4_a5",
@@ -52,7 +52,7 @@ export const LCA_STAGES = [
     desc: "Freight logistics from plant gate to building site & commissioning rigging.",
     standard: "PCR 2019:14 Construction Products v2.0.1",
     gwpShare: "5%",
-    badgeColor: "#8F4A14"
+    badgeColor: "#2997FF"
   },
   {
     id: "b1_b7",
@@ -62,7 +62,7 @@ export const LCA_STAGES = [
     desc: "25-year grid electricity, refrigerant fugitive leakage, and filter refurbishment.",
     standard: "EN 15804+A2 Clause 6.2.3 (Operational)",
     gwpShare: "45%",
-    badgeColor: "#D97706"
+    badgeColor: "#0071E3"
   },
   {
     id: "c1_c4",
@@ -72,7 +72,7 @@ export const LCA_STAGES = [
     desc: "Refrigerant recovery/destruction, dismantling, sorting, and final disposal.",
     standard: "EN 15804+A2 Clause 6.2.4 (Mandatory)",
     gwpShare: "7%",
-    badgeColor: "#5C4E46"
+    badgeColor: "#1D1D1F"
   },
   {
     id: "d",
@@ -82,7 +82,7 @@ export const LCA_STAGES = [
     desc: "Credits for avoided virgin raw material production via steel and copper recycling.",
     standard: "EN 15804+A2 Annex D",
     gwpShare: "-18% (Credit)",
-    badgeColor: "#2E7D32"
+    badgeColor: "#28CD41"
   }
 ];
 

@@ -123,11 +123,11 @@ export default function UploadView() {
         <div className="upload-zone-title" style={{ fontSize: '16px', fontWeight: 600 }}>
           Drop files here or click to browse
         </div>
-        <div className="upload-zone-desc" style={{ fontSize: '13px', color: '#7A6B63' }}>
+        <div className="upload-zone-desc" style={{ fontSize: '13px', color: 'var(--text-secondary, #86868b)' }}>
           Supports ZIP engineering archives, BOM spreadsheets (Excel .xlsx, CSV), utility bills, or JSON declarations
         </div>
         <div className="upload-zone-formats" style={{ marginTop: '12px' }}>
-          <span className="format-tag" style={{ backgroundColor: '#EBF3ED', color: '#275234', fontWeight: 600 }}>ZIP ARCHIVE</span>
+          <span className="format-tag" style={{ backgroundColor: 'rgba(52, 199, 89, 0.12)', color: '#28cd41', fontWeight: 600 }}>ZIP ARCHIVE</span>
           <span className="format-tag">XLSX</span>
           <span className="format-tag">CSV</span>
           <span className="format-tag">PDF</span>
@@ -147,27 +147,26 @@ export default function UploadView() {
       {gaps && gaps.length > 0 && (
         <div style={{
           marginTop: '24px',
-          padding: '16px 20px',
-          borderRadius: '12px',
-          backgroundColor: '#FFF8F2',
-          border: '1px solid #F5DEC8',
-          boxShadow: '0 2px 8px rgba(184, 83, 29, 0.05)'
+          padding: '20px 24px',
+          borderRadius: '18px',
+          backgroundColor: '#f5f5f7',
+          border: '1px solid #d2d2d7'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ color: '#D97706', display: 'flex', alignItems: 'center' }}>
+              <div style={{ color: '#ff9500', display: 'flex', alignItems: 'center' }}>
                 <AlertTriangleIcon size={18} />
               </div>
-              <span style={{ fontSize: '14px', fontWeight: 700, color: '#8F4A14' }}>
+              <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
                 PCR & ISO 14025 Data Gap Analysis ({gaps.length} Action Items Detected)
               </span>
             </div>
             <span style={{
               fontSize: '11px',
-              padding: '2px 8px',
-              borderRadius: '10px',
-              backgroundColor: '#FEF3C7',
-              color: '#92400E',
+              padding: '2px 10px',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(0, 102, 204, 0.08)',
+              color: 'var(--accent, #0066cc)',
               fontWeight: 600
             }}>
               Pre-Calculation Verification Gate
@@ -177,10 +176,10 @@ export default function UploadView() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {gaps.map((gap) => (
               <div key={gap.id} style={{
-                padding: '12px 14px',
-                borderRadius: '8px',
+                padding: '12px 16px',
+                borderRadius: '11px',
                 backgroundColor: '#FFFFFF',
-                border: '1px solid #EED8C5',
+                border: '1px solid #e5e5ea',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'flex-start',
@@ -194,22 +193,22 @@ export default function UploadView() {
                       padding: '1px 6px',
                       borderRadius: '4px',
                       backgroundColor: gap.severity === 'critical' ? '#FEE2E2' : '#FEF3C7',
-                      color: gap.severity === 'critical' ? '#991B1B' : '#92400E',
+                      color: gap.severity === 'critical' ? '#ff3b30' : '#b45309',
                       textTransform: 'uppercase'
                     }}>
                       {gap.severity || 'Notice'}
                     </span>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#2C221E' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                       {gap.title}
                     </span>
-                    <span style={{ fontSize: '11px', color: '#9C5832', fontWeight: 500 }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 500 }}>
                       ({gap.module})
                     </span>
                   </div>
-                  <p style={{ fontSize: '12px', color: '#5C4E46', margin: '4px 0 2px 0' }}>
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', margin: '4px 0 2px 0' }}>
                     {gap.message}
                   </p>
-                  <p style={{ fontSize: '11px', color: '#8A7A72', margin: 0, fontStyle: 'italic' }}>
+                  <p style={{ fontSize: '11px', color: 'var(--accent, #0066cc)', margin: 0, fontWeight: 500 }}>
                     Recommendation: {gap.action}
                   </p>
                 </div>
@@ -241,10 +240,10 @@ export default function UploadView() {
       {uploadedFiles.length > 0 && (
         <div style={{ marginTop: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
               Uploaded Files ({uploadedFiles.length})
             </h3>
-            <span style={{ fontSize: '12px', color: '#7A6B63' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)' }}>
               Files queued for ecoinvent v3.12 characterization
             </span>
           </div>

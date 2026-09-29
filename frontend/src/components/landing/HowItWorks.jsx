@@ -3,72 +3,84 @@ import React from 'react';
 export default function HowItWorks() {
   const steps = [
     {
-      num: "1",
+      num: "01",
       title: "Import product data",
-      desc: "Upload your engineering bill of materials (BOM), plant utility electricity logs, and logistics manifests."
+      desc: "Upload engineering bill of materials (BOM), plant utility electricity logs, and logistics manifests in CSV, Excel, or PDF."
     },
     {
-      num: "2",
+      num: "02",
       title: "Connect LCA datasets",
       desc: "Map materials to verified ecoinvent v3.12 industrial processes with intelligent fuzzy search and proxy recommendations."
     },
     {
-      num: "3",
+      num: "03",
       title: "Calculate impacts",
       desc: "Run dynamic characterization matrices (EF 3.1, TRACI 2.1) across all modules from raw materials (A1) to circularity (D)."
     },
     {
-      num: "4",
+      num: "04",
       title: "Validate results",
       desc: "The automated rules engine checks cut-off criteria, mass balance, and PCR mandates to guarantee audit readiness."
     },
     {
-      num: "5",
+      num: "05",
       title: "Generate EPD",
       desc: "Download verified publication PDFs and ILCD+EPD machine-readable XML ready for registry submission."
     }
   ];
 
   return (
-    <section id="how-it-works" style={{ padding: '80px 0', backgroundColor: '#FAF6F0' }}>
+    <section className="product-tile-parchment" id="how-it-works">
       <div className="lp-container">
-        <div className="section-header">
-          <div className="section-badge">
-            <span>The Process</span>
+        <div className="apple-section-header">
+          <div className="apple-section-eyebrow">
+            The Process
           </div>
-          <h2 className="section-title">How It Works</h2>
-          <p className="section-subtitle">
+          <h2 className="apple-section-title">
+            How It Works
+          </h2>
+          <p className="apple-section-subtitle">
             Five clear, structured steps from raw product files to an independently verifier-ready declaration.
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '20px' }}>
           {steps.map((step, idx) => (
-            <div key={idx} style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '12px',
-              padding: '24px 20px',
-              border: '1px solid #EAE0D5',
-              boxShadow: '0 4px 12px rgba(44, 34, 30, 0.03)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}>
+            <div
+              key={idx}
+              className="store-utility-card"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                padding: '24px'
+              }}
+            >
               <div>
                 <span style={{
-                  fontSize: '28px',
-                  fontWeight: 800,
-                  color: '#C25A23',
+                  fontSize: '24px',
+                  fontWeight: 600,
+                  color: 'var(--apple-primary)',
                   display: 'block',
                   marginBottom: '12px',
-                  fontFamily: 'monospace'
+                  fontFamily: 'var(--apple-font-mono)'
                 }}>
-                  {step.num}.
+                  {step.num}
                 </span>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', marginBottom: '8px' }}>
+                <h3 style={{
+                  fontSize: '17px',
+                  fontWeight: 600,
+                  color: 'var(--apple-ink)',
+                  marginBottom: '8px',
+                  letterSpacing: '-0.374px'
+                }}>
                   {step.title}
                 </h3>
-                <p style={{ fontSize: '12px', color: '#5C4E46', lineHeight: '1.6' }}>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#6e6e73',
+                  lineHeight: '1.47'
+                }}>
                   {step.desc}
                 </p>
               </div>

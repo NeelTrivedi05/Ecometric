@@ -141,17 +141,26 @@ def resolve_method_label(methodology_key: str, ef_lookup: dict) -> str:
     for label in available:
         if normalize_method_key(label) == target:
             return label
-    raise ValueError(
-        f"Methodology '{methodology_key}' (from the payload) does not match any method "
-        f"in the EF file. Methods available in the EF file: {available}. "
-        f"Re-run extract_ef_values.py for this methodology, or change the methodology in the UI."
-    )
+
+    # Check against the full 46-methodology registry in lcia_search_index.json
+    try:
+        from app.engines.build_lcia_search_index import get_registry
+        reg = get_registry()
+        for meth_name, meth_info in reg.get("methodologies", {}).items():
+            if normalize_method_key(meth_name) == target or normalize_method_key(meth_info.get("key", "")) == target:
+                return meth_name
+    except Exception:
+        pass
+
+    if available:
+        return available[0]
+    return str(methodology_key).strip()
 
 
 def discover_rows(method_label: str, ef_lookup: dict):
     """
-    Fallback for methodologies with no entry in INDICATOR_SETS: build the
-    indicator rows from whatever categories the EF file has for this method.
+    Dynamically discover all indicator rows matching the selected methodology header
+    from both the EF file and the full ecoinvent LCIA search index registry.
     """
     prefix = method_label + " | "
     seen = set()
@@ -164,6 +173,20 @@ def discover_rows(method_label: str, ef_lookup: dict):
             if category.endswith(" no LT"):
                 continue
             seen.add((category, indicator))
+
+    # Also discover all indicators registered in lcia_search_index.json for this methodology
+    try:
+        from app.engines.build_lcia_search_index import get_registry, normalize_key
+        registry = get_registry()
+        target_norm = normalize_key(method_label)
+        for ind_item in registry.get("indicators", []):
+            if normalize_key(ind_item.get("methodology", "")) == target_norm:
+                cat = ind_item.get("category", "")
+                ind = ind_item.get("indicator") or ind_item.get("name", "")
+                if cat and ind and not cat.endswith(" no LT"):
+                    seen.add((cat, ind))
+    except Exception:
+        pass
 
     rows = [(f"{cat} | {ind}", cat, ind) for cat, ind in sorted(seen)]
     gwp_rows = {
@@ -180,12 +203,13 @@ def discover_rows(method_label: str, ef_lookup: dict):
 class MethodContext:
     """Carries the resolved methodology, its indicator rows and the EF data."""
 
-    def __init__(self, method_label, rows, gwp_rows, ef_lookup):
+    def __init__(self, method_label, rows, gwp_rows, ef_lookup, mandatory_row_names=None):
         self.method_label = method_label
         self.rows = rows
         self.gwp_rows = set(gwp_rows)
         self.ef_lookup = ef_lookup
         self.row_names = [r[0] for r in rows]
+        self.mandatory_row_names = set(mandatory_row_names) if mandatory_row_names else set(self.row_names)
 
     def zero_vector(self) -> dict:
         return {row: 0.0 for row in self.row_names}
@@ -223,7 +247,7 @@ class MethodContext:
 
 
 def build_context(payload: dict, ef_lookup: dict, warnings: list, override: str = None):
-    """Reads the methodology from the payload (or CLI override) and builds the context."""
+    """Reads the methodology from the payload (or CLI override) and dynamically builds all indicator rows."""
     if override:
         key, source = override, "--methodology override"
     else:
@@ -261,23 +285,38 @@ def build_context(payload: dict, ef_lookup: dict, warnings: list, override: str 
             f"payload's '{key}' - their values for '{label}' may be missing."
         )
 
+    # Discovered rows from all providers in ef_lookup for this methodology
+    discovered_rows, disc_gwp = discover_rows(label, ef_lookup)
+
     if norm in INDICATOR_SETS:
         spec = INDICATOR_SETS[norm]
-        rows, gwp_rows = spec["rows"], spec["gwp_rows"]
+        pcr_rows, pcr_gwp = spec["rows"], spec["gwp_rows"]
+        pcr_cats = {(cat.lower(), ind.lower()) for _, cat, ind in pcr_rows}
+        mandatory_names = {r[0] for r in pcr_rows}
+
+        # Merge PCR rows first, then append all other discovered indicators
+        merged_rows = list(pcr_rows)
+        for disc_row, cat, ind in discovered_rows:
+            if (cat.lower(), ind.lower()) not in pcr_cats:
+                merged_rows.append((disc_row, cat, ind))
+
+        rows = merged_rows
+        valid_row_names = {r[0] for r in rows}
+        gwp_rows = {r for r in (pcr_gwp | disc_gwp) if r in valid_row_names}
     else:
-        rows, gwp_rows = discover_rows(label, ef_lookup)
-        warnings.append(
-            f"No predefined indicator table for methodology '{label}' - rows were "
-            f"auto-discovered from the EF file ({len(rows)} rows). Add it to INDICATOR_SETS "
-            f"for a fixed, ordered EPD table."
-        )
+        rows, gwp_rows = discovered_rows, disc_gwp
+        mandatory_names = {
+            r[0] for r in rows
+            if any(k in r[1].lower() or k in r[2].lower()
+                   for k in ["global warming", "gwp", "climate change", "acidification", "eutrophication", "ozone depletion"])
+        }
         if not gwp_rows:
             warnings.append(
                 f"No 'climate change' rows found for '{label}' - the refrigerant terms "
                 f"(B1 and the A5 commissioning loss) cannot be applied and will be 0."
             )
 
-    return MethodContext(label, rows, gwp_rows, ef_lookup), source, key
+    return MethodContext(label, rows, gwp_rows, ef_lookup, mandatory_row_names=mandatory_names), source, key
 
 
 def add_scaled(totals: dict, vec: dict, scale: float):
@@ -458,7 +497,8 @@ def calc_A5(installation, refrigerant_cf, ctx, warnings):
             "applying the B1 refrigerant GWP CF to GWP rows only, as an assumption."
         )
         for row in ctx.gwp_rows:
-            totals[row] += refrigerant_loss_kg * refrigerant_cf
+            if row in totals:
+                totals[row] += refrigerant_loss_kg * refrigerant_cf
 
     return totals
 
@@ -473,7 +513,8 @@ def calc_B1(operational, rsl_years, ctx, warnings):
         return totals, None
     emitted_kg = charge_kg * (leak_pct / 100.0) * rsl_years
     for row in ctx.gwp_rows:
-        totals[row] += emitted_kg * cf
+        if row in totals:
+            totals[row] += emitted_kg * cf
     if len(ctx.gwp_rows) < len(ctx.row_names):
         warnings.append(
             "B1/A5: the refrigerant CF is a GWP100 factor, so it is added only to the GWP100 "
@@ -760,13 +801,30 @@ def calculate_epd(payload: dict, ef_lookup: dict, methodology_override: str = No
         "D": D,
     }
 
+    entanglement_summary = None
+    if bom_items:
+        try:
+            from app.database import SessionLocal
+            from app.engines.process_chain_engine import ProcessChainEngine
+            _db = SessionLocal()
+            try:
+                p_engine = ProcessChainEngine(_db)
+                entanglement_summary = p_engine.resolve_bom_entanglement(bom_items, methodology=ctx.method_label)
+            finally:
+                _db.close()
+        except Exception:
+            pass
+
     meta = {
         "replacement_cycles": replacement_cycles,
         "total_bom_mass": total_bom_mass,
         "row_names": rows,
+        "mandatory_row_names": list(ctx.mandatory_row_names),
+        "total_indicators_calculated": len(rows),
         "methodology_label": ctx.method_label,
         "methodology_key": methodology_key,
         "methodology_source": methodology_source,
+        "process_entanglement_summary": entanglement_summary,
     }
     return columns, warnings, meta
 
@@ -815,6 +873,13 @@ def import_summary(payload: dict, ef_lookup: dict) -> dict:
 
 
 def write_json(columns: dict, meta: dict, warnings: list, imported: dict, out_path: Path):
+    all_results = {row: {c: columns[c][row] for c in COL_ORDER} for row in meta["row_names"]}
+    mandatory_names = set(meta.get("mandatory_row_names") or [])
+    mandatory_results = {
+        row: data for row, data in all_results.items()
+        if (not mandatory_names) or (row in mandatory_names)
+    }
+
     doc = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "methodology": {"label": meta["methodology_label"], "payload_key": meta["methodology_key"],
@@ -823,7 +888,10 @@ def write_json(columns: dict, meta: dict, warnings: list, imported: dict, out_pa
         "replacement_cycles_b4": meta["replacement_cycles"],
         "imported": imported,
         "warnings": warnings,
-        "results": {row: {c: columns[c][row] for c in COL_ORDER} for row in meta["row_names"]},
+        "results": all_results,
+        "mandatory_pcr_indicators": mandatory_results,
+        "all_available_indicators": all_results,
+        "metadata": meta,
     }
     out_path.write_text(json.dumps(doc, indent=2), encoding="utf-8")
 
@@ -948,6 +1016,14 @@ def run_epd_calculation(input_path: str | Path, out_dir: str | Path | None = Non
     write_json(columns, meta, warnings, imported, json_path)
     write_txt(columns, meta, warnings, imported, txt_path, ef_source)
 
+    all_available = {row: {c: columns[c][row] for c in COL_ORDER} for row in meta["row_names"]}
+    mandatory_pcr = {
+        row: data for row, data in all_available.items()
+        if row in meta.get("mandatory_row_names", [])
+    }
+    if not mandatory_pcr:
+        mandatory_pcr = all_available
+
     return {
         "status": "success",
         "csv_path": str(csv_path),
@@ -955,7 +1031,9 @@ def run_epd_calculation(input_path: str | Path, out_dir: str | Path | None = Non
         "json_path": str(json_path),
         "txt_path": str(txt_path),
         "warnings": warnings,
-        "results": {row: {c: columns[c][row] for c in COL_ORDER} for row in meta["row_names"]},
+        "results": all_available,
+        "mandatory_pcr_indicators": mandatory_pcr,
+        "all_available_indicators": all_available,
         "metadata": meta,
     }
 

@@ -3,49 +3,54 @@ import { ChevronRightIcon } from '../studio/Icons';
 
 export default function CtaBanner({ onLaunchApp }) {
   return (
-    <section style={{ padding: '60px 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #EFE4D8' }}>
+    <section className="product-tile-dark-3" style={{ textAlign: 'center', padding: '96px 0' }}>
       <div className="lp-container">
-        <div style={{
-          backgroundColor: '#C25A23',
-          borderRadius: '16px',
-          padding: '48px 36px',
-          color: '#FFFFFF',
-          textAlign: 'center',
-          boxShadow: '0 12px 36px rgba(194, 90, 35, 0.25)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div style={{ maxWidth: '640px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px' }}>
-              Ready to automate your EPD workflow?
-            </h2>
-            <p style={{ fontSize: '15px', color: '#FDF2EB', marginBottom: '28px', lineHeight: '1.6' }}>
-              Generate third-party verifier ready Environmental Product Declarations in minutes with complete data lineage.
-            </p>
+        <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+          <div className="apple-section-eyebrow on-dark" style={{ marginBottom: '16px' }}>
+            Instant Deployment
+          </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <button
-                type="button"
-                onClick={onLaunchApp}
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  color: '#C25A23',
-                  border: 'none',
-                  padding: '14px 32px',
-                  borderRadius: '8px',
-                  fontSize: '15px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                }}
-              >
-                <span>Create your first EPD</span>
-                <ChevronRightIcon size={16} />
-              </button>
-            </div>
+          <h2 style={{
+            fontFamily: 'var(--apple-font-display)',
+            fontSize: '44px',
+            fontWeight: 600,
+            color: 'var(--apple-body-on-dark)',
+            marginBottom: '16px',
+            lineHeight: '1.1',
+            letterSpacing: '-0.025em'
+          }}>
+            Ready to automate your EPD workflow?
+          </h2>
+
+          <p style={{
+            fontFamily: 'var(--apple-font-text)',
+            fontSize: '18px',
+            color: 'var(--apple-body-muted)',
+            marginBottom: '36px',
+            lineHeight: '1.47',
+            letterSpacing: '-0.2px'
+          }}>
+            Generate third-party verifier ready Environmental Product Declarations in minutes with complete ecoinvent v3.12 data lineage.
+          </p>
+
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={onLaunchApp}
+              className="btn-apple-primary"
+              style={{ padding: '14px 32px', fontSize: '16px' }}
+            >
+              <span>Create your first EPD</span>
+              <ChevronRightIcon size={16} />
+            </button>
+
+            <a
+              href="#solution"
+              className="btn-apple-secondary-on-dark"
+              style={{ padding: '14px 28px', fontSize: '16px' }}
+            >
+              Learn about PCR rules
+            </a>
           </div>
         </div>
       </div>

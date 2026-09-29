@@ -6,9 +6,9 @@ export default function TheSolution() {
 
   const workflowSteps = [
     {
-      title: "1. Product Data",
+      title: "1. Ingest Product Data",
       subtitle: "BOM & Energy Ingestion",
-      desc: "Upload CAD/ERP BOM spreadsheets, facility utility electricity bills, and Tier-1 transport distances in any common format."
+      desc: "Upload engineering bill of materials (BOM), plant utility electricity logs, and Tier-1 transport manifests in CSV, Excel, or PDF format."
     },
     {
       title: "2. Dataset Linking",
@@ -16,120 +16,123 @@ export default function TheSolution() {
       desc: "Components are mapped to verified background datasets (steel, copper, motors, regional grids) with automated proxy suggestions."
     },
     {
-      title: "3. LCIA Engine",
+      title: "3. LCIA Dynamic Engine",
       subtitle: "EN 15804+A2 / EF 3.1",
       desc: "The characterization engine calculates 13 core indicators across all lifecycle modules (A1–A3, A4–A5, B1–B7, C1–C4, Module D)."
     },
     {
-      title: "4. PCR Validation",
-      subtitle: "Automated Compliance Gate",
-      desc: "The rules engine verifies mass cut-off criteria, proxy data thresholds, and mandatory module declarations before building."
+      title: "4. Automated PCR Gate",
+      subtitle: "5-Gate Compliance Rule",
+      desc: "The rules engine enforces mass cut-off criteria (<1%), proxy data thresholds (<10%), and mandatory module declarations before building."
     },
     {
-      title: "5. Verified EPD",
+      title: "5. Verified EPD Export",
       subtitle: "Publication PDF & ILCD XML",
       desc: "Export third-party verifier ready publication PDFs and EcoPlatform compliant machine-readable ILCD+EPD XML in one click."
     }
   ];
 
   return (
-    <section id="solution" style={{ padding: '80px 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #EFE4D8', borderBottom: '1px solid #EFE4D8' }}>
+    <section className="product-tile-light" id="solution">
       <div className="lp-container">
-        <div className="section-header">
-          <div className="section-badge">
-            <span>The Solution</span>
+        <div className="apple-section-header">
+          <div className="apple-section-eyebrow">
+            The Solution
           </div>
-          <h2 className="section-title">One workflow from product data → EPD</h2>
-          <p className="section-subtitle">
+          <h2 className="apple-section-title">
+            One workflow from product data → verified EPD
+          </h2>
+          <p className="apple-section-subtitle">
             An end-to-end automated platform that replaces fragmented consulting steps with a continuous, traceable digital pipeline.
           </p>
         </div>
 
-        {/* Visual Interactive Workflow Bar */}
+        {/* Step Selector Chips (Apple configurator-option-chip style) */}
         <div style={{
-          backgroundColor: '#FAF5EE',
-          borderRadius: '16px',
-          border: '1px solid #EAE0D5',
-          padding: '32px 24px',
-          boxShadow: '0 4px 20px rgba(44, 34, 30, 0.04)'
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '10px',
+          justifyContent: 'center',
+          marginBottom: '32px'
         }}>
-          {/* Step Pills */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '12px',
-            marginBottom: '28px'
-          }}>
-            {workflowSteps.map((step, idx) => {
-              const isActive = activeStep === idx;
-              return (
-                <div
-                  key={idx}
-                  onClick={() => setActiveStep(idx)}
-                  style={{
-                    backgroundColor: isActive ? '#FFFFFF' : '#FAF6F0',
-                    border: '1px solid',
-                    borderColor: isActive ? '#C25A23' : '#EAE0D5',
-                    borderRadius: '10px',
-                    padding: '16px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: isActive ? '0 4px 12px rgba(194, 90, 35, 0.12)' : 'none'
-                  }}
-                >
-                  <div style={{ fontSize: '12px', fontWeight: 700, color: isActive ? '#C25A23' : '#8A7A72' }}>
-                    {step.title}
-                  </div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#2C221E', marginTop: '4px' }}>
-                    {step.subtitle}
-                  </div>
-                </div>
-              );
-            })}
+          {workflowSteps.map((step, idx) => {
+            const isSelected = activeStep === idx;
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setActiveStep(idx)}
+                className={`configurator-chip ${isSelected ? 'selected' : ''}`}
+                style={{
+                  padding: '11px 20px',
+                  fontSize: '14px',
+                  fontWeight: isSelected ? 600 : 400
+                }}
+              >
+                <span>{step.title}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Detail Container Card (Store Utility Card style: 18px radius, 1px hairline, no shadow) */}
+        <div className="store-utility-card" style={{ maxWidth: '860px', margin: '0 auto', padding: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+            <span style={{
+              fontSize: '12px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              color: 'var(--apple-primary)'
+            }}>
+              Step 0{activeStep + 1} • {workflowSteps[activeStep].subtitle}
+            </span>
+            <span style={{
+              fontSize: '12px',
+              color: '#28cd41',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              <CheckCircleIcon size={14} /> Automated Verification
+            </span>
           </div>
 
-          {/* Active Step Showcase */}
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '12px',
-            border: '1px solid #EAE0D5',
-            padding: '24px 28px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '20px'
+          <h3 style={{
+            fontFamily: 'var(--apple-font-display)',
+            fontSize: '24px',
+            fontWeight: 600,
+            color: 'var(--apple-ink)',
+            marginBottom: '12px',
+            letterSpacing: '-0.02em'
           }}>
-            <div style={{ maxWidth: '580px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#C25A23', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Stage Details
-              </div>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#2C221E', margin: '4px 0 8px 0' }}>
-                {workflowSteps[activeStep].title}: {workflowSteps[activeStep].subtitle}
-              </h3>
-              <p style={{ fontSize: '14px', color: '#5C4E46', lineHeight: '1.6', margin: 0 }}>
-                {workflowSteps[activeStep].desc}
-              </p>
-            </div>
+            {workflowSteps[activeStep].title}
+          </h3>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                type="button"
-                onClick={() => setActiveStep((prev) => (prev > 0 ? prev - 1 : workflowSteps.length - 1))}
-                className="btn-lp-secondary"
-                style={{ padding: '8px 14px', fontSize: '12px' }}
-              >
-                Previous
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveStep((prev) => (prev < workflowSteps.length - 1 ? prev + 1 : 0))}
-                className="btn-lp-primary"
-                style={{ padding: '8px 16px', fontSize: '12px' }}
-              >
-                Next Stage
-              </button>
-            </div>
+          <p style={{
+            fontSize: '17px',
+            color: '#6e6e73',
+            lineHeight: '1.47',
+            letterSpacing: '-0.374px',
+            marginBottom: '24px'
+          }}>
+            {workflowSteps[activeStep].desc}
+          </p>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingTop: '20px',
+            borderTop: '1px solid var(--apple-hairline)',
+            fontSize: '13px',
+            color: '#86868b'
+          }}>
+            <span>EN 15804+A2 & ISO 14025 Aligned</span>
+            <span style={{ color: 'var(--apple-primary)', fontWeight: 600, cursor: 'pointer' }} onClick={() => setActiveStep((activeStep + 1) % workflowSteps.length)}>
+              Next Step →
+            </span>
           </div>
         </div>
       </div>
