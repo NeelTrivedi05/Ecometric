@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Fuse from 'fuse.js';
+import { SearchIcon, CloseIcon, ShieldIcon, GlobeIcon } from './Icons';
 
 // Canonical Acronym quick-jump shortcuts
 const ACRONYM_SHORTCUTS = [
-  { label: 'CO₂ / GWP', query: 'GWP', icon: '🌍' },
-  { label: 'Smog / POCP', query: 'Smog', icon: '🌫️' },
-  { label: 'Acid Rain (AP)', query: 'Acidification', icon: '🌧️' },
-  { label: 'Eutrophication', query: 'Eutrophication', icon: '💧' },
-  { label: 'Ozone (ODP)', query: 'Ozone', icon: '🛡️' },
-  { label: 'Resources (ADP)', query: 'Abiotic', icon: '⛏️' },
-  { label: 'Water Use', query: 'Water', icon: '🚰' },
-  { label: 'Toxicity', query: 'Toxicity', icon: '☣️' },
+  { label: 'CO₂ / GWP', query: 'GWP' },
+  { label: 'Smog / POCP', query: 'Smog' },
+  { label: 'Acid Rain (AP)', query: 'Acidification' },
+  { label: 'Eutrophication', query: 'Eutrophication' },
+  { label: 'Ozone (ODP)', query: 'Ozone' },
+  { label: 'Resources (ADP)', query: 'Abiotic' },
+  { label: 'Water Use', query: 'Water' },
+  { label: 'Toxicity', query: 'Toxicity' },
 ];
 
 // High-level category groupings for filter chips
@@ -158,7 +159,7 @@ export default function LciaSearchFilter({
                 gap: 6,
               }}
             >
-              <span>🛡️</span> Standard PCR View ({pcrCount})
+              <ShieldIcon size={14} /> Standard PCR View ({pcrCount})
             </button>
             <button
               type="button"
@@ -181,7 +182,7 @@ export default function LciaSearchFilter({
                 gap: 6,
               }}
             >
-              <span>🌐</span> Full LCIA Matrix View ({totalInMethodology})
+              <GlobeIcon size={14} /> Full LCIA Matrix View ({totalInMethodology})
             </button>
           </div>
 
@@ -199,9 +200,9 @@ export default function LciaSearchFilter({
               setSearchTerm('');
               setSelectedCategoryGroup('all');
             }}
-            style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-secondary)' }}
+            style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
-            ✕ Reset Filters
+            <CloseIcon size={10} /> Reset Filters
           </button>
         )}
       </div>
@@ -230,10 +231,11 @@ export default function LciaSearchFilter({
           top: '50%',
           transform: 'translateY(-50%)',
           color: 'var(--text-muted)',
-          fontSize: '15px',
+          display: 'flex',
+          alignItems: 'center',
           pointerEvents: 'none',
         }}>
-          🔍
+          <SearchIcon size={15} />
         </span>
         {searchTerm && (
           <button
@@ -248,10 +250,13 @@ export default function LciaSearchFilter({
               border: 'none',
               color: 'var(--text-muted)',
               cursor: 'pointer',
-              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              padding: 2,
             }}
+            aria-label="Clear search"
           >
-            ✕
+            <CloseIcon size={13} />
           </button>
         )}
       </div>
@@ -283,7 +288,6 @@ export default function LciaSearchFilter({
                 transition: 'all 0.15s ease',
               }}
             >
-              <span>{sc.icon}</span>
               <span>{sc.label}</span>
             </button>
           ))}

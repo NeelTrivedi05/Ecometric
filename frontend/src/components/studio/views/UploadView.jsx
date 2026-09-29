@@ -10,6 +10,10 @@ import {
   InfoIcon,
   ChevronRightIcon,
   LayersIcon,
+  DropletIcon,
+  SnowflakeIcon,
+  ThermalIcon,
+  CheckIcon,
 } from '../Icons';
 import ProcessFlowModal from '../ProcessFlowModal';
 
@@ -121,9 +125,10 @@ export default function UploadView() {
               >
                 <div className="card-top-row">
                   <span className="card-equipment-glyph">
-                    {key === 'screw_chiller_300rt' ? '❄️' :
-                     key === 'heat_pump_150rt' ? '♨️' :
-                     key === 'incomplete_gap_analysis' ? '⚠️' : '💧'}
+                    {key === 'screw_chiller_300rt' ? <SnowflakeIcon size={18} style={{ color: '#0066cc' }} /> :
+                     key === 'heat_pump_150rt' ? <ThermalIcon size={18} style={{ color: '#ff9f0a' }} /> :
+                     key === 'incomplete_gap_analysis' ? <AlertTriangleIcon size={18} style={{ color: '#ff3b30' }} /> :
+                     <DropletIcon size={18} style={{ color: '#0066cc' }} />}
                   </span>
                   <span
                     className="card-badge"
@@ -161,7 +166,11 @@ export default function UploadView() {
                     }}
                     disabled={isLoading}
                   >
-                    {isSelected ? '✓ Loaded in Workspace' : 'Load Benchmark →'}
+                    {isSelected ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <CheckIcon size={12} /> Loaded in Workspace
+                      </span>
+                    ) : 'Load Benchmark →'}
                   </button>
                 </div>
               </div>

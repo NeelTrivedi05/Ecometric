@@ -30,9 +30,9 @@
   --apple-on-dark: #ffffff;
 
   /* Typography Stacks */
-  --apple-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
-  --apple-font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
-  --apple-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --apple-font-display: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --apple-font-text: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --apple-font-mono: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, monospace;
 
   /* Radii scale from DESIGN-apple.md */
   --apple-radius-none: 0px;

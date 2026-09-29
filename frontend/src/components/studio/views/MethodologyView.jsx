@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
-import { MethodologyIcon, CheckIcon, ChevronRightIcon, InfoIcon, RefreshCwIcon, SearchIcon } from '../Icons';
+import { MethodologyIcon, CheckIcon, ChevronRightIcon, InfoIcon, RefreshCwIcon, SearchIcon, CloseIcon } from '../Icons';
 
 const GROUPS = [
   'All',
@@ -144,14 +144,15 @@ export default function MethodologyView() {
       <div
         className="card"
         style={{
-          background: 'var(--bg-card2)',
-          borderLeft: '4px solid var(--accent)',
+          background: '#fafafc',
+          border: '1px solid #e0e0e0',
+          borderRadius: '12px',
           padding: '16px 20px',
           marginBottom: 24,
         }}
       >
         <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <InfoIcon size={20} style={{ color: 'var(--accent)', marginTop: 2, flexShrink: 0 }} />
+          <InfoIcon size={20} style={{ color: '#86868b', marginTop: 2, flexShrink: 0 }} />
           <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-primary)', lineHeight: 1.6 }}>
             <strong>How LCA Characterization Works:</strong> The calculation engine first compiles all elementary flows (energy, raw resources, direct emissions) from your uploaded documents and ecoinvent 3.12 cutoff.
             When you select a methodology below, standard characterization factors are multiplied across those flows (<code>Impact = &sum; Flow<sub>i</sub> &times; CF<sub>i</sub></code>).
@@ -224,8 +225,9 @@ export default function MethodologyView() {
                   lineHeight: 1,
                 }}
                 title="Clear search"
+                aria-label="Clear search"
               >
-                ✕
+                <CloseIcon size={14} />
               </button>
             )}
           </div>
@@ -359,7 +361,7 @@ export default function MethodologyView() {
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
           }}>
-            ⭐ Commonly Used
+            Commonly Used
           </span>
           <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
@@ -376,7 +378,9 @@ export default function MethodologyView() {
             background: 'var(--bg-card)',
           }}
         >
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🔍</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12, color: 'var(--text-muted)' }}>
+            <SearchIcon size={32} />
+          </div>
           <h3 style={{ fontSize: 'var(--text-base)', color: 'var(--text-primary)', marginBottom: 6 }}>
             No methodologies found
           </h3>
@@ -499,7 +503,7 @@ export default function MethodologyView() {
                               letterSpacing: '0.04em',
                             }}
                           >
-                            ⭐ Popular
+                            Popular
                           </span>
                         )}
 
@@ -516,7 +520,7 @@ export default function MethodologyView() {
                               letterSpacing: '0.04em',
                             }}
                           >
-                            ★ Recommended
+                            Recommended
                           </span>
                         )}
 

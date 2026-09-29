@@ -442,7 +442,7 @@ export default function ExportView() {
           ) : (
             <div className="printable-doc" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 32, boxShadow: 'var(--shadow-md)' }}>
               {/* DOCUMENT BANNER & HEADER */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid var(--accent)', paddingBottom: 20, marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border)', paddingBottom: 20, marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
                 <div>
                   <span className="badge badge-accent" style={{ fontWeight: 700, marginBottom: 6, display: 'inline-block' }}>
                     NSF Certified EPD • UL 10010-4 Part B v2.0
@@ -464,7 +464,7 @@ export default function ExportView() {
 
               {/* SECTION 1: GENERAL INFORMATION */}
               <div style={{ marginBottom: 32 }}>
-                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, borderLeft: '4px solid var(--accent)', paddingLeft: 10, marginBottom: 16 }}>
+                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, marginBottom: 16 }}>
                   1. General Information &amp; Program Operator Block
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, fontSize: 'var(--text-xs)' }}>
@@ -485,7 +485,7 @@ export default function ExportView() {
 
               {/* SECTION 2: TECHNICAL DATA & BOM */}
               <div style={{ marginBottom: 32 }}>
-                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, borderLeft: '4px solid var(--accent)', paddingLeft: 10, marginBottom: 16 }}>
+                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, marginBottom: 16 }}>
                   2. Technical Operating Specifications &amp; Material Breakdown
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
@@ -544,7 +544,7 @@ export default function ExportView() {
               {/* SECTION 3: LCA RESULTS IN SCIENTIFIC NOTATION */}
               <div style={{ marginBottom: 32 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
-                  <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, borderLeft: '4px solid var(--accent)', paddingLeft: 10, margin: 0 }}>
+                  <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, margin: 0 }}>
                     3. Life Cycle Assessment Results (Scientific Notation, 3 Sig Figs)
                   </h3>
                   <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
@@ -622,7 +622,7 @@ export default function ExportView() {
 
               {/* SECTION 4: INTERPRETATION */}
               <div style={{ marginBottom: 32 }}>
-                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, borderLeft: '4px solid var(--accent)', paddingLeft: 10, marginBottom: 16 }}>
+                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, marginBottom: 16 }}>
                   4. Life Cycle Interpretation &amp; Carbon Breakdown
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>

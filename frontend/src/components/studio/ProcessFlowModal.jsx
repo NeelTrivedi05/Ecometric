@@ -258,7 +258,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                   transition: 'all 0.15s ease'
                 }}
               >
-                ⛓️ Supply Chain Process Entanglement (1-to-10 DAG)
+                Supply Chain Process Entanglement (1-to-10 DAG)
               </button>
               <button
                 onClick={() => setActiveTab('pcr_rules')}
@@ -275,7 +275,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                   transition: 'all 0.15s ease'
                 }}
               >
-                ⚖️ PCR & GPI Compliance Evaluator
+                PCR &amp; GPI Compliance Evaluator
               </button>
               <button
                 onClick={() => setActiveTab('traceability')}
@@ -292,7 +292,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                   transition: 'all 0.15s ease'
                 }}
               >
-                📑 ISO 14025 Document Audit Trail
+                ISO 14025 Document Audit Trail
               </button>
             </div>
 
@@ -377,8 +377,9 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                     <span>·</span>
                     <span>Yield: <strong>{(entanglementData.mass_balance_audit.yield_ratio * 100).toFixed(1)}%</strong></span>
                     <span>·</span>
-                    <span style={{ color: '#2E7D32', fontWeight: 700 }}>
-                      ✓ {entanglementData.mass_balance_audit.balance_status} (0 Cycles)
+                    <span style={{ color: '#2E7D32', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <CheckCircleIcon size={12} color="#2E7D32" />
+                      <span>{entanglementData.mass_balance_audit.balance_status} (0 Cycles)</span>
                     </span>
                   </div>
                 )}
@@ -583,7 +584,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                                   {node.sector || 'upstream'}
                                 </span>
                                 <span style={{ fontSize: '11px', fontWeight: 700, color: isOverridden ? '#D47A47' : '#2B1E17' }}>
-                                  {node.cumulative_scaling}x {isOverridden ? '⚡' : ''}
+                                  {node.cumulative_scaling}x {isOverridden ? '(Custom)' : ''}
                                 </span>
                               </div>
                               <div style={{ fontSize: '12px', fontWeight: 600, color: '#2B1E17', lineHeight: '1.3' }}>
@@ -755,7 +756,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                         gap: '10px'
                       }}>
                         <div style={{ fontSize: '11px', fontWeight: 700, color: '#A24A1E', textTransform: 'uppercase' }}>
-                          ⚡ Live Edge Parameters
+                          Live Edge Parameters
                         </div>
 
                         {/* Scaling Factor */}
@@ -1064,8 +1065,9 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                           ))}
                         </ul>
                       ) : (
-                        <div style={{ fontSize: '12px', color: '#2E7D32', fontWeight: 600 }}>
-                          ✓ Fully compliant with all mandatory PCR declaration requirements. Ready for Third-Party Verifier submission.
+                        <div style={{ fontSize: '12px', color: '#2E7D32', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <CheckCircleIcon size={14} color="#2E7D32" />
+                          <span>Fully compliant with all mandatory PCR declaration requirements. Ready for Third-Party Verifier submission.</span>
                         </div>
                       )}
                     </div>

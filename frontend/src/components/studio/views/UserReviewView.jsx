@@ -550,7 +550,8 @@ export default function UserReviewView() {
             />
           </div>
           <div style={{ fontSize: '11px', color: '#86868b', marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span>✓ Material Classification Order: <strong>"Aluminium"</strong> alloys evaluated before <strong>"Cast Iron"</strong> to prevent misclassification.</span>
+            <CheckIcon size={12} color="#28cd41" />
+            <span>Material Classification Order: <strong>"Aluminium"</strong> alloys evaluated before <strong>"Cast Iron"</strong> to prevent misclassification.</span>
           </div>
         </div>
 
@@ -620,7 +621,7 @@ export default function UserReviewView() {
               title="Automatically query ecoinvent v3.12 database and assign the best search match for each extracted keyword"
             >
               <RefreshCwIcon size={13} className={isAutoMatching ? 'spin-anim' : ''} />
-              <span>{isAutoMatching ? 'Auto-Matching...' : '⚡ Auto-Match All Providers'}</span>
+              <span>{isAutoMatching ? 'Auto-Matching...' : 'Auto-Match All Providers'}</span>
             </button>
             <button
               type="button"
@@ -1492,7 +1493,7 @@ export default function UserReviewView() {
             </h3>
           </div>
 
-          <div className="card" style={{ borderLeft: '4px solid #28cd41' }}>
+          <div className="card" style={{ border: '1px solid var(--border)' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
               {/* Single Overall Recovery Rate (%) Field */}
               <div className="form-group">
@@ -1654,12 +1655,14 @@ export default function UserReviewView() {
                         border: 'none',
                         color: 'var(--text-secondary, #86868b)',
                         cursor: 'pointer',
-                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         padding: '2px'
                       }}
                       title="Clear search"
                     >
-                      ✕
+                      <CloseIcon size={12} />
                     </button>
                   )}
                 </div>
@@ -1708,7 +1711,7 @@ export default function UserReviewView() {
                       {isSearchingDb && <span style={{ fontSize: '10px', color: 'var(--accent, #0066cc)', fontWeight: 500 }}>(updating...)</span>}
                     </div>
                     <div style={{ fontSize: '11px', color: '#34c759', fontWeight: 600 }}>
-                      ★ Best match ranked first
+                      Best match ranked first
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -1774,7 +1777,7 @@ export default function UserReviewView() {
                                   textTransform: 'uppercase',
                                   letterSpacing: '0.04em'
                                 }}>
-                                  ★ Best Match (Default)
+                                  Best Match (Default)
                                 </span>
                               )}
                               {isCurrentlySelected && (
@@ -1785,9 +1788,12 @@ export default function UserReviewView() {
                                   fontWeight: 600,
                                   padding: '2px 8px',
                                   borderRadius: '9999px',
-                                  textTransform: 'uppercase'
+                                  textTransform: 'uppercase',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px'
                                 }}>
-                                  ✓ Selected
+                                  <CheckIcon size={10} color="#34c759" /> Selected
                                 </span>
                               )}
                               <span style={{
@@ -2026,12 +2032,14 @@ export default function UserReviewView() {
                         border: 'none',
                         color: 'var(--text-secondary, #86868b)',
                         cursor: 'pointer',
-                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         padding: '2px'
                       }}
                       title="Clear search"
                     >
-                      ✕
+                      <CloseIcon size={12} />
                     </button>
                   )}
                 </div>
@@ -2080,7 +2088,7 @@ export default function UserReviewView() {
                       {isGenericSearching && <span style={{ fontSize: '10px', color: 'var(--accent, #0066cc)', fontWeight: 500 }}>(updating...)</span>}
                     </div>
                     <div style={{ fontSize: '11px', color: '#34c759', fontWeight: 600 }}>
-                      ★ Best match ranked first
+                      Best match ranked first
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2144,7 +2152,7 @@ export default function UserReviewView() {
                                   textTransform: 'uppercase',
                                   letterSpacing: '0.04em'
                                 }}>
-                                  ★ Best Match
+                                  Best Match
                                 </span>
                               )}
                               {isCurrentlySelected && (
@@ -2155,9 +2163,12 @@ export default function UserReviewView() {
                                   fontWeight: 600,
                                   padding: '2px 8px',
                                   borderRadius: '9999px',
-                                  textTransform: 'uppercase'
+                                  textTransform: 'uppercase',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px'
                                 }}>
-                                  ✓ Selected
+                                  <CheckIcon size={10} color="#34c759" /> Selected
                                 </span>
                               )}
                               <span style={{

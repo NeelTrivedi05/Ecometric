@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStudio } from '../../context/StudioContext';
-import { DownloadIcon, RefreshCwIcon, CheckIcon, ShieldCheckIcon, AlertTriangleIcon, InfoIcon, FileIcon } from './Icons';
+import { DownloadIcon, RefreshCwIcon, CheckIcon, CloseIcon, ShieldCheckIcon, AlertTriangleIcon, InfoIcon, FileIcon } from './Icons';
 
 export default function ReportDetailsModal() {
   const {
@@ -354,10 +354,10 @@ export default function ReportDetailsModal() {
           {/* TAB 1: COMPANY & BRAND */}
           {activeTab === 'company' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-              {/* Apple Callout Note */}
+              {/* Educational Callout Note */}
               <div style={{
-                backgroundColor: 'rgba(0, 113, 227, 0.06)',
-                border: '1px solid rgba(0, 113, 227, 0.16)',
+                backgroundColor: '#FAFAFC',
+                border: '1px solid #E0E0E0',
                 padding: '12px 16px',
                 borderRadius: 12,
                 fontSize: 12,
@@ -366,9 +366,9 @@ export default function ReportDetailsModal() {
                 alignItems: 'flex-start',
                 gap: 10
               }}>
-                <InfoIcon className="w-4 h-4 text-blue-600" style={{ flexShrink: 0, marginTop: 2, color: '#0071E3' }} />
+                <InfoIcon className="w-4 h-4" style={{ flexShrink: 0, marginTop: 2, color: '#86868B' }} />
                 <div>
-                  <strong style={{ color: '#0071E3' }}>Single Source of Truth Propagation:</strong> Company details automatically populate the EPD Cover Page, Table 1 ("Manufacturer Name &amp; Address"), Section 1 ("Description of Company"), running footers, and verification credentials.
+                  <strong style={{ color: '#1D1D1F' }}>Single Source of Truth Propagation:</strong> Company details automatically populate the EPD Cover Page, Table 1 ("Manufacturer Name &amp; Address"), Section 1 ("Description of Company"), running footers, and verification credentials.
                 </div>
               </div>
 
@@ -1181,11 +1181,11 @@ export default function ReportDetailsModal() {
                     gap: 12
                   }}>
                     <span style={{
-                      fontSize: 16,
+                      display: 'inline-flex',
+                      alignItems: 'center',
                       color: validationResult.valid ? '#28CD41' : '#FF3B30',
-                      fontWeight: 700
                     }}>
-                      {validationResult.valid ? '✓' : '✕'}
+                      {validationResult.valid ? <CheckIcon size={16} /> : <CloseIcon size={16} />}
                     </span>
                     <strong style={{ fontSize: 13, color: validationResult.valid ? '#1B5E20' : '#D70015', fontWeight: 600 }}>
                       {validationResult.valid

@@ -727,7 +727,7 @@ export default function ReviewView() {
             </h2>
           </div>
 
-          <div className="card" style={{ borderLeft: '4px solid #28cd41' }}>
+          <div className="card" style={{ border: '1px solid var(--border)' }}>
             <div style={{ fontSize: '13px', color: 'var(--text-secondary, #86868b)', marginBottom: '14px' }}>
               ISO 21930 & EN 15804+A2 require explicit accounting of exported secondary materials, avoided virgin production credits, and refrigerant reclamation.
             </div>
