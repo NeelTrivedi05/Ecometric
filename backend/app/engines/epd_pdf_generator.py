@@ -147,6 +147,7 @@ class EpdReport:
         # Refrigerant
         self.refrigerant_type = str(op.get("refrigerant_type") or "R-1233zd(E)").strip()
         self.refrigerant_charge_kg = float(op.get("refrigerant_charge_kg") or 596.0)
+        self.annual_leak_rate_pct = float(op.get("annual_leak_rate_percent") or 2.0)
         self.hazardous_substances_statement = (
             report_details.get("hazardous_substances_statement")
             or "No substances required to be reported as hazardous according to the US Resources Conservation and Recovery Act, Subtitle 3 are associated with the production of this product."
@@ -294,12 +295,15 @@ class EpdReport:
         ]
 
         # Table 1: Technical Data
+        eff_full = float(op.get("efficiency_kw_per_ton") or 0.4818)
+        iplv_val = float(op.get("iplv_kw_per_ton") or 0.435)
         self.table_1_tech_data = [
             {"name": "Chilling Capacity", "value": f"{int(self.capacity_rt)}", "unit": "tons of refrigeration (RT)"},
-            {"name": "Energy Efficiency* (100% Load at 85°F)", "value": "0.4818", "unit": "kW/ton at AHRI 550/590 conditions"},
+            {"name": "Energy Efficiency* (100% Load at 85°F)", "value": f"{eff_full:.4f}", "unit": "kW/ton at AHRI 550/590 conditions"},
             {"name": "Energy Efficiency* (75% Load at 75°F)", "value": "0.3373", "unit": "kW/ton"},
             {"name": "Energy Efficiency* (50% Load at 65°F)", "value": "0.2602", "unit": "kW/ton"},
             {"name": "Energy Efficiency* (25% Load at 65°F)", "value": "0.3132", "unit": "kW/ton"},
+            {"name": "IPLV (Integrated Part-Load Value)", "value": f"{iplv_val:.4f}", "unit": "kW/ton (AHRI 550/590)"},
         ]
 
         # Table 2: Product Dimensions
@@ -355,9 +359,10 @@ class EpdReport:
         }
 
         # Table 8: Maintenance (B2)
-        leak_kg_per_fu = round((self.refrigerant_charge_kg * 0.02 * self.rsl_years) / max(1.0, self.capacity_rt), 2)
+        leak_rate = self.annual_leak_rate_pct / 100.0
+        leak_kg_per_fu = round((self.refrigerant_charge_kg * leak_rate * self.rsl_years) / max(1.0, self.capacity_rt), 2)
         self.table_8_maintenance = {
-            "process_info": "Replacement of leaked refrigerant assuming a 2% annual loss rate",
+            "process_info": f"Replacement of leaked refrigerant assuming a {self.annual_leak_rate_pct}% annual loss rate",
             "cycles_rsl": f"{self.rsl_years} cycles",
             "cycles_esl": f"{self.esl_years} cycles",
             "refrigerant_replacement_kg": f"{leak_kg_per_fu:.2f}",
@@ -390,8 +395,12 @@ class EpdReport:
         }
 
         # Table 12: End-of-Life Scenario Details (C1-C4)
-        recycled_kg = round(self.mass_delivered_kg * 0.902, 2)
-        landfill_kg = round(self.mass_delivered_kg - recycled_kg, 2)
+        recycle_pct = float(eol.get("recycling_rate_percent") or 92.4) / 100.0
+        landfill_pct = float(eol.get("landfill_rate_percent") or 4.5) / 100.0
+        incineration_pct = float(eol.get("incineration_rate_percent") or 3.1) / 100.0
+        recycled_kg = round(self.mass_delivered_kg * recycle_pct, 2)
+        landfill_kg = round(self.mass_delivered_kg * landfill_pct, 2)
+        incineration_kg = round(self.mass_delivered_kg * incineration_pct, 2)
         self.table_12_eol = {
             "collected_separately": "0",
             "collected_mixed_waste_kg": f"{self.mass_delivered_kg:,.2f}",
@@ -399,8 +408,8 @@ class EpdReport:
             "distance_reuse_km": "0",
             "waste_to_landfill_kg": f"{landfill_kg:,.1f}",
             "distance_landfill_km": "100",
-            "waste_to_incineration_kg": "0",
-            "distance_incineration_km": "0",
+            "waste_to_incineration_kg": f"{incineration_kg:,.1f}",
+            "distance_incineration_km": "100",
             "waste_to_recycling_kg": f"{recycled_kg:,.2f}",
             "distance_recycling_km": "100",
         }
@@ -425,12 +434,12 @@ class EpdReport:
             m = float(item.get("mass", 0.0) or 0.0)
             if "steel" in mat and "stainless" not in mat:
                 groups["Steel"] += m
+            elif "alum" in mat:
+                groups["Aluminum"] += m
             elif "iron" in mat or "cast" in mat:
                 groups["Iron"] += m
             elif "copper" in mat:
                 groups["Copper"] += m
-            elif "alum" in mat:
-                groups["Aluminum"] += m
             elif "refrigerant" in mat:
                 groups["Refrigerant"] += m
             else:
@@ -462,8 +471,28 @@ class EpdReport:
         return res
 
 
-def build_results_table_rows(epd_results: Dict[str, Any], filter_keywords: Optional[List[str]] = None, exclude_keywords: Optional[List[str]] = None) -> List[Dict[str, Any]]:
-    """Builds tabular rows formatted in scientific notation."""
+# Canonical units for EF v3.1 / EN 15804+A2 impact categories
+INDICATOR_UNITS = {
+    "acidification": "mol H⁺e",
+    "climate change": "kg CO₂e",
+    "ozone depletion": "kg CFC-11e",
+    "eutrophication: freshwater": "kg Pe",
+    "eutrophication: marine": "kg Ne",
+    "eutrophication: terrestrial": "mol Ne",
+    "ecotoxicity": "CTUe",
+    "human toxicity": "CTUh",
+    "ionising radiation": "kBq U235e",
+    "land use": "dimensionless",
+    "energy resources": "MJ",
+    "material resources": "kg Sbe",
+    "particulate matter": "disease incidence",
+    "photochemical oxidant": "kg NMVOCe",
+    "water use": "m³ world eq",
+}
+
+
+def build_results_table_rows(epd_results: Dict[str, Any], filter_keywords: Optional[List[str]] = None, exclude_keywords: Optional[List[str]] = None, capacity_rt: float = 1.0) -> List[Dict[str, Any]]:
+    """Builds tabular rows formatted in scientific notation, normalized per functional unit."""
     columns = ["A1-A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "C1-C4", "C1", "C2", "C3", "C4", "D"]
     rows = []
 
@@ -484,6 +513,11 @@ def build_results_table_rows(epd_results: Dict[str, Any], filter_keywords: Optio
             unit = key.split("[")[-1].split("]")[0].strip()
         elif "unit" in data:
             unit = data["unit"]
+        else:
+            for ind_key, ind_unit in INDICATOR_UNITS.items():
+                if ind_key in k_lower:
+                    unit = ind_unit
+                    break
 
         row = {
             "indicator": ind_name,
@@ -491,6 +525,11 @@ def build_results_table_rows(epd_results: Dict[str, Any], filter_keywords: Optio
         }
         for col in columns:
             val = data.get(col, 0.0)
+            if capacity_rt > 1.0:
+                try:
+                    val = float(val) / capacity_rt
+                except (ValueError, TypeError):
+                    pass
             row[col] = format_scientific(val)
         rows.append(row)
 
@@ -528,14 +567,16 @@ def generate_full_epd_html(report: EpdReport) -> str:
         "global warming", "climate change", "ozone depletion", "acidification",
         "eutrophication", "pocp", "smog", "abiotic depletion", "adp", "water use"
     ]
-    core_rows = build_results_table_rows(report.epd_results, filter_keywords=core_indicators)
+    core_rows = build_results_table_rows(report.epd_results, filter_keywords=core_indicators, capacity_rt=report.capacity_rt)
     additional_rows = build_results_table_rows(
         report.epd_results,
-        filter_keywords=["particulate", "ionizing", "ecotoxicity", "human tox", "soil quality", "sqp"]
+        filter_keywords=["particulate", "ionizing", "ecotoxicity", "human tox", "soil quality", "sqp"],
+        capacity_rt=report.capacity_rt
     )
     resource_rows = build_results_table_rows(
         report.epd_results,
-        filter_keywords=["primary energy", "secondary", "renewable", "waste", "output flow", "water"]
+        filter_keywords=["energy resources", "material resources", "water use", "primary energy", "secondary", "renewable"],
+        capacity_rt=report.capacity_rt
     )
 
     # Fallback rows if results dict was minimal
@@ -800,7 +841,7 @@ def generate_full_epd_html(report: EpdReport) -> str:
     """
 
     traci_indicators = ["global warming", "ozone depletion", "acidification", "eutrophication", "smog", "fossil fuel"]
-    traci_rows = build_results_table_rows(report.epd_results, filter_keywords=traci_indicators)
+    traci_rows = build_results_table_rows(report.epd_results, filter_keywords=traci_indicators, capacity_rt=report.capacity_rt)
     if not traci_rows:
         traci_rows = [
             {"indicator": "Global Warming Potential", "unit": "kg CO₂e", "A1-A3": "1.65E+02", "A4": "1.24E+00", "A5": "8.41E-01", "B1": "1.38E+00", "B2": "3.52E+00", "B3": "0.00E+00", "B4": "3.33E+02", "B5": "0.00E+00", "B6": "3.59E+04", "B7": "0.00E+00", "C1-C4": "2.59E+00", "C1": "0.00E+00", "C2": "4.21E-01", "C3": "2.07E+00", "C4": "9.90E-02", "D": "0.00E+00"},

@@ -83,12 +83,12 @@ def generate_nsf_chiller_epd(
         mass = float(item.get("mass", 0) or 0)
         if "steel" in mat:
             material_groups["Steel"] += mass
+        elif "alum" in mat:
+            material_groups["Aluminum"] += mass
         elif "iron" in mat or "cast" in mat:
             material_groups["Iron"] += mass
         elif "copper" in mat:
             material_groups["Copper"] += mass
-        elif "alum" in mat:
-            material_groups["Aluminum"] += mass
         else:
             material_groups["Other"] += mass
 
