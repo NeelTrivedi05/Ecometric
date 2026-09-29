@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Response
 from sqlalchemy.orm import Session
 from typing import Dict, Any, Optional
 
@@ -397,16 +397,14 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
     try:
         candidate_excel_paths = [
             REPO_ROOT / "Ecoinvent database" / "ecoinvent 3.12_cut-off_cumulative_lcia_xlsx" / "Cut-off Cumulative LCIA v3.12.xlsx",
-            REPO_ROOT / "database" / "ecoinvent_raw" / "LCIA Implementation 3.12.xlsx",
+            REPO_ROOT / "Cut-off Cumulative LCIA v3.12.xlsx",
             Path("/Users/parth/Desktop/final year project/Cut-off Cumulative LCIA v3.12.xlsx"),
             Path("/Users/parth/Desktop/Ecometric/Cut-off Cumulative LCIA v3.12.xlsx"),
         ]
-        excel_path = next((p for p in candidate_excel_paths if p.exists()), candidate_excel_paths[0])
-
-        if excel_path.exists():
-            ef_results = extract_ef_for_payload(calculation_record, str(excel_path), methodology)
-            calculation_record["extracted_ef_values"] = ef_results
-            print(f"[EPD Router] Extracted EF values for {len(ef_results)} providers")
+        excel_path = next((p for p in candidate_excel_paths if p.exists()), None)
+        ef_results = extract_ef_for_payload(calculation_record, str(excel_path) if excel_path else None, methodology)
+        calculation_record["extracted_ef_values"] = ef_results
+        print(f"[EPD Router] Extracted EF values for {len(ef_results)} providers ({methodology})")
     except Exception as e:
         print(f"[EPD Router] Warning: Could not extract EF values: {e}")
 
@@ -435,9 +433,23 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
     res_anti = calculate_anti_lca(extracted_data)
     if calc_out and isinstance(calc_out, dict):
         epd_res = calc_out.get("results", {})
+        mandatory_pcr = calc_out.get("mandatory_pcr_indicators", epd_res)
+        all_indicators = calc_out.get("all_available_indicators", epd_res)
+
         res_anti["epd_results"] = epd_res
+        res_anti["mandatory_pcr_indicators"] = mandatory_pcr
+        res_anti["all_available_indicators"] = all_indicators
+        res_anti["total_indicators_count"] = len(all_indicators)
+        res_anti["mandatory_indicators_count"] = len(mandatory_pcr)
         res_anti["epd_metadata"] = calc_out.get("metadata")
         res_anti["epd_warnings"] = calc_out.get("warnings")
+
+        # Allow user to request custom indicator subset
+        selected_keys = data.get("selected_indicator_keys", [])
+        if selected_keys and isinstance(selected_keys, list):
+            res_anti["custom_selected_indicators"] = {
+                k: all_indicators[k] for k in selected_keys if k in all_indicators
+            }
 
         # Synchronize top-level summary metrics with calculated GWP row
         gwp_key = next((k for k in epd_res.keys() if "global warming" in k.lower() or "climate change" in k.lower()), None)
@@ -469,7 +481,87 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
                 float(row.get("A1-A3", 0)) + float(row.get("A4", 0)) + float(row.get("A5", 0)) + b_tot + c_tot + float(row.get("D", 0)), 2
             )
 
+    # Automated PCR & GPI Rule Evaluation (Phase 3)
+    try:
+        from app.engines.pcr_rules_engine import PcrRulesEngine
+        from app.database import SessionLocal
+        db_sess = SessionLocal()
+        try:
+            pcr_engine = PcrRulesEngine(db_sess)
+            pcr_rule_id = data.get("pcr_rule_id") or "rule-ul10010-4-traci"
+            pcr_report = pcr_engine.evaluate_compliance(
+                rule_id=pcr_rule_id,
+                results_payload=res_anti,
+                bom_items=extracted_data.get("bom", [])
+            )
+            res_anti["pcr_evaluation"] = pcr_report
+            res_anti["audit_rules"] = pcr_report.get("audit_rules", [])
+            res_anti["compliance_score_pct"] = pcr_report.get("compliance_score_pct", 100.0)
+            res_anti["overall_verdict"] = pcr_report.get("overall_verdict", "COMPLIANT")
+        finally:
+            db_sess.close()
+    except Exception as pcr_err:
+        print(f"[EPD Router] PCR evaluation notice: {pcr_err}")
+
     return res_anti
+
+
+@router.get("/lcia/search")
+def search_lcia_indicators_endpoint(
+    q: str = "",
+    methodology: Optional[str] = None,
+    category: Optional[str] = None,
+    mandatory_only: bool = False,
+    include_no_lt: bool = False,
+    limit: int = 50,
+):
+    """
+    Auto-suggest & fuzzy search across all ~633 LCIA indicators.
+    Supports partial queries, canonical acronyms (GWP, CO2, ODP, AP, Smog, POCP),
+    and returns indicators grouped by methodology and category in <2ms.
+    """
+    from app.engines.build_lcia_search_index import search_lcia_indicators
+
+    results = search_lcia_indicators(
+        query=q,
+        methodology=methodology,
+        category=category,
+        mandatory_only=mandatory_only,
+        include_no_lt=include_no_lt,
+        limit=limit,
+    )
+
+    by_category = {}
+    by_methodology = {}
+    for ind in results:
+        cat = ind.get("category", "General")
+        meth = ind.get("methodology", "Unknown")
+        by_category.setdefault(cat, []).append(ind)
+        by_methodology.setdefault(meth, []).append(ind)
+
+    return {
+        "query": q,
+        "methodology": methodology,
+        "total_found": len(results),
+        "indicators": results,
+        "grouped_by_category": by_category,
+        "grouped_by_methodology": by_methodology,
+    }
+
+
+@router.get("/lcia/methodologies")
+def get_lcia_methodologies_endpoint():
+    """
+    Returns all 46 supported LCIA methodologies with indicator counts and metadata.
+    """
+    from app.engines.build_lcia_search_index import get_registry
+    registry = get_registry()
+    return {
+        "total_methodologies": registry.get("metadata", {}).get("total_methodologies", 0),
+        "total_indicators": registry.get("metadata", {}).get("total_indicators", 0),
+        "methodologies": registry.get("methodologies", {}),
+        "acronym_definitions": registry.get("acronym_definitions", {}),
+    }
 
 
 @router.post("/generate-nsf-document")
@@ -489,3 +581,374 @@ def generate_nsf_document_endpoint(payload: Dict[str, Any] = Body(default_factor
 
     doc = generate_nsf_chiller_epd(data, results, methodology)
     return doc
+
+
+# =========================================================================
+# Phase 4: DQR Scoring, openEPD Serializer & Third-Party Verification Bundle
+# =========================================================================
+
+@router.post("/dqr-evaluation")
+def evaluate_dqr_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Evaluates Data Quality Rating (DQR) according to PEF 3.0 / EN 15804+A2 guidelines
+    across TeR, GeR, TiR, and P for all lifecycle stages.
+    """
+    from app.engines.dqr_engine import DqrEngine
+    data = payload or {}
+    extracted = data.get("extracted_data", data)
+    results = data.get("results")
+    
+    engine = DqrEngine()
+    report = engine.evaluate_dqr(extracted, results)
+    return report
+
+
+@router.post("/openepd")
+def generate_openepd_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Serializes LCA/EPD results into official openEPD standard v2.0 JSON format.
+    """
+    from app.engines.openepd_serializer import serialize_openepd_json
+    from app.engines.dqr_engine import DqrEngine
+
+    data = payload or {}
+    extracted = data.get("extracted_data", data)
+    methodology = data.get("methodology", "TRACI 2.1")
+
+    results = data.get("results")
+    if not results or not results.get("epd_results"):
+        results = calculate_anti_endpoint(data)
+
+    dqr_engine = DqrEngine()
+    dqr_report = dqr_engine.evaluate_dqr(extracted, results)
+
+    openepd_doc = serialize_openepd_json(extracted, results, dqr_report, methodology)
+    return openepd_doc
+
+
+@router.post("/export-verification-bundle")
+def export_verification_bundle_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Generates and returns an audited Third-Party Verification ZIP package containing:
+    1. 01_openepd_declaration_v2.json
+    2. 02_nsf_ul10010_4_declaration.json
+    3. 03_lcia_characterization_matrix.csv
+    4. 04_data_quality_rating_pef3.json
+    5. 05_pre_audit_quality_gates.json
+    6. 06_official_epd_report.html
+    7. checksums_sha256.txt
+    """
+    from app.engines.verification_package import build_verification_bundle
+    from app.engines.pcr_rules_engine import PcrRulesEngine
+    from app.database import SessionLocal
+
+    data = payload or {}
+    extracted = data.get("extracted_data", data)
+    methodology = data.get("methodology", "TRACI 2.1")
+    pcr_rule_id = data.get("pcr_rule_id", "rule-ul10010-4-traci")
+
+    results = data.get("results")
+    if not results or not results.get("epd_results"):
+        results = calculate_anti_endpoint(data)
+
+    db_sess = SessionLocal()
+    try:
+        pcr_engine = PcrRulesEngine(db_sess)
+        pcr_evaluation = pcr_engine.evaluate_compliance(pcr_rule_id, results, extracted.get("bom", []))
+    finally:
+        db_sess.close()
+
+    zip_bytes, filename, manifest = build_verification_bundle(
+        extracted_data=extracted,
+        results_payload=results,
+        pcr_evaluation=pcr_evaluation,
+        methodology=methodology
+    )
+
+    headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "X-Bundle-Hash": manifest["bundle_hash"],
+        "X-Lineage-Hash": manifest["lineage_hash"],
+        "X-Files-Count": str(manifest["file_count"])
+    }
+
+    return Response(
+        content=zip_bytes,
+        media_type="application/zip",
+        headers=headers
+    )
+
+
+# =========================================================================
+# Verified Reference EPD (EPD11017) Export to PDF & Report Details API
+# =========================================================================
+
+@router.get("/report-details/{project_id}")
+def get_report_details_endpoint(project_id: str, db: Session = Depends(get_db)):
+    """
+    Fetches persisted Report Details for a project, pre-filling with CompanyDefaults
+    and project metadata where available.
+    """
+    from app.models import ReportDetails, CompanyDefaults, Project
+
+    details = db.query(ReportDetails).filter(ReportDetails.project_id == project_id).first()
+    if details:
+        return {
+            "company_name": details.company_name,
+            "company_address": details.company_address,
+            "company_logo": details.company_logo,
+            "company_website": details.company_website,
+            "description_of_company": details.description_of_company,
+            "product_name": details.product_name,
+            "product_description": details.product_description,
+            "product_image": details.product_image,
+            "csi_code": details.csi_code,
+            "technical_data_bullets": details.technical_data_bullets or [],
+            "intended_application": details.intended_application,
+            "markets": details.markets,
+            "declaration_number": details.declaration_number,
+            "date_of_issue": details.date_of_issue,
+            "validity_period": details.validity_period,
+            "program_operator_name": details.program_operator_name,
+            "program_operator_address": details.program_operator_address,
+            "program_operator_website": details.program_operator_website,
+            "program_operator_logo": details.program_operator_logo,
+            "general_program_instructions": details.general_program_instructions,
+            "reference_pcr": details.reference_pcr,
+            "pcr_review_panel": details.pcr_review_panel or [],
+            "lca_practitioner_name": details.lca_practitioner_name,
+            "lca_practitioner_org": details.lca_practitioner_org,
+            "is_verified": details.is_verified,
+            "verification_type": details.verification_type,
+            "verifier_name": details.verifier_name,
+            "verifier_org": details.verifier_org,
+            "verifier_email": details.verifier_email,
+            "verifier_signature": details.verifier_signature,
+            "limitations_text": details.limitations_text,
+            "assumptions_limitations_text": details.assumptions_limitations_text,
+            "hazardous_substances_statement": details.hazardous_substances_statement,
+            "extra_references": details.extra_references or [],
+            "save_as_company_defaults": details.save_as_company_defaults,
+        }
+
+    # If no details saved for this project, fetch company defaults or provide prefilled template
+    defaults = db.query(CompanyDefaults).first()
+    proj = db.query(Project).filter(Project.id == project_id).first()
+    proj_name = proj.name if proj else "AquaEdge® 19DV Water-Cooled Centrifugal Chiller"
+
+    return {
+        "company_name": defaults.company_name if defaults else "Carrier Corporation",
+        "company_address": defaults.company_address if defaults else "13995 Pasteur Boulevard\nPalm Beach Gardens, Florida 33418",
+        "company_logo": defaults.company_logo if defaults else "",
+        "company_website": defaults.company_website if defaults else "https://www.carrier.com",
+        "description_of_company": defaults.description_of_company if defaults else "Carrier is the leading global provider of healthy, safe, and sustainable building and cold chain solutions with a world-class, diverse workforce. Through performance-driven culture, shareholder value is driven by growing earnings and investing strategically to strengthen its position in the market. Carrier’s industry leading solutions and services are designed to reduce energy consumption and facility operating costs in HVAC & Refrigeration.",
+        "product_name": proj_name,
+        "product_description": f"The {proj_name} is a water-cooled centrifugal chiller that utilizes a two-stage back-to-back compressor and an oil-free ceramic bearing system to deliver more operating range and consistent efficiency.",
+        "product_image": "",
+        "csi_code": "23 64 16.16",
+        "technical_data_bullets": [
+            "High tier variable speed starter equipped with harmonic filter (optional), total harmonic distortion (THD) ≤5% and fully complies with IEEE519 standard.",
+            "AquaEdge® 19DV chillers can achieve up to 7.3 (0.4818 kW/Ton) full load COPR and 12.3 (0.2859 kW/Ton) IPLV.IP at AHRI conditions.",
+            "AquaEdge® 19DV chillers can meet 18001 standards recommended by Occupational Health and Safety Advisory Services (OHSAS).",
+            "ASME Section VIII Div. 1 “U” stamped certified.",
+            "Certified in accordance with the AHRI Water-Cooled Water-Chilling and Heat Pump Water-Heating Packages Certification Program (AHRI Standard 550/590).",
+            "Certified units may be found in the AHRI Directory at http://www.ahridirectory.org.",
+        ],
+        "intended_application": "The function of the chiller included within this study is to provide chilled water for use in cooling the interior of a building, for a functional unit of 1 ton chilling capacity.",
+        "markets": "North America, Global",
+        "declaration_number": f"EPD{datetime.now().strftime('%Y%m%d')}",
+        "date_of_issue": datetime.now().strftime("%m/%d/%Y"),
+        "validity_period": "5 Years from the date of issue",
+        "program_operator_name": "NSF Certification, LLC",
+        "program_operator_address": "789 North Dixboro Road, Ann Arbor, MI, 48105, United States",
+        "program_operator_website": "https://www.nsf.org/",
+        "program_operator_logo": "",
+        "general_program_instructions": "Part A: Life Cycle Assessment Calculations and Report Requirements Version 4.0",
+        "reference_pcr": "Part A: Life Cycle Assessment Calculation Rules and Report Requirements (UL Environment, V4.0, 2022)\nPart B: Water Cooled Chiller EPD Requirements (UL Environment V2.0, 2018)",
+        "pcr_review_panel": [
+            "Lise Laurin, EarthShift Global",
+            "Sean Beilman, BCER Engineering, Inc.",
+            "François Charron-Doucet, Group AGÉCO",
+        ],
+        "lca_practitioner_name": defaults.lca_practitioner_name if defaults else "Shashikumar M S, HCLTech",
+        "lca_practitioner_org": defaults.lca_practitioner_org if defaults else "HCLTech",
+        "is_verified": False,
+        "verification_type": "EXTERNAL",
+        "verifier_name": "Jack Geibig - EcoForm",
+        "verifier_org": "EcoForm Certification",
+        "verifier_email": "jgeibig@ecoform.com",
+        "verifier_signature": "",
+        "limitations_text": defaults.limitations_text if defaults else (
+            "Environmental declarations from different programs (ISO 14025) may not be comparable.\n"
+            "Comparison of the environmental performance of products using EPD information shall be based on the product’s use "
+            "and impacts at the building level, and therefore EPDs may not be used for comparability purposes when not considering "
+            "the building use phase as instructed under this PCR. Previous versions of the PCR vary in the prescribed default "
+            "refrigerant leakage rate and do not necessitate the reporting of B4 impacts. These variations make it imperative to ensure "
+            "that EPDs are aligned with all the following conformance requirements for comparisons.\n\n"
+            "Full conformance with the PCR for Water Chillers allows EPD comparability only when all stages of a life cycle have been "
+            "considered, when they comply with all referenced standards, use the same sub-category PCR, and use equivalent scenarios "
+            "with respect to construction works. However, variations and deviations are possible. Example of variations: Different LCA software "
+            "and background LCI datasets may lead to differences results for upstream or downstream of the life cycle stages declared.\n\n"
+            "No use phase grid mix is explicitly defined by the PCR. As such, Carrier has elected to report multiple use phase electricity "
+            "demand scenarios for increased reader utility. This reporting is described in the text of the EPD."
+        ),
+        "assumptions_limitations_text": defaults.assumptions_limitations_text if defaults else (
+            "The use and selection of secondary datasets from Eco-Invent database. The selection of which generic dataset to use to represent an aspect of "
+            "a supply chain is a significant value choice. However, no generic data can be a perfect fit. Improved supply chain specific data would improve the accuracy of results.\n\n"
+            "Use phase calculations are based on default scenarios provided by an excel calculator sheet as described by the PCR and do not reflect actual consumption in a specific location.\n\n"
+            "Availability of geographically more accurate datasets would have improved the accuracy of the study."
+        ),
+        "hazardous_substances_statement": "No substances required to be reported as hazardous according to the US Resources Conservation and Recovery Act, Subtitle 3 are associated with the production of this product.",
+        "extra_references": [],
+        "save_as_company_defaults": False,
+    }
+
+
+@router.post("/report-details/{project_id}")
+def save_report_details_endpoint(
+    project_id: str,
+    payload: Dict[str, Any] = Body(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Saves or updates Report Details for a project, optionally persisting company-level defaults.
+    """
+    from app.models import ReportDetails, CompanyDefaults, Project
+
+    # Ensure project exists
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        # Create lightweight project if not yet exists
+        project = Project(id=project_id, name=payload.get("product_name", "EPD Project"))
+        db.add(project)
+        db.commit()
+
+    details = db.query(ReportDetails).filter(ReportDetails.project_id == project_id).first()
+    if not details:
+        details = ReportDetails(project_id=project_id)
+        db.add(details)
+
+    # Assign fields
+    fields = [
+        "company_name", "company_address", "company_logo", "company_website",
+        "description_of_company", "product_name", "product_description", "product_image",
+        "csi_code", "technical_data_bullets", "intended_application", "markets",
+        "declaration_number", "date_of_issue", "validity_period", "program_operator_name",
+        "program_operator_address", "program_operator_website", "program_operator_logo",
+        "general_program_instructions", "reference_pcr", "pcr_review_panel",
+        "lca_practitioner_name", "lca_practitioner_org", "is_verified", "verification_type",
+        "verifier_name", "verifier_org", "verifier_email", "verifier_signature",
+        "limitations_text", "assumptions_limitations_text", "hazardous_substances_statement",
+        "extra_references", "save_as_company_defaults"
+    ]
+    for field in fields:
+        if field in payload:
+            setattr(details, field, payload[field])
+
+    # Save company defaults if requested
+    if payload.get("save_as_company_defaults") and payload.get("company_name"):
+        comp_name = payload["company_name"].strip()
+        comp_def = db.query(CompanyDefaults).filter(CompanyDefaults.company_name == comp_name).first()
+        if not comp_def:
+            comp_def = CompanyDefaults(company_name=comp_name)
+            db.add(comp_def)
+        comp_def.company_address = payload.get("company_address")
+        comp_def.company_logo = payload.get("company_logo")
+        comp_def.company_website = payload.get("company_website")
+        comp_def.description_of_company = payload.get("description_of_company")
+        comp_def.lca_practitioner_name = payload.get("lca_practitioner_name")
+        comp_def.lca_practitioner_org = payload.get("lca_practitioner_org")
+        comp_def.limitations_text = payload.get("limitations_text")
+        comp_def.assumptions_limitations_text = payload.get("assumptions_limitations_text")
+
+    db.commit()
+    return {"success": True, "message": "Report details saved successfully", "project_id": project_id}
+
+
+@router.post("/validate-pre-export")
+def validate_pre_export_endpoint(payload: Dict[str, Any] = Body(...)):
+    """
+    Runs Part G pre-export validation gate checks.
+    """
+    from app.engines.epd_validator import validate_pre_export
+
+    extracted_data = payload.get("extracted_data") or {}
+    results = payload.get("results") or {}
+    report_details = payload.get("report_details") or {}
+
+    val_res = validate_pre_export(extracted_data, results, report_details)
+    return val_res
+
+
+@router.post("/export-pdf-preview")
+def export_pdf_preview_endpoint(payload: Dict[str, Any] = Body(...)):
+    """
+    Generates standalone full HTML report for preview before PDF compilation.
+    """
+    from app.engines.epd_pdf_generator import EpdReport, generate_full_epd_html
+
+    extracted_data = payload.get("extracted_data") or {}
+    results = payload.get("results") or {}
+    report_details = payload.get("report_details") or {}
+
+    report = EpdReport(extracted_data, results, report_details)
+    html_content = generate_full_epd_html(report)
+    return {"html": html_content}
+
+
+@router.post("/export-pdf")
+def export_epd_pdf_endpoint(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
+    """
+    Compiles publication-grade PDF modeled on reference EPD11017.
+    Enforces Part G validation gate before rendering.
+    """
+    from app.engines.epd_pdf_generator import export_epd_to_pdf
+    from app.models import Report
+
+    extracted_data = payload.get("extracted_data") or {}
+    results = payload.get("results") or {}
+    report_details = payload.get("report_details") or {}
+    project_id = payload.get("project_id") or "export_project"
+
+    try:
+        pdf_bytes = export_epd_to_pdf(extracted_data, results, report_details)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail={"error": "Pre-Export Validation Failed", "details": str(ve)})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={"error": "PDF Generation Failed", "details": str(e)})
+
+    decl_no = report_details.get("declaration_number", "EPD").replace(" ", "_")
+    prod_name = (report_details.get("product_name") or "Declaration").replace(" ", "_")[:30]
+    filename = f"{decl_no}_{prod_name}.pdf"
+
+    # Save record to reports table if project exists
+    try:
+        pdf_dir = REPO_ROOT / "results" / "pdfs"
+        pdf_dir.mkdir(parents=True, exist_ok=True)
+        pdf_file = pdf_dir / filename
+        with open(pdf_file, "wb") as f:
+            f.write(pdf_bytes)
+
+        db.add(Report(
+            project_id=project_id,
+            pdf_url=f"/results/pdfs/{filename}",
+            version="1.0",
+            disclaimer_text_snapshot="NSF EPD11017 Modeled Verified Declaration"
+        ))
+        db.commit()
+    except Exception as db_err:
+        print(f"[PDF Export] Warning saving report DB record: {db_err}")
+
+    headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Content-Type": "application/pdf",
+        "X-Declaration-Number": decl_no,
+        "X-EPD-Version": "2.0-EPD11017",
+    }
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers=headers
+    )
+

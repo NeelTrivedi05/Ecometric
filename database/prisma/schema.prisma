@@ -251,3 +251,76 @@ model Report {
   disclaimerTextSnapshot String
   generatedAt           DateTime @default(now())
 }
+
+// =========================================================================
+// Phase 1: Database Lineage & Entanglement Schema
+// =========================================================================
+
+model EcoinventDatabase {
+  id            String        @id @default(uuid())
+  version       String        @default("3.12")
+  systemModel   String        @default("cut-off") // cut-off | apos | consequential
+  branchName    String        @default("ecoinvent 3.12 default")
+  fileReference String
+  fileHash      String?
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+
+  processNodes  ProcessNode[]
+}
+
+model ProcessNode {
+  id               String                    @id
+  databaseId       String?
+  database         EcoinventDatabase?        @relation(fields: [databaseId], references: [id], onDelete: SetNull)
+  activityUuid     String?
+  productUuid      String?
+  activityName     String
+  referenceProduct String
+  geography        String                    @default("GLO")
+  unit             String                    @default("kg")
+  systemBoundaries String                    @default("cradle-to-gate")
+  sector           String?
+  tierLevel        Int                       @default(1)
+  createdAt        DateTime                  @default(now())
+
+  childEdges       ProcessEntanglementEdge[] @relation("ParentProcess")
+  parentEdges      ProcessEntanglementEdge[] @relation("ChildProcess")
+
+  @@index([activityName])
+  @@index([referenceProduct])
+  @@index([sector])
+}
+
+model ProcessEntanglementEdge {
+  id               String      @id @default(uuid())
+  parentProcessId  String
+  parentProcess    ProcessNode @relation("ParentProcess", fields: [parentProcessId], references: [id], onDelete: Cascade)
+  childProcessId   String
+  childProcess     ProcessNode @relation("ChildProcess", fields: [childProcessId], references: [id], onDelete: Cascade)
+  scalingFactor    Float       @default(1.0)
+  tierLevel        Int         @default(1)
+  relationshipType String      // upstream_manufacturing | downstream_processing | energy_carrier | transport_link
+  allocationFactor Float       @default(1.0)
+  lossRate         Float       @default(0.0)
+  createdAt        DateTime    @default(now())
+
+  @@index([parentProcessId])
+  @@index([childProcessId])
+  @@index([relationshipType])
+}
+
+model PcrGpiIndicatorRule {
+  id                 String   @id @default(uuid())
+  ruleName           String   // UL 10010-4 Part B v2.0 | GPI v4.0 | EN 15804+A2
+  productCategory    String   @default("water_cooled_chiller")
+  methodology        String   // TRACI 2.1 | EF v3.1 | EN 15804+A2
+  standard           String   // ISO 14025 | EN 15804+A2 | UL 10010-4
+  requiredIndicators String   @default("[]") // JSON array of indicator keys
+  optionalIndicators String   @default("[]") // JSON array of indicator keys
+  cutOffCriteria     String   @default("1% mass / 1% energy cumulative 95%")
+  isDefault          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+
+  @@index([productCategory, methodology])
+}

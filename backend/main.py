@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routers import auth_routes, epd, submissions, documents
+from app.routers import auth_routes, epd, submissions, documents, processes
 
 # Initialize DB tables
 Base.metadata.create_all(bind=engine)
@@ -33,6 +33,7 @@ app.include_router(auth_routes.router)
 app.include_router(epd.router)
 app.include_router(submissions.router)
 app.include_router(documents.router)
+app.include_router(processes.router)
 
 @app.get("/health")
 def healthcheck():
@@ -48,6 +49,30 @@ def healthcheck():
 def validate_epd_endpoint(payload: dict = None):
     from app.engines.pcr_validation import validate_epd_compliance
     return validate_epd_compliance(payload or {})
+
+@app.get("/api/lcia/search")
+def search_lcia_root(
+    q: str = "",
+    methodology: str = None,
+    category: str = None,
+    mandatory_only: bool = False,
+    include_no_lt: bool = False,
+    limit: int = 50,
+):
+    from app.routers.epd import search_lcia_indicators_endpoint
+    return search_lcia_indicators_endpoint(
+        q=q,
+        methodology=methodology,
+        category=category,
+        mandatory_only=mandatory_only,
+        include_no_lt=include_no_lt,
+        limit=limit,
+    )
+
+@app.get("/api/lcia/methodologies")
+def get_lcia_methodologies_root():
+    from app.routers.epd import get_lcia_methodologies_endpoint
+    return get_lcia_methodologies_endpoint()
 
 if __name__ == "__main__":
     import uvicorn

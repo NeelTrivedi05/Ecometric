@@ -4,34 +4,52 @@ import { CheckCircleIcon } from '../studio/Icons';
 export default function TrustProof() {
   const standards = [
     "ISO 14025:2006 Type III",
-    "EN 15804+A2:2019",
-    "ecoinvent v3.12 Cutoff",
-    "UL 10010-4 Part B",
-    "ILCD+EPD Data Format"
+    "EN 15804+A2:2019 Core PCR",
+    "ecoinvent v3.12 Cut-off LCI",
+    "PEF 3.0 / EF 3.1 Method",
+    "openEPD & ILCD+EPD XML",
+    "UL 10010-4 Part B PCR"
   ];
 
   return (
-    <div className="lp-trust-banner">
+    <section className="product-tile-parchment" style={{ padding: '40px 0', borderTop: '1px solid var(--apple-hairline)', borderBottom: '1px solid var(--apple-hairline)' }}>
       <div className="lp-container">
-        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-          <span style={{ fontSize: '15px', fontWeight: 700, color: '#2C221E', letterSpacing: '-0.01em' }}>
-            Built for manufacturers • LCA teams • Consultants
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--apple-ink)', letterSpacing: '-0.224px' }}>
+            Built for environmental engineers, sustainability managers, and third-party LCA verifiers
           </span>
         </div>
 
-        <div className="lp-trust-grid" style={{ justifyContent: 'center', gap: '32px' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          gap: '16px 28px'
+        }}>
           {standards.map((name, idx) => (
-            <div key={idx} className="lp-trust-item">
-              <span style={{ color: '#2E7D32', display: 'flex', alignItems: 'center' }}>
-                <CheckCircleIcon size={16} />
-              </span>
-              <span style={{ fontSize: '13px', color: '#5C4E46', fontWeight: 600 }}>
-                {name}
-              </span>
+            <div
+              key={idx}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                borderRadius: 'var(--apple-radius-pill)',
+                backgroundColor: 'var(--apple-canvas)',
+                border: '1px solid var(--apple-hairline)',
+                fontSize: '13px',
+                fontWeight: 600,
+                color: 'var(--apple-ink)',
+                letterSpacing: '-0.1px'
+              }}
+            >
+              <CheckCircleIcon size={14} style={{ color: '#28cd41' }} />
+              <span>{name}</span>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

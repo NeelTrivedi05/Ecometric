@@ -73,3 +73,11 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Temporary directories and generated export PDFs
+temp-skills/
+results/pdfs/
+test/*.pdf
+results/epd_calculation_input_*.json
+
+

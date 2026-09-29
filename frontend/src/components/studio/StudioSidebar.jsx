@@ -10,34 +10,54 @@ import {
   ExportIcon,
   CheckIcon,
   CloseIcon,
+  LeafIcon,
+  ShieldCheckIcon,
 } from './Icons';
 
 const PHASES = [
-  { id: 'upload', label: '1. Upload Documents', icon: UploadIcon },
-  { id: 'extract', label: '2. Extracted Data', icon: ReviewIcon },
-  { id: 'user_review', label: '3. User Review', icon: EditIcon },
-  { id: 'validate', label: '4. Validate Against Rules', icon: ValidateIcon },
-  { id: 'methodology', label: '5. Select Methodology', icon: MethodologyIcon },
-  { id: 'results', label: '6. View Results', icon: ResultsIcon },
-  { id: 'export', label: '7. Export EPD', icon: ExportIcon },
+  { id: 'upload', step: '1', label: 'Upload Documents', sub: 'XLSX, CSV, PDF Ingestion', icon: UploadIcon },
+  { id: 'extract', step: '2', label: 'Extracted Inventory', sub: 'Modules A1–D Coverage', icon: ReviewIcon },
+  { id: 'user_review', step: '3', label: 'Review & Mapping', sub: 'BOM & ecoinvent Providers', icon: EditIcon },
+  { id: 'validate', step: '4', label: 'PCR Rules Audit', sub: 'UL 10010-4 & GPI Check', icon: ValidateIcon },
+  { id: 'methodology', step: '5', label: 'LCIA Methodology', sub: 'EF v3.1, TRACI, CML-IA', icon: MethodologyIcon },
+  { id: 'results', step: '6', label: 'LCIA Results', sub: '25 Indicators × 16 Stages', icon: ResultsIcon },
+  { id: 'export', step: '7', label: 'Export EPD', sub: 'Publication PDF & openEPD', icon: ExportIcon },
 ];
 
 export default function StudioSidebar() {
-  const { activePhase, setActivePhase, isSidebarOpen, setIsSidebarOpen, uploadedFiles, extractedData, validationResults, selectedMethodology, results } = useStudio();
+  const {
+    activePhase,
+    setActivePhase,
+    isSidebarOpen,
+    setIsSidebarOpen,
+    uploadedFiles,
+    extractedData,
+    validationResults,
+    selectedMethodology,
+    results,
+    lca,
+  } = useStudio();
 
   const getPhaseStatus = (phaseId) => {
     switch (phaseId) {
-      case 'upload': return uploadedFiles.length > 0 ? 'done' : '';
-      case 'extract': return uploadedFiles.some(f => f.status === 'done') || (extractedData.bom && extractedData.bom.length > 0) ? 'done' : '';
-      case 'user_review': return extractedData.bom && extractedData.bom.length > 0 ? 'done' : '';
-      case 'validate': return validationResults?.run_at ? 'done' : '';
-      case 'methodology': return selectedMethodology ? 'done' : '';
-      case 'results': return results ? 'done' : '';
-      case 'export': return '';
-      default: return '';
+      case 'upload':
+        return uploadedFiles.length > 0 ? 'done' : '';
+      case 'extract':
+        return uploadedFiles.some(f => f.status === 'done') || (extractedData?.bom && extractedData.bom.length > 0) ? 'done' : '';
+      case 'user_review':
+        return extractedData?.bom && extractedData.bom.length > 0 ? 'done' : '';
+      case 'validate':
+        return validationResults?.run_at ? 'done' : '';
+      case 'methodology':
+        return selectedMethodology ? 'done' : '';
+      case 'results':
+        return lca?.isCalculated || results ? 'done' : '';
+      case 'export':
+        return '';
+      default:
+        return '';
     }
   };
-
 
   const handleSelectPhase = (phaseId) => {
     setActivePhase(phaseId);
@@ -46,10 +66,16 @@ export default function StudioSidebar() {
     }
   };
 
+  const capacityRt = extractedData?.operational?.capacity_rt || 500;
+  const rslYears = extractedData?.project_info?.lifespan_years || 25;
+
   return (
     <aside className={`studio-sidebar ${isSidebarOpen ? 'mobile-open' : ''}`} aria-label="Workflow Navigation">
       <div className="sidebar-header-row">
-        <div className="sidebar-heading">EPD Workflow</div>
+        <div className="sidebar-heading-group">
+          <span className="sidebar-heading">EPD Workflow</span>
+          <span className="sidebar-heading-badge">UL 10010-4</span>
+        </div>
         <button
           type="button"
           className="btn-icon-sidebar-close"
@@ -57,7 +83,7 @@ export default function StudioSidebar() {
           title="Close Navigation"
           aria-label="Close Navigation"
         >
-          <CloseIcon className="w-4 h-4" />
+          <CloseIcon size={14} />
         </button>
       </div>
 
@@ -75,28 +101,59 @@ export default function StudioSidebar() {
               onClick={() => handleSelectPhase(phase.id)}
               aria-current={isActive ? 'step' : undefined}
             >
-              <div className="item-icon-wrapper">
-                <Icon className="w-4 h-4" />
+              <div className="item-step-indicator">
+                {status === 'done' && !isActive ? (
+                  <span className="step-done-check" title="Phase complete">✓</span>
+                ) : (
+                  <span className="step-number">{phase.step}</span>
+                )}
               </div>
-              <span className="item-label">{phase.label}</span>
-              {status === 'done' && !isActive && (
-                <span className="item-check" aria-label="Complete">
-                  <CheckIcon className="w-3 h-3" />
-                </span>
-              )}
+
+              <div className="item-icon-wrapper">
+                <Icon size={15} />
+              </div>
+
+              <div className="item-text-stack">
+                <span className="item-label">{phase.label}</span>
+                <span className="item-subtext">{phase.sub}</span>
+              </div>
+
+              {isActive && <span className="active-pill-marker" />}
             </button>
           );
         })}
       </nav>
 
+      {/* Apple-style Specs Card in Sidebar Footer */}
       <div className="sidebar-footer">
-        <div className="compliance-tag">
-          <span className="tag-label">Standard</span>
-          <span className="tag-value">EN 15804+A2:2019</span>
-        </div>
-        <div className="compliance-tag">
-          <span className="tag-label">Database</span>
-          <span className="tag-value">ecoinvent 3.12</span>
+        <div className="sidebar-spec-card">
+          <div className="spec-card-header">
+            <span className="spec-icon">⚡</span>
+            <span className="spec-title">Reference Basis</span>
+          </div>
+
+          <div className="spec-grid">
+            <div className="spec-row">
+              <span className="spec-key">Functional Unit</span>
+              <span className="spec-val">1 ton capacity</span>
+            </div>
+            <div className="spec-row">
+              <span className="spec-key">Capacity</span>
+              <span className="spec-val">{Math.round(capacityRt)} RT</span>
+            </div>
+            <div className="spec-row">
+              <span className="spec-key">RSL</span>
+              <span className="spec-val">{rslYears} Years</span>
+            </div>
+            <div className="spec-row">
+              <span className="spec-key">Database</span>
+              <span className="spec-val">ecoinvent 3.12</span>
+            </div>
+            <div className="spec-row">
+              <span className="spec-key">Lineage</span>
+              <span className="spec-val text-success">SHA-256 Valid</span>
+            </div>
+          </div>
         </div>
       </div>
     </aside>

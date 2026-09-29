@@ -1,6 +1,16 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { useStudio } from '../../../context/StudioContext';
-import { UploadIcon, FileIcon, TrashIcon, RefreshCwIcon, AlertTriangleIcon, CheckCircleIcon, InfoIcon, ChevronRightIcon } from '../Icons';
+import {
+  UploadIcon,
+  FileIcon,
+  TrashIcon,
+  RefreshCwIcon,
+  AlertTriangleIcon,
+  CheckCircleIcon,
+  InfoIcon,
+  ChevronRightIcon,
+  LayersIcon,
+} from '../Icons';
 import ProcessFlowModal from '../ProcessFlowModal';
 
 export default function UploadView() {
@@ -16,11 +26,13 @@ export default function UploadView() {
     isFlowModalOpen,
     setIsFlowModalOpen,
     loadSampleData,
+    loadPreset,
+    currentPresetId,
+    PRESET_DATASETS,
   } = useStudio();
 
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
-
 
   const handleDrop = useCallback((e) => {
     e.preventDefault();
@@ -60,256 +72,279 @@ export default function UploadView() {
   return (
     <div className="view-container">
       {/* Header & Quick Action Row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+      <div className="apple-view-header">
         <div>
-          <h1 className="view-title" style={{ margin: 0 }}>Upload & Extract Documents</h1>
-          <p className="view-subtitle" style={{ marginTop: '6px', marginBottom: 0 }}>
-            Upload raw engineering documents — BOM spreadsheets, transport manifests, plant utility reports.
-            The parser matches components to verified ecoinvent v3.12 datasets and checks compliance gaps.
+          <span className="apple-eyebrow">Phase 1 • Document Ingestion</span>
+          <h1 className="view-title">Upload & Ingest Chiller Engineering Documents</h1>
+          <p className="view-subtitle">
+            Upload raw engineering files (BOM spreadsheets, freight manifests, plant utility submetering, and equipment cut sheets).
+            The engine parses component masses, links them to verified ecoinvent v3.12 activities, and audits UL 10010-4 completeness.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className="apple-header-action-group">
           <button
             type="button"
-            className="btn btn-secondary"
-            onClick={loadSampleData}
-            disabled={isLoading}
-            style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <RefreshCwIcon size={14} />
-            <span>Load Sample BOM (500RT Chiller)</span>
-          </button>
-
-          <button
-            type="button"
-            className="btn btn-secondary"
+            className="btn-apple-secondary-pill"
             onClick={() => setIsFlowModalOpen(true)}
-            style={{
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#FDF5F0',
-              borderColor: '#E8D5C8',
-              color: '#B8531D'
-            }}
+            title="Inspect Process Supply Chain Entanglement Flow"
           >
-            <span>View Traceability Flow Map</span>
-            <span style={{
-              backgroundColor: '#B8531D',
-              color: '#FFFFFF',
-              borderRadius: '10px',
-              padding: '1px 6px',
-              fontSize: '10px',
-              fontWeight: 700
-            }}>
-              {traceabilityFlow ? traceabilityFlow.nodes?.length || 14 : 'Active'}
+            <LayersIcon size={14} />
+            <span>Traceability Flow Map</span>
+            <span className="apple-pill-counter">
+              {traceabilityFlow?.nodes?.length || 14}
             </span>
           </button>
         </div>
       </div>
 
+      {/* Preset Chiller Benchmark Models Gallery (Apple Store Utility Card Grid) */}
+      <div className="apple-benchmark-gallery">
+        <div className="gallery-header-row">
+          <div className="gallery-title-group">
+            <span className="gallery-title">Verified Equipment Benchmarks</span>
+            <span className="gallery-desc">Instant 1-click loading of UL 10010-4 / EN 15804+A2 test fixtures from test/ suite</span>
+          </div>
+          <span className="gallery-pill-tag">4 Models Available</span>
+        </div>
+
+        <div className="benchmark-card-grid">
+          {Object.entries(PRESET_DATASETS || {}).map(([key, item]) => {
+            const isSelected = currentPresetId === key;
+            return (
+              <div
+                key={key}
+                className={`benchmark-card ${isSelected ? 'active-benchmark' : ''}`}
+                onClick={() => loadPreset(key)}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="card-top-row">
+                  <span className="card-equipment-glyph">
+                    {key === 'screw_chiller_300rt' ? '❄️' :
+                     key === 'heat_pump_150rt' ? '♨️' :
+                     key === 'incomplete_gap_analysis' ? '⚠️' : '💧'}
+                  </span>
+                  <span
+                    className="card-badge"
+                    style={{ color: item.badgeColor, backgroundColor: `${item.badgeColor}15` }}
+                  >
+                    {item.badge}
+                  </span>
+                </div>
+
+                <div className="card-title">{item.title}</div>
+                <div className="card-subtitle">{item.subtitle}</div>
+
+                <div className="card-specs-row">
+                  <div className="card-spec-item">
+                    <span className="spec-label">Capacity</span>
+                    <span className="spec-value">{Math.round(item.capacityRt)} RT</span>
+                  </div>
+                  <div className="card-spec-item">
+                    <span className="spec-label">Mass</span>
+                    <span className="spec-value">{item.totalMassKg} kg</span>
+                  </div>
+                  <div className="card-spec-item">
+                    <span className="spec-label">Refrigerant</span>
+                    <span className="spec-value">{item.refrigerant.split(' ')[0]}</span>
+                  </div>
+                </div>
+
+                <div className="card-action-row">
+                  <button
+                    type="button"
+                    className={`btn-card-load ${isSelected ? 'is-selected' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      loadPreset(key);
+                    }}
+                    disabled={isLoading}
+                  >
+                    {isSelected ? '✓ Loaded in Workspace' : 'Load Benchmark →'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Upload Dropzone */}
       <div
-        className={`upload-zone ${isDragOver ? 'drag-over' : ''}`}
+        className={`apple-upload-zone ${isDragOver ? 'drag-over' : ''}`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onClick={() => fileInputRef.current?.click()}
         style={{ cursor: 'pointer' }}
       >
-        <UploadIcon size={44} className="upload-zone-icon" />
-        <div className="upload-zone-title" style={{ fontSize: '16px', fontWeight: 600 }}>
-          Drop files here or click to browse
+        <div className="upload-icon-circle">
+          <UploadIcon size={26} style={{ color: '#0066cc' }} />
         </div>
-        <div className="upload-zone-desc" style={{ fontSize: '13px', color: '#7A6B63' }}>
-          Supports ZIP engineering archives, BOM spreadsheets (Excel .xlsx, CSV), utility bills, or JSON declarations
+
+        <div className="upload-zone-title">
+          Drop engineering files here, or click to browse
         </div>
-        <div className="upload-zone-formats" style={{ marginTop: '12px' }}>
-          <span className="format-tag" style={{ backgroundColor: '#EBF3ED', color: '#275234', fontWeight: 600 }}>ZIP ARCHIVE</span>
-          <span className="format-tag">XLSX</span>
-          <span className="format-tag">CSV</span>
-          <span className="format-tag">PDF</span>
-          <span className="format-tag">JSON</span>
+
+        <div className="upload-zone-desc">
+          Supports BOM spreadsheets (Excel .xlsx, CSV), technical cutsheets (vector PDF), multimodal manifests, or complete ZIP packages
         </div>
+
+        <div className="upload-zone-formats">
+          <span className="apple-chip-format">.XLSX</span>
+          <span className="apple-chip-format">.CSV</span>
+          <span className="apple-chip-format">.PDF</span>
+          <span className="apple-chip-format">.JSON</span>
+          <span className="apple-chip-format">.ZIP</span>
+        </div>
+
         <input
           ref={fileInputRef}
           type="file"
           multiple
-          accept=".zip,.pdf,.xlsx,.xls,.csv,.json,.xml"
+          accept=".xlsx,.xls,.csv,.pdf,.json,.zip"
           style={{ display: 'none' }}
           onChange={handleFileSelect}
         />
       </div>
 
-      {/* PCR Compliance & Missing Data Gaps Notification Banner */}
-      {gaps && gaps.length > 0 && (
-        <div style={{
-          marginTop: '24px',
-          padding: '16px 20px',
-          borderRadius: '12px',
-          backgroundColor: '#FFF8F2',
-          border: '1px solid #F5DEC8',
-          boxShadow: '0 2px 8px rgba(184, 83, 29, 0.05)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ color: '#D97706', display: 'flex', alignItems: 'center' }}>
-                <AlertTriangleIcon size={18} />
-              </div>
-              <span style={{ fontSize: '14px', fontWeight: 700, color: '#8F4A14' }}>
-                PCR & ISO 14025 Data Gap Analysis ({gaps.length} Action Items Detected)
-              </span>
-            </div>
-            <span style={{
-              fontSize: '11px',
-              padding: '2px 8px',
-              borderRadius: '10px',
-              backgroundColor: '#FEF3C7',
-              color: '#92400E',
-              fontWeight: 600
-            }}>
-              Pre-Calculation Verification Gate
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {gaps.map((gap) => (
-              <div key={gap.id} style={{
-                padding: '12px 14px',
-                borderRadius: '8px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #EED8C5',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                gap: '12px'
-              }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      padding: '1px 6px',
-                      borderRadius: '4px',
-                      backgroundColor: gap.severity === 'critical' ? '#FEE2E2' : '#FEF3C7',
-                      color: gap.severity === 'critical' ? '#991B1B' : '#92400E',
-                      textTransform: 'uppercase'
-                    }}>
-                      {gap.severity || 'Notice'}
-                    </span>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#2C221E' }}>
-                      {gap.title}
-                    </span>
-                    <span style={{ fontSize: '11px', color: '#9C5832', fontWeight: 500 }}>
-                      ({gap.module})
-                    </span>
-                  </div>
-                  <p style={{ fontSize: '12px', color: '#5C4E46', margin: '4px 0 2px 0' }}>
-                    {gap.message}
-                  </p>
-                  <p style={{ fontSize: '11px', color: '#8A7A72', margin: 0, fontStyle: 'italic' }}>
-                    Recommendation: {gap.action}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{
-                    padding: '5px 10px',
-                    fontSize: '11px',
-                    borderRadius: '6px',
-                    border: '1px solid #D47A47',
-                    backgroundColor: '#FFF7ED',
-                    color: '#B8531D',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  Upload File
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Uploaded Files Table / List */}
+      {/* Uploaded Documents Queue */}
       {uploadedFiles.length > 0 && (
-        <div style={{ marginTop: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#2C221E', margin: 0 }}>
-              Uploaded Files ({uploadedFiles.length})
-            </h3>
-            <span style={{ fontSize: '12px', color: '#7A6B63' }}>
-              Files queued for ecoinvent v3.12 characterization
-            </span>
+        <div className="apple-card" style={{ marginTop: '24px' }}>
+          <div className="card-header-flex">
+            <div>
+              <h3 className="card-heading-title">Ingested Document Queue ({uploadedFiles.length})</h3>
+              <p className="card-heading-sub">Files queued for parsing and ecoinvent v3.12 activity matching</p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn-apple-secondary-pill"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                + Add More Files
+              </button>
+            </div>
           </div>
 
-          <div className="file-list">
-            {uploadedFiles.map(file => (
-              <div key={file.id} className="file-item">
-                <div className="file-item-icon">
-                  <FileIcon size={16} />
-                </div>
-                <div className="file-item-info">
-                  <div className="file-item-name" style={{ fontWeight: 600 }}>{file.name}</div>
-                  <div className="file-item-meta">{formatSize(file.size)}</div>
-                </div>
-                <span className={`file-item-status ${file.status}`}>
-                  {file.status === 'pending' && 'Pending Extraction'}
-                  {file.status === 'extracting' && 'Extracting Parameters...'}
-                  {file.status === 'done' && 'Extracted & Mapped'}
-                  {file.status === 'error' && 'Extraction Warning'}
-                </span>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => removeFile(file.id)}
-                  title="Remove file"
-                >
-                  <TrashIcon size={14} />
-                </button>
-              </div>
-            ))}
+          <div className="apple-files-table-container">
+            <table className="apple-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '40%' }}>Document Name</th>
+                  <th style={{ width: '15%' }}>Size</th>
+                  <th style={{ width: '20%' }}>Lifecycle Scope</th>
+                  <th style={{ width: '15%' }}>Status</th>
+                  <th style={{ width: '10%', textAlign: 'right' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {uploadedFiles.map((file) => (
+                  <tr key={file.id}>
+                    <td>
+                      <div className="file-name-cell">
+                        <span className="file-type-pill">{file.type?.toUpperCase() || 'DOC'}</span>
+                        <span className="file-name-text" title={file.name}>{file.name}</span>
+                      </div>
+                    </td>
+                    <td className="num-font">{formatSize(file.size)}</td>
+                    <td>
+                      <span className="scope-tag">
+                        {file.name.includes('A2') ? 'A2 Inbound Transport' :
+                         file.name.includes('A4') ? 'A4/A5 Jobsite Logistics' :
+                         file.name.includes('B1') ? 'B1–B7 Operational Use' :
+                         file.name.includes('C1') ? 'C1–D End of Life' :
+                         'A1 Raw Material BOM'}
+                      </span>
+                    </td>
+                    <td>
+                      {file.status === 'done' ? (
+                        <span className="status-chip success">
+                          <CheckCircleIcon size={12} />
+                          <span>Extracted</span>
+                        </span>
+                      ) : file.status === 'extracting' ? (
+                        <span className="status-chip pending">
+                          <RefreshCwIcon size={12} className="spin" />
+                          <span>Parsing...</span>
+                        </span>
+                      ) : (
+                        <span className="status-chip neutral">Ready</span>
+                      )}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        type="button"
+                        className="btn-icon-trash"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFile(file.id);
+                        }}
+                        title="Remove Document"
+                      >
+                        <TrashIcon size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {/* Action Row */}
-          <div style={{ marginTop: '20px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <div className="card-footer-action-row">
             <button
               type="button"
-              className="btn btn-primary btn-lg"
+              className="btn-apple-primary-pill"
               onClick={handleExtractAndProceed}
               disabled={isLoading}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              <span>{isLoading ? 'Extracting...' : 'Extract & Proceed to Extracted Data'}</span>
-              <ChevronRightIcon size={16} />
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setActivePhase('extract')}
-            >
-              Skip to Extracted Data
+              <span>{isLoading ? 'Parsing Engineering Data...' : 'Extract & Analyze Lifecycle Inventory'}</span>
+              <ChevronRightIcon size={15} />
             </button>
           </div>
         </div>
       )}
 
-      {/* Interactive Traceability Flow Modal */}
-      <ProcessFlowModal
-        isOpen={isFlowModalOpen}
-        onClose={() => setIsFlowModalOpen(false)}
-        traceabilityFlow={traceabilityFlow}
-        gaps={gaps}
-      />
+      {/* PCR Completeness Gap Audit Banner if gaps detected */}
+      {gaps.length > 0 && (
+        <div className="apple-gap-card" style={{ marginTop: '24px' }}>
+          <div className="gap-card-top">
+            <div className="gap-icon-wrap">
+              <AlertTriangleIcon size={18} style={{ color: '#ff9f0a' }} />
+            </div>
+            <div>
+              <div className="gap-title">PCR Gap Warning: {gaps.length} Requirement(s) Detected</div>
+              <div className="gap-desc">
+                The engine checked the active inventory against UL 10010-4 Part B v2.0 cut-off & reporting requirements.
+              </div>
+            </div>
+          </div>
+
+          <div className="gap-items-list">
+            {gaps.map((gap, idx) => (
+              <div key={gap.id || idx} className="gap-item-row">
+                <span className="gap-module-tag">{gap.module || 'PCR'}</span>
+                <div className="gap-item-content">
+                  <div className="gap-item-title">{gap.title}</div>
+                  <div className="gap-item-msg">{gap.message}</div>
+                </div>
+                {gap.action && <div className="gap-item-action">{gap.action}</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Traceability Flow Map Modal */}
+      {isFlowModalOpen && (
+        <ProcessFlowModal
+          isOpen={isFlowModalOpen}
+          onClose={() => setIsFlowModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
-
-
