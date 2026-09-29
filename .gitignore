@@ -8,6 +8,7 @@ node_modules/
 out/
 build/
 dist/
+.vercel/
 
 # Large dataset archives & raw database dumps
 *.7z
