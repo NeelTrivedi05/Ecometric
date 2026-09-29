@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SearchIcon, RefreshCwIcon, CheckIcon, ChevronRightIcon } from './Icons';
+import { SearchIcon, RefreshCwIcon, CheckIcon, ChevronRightIcon, AlertTriangleIcon } from './Icons';
 
 export default function LciaExtractorSection() {
   const [productQuery, setProductQuery] = useState('');
@@ -301,8 +301,9 @@ export default function LciaExtractorSection() {
 
         {/* ── Error banner ── */}
         {errorMsg && (
-          <div style={{ padding:'12px 16px', background:'var(--error-soft)', color:'var(--error)', borderRadius:'var(--radius-sm)', fontSize:13, marginBottom:16, border:'1px solid rgba(255, 59, 48, 0.25)' }}>
-            ⚠ {errorMsg}
+          <div style={{ padding:'12px 16px', background:'var(--error-soft)', color:'var(--error)', borderRadius:'var(--radius-sm)', fontSize:13, marginBottom:16, border:'1px solid rgba(255, 59, 48, 0.25)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <AlertTriangleIcon size={15} style={{ flexShrink: 0 }} />
+            <span>{errorMsg}</span>
           </div>
         )}
 

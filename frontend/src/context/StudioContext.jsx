@@ -240,9 +240,25 @@ export function StudioProvider({ children }) {
   // UI state
   const [notification, setNotification] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('ecometric_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const toggleSidebar = useCallback(() => setIsSidebarOpen(prev => !prev), []);
+  const toggleSidebarCollapsed = useCallback(() => {
+    setIsSidebarCollapsed(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('ecometric_sidebar_collapsed', String(next));
+      } catch {}
+      return next;
+    });
+  }, []);
 
   const showNotif = useCallback((msg, title = 'Done') => {
     setNotification({ msg, title });
@@ -1454,6 +1470,9 @@ export function StudioProvider({ children }) {
         isSidebarOpen,
         setIsSidebarOpen,
         toggleSidebar,
+        isSidebarCollapsed,
+        setIsSidebarCollapsed,
+        toggleSidebarCollapsed,
         isLoading,
         pcrRules,
         selectedPcrRule,

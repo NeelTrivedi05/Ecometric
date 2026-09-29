@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&display=swap');
 
 :root {
   /* Apple Design Tokens — DESIGN-apple.md */
@@ -44,9 +44,11 @@
   --error: #FF3B30;
   --error-soft: rgba(255, 59, 48, 0.12);
 
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, monospace;
+  --font-mono: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, monospace;
+  --font-sans: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Shapes & Radii scale from DESIGN-apple.md */
   --radius-xs: 5px;
@@ -75,6 +77,36 @@
   --shadow-md: none;
   --shadow-lg: none;
   --shadow-product: 3px 5px 30px 0 rgba(0, 0, 0, 0.22);
+}
+
+*,
+*::before,
+*::after,
+html,
+body,
+button,
+input,
+select,
+textarea,
+table,
+th,
+td,
+code,
+pre,
+kbd,
+samp,
+span,
+p,
+a,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label {
+  font-family: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
 *,
@@ -346,6 +378,38 @@ svg {
   flex-direction: column;
   flex-shrink: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.studio-sidebar.collapsed {
+  width: 68px;
+  min-width: 68px;
+}
+
+.studio-sidebar.collapsed .sidebar-header-row {
+  padding: 14px 8px 12px;
+  justify-content: center;
+}
+
+.studio-sidebar.collapsed .sidebar-item {
+  padding: 10px 0;
+  justify-content: center;
+  gap: 0;
+  margin: 2px 8px;
+  width: calc(100% - 16px);
+}
+
+.studio-sidebar.collapsed .item-step-indicator {
+  display: none;
+}
+
+.studio-sidebar.collapsed .item-icon-wrapper {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar-header-row {
@@ -354,6 +418,49 @@ svg {
   justify-content: space-between;
   padding: 16px 18px 12px;
   border-bottom: 1px solid var(--border);
+}
+
+.sidebar-heading-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-heading-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  background: var(--accent-soft);
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+.sidebar-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-icon-collapse-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.btn-icon-collapse-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-bright);
 }
 
 .sidebar-heading {
@@ -440,8 +547,58 @@ svg {
   color: var(--accent);
 }
 
-.item-label {
+.item-step-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.sidebar-item.active .item-step-indicator {
+  background: var(--accent);
+  color: #FFFFFF;
+}
+
+.sidebar-item.done .item-step-indicator {
+  background: rgba(40, 205, 65, 0.15);
+  color: var(--success);
+}
+
+.item-step-indicator .step-done-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--success);
+}
+
+.item-text-stack {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   flex: 1;
+}
+
+.item-label {
+  font-weight: 600;
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-subtext {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -473,6 +630,70 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.sidebar-spec-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spec-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.spec-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.spec-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spec-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.spec-key {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.spec-val {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.sidebar-footer-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  color: var(--accent);
+  transition: all 0.15s ease;
+}
+
+.sidebar-footer-collapsed:hover {
+  background: var(--bg-hover);
 }
 
 .compliance-tag {
@@ -2089,7 +2310,7 @@ textarea.form-input {
 
 .benchmark-card:hover {
   border-color: #0066cc;
-  box-shadow: 0 4px 18px rgba(0, 102, 204, 0.08);
+  box-shadow: none;
   transform: translateY(-2px);
 }
 

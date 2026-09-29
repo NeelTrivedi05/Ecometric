@@ -1,7 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
-import { MenuIcon, ExportIcon, CheckCircleIcon, ChevronRightIcon, LeafIcon, RefreshCwIcon } from './Icons';
+import {
+  MenuIcon,
+  ExportIcon,
+  CheckCircleIcon,
+  ChevronRightIcon,
+  RefreshCwIcon,
+  DropletIcon,
+  SnowflakeIcon,
+  ThermalIcon,
+  AlertTriangleIcon,
+  CheckIcon
+} from './Icons';
 
 export default function StudioHeader() {
   const {
@@ -37,16 +48,16 @@ export default function StudioHeader() {
     await loadPreset(presetKey);
   };
 
+  const renderPresetIcon = (id, size = 15) => {
+    if (id === 'screw_chiller_300rt') return <SnowflakeIcon size={size} style={{ color: '#0066cc' }} />;
+    if (id === 'heat_pump_150rt') return <ThermalIcon size={size} style={{ color: '#ff9f0a' }} />;
+    if (id === 'incomplete_gap_analysis') return <AlertTriangleIcon size={size} style={{ color: '#ff3b30' }} />;
+    return <DropletIcon size={size} style={{ color: '#0066cc' }} />;
+  };
+
   return (
     <header className="studio-topbar" role="banner">
       <div className="topbar-left">
-        {/* macOS Window Controls (Traffic Lights) */}
-        <div className="macos-traffic-lights hide-mobile" title="macOS Window Controls">
-          <span className="traffic-dot dot-close" title="Close Workspace" onClick={() => setActivePhase('upload')} />
-          <span className="traffic-dot dot-min" title="Minimize / Clean View" />
-          <span className="traffic-dot dot-zoom" title="Full Screen View" />
-        </div>
-
         {/* Mobile Hamburger */}
         <button
           type="button"
@@ -58,14 +69,10 @@ export default function StudioHeader() {
           <MenuIcon size={16} />
         </button>
 
-        {/* Brand Logo & Home Breadcrumb */}
+        {/* Brand Name Home Breadcrumb */}
         <div className="brand-group">
-          <div className="brand-logo" onClick={() => setActivePhase('upload')}>
-            <div className="brand-icon-box">
-              <LeafIcon size={13} style={{ color: '#0066cc' }} />
-            </div>
+          <div className="brand-logo" onClick={() => setActivePhase('upload')} style={{ cursor: 'pointer' }}>
             <span className="brand-name">EcoMetric</span>
-            <span className="brand-sub">Studio</span>
           </div>
 
           <Link
@@ -79,7 +86,7 @@ export default function StudioHeader() {
 
         <div className="topbar-divider hide-mobile" aria-hidden="true" />
 
-        {/* Interactive Apple Model Preset Selector */}
+        {/* Interactive Model Preset Selector */}
         <div className="preset-selector-container" ref={menuRef}>
           <button
             type="button"
@@ -89,9 +96,7 @@ export default function StudioHeader() {
             aria-expanded={isPresetMenuOpen}
           >
             <span className="preset-equipment-icon">
-              {currentPresetId === 'screw_chiller_300rt' ? '❄️' :
-               currentPresetId === 'heat_pump_150rt' ? '♨️' :
-               currentPresetId === 'incomplete_gap_analysis' ? '⚠️' : '💧'}
+              {renderPresetIcon(currentPresetId, 14)}
             </span>
             <span className="preset-active-label">
               {productName} ({Math.round(capacityRt)} RT)
@@ -117,14 +122,12 @@ export default function StudioHeader() {
                     disabled={isLoading}
                   >
                     <div className="menu-item-icon">
-                      {key === 'screw_chiller_300rt' ? '❄️' :
-                       key === 'heat_pump_150rt' ? '♨️' :
-                       key === 'incomplete_gap_analysis' ? '⚠️' : '💧'}
+                      {renderPresetIcon(key, 16)}
                     </div>
                     <div className="menu-item-text">
                       <div className="menu-item-title">
                         {item.title}
-                        {isSelected && <span className="menu-check">✓</span>}
+                        {isSelected && <span className="menu-check"><CheckIcon size={12} /></span>}
                       </div>
                       <div className="menu-item-desc">{item.subtitle}</div>
                     </div>

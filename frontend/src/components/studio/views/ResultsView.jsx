@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
-import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon } from '../Icons';
+import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon, SearchIcon } from '../Icons';
 import LciaSearchFilter from '../LciaSearchFilter';
 import ProcessFlowModal from '../ProcessFlowModal';
 
@@ -122,7 +122,7 @@ export default function ResultsView() {
             onClick={() => setIsFlowModalOpen(true)}
             style={{ fontSize: '12px', color: '#0066cc' }}
           >
-            <span>⛓️ Entanglement &amp; PCR Audit</span>
+            <span>Entanglement &amp; PCR Audit</span>
           </button>
 
           {/* Interactive Quick Methodology Switcher */}
@@ -149,7 +149,7 @@ export default function ResultsView() {
 
       {/* Dynamic Processing Status Banner */}
       {isLoading && (
-        <div className="card" style={{ padding: '20px 24px', textAlign: 'center', marginBottom: 24, border: '1px solid var(--accent)', background: 'var(--bg-card)' }}>
+        <div className="card" style={{ padding: '20px 24px', textAlign: 'center', marginBottom: 24, border: '1px solid #e0e0e0', background: '#fafafc', borderRadius: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 6 }}>
             <RefreshCwIcon size={18} className="spin" style={{ color: 'var(--accent)' }} />
             <span style={{ fontWeight: 700, fontSize: 'var(--text-base)', color: 'var(--text-primary)' }}>
@@ -268,8 +268,8 @@ export default function ResultsView() {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {lca.isCalculated && (
-              <span style={{ fontSize: '11px', fontWeight: 500, color: '#28cd41', backgroundColor: '#eafaf1', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(40, 205, 65, 0.2)' }}>
-                ✓ Synced with verified ecoinvent LCI
+              <span style={{ fontSize: '11px', fontWeight: 500, color: '#28cd41', backgroundColor: '#eafaf1', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(40, 205, 65, 0.2)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <CheckIcon size={11} color="#28cd41" /> Synced with verified ecoinvent LCI
               </span>
             )}
             <button
@@ -318,7 +318,9 @@ export default function ResultsView() {
               {activeRows.length === 0 ? (
                 <tr>
                   <td colSpan={23} style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--text-muted)' }}>
-                    <div style={{ fontSize: '24px', marginBottom: 8 }}>🔍</div>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, color: 'var(--text-muted)' }}>
+                      <SearchIcon size={24} />
+                    </div>
                     <div style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--text-primary)' }}>
                       No matching indicators found for "{activeSearchTerm}"
                     </div>
