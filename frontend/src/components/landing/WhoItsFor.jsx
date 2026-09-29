@@ -22,7 +22,7 @@ export default function WhoItsFor() {
   ];
 
   return (
-    <section style={{ padding: '80px 0', backgroundColor: '#FAF6F0' }}>
+    <section id="audience" style={{ padding: '80px 0', backgroundColor: '#FAF6F0' }}>
       <div className="lp-container">
         <div className="section-header">
           <div className="section-badge">
@@ -30,7 +30,7 @@ export default function WhoItsFor() {
           </div>
           <h2 className="section-title">Who It's For</h2>
           <p className="section-subtitle">
-            Engineered for professionals requiring auditable, standard-compliant environmental disclosures.
+            For manufacturers and sustainability engineers publishing declarations under EN 15804+A2 and ISO 14025.
           </p>
         </div>
 

@@ -662,9 +662,9 @@ export default function MethodologyView() {
             })}
           </div>
 
-          {/* ── Show More / Show Less Button ── */}
+          {/* ── Show More / Show All Buttons ── */}
           {hasMore && (
-            <div style={{ textAlign: 'center', margin: '20px 0 28px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, margin: '20px 0 28px 0', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 onClick={handleShowMore}
@@ -672,7 +672,7 @@ export default function MethodologyView() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 8,
-                  padding: '12px 32px',
+                  padding: '12px 28px',
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--border)',
                   background: 'var(--bg-card)',
@@ -694,8 +694,37 @@ export default function MethodologyView() {
                   e.currentTarget.style.color = 'var(--text-primary)';
                 }}
               >
-                <span>Show More</span>
+                <span>Show More (+{Math.min(BATCH_SIZE, remainingCount)})</span>
                 <ChevronRightIcon size={14} style={{ transform: 'rotate(90deg)' }} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisibleCount(totalFiltered)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '12px 28px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--accent)',
+                  background: 'rgba(184, 80, 66, 0.08)',
+                  color: 'var(--accent)',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: 'var(--shadow-sm)',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'var(--accent)';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(184, 80, 66, 0.08)';
+                  e.currentTarget.style.color = 'var(--accent)';
+                }}
+              >
+                <span>Show All {totalFiltered} Methodologies</span>
               </button>
             </div>
           )}

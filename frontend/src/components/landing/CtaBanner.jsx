@@ -3,7 +3,7 @@ import { ChevronRightIcon } from '../studio/Icons';
 
 export default function CtaBanner({ onLaunchApp }) {
   return (
-    <section style={{ padding: '60px 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #EFE4D8' }}>
+    <section id="pricing" style={{ padding: '60px 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #EFE4D8' }}>
       <div className="lp-container">
         <div style={{
           backgroundColor: '#C25A23',
@@ -17,10 +17,10 @@ export default function CtaBanner({ onLaunchApp }) {
         }}>
           <div style={{ maxWidth: '640px', margin: '0 auto' }}>
             <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px' }}>
-              Ready to automate your EPD workflow?
+              Generate audit-ready EPDs in minutes.
             </h2>
             <p style={{ fontSize: '15px', color: '#FDF2EB', marginBottom: '28px', lineHeight: '1.6' }}>
-              Generate third-party verifier ready Environmental Product Declarations in minutes with complete data lineage.
+              Full data lineage from raw bill of materials to ecoinvent characterization factors.
             </p>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>

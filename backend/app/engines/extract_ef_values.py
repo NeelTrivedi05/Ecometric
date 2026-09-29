@@ -384,6 +384,24 @@ def find_best_match(provider_id: str, context_strings: set[str],
         return None
 
     row = matches.iloc[0]
+
+    # Guard: reject capital-goods entries (unit="unit"/"piece"/"vehicle") when context
+    # suggests an energy, mass, or process-flow activity is expected.
+    CAPITAL_GOODS_UNITS = {"unit", "piece", "vehicle"}
+    if "Reference Product Unit" in metadata_names:
+        unit_col = metadata_names.index("Reference Product Unit")
+        matched_unit = str(row[unit_col]).strip().lower()
+        if matched_unit in CAPITAL_GOODS_UNITS:
+            ctx_lower = " ".join(str(s) for s in context_strings).lower()
+            energy_kws = [
+                "energy", "kwh", "mj", "electricity", "diesel", "gas", "water",
+                "transport", "waste", "recycling", "incineration", "landfill",
+                "deconstruction", "installation", "maintenance",
+            ]
+            if any(kw in ctx_lower for kw in energy_kws):
+                # Capital-goods match for an energy/process context — reject
+                return None
+
     return {
         "row": row,
         "matched_activity_name": row[activity_col],

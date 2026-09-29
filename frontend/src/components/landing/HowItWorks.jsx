@@ -38,7 +38,7 @@ export default function HowItWorks() {
           </div>
           <h2 className="section-title">How It Works</h2>
           <p className="section-subtitle">
-            Five clear, structured steps from raw product files to an independently verifier-ready declaration.
+            From raw bill of materials to registry-ready declaration in five steps.
           </p>
         </div>
 

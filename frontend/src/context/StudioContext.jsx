@@ -81,16 +81,22 @@ export function StudioProvider({ children }) {
       incineration_rate_percent: 0,
       decommissioning_energy_kwh: 0,
       waste_transport_km: 0,
-      deconstruction_provider_id: 'ecoinvent_diesel_dismantling_glo',
+      // Row 2621: "diesel, burned in building machine" | GLO | MJ (verified ecoinvent v3.12)
+      deconstruction_provider_id: 'ecoinvent_row_2621',
       waste_transport_provider_id: 'ecoinvent_transport_lorry_32t_rer',
-      recycling_process_provider_id: 'ecoinvent_waste_metal_recycling_glo',
-      incineration_process_provider_id: 'ecoinvent_waste_incineration_glo',
-      landfill_process_provider_id: 'ecoinvent_waste_landfill_glo',
+      // Row 20713: "sorting and pressing of iron scrap" | RoW | kg (verified ecoinvent v3.12)
+      recycling_process_provider_id: 'ecoinvent_row_20713',
+      // Row 22918: "treatment of municipal solid waste, municipal incineration" | RoW | kg
+      incineration_process_provider_id: 'ecoinvent_row_22918',
+      // Row 14191: "market for process-specific burdens, sanitary landfill" | RoW | kg
+      landfill_process_provider_id: 'ecoinvent_row_14191',
     },
     circularity_d: {
       overall_recovery_rate_percent: 0,
-      virgin_material_provider_id: 'ecoinvent_virgin_steel_primary_glo',
-      recycled_process_provider_id: 'ecoinvent_secondary_steel_electric_glo',
+      // Row 15528: "market for steel, low-alloyed, hot rolled" | GLO | kg (verified ecoinvent v3.12)
+      virgin_material_provider_id: 'ecoinvent_row_15528',
+      // Row 15529: "market for steel, structural, 100% scrap" | GLO | kg (verified ecoinvent v3.12)
+      recycled_process_provider_id: 'ecoinvent_row_15529',
     },
     project_info: {
       product_name: '',
@@ -131,6 +137,60 @@ export function StudioProvider({ children }) {
   const showNotif = useCallback((msg, title = 'Done') => {
     setNotification({ msg, title });
     setTimeout(() => setNotification(null), 3500);
+  }, []);
+
+  // ─── STATE RESET ───
+  // Zero-value baseline — mirrors the initial useState shape above.
+  const EMPTY_STUDIO_STATE = {
+    bom: [],
+    transport: [],
+    manufacturing: {
+      annual_facility_kwh: 0, natural_gas_mj: 0, grid_region: 'US_Average',
+      water_m3: 0, annual_production_units: 0,
+      electricity_provider_id: 'ecoinvent_elec_mv_us',
+      gas_provider_id: 'ecoinvent_gas_burned_boiler_glo',
+      water_provider_id: 'ecoinvent_water_deionised_glo',
+    },
+    installation: {
+      outbound_transport_km: 0, installation_energy_kwh: 0,
+      commissioning_refrigerant_loss_kg: 0, rigging_crane_diesel_liters: 0,
+    },
+    operational: {
+      refrigerant_type: 'R134a', refrigerant_charge_kg: 0,
+      annual_leak_rate_percent: 0, efficiency_kw_per_ton: 0,
+      capacity_rt: 0, annual_operating_hours: 0, cooling_tower_water_m3_yr: 0,
+      energy_provider_id: 'ecoinvent_elec_mv_us',
+      water_provider_id: 'ecoinvent_water_deionised_glo',
+    },
+    end_of_life: {
+      recycling_rate_percent: 0, landfill_rate_percent: 0,
+      incineration_rate_percent: 0, decommissioning_energy_kwh: 0,
+      waste_transport_km: 0,
+      deconstruction_provider_id: 'ecoinvent_row_2621',
+      waste_transport_provider_id: 'ecoinvent_transport_lorry_32t_rer',
+      recycling_process_provider_id: 'ecoinvent_row_20713',
+      incineration_process_provider_id: 'ecoinvent_row_22918',
+      landfill_process_provider_id: 'ecoinvent_row_14191',
+    },
+    circularity_d: {
+      overall_recovery_rate_percent: 0,
+      virgin_material_provider_id: 'ecoinvent_row_15528',
+      recycled_process_provider_id: 'ecoinvent_row_15529',
+    },
+    project_info: {
+      product_name: '', manufacturer_name: '', functional_unit: '',
+      pcr_ref: '', declared_unit: '', lifespan_years: 25,
+    },
+  };
+
+  const resetStudioState = useCallback(() => {
+    setExtractedData(EMPTY_STUDIO_STATE);
+    setResults(null);
+    setGaps([]);
+    setTraceabilityFlow(null);
+    setValidationResults({ checks: [], overall_pass: false, run_at: null });
+    setNsfDocument(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ─── FILE UPLOAD ───
@@ -185,10 +245,14 @@ export function StudioProvider({ children }) {
 
       if (res.ok) {
         const data = await res.json();
+        // Start from empty baseline so stale arrays from previous sessions never accumulate.
+        // Preserve only project_info fields that the user may have already edited manually.
         setExtractedData(prev => ({
-          ...prev,
+          ...EMPTY_STUDIO_STATE,
           ...data.extracted,
+          project_info: { ...EMPTY_STUDIO_STATE.project_info, ...(prev.project_info || {}), ...(data.extracted.project_info || {}) },
         }));
+        setResults(null);
         setGaps(data.gaps || []);
         setTraceabilityFlow(data.traceability_flow || null);
         targetFiles.forEach(f => updateFileStatus(f.id, 'done'));
@@ -211,6 +275,8 @@ export function StudioProvider({ children }) {
 
   // Load verified sample dataset
   const loadSampleData = useCallback(async () => {
+    // Wipe previous session state before applying new sample data
+    resetStudioState();
     setIsLoading(true);
     try {
       const res = await fetch(`${API_BASE}/documents/sample-bom`);
@@ -229,11 +295,11 @@ export function StudioProvider({ children }) {
             lifespan_years: 25,
           },
           bom: [
-            { id: 'bom-1', name: 'Compressor Shell & Frame', material: 'steel_hot_rolled', mass: 2100, unit: 'kg', ecoinvent_id: 'ecoinvent_steel_hot_rolled_glo', supplier: 'Midwest Steel Casting', transport_km: 420 },
-            { id: 'bom-2', name: 'Condenser & Evaporator Tubes', material: 'copper_tube_wire', mass: 650, unit: 'kg', ecoinvent_id: 'ecoinvent_copper_tube_wire_glo', supplier: 'Great Lakes Copper Corp', transport_km: 280 },
-            { id: 'bom-3', name: 'Semi-Hermetic Induction Motor', material: 'electric_motor_industrial', mass: 450, unit: 'kg', ecoinvent_id: 'ecoinvent_electric_motor_industrial_glo', supplier: 'Precision ElectroMotors Ltd', transport_km: 650 },
-            { id: 'bom-4', name: 'Thermal Insulation Jackets', material: 'insulation_polyurethane_rigid', mass: 150, unit: 'kg', ecoinvent_id: 'ecoinvent_insulation_pu_rigid_rer', supplier: 'PolyFoam Systems', transport_km: 190 },
-            { id: 'bom-5', name: 'VFD & Solid-State Starter', material: 'electronics_vfd', mass: 120, unit: 'kg', ecoinvent_id: 'ecoinvent_electronics_vfd_glo', supplier: 'Advantech Power Systems', transport_km: 890 }
+            { id: 'bom-1', name: 'Compressor Shell & Frame', material: 'steel_hot_rolled', mass: 2100, unit: 'kg', ecoinvent_id: 'ecoinvent_row_15528', supplier: 'Midwest Steel Casting', transport_km: 420 },
+            { id: 'bom-2', name: 'Condenser & Evaporator Tubes', material: 'copper_tube_wire', mass: 650, unit: 'kg', ecoinvent_id: 'ecoinvent_row_15830', supplier: 'Great Lakes Copper Corp', transport_km: 280 },
+            { id: 'bom-3', name: 'Semi-Hermetic Induction Motor', material: 'electric_motor_industrial', mass: 450, unit: 'kg', ecoinvent_id: 'ecoinvent_row_16390', supplier: 'Precision ElectroMotors Ltd', transport_km: 650 },
+            { id: 'bom-4', name: 'Thermal Insulation Jackets', material: 'insulation_polyurethane_rigid', mass: 150, unit: 'kg', ecoinvent_id: 'ecoinvent_row_17208', supplier: 'PolyFoam Systems', transport_km: 190 },
+            { id: 'bom-5', name: 'VFD & Solid-State Starter', material: 'electronics_vfd', mass: 120, unit: 'kg', ecoinvent_id: 'ecoinvent_row_16422', supplier: 'Advantech Power Systems', transport_km: 890 }
           ],
           manufacturing: {
             annual_facility_kwh: 34000,
@@ -272,11 +338,9 @@ export function StudioProvider({ children }) {
             waste_transport_km: 100,
           },
           circularity_d: {
-            steel_scrap_recovery_rate: 95.0,
-            copper_scrap_recovery_rate: 96.0,
-            aluminium_recovery_rate: 90.0,
-            refrigerant_reclamation_rate: 92.0,
-            net_avoided_burden_gwp_kg: -3210.0,
+            overall_recovery_rate_percent: 92.4,
+            virgin_material_provider_id: 'ecoinvent_row_15528',
+            recycled_process_provider_id: 'ecoinvent_row_15529',
           }
         };
       }
@@ -324,6 +388,8 @@ export function StudioProvider({ children }) {
 
   // Load specific sample file directly from backend sample library
   const loadSpecificSample = useCallback(async (filename, title) => {
+    // Reset first so no stale state bleeds across different sample files
+    resetStudioState();
     setIsLoading(true);
     try {
       const res = await fetch(`${API_BASE}/documents/load-sample/${encodeURIComponent(filename)}`, {
@@ -332,19 +398,12 @@ export function StudioProvider({ children }) {
       if (res.ok) {
         const data = await res.json();
         const ext = data.extracted || {};
-        setExtractedData(prev => ({
-          ...prev,
+        // Full replace from empty baseline; each sample is self-contained
+        setExtractedData({
+          ...EMPTY_STUDIO_STATE,
           ...ext,
-          project_info: { ...prev.project_info, ...(ext.project_info || {}) },
-          manufacturing: { ...prev.manufacturing, ...(ext.manufacturing || {}) },
-          installation: { ...prev.installation, ...(ext.installation || {}) },
-          operational: { ...prev.operational, ...(ext.operational || {}) },
-          end_of_life: { ...prev.end_of_life, ...(ext.end_of_life || {}) },
-          circularity_d: { ...prev.circularity_d, ...(ext.circularity_d || {}) },
-          maintenance_b2: { ...prev.maintenance_b2, ...(ext.maintenance_b2 || {}) },
-          bom: ext.bom && ext.bom.length > 0 ? ext.bom : prev.bom,
-          transport: ext.transport && ext.transport.length > 0 ? ext.transport : prev.transport,
-        }));
+          project_info: { ...EMPTY_STUDIO_STATE.project_info, ...(ext.project_info || {}) },
+        });
 
         setUploadedFiles([
           { id: `sample-${Date.now()}`, name: filename, size: 85000, type: filename.split('.').pop(), status: 'done' }
@@ -723,8 +782,8 @@ export function StudioProvider({ children }) {
         c_stage_gwp,
         module_d_gwp,
         total_gwp,
-        recRate: 92.4,
-        massCutoff: 0.85,
+        recRate: Number(extractedData.end_of_life?.recycling_rate_percent) || 0,
+        massCutoff: Number(validationResults?.mass_coverage_percent || 0) / 100 || (totalMass > 0 ? 1.0 : 0),
         indicators,
         isCalculated: true,
         epd_results: epdRes,
@@ -885,6 +944,7 @@ export function StudioProvider({ children }) {
         setIsFlowModalOpen,
         loadSampleData,
         loadSpecificSample,
+        resetStudioState,
         notification,
         showNotif,
         isSidebarOpen,

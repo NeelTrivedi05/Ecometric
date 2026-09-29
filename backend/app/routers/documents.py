@@ -171,11 +171,11 @@ SAMPLE_BOM_DATA = {
         "lifespan_years": 25
     },
     "bom": [
-        { "id": "bom-1", "name": "Compressor Shell & Frame", "material": "steel_hot_rolled", "mass": 2100, "unit": "kg", "ecoinvent_id": "ecoinvent_steel_hot_rolled_glo", "supplier": "Midwest Steel Casting", "transport_km": 420 },
-        { "id": "bom-2", "name": "Condenser & Evaporator Tubes", "material": "copper_tube_wire", "mass": 650, "unit": "kg", "ecoinvent_id": "ecoinvent_copper_tube_wire_glo", "supplier": "Great Lakes Copper Corp", "transport_km": 280 },
-        { "id": "bom-3", "name": "Semi-Hermetic Induction Motor", "material": "electric_motor_industrial", "mass": 450, "unit": "kg", "ecoinvent_id": "ecoinvent_electric_motor_industrial_glo", "supplier": "Precision ElectroMotors Ltd", "transport_km": 650 },
-        { "id": "bom-4", "name": "Thermal Insulation Jackets", "material": "insulation_polyurethane_rigid", "mass": 150, "unit": "kg", "ecoinvent_id": "ecoinvent_insulation_pu_rigid_rer", "supplier": "PolyFoam Systems", "transport_km": 190 },
-        { "id": "bom-5", "name": "VFD & Solid-State Starter", "material": "electronics_vfd", "mass": 120, "unit": "kg", "ecoinvent_id": "ecoinvent_electronics_vfd_glo", "supplier": "Advantech Power Systems", "transport_km": 890 }
+        { "id": "bom-1", "name": "Compressor Shell & Frame", "material": "steel_hot_rolled", "mass": 2100, "unit": "kg", "ecoinvent_id": "ecoinvent_row_15528", "supplier": "Midwest Steel Casting", "transport_km": 420 },
+        { "id": "bom-2", "name": "Condenser & Evaporator Tubes", "material": "copper_tube_wire", "mass": 650, "unit": "kg", "ecoinvent_id": "ecoinvent_row_15830", "supplier": "Great Lakes Copper Corp", "transport_km": 280 },
+        { "id": "bom-3", "name": "Semi-Hermetic Induction Motor", "material": "electric_motor_industrial", "mass": 450, "unit": "kg", "ecoinvent_id": "ecoinvent_row_16390", "supplier": "Precision ElectroMotors Ltd", "transport_km": 650 },
+        { "id": "bom-4", "name": "Thermal Insulation Jackets", "material": "insulation_polyurethane_rigid", "mass": 150, "unit": "kg", "ecoinvent_id": "ecoinvent_row_17208", "supplier": "PolyFoam Systems", "transport_km": 190 },
+        { "id": "bom-5", "name": "VFD & Solid-State Starter", "material": "electronics_vfd", "mass": 120, "unit": "kg", "ecoinvent_id": "ecoinvent_row_16422", "supplier": "Advantech Power Systems", "transport_km": 890 }
     ],
     "manufacturing": {
         "annual_facility_kwh": 34000,
@@ -215,11 +215,9 @@ SAMPLE_BOM_DATA = {
         "waste_transport_km": 100
     },
     "circularity_d": {
-        "steel_scrap_recovery_rate": 95.0,
-        "copper_scrap_recovery_rate": 96.0,
-        "aluminium_recovery_rate": 90.0,
-        "refrigerant_reclamation_rate": 92.0,
-        "net_avoided_burden_gwp_kg": -3210.0
+        "overall_recovery_rate_percent": 92.4,
+        "virgin_material_provider_id": "ecoinvent_row_15528",
+        "recycled_process_provider_id": "ecoinvent_row_15529"
     }
 }
 
@@ -268,11 +266,9 @@ EMPTY_EXTRACTION_TEMPLATE = {
         "waste_transport_km": 0
     },
     "circularity_d": {
-        "steel_scrap_recovery_rate": 0,
-        "copper_scrap_recovery_rate": 0,
-        "aluminium_recovery_rate": 0,
-        "refrigerant_reclamation_rate": 0,
-        "net_avoided_burden_gwp_kg": 0
+        "overall_recovery_rate_percent": 0,
+        "virgin_material_provider_id": "ecoinvent_row_15528",
+        "recycled_process_provider_id": "ecoinvent_row_15529"
     }
 }
 

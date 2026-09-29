@@ -22,7 +22,9 @@ export default function ReviewView() {
     updateInstallation,
     updateOperational,
     updateEndOfLife,
-    updateCircularityD
+    updateCircularityD,
+    results,
+    lca
   } = useStudio();
 
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'a1_a3' | 'a4_a5' | 'b1_b7' | 'c1_c4' | 'd'
@@ -85,14 +87,20 @@ export default function ReviewView() {
   const inboundFreightKm = transport
     .filter(t => !t.module || t.module === 'A2')
     .reduce((acc, t) => acc + (Number(t.distance || t.dist) || 0), 0);
-  const outboundFreightKm = Number(installation.outbound_transport_km) || 500;
+  const outboundFreightKm = Number(installation.outbound_transport_km) || 0;
   const totalLogisticsKm = inboundFreightKm + outboundFreightKm;
-  const annualFactoryKwh = Number(manufacturing.annual_facility_kwh) || 34000;
-  const ratedEfficiency = Number(operational.efficiency_kw_per_ton) || 0.54;
-  const capacityRt = Number(operational.capacity_rt) || 500;
-  const annualOperationalKwh = Math.round(capacityRt * ratedEfficiency * 2000); // 2000 full-load equivalent hours
-  const recyclingRate = Number(end_of_life.recycling_rate_percent) || 92.4;
-  const avoidedBurdenCo2e = Number(circularity_d.net_avoided_burden_gwp_kg) || -3210;
+  const annualFactoryKwh = Number(manufacturing.annual_facility_kwh) || 0;
+  const ratedEfficiency = Number(operational.efficiency_kw_per_ton) || 0;
+  const capacityRt = Number(operational.capacity_rt) || 0;
+  // Only compute operational kWh when real capacity + efficiency data exists
+  const annualOperationalKwh = (capacityRt > 0 && ratedEfficiency > 0)
+    ? Math.round(capacityRt * ratedEfficiency * (Number(operational.annual_operating_hours) || 0))
+    : 0;
+  const recyclingRate = Number(end_of_life.recycling_rate_percent) || 0;
+  // Module D avoided burden comes strictly from verified backend calculation results — zero fake fallbacks
+  const avoidedBurdenCo2e = (lca?.isCalculated && (lca?.module_d_gwp != null || results?.module_d_gwp != null || results?.d_gwp != null))
+    ? Number(lca?.module_d_gwp ?? results?.module_d_gwp ?? results?.d_gwp)
+    : null;
 
   const tabs = [
     { id: 'all', label: 'All Modules (A1–D)', badge: 'Full Lifecycle' },
@@ -210,9 +218,13 @@ export default function ReviewView() {
         }}>
           <div style={{ fontSize: '11px', fontWeight: 600, color: '#8A7A72', textTransform: 'uppercase' }}>Circularity & Recovery (C3 & D)</div>
           <div style={{ fontSize: '20px', fontWeight: 700, color: '#2E7D32', marginTop: '4px' }}>
-            {recyclingRate}% <span style={{ fontSize: '12px', fontWeight: 600, color: '#2E7D32' }}>({avoidedBurdenCo2e.toLocaleString()} kg CO₂e)</span>
+            {recyclingRate}% {avoidedBurdenCo2e != null && (
+              <span style={{ fontSize: '12px', fontWeight: 600, color: '#2E7D32' }}>({avoidedBurdenCo2e.toLocaleString()} kg CO₂e)</span>
+            )}
           </div>
-          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Net avoided burden virgin offset</div>
+          <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>
+            {avoidedBurdenCo2e != null ? 'Live calculated net virgin offset' : 'Net offset computed after engine calculation'}
+          </div>
         </div>
       </div>
 
@@ -781,72 +793,50 @@ export default function ReviewView() {
               ISO 21930 & EN 15804+A2 require explicit accounting of exported secondary materials, avoided virgin production credits, and refrigerant reclamation.
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Steel Scrap Recovery Rate (%)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46', fontWeight: 700 }}>Overall Product Recovery Rate (%)</label>
                 <input
                   type="number"
                   step="0.1"
+                  min="0"
+                  max="100"
                   className="form-input"
-                  value={circularity_d.steel_scrap_recovery_rate || ''}
-                  onChange={(e) => updateCircularityD({ steel_scrap_recovery_rate: Number(e.target.value) })}
-                  placeholder="95.0"
+                  value={circularity_d.overall_recovery_rate_percent ?? ''}
+                  onChange={(e) => updateCircularityD({ overall_recovery_rate_percent: Math.max(0, parseFloat(e.target.value) || 0) })}
+                  placeholder="e.g. 90.0"
                 />
-              </div>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Copper Scrap Recovery Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  className="form-input"
-                  value={circularity_d.copper_scrap_recovery_rate || ''}
-                  onChange={(e) => updateCircularityD({ copper_scrap_recovery_rate: Number(e.target.value) })}
-                  placeholder="96.0"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Aluminium Recovery Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  className="form-input"
-                  value={circularity_d.aluminium_recovery_rate || ''}
-                  onChange={(e) => updateCircularityD({ aluminium_recovery_rate: Number(e.target.value) })}
-                  placeholder="90.0"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px', color: '#5C4E46' }}>Refrigerant Reclamation Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  className="form-input"
-                  value={circularity_d.refrigerant_reclamation_rate || ''}
-                  onChange={(e) => updateCircularityD({ refrigerant_reclamation_rate: Number(e.target.value) })}
-                  placeholder="92.0"
-                />
+                <span style={{ fontSize: '11px', color: '#8A7A72', marginTop: '4px', display: 'block' }}>
+                  Unified recovery rate applied to recyclable product mass in Module D calculation.
+                </span>
               </div>
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label" style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 700 }}>Net Avoided Carbon Burden Credit (Calculated Display)</label>
+                <label className="form-label" style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 700 }}>Net Avoided Carbon Burden Credit (Module D Calculation)</label>
                 <div style={{
-                  padding: '10px 14px',
+                  padding: '12px 16px',
                   backgroundColor: '#E8F5E9',
                   borderRadius: '6px',
                   border: '1px solid #C8E6C9',
-                  fontSize: '14px',
+                  fontSize: '15px',
                   fontWeight: 700,
                   color: '#2E7D32',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between'
                 }}>
-                  <span>{Number(circularity_d.net_avoided_burden_gwp_kg || -3210.0).toFixed(1)} kg CO₂e</span>
+                  <span>
+                    {avoidedBurdenCo2e != null
+                      ? `${avoidedBurdenCo2e.toFixed(1)} kg CO₂e`
+                      : 'Awaiting Calculation'}
+                  </span>
                   <span style={{ fontSize: '11px', color: '#388E3C', fontWeight: 600, backgroundColor: '#FFFFFF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #C8E6C9' }}>
-                    READ-ONLY CALCULATED DISPLAY
+                    {avoidedBurdenCo2e != null ? 'ECOINVENT LCIA CALCULATED' : 'PROCEED TO CALCULATION'}
                   </span>
                 </div>
-                <div style={{ fontSize: '11px', color: '#2E7D32', marginTop: '4px' }}>
-                  Net avoided carbon credit derived from displaced primary virgin materials vs. secondary recycling recovery processes per EN 15804+A2 & ISO 21930.
+                <div style={{ fontSize: '11px', color: '#2E7D32', marginTop: '6px' }}>
+                  {avoidedBurdenCo2e != null
+                    ? 'Net credit dynamically calculated by ecoinvent characterization engine (primary virgin material displacement minus secondary scrap processing burdens).'
+                    : 'Module D credit is computed dynamically by the calculation engine from the product BOM mass, recovery rate, and ecoinvent primary/recycled dataset characterization.'}
                 </div>
               </div>
             </div>

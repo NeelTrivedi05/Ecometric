@@ -29,7 +29,7 @@ export default function TheProblem() {
   ];
 
   return (
-    <section style={{ padding: '80px 0', backgroundColor: '#FAF6F0' }}>
+    <section id="problem" style={{ padding: '80px 0', backgroundColor: '#FAF6F0' }}>
       <div className="lp-container">
         <div className="section-header">
           <div className="section-badge">
@@ -37,7 +37,7 @@ export default function TheProblem() {
           </div>
           <h2 className="section-title">EPD creation is complicated.</h2>
           <p className="section-subtitle">
-            Traditional life cycle assessment processes waste hundreds of hours and thousands of dollars on manual friction.
+            Manual LCA modeling takes 3–6 months and costs $20,000+ per declaration.
           </p>
         </div>
 

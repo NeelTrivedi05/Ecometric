@@ -220,9 +220,11 @@ def parse_flexible_json(data: Dict[str, Any], extracted: Dict[str, Any]) -> bool
     if isinstance(circ_data, dict):
         burdens = circ_data.get("net_avoided_burdens") or circ_data
         if isinstance(burdens, dict):
-            for k in ["steel_scrap_recovery_rate", "copper_scrap_recovery_rate", "aluminium_recovery_rate", "refrigerant_reclamation_rate", "net_avoided_burden_gwp_kg"]:
+            for k in ["steel_scrap_recovery_rate", "copper_scrap_recovery_rate", "aluminium_recovery_rate", "refrigerant_reclamation_rate", "net_avoided_burden_gwp_kg", "overall_recovery_rate_percent"]:
                 if k in burdens:
                     circ[k] = clean_decimal_number(burdens[k])
+            if "overall_recovery_rate" in burdens and "overall_recovery_rate_percent" not in circ:
+                circ["overall_recovery_rate_percent"] = clean_decimal_number(burdens["overall_recovery_rate"])
         changed = True
 
     return changed

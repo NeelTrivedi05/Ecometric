@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
+import { indicatorPassesFilter } from '../../../data/lciaMethodologies';
 import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon } from '../Icons';
 
 export default function ResultsView() {
@@ -16,6 +17,19 @@ export default function ResultsView() {
   } = useStudio();
 
   const [showFullBreakdown, setShowFullBreakdown] = useState(false);
+  // 'all' | 'pcr' | 'gpi'
+  const [indicatorFilter, setIndicatorFilter] = useState('all');
+
+  const FILTER_OPTIONS = [
+    { id: 'all', label: 'All Indicators',  desc: 'Show all 25 computed impact categories' },
+    { id: 'pcr', label: 'PCR Mandatory',   desc: 'EN 15804+A2 + UL 10010-4 required (16 indicators)' },
+    { id: 'gpi', label: 'GPI Core',        desc: 'International EPD System primary page (6 indicators)' },
+  ];
+
+  const filteredIndicators = useMemo(
+    () => lca.indicators.filter(ind => indicatorPassesFilter(ind.rawCategory, indicatorFilter)),
+    [lca.indicators, indicatorFilter]
+  );
 
   // Auto-run genuine characterization if results not calculated yet but BOM exists
   useEffect(() => {
@@ -72,11 +86,21 @@ export default function ResultsView() {
                   changeMethodology(e.target.value);
                   showNotif(`Characterized using ${getMethodology(e.target.value)?.name || e.target.value}`, 'Methodology Updated');
                 }}
-                style={{ padding: '4px 8px', fontSize: 'var(--text-xs)', height: 'auto', background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--accent)', cursor: 'pointer' }}
+                style={{ padding: '4px 8px', fontSize: 'var(--text-xs)', height: 'auto', background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--accent)', cursor: 'pointer', maxWidth: '320px' }}
               >
-                {ALL_METHODOLOGIES.map((m) => (
-                  <option key={m.id} value={m.id}>{m.name} ({m.standard})</option>
-                ))}
+                {['EF / PEF', 'TRACI', 'IPCC', 'ReCiPe', 'CML', 'USEtox', 'Energy & Resources', 'Other'].map((groupName) => {
+                  const items = ALL_METHODOLOGIES.filter((m) => m.group === groupName);
+                  if (!items.length) return null;
+                  return (
+                    <optgroup key={groupName} label={`${groupName} (${items.length})`}>
+                      {items.map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.recommended ? '★ ' : ''}{m.name} ({m.standard})
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                })}
               </select>
             </div>
           </div>
@@ -189,12 +213,52 @@ export default function ResultsView() {
             </span>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             {lca.isCalculated && (
               <span className="item-badge" style={{ background: 'var(--success-dim)', color: 'var(--success)', border: '1px solid var(--success)' }}>
-                ✓ Synced with epd_results_exp.csv
+                ✓ {filteredIndicators.length} indicator{filteredIndicators.length !== 1 ? 's' : ''} shown
               </span>
             )}
+
+            {/* PCR / GPI Filter Toggle */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                background: 'var(--bg-card2)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '2px',
+                gap: 2,
+              }}
+              role="group"
+              aria-label="Indicator filter"
+            >
+              {FILTER_OPTIONS.map(opt => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  title={opt.desc}
+                  aria-pressed={indicatorFilter === opt.id}
+                  onClick={() => setIndicatorFilter(opt.id)}
+                  style={{
+                    padding: '3px 10px',
+                    fontSize: 'var(--text-2xs)',
+                    fontWeight: 700,
+                    borderRadius: 'calc(var(--radius-sm) - 2px)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s, color 0.15s',
+                    background: indicatorFilter === opt.id ? 'var(--accent)' : 'transparent',
+                    color: indicatorFilter === opt.id ? '#fff' : 'var(--text-muted)',
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
             <button
               type="button"
               className="btn btn-2xs btn-outline"
@@ -235,7 +299,14 @@ export default function ResultsView() {
               </tr>
             </thead>
             <tbody>
-              {lca.indicators.map((ind) => {
+              {filteredIndicators.length === 0 && lca.isCalculated && (
+                <tr>
+                  <td colSpan={22} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>
+                    No indicators match the current filter. Try switching to “All Indicators”.
+                  </td>
+                </tr>
+              )}
+              {filteredIndicators.map((ind) => {
                 const isGwp = ind.code === 'GWP100' || ind.name.toLowerCase().includes('global warming');
 
                 return (

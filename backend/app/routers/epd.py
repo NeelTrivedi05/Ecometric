@@ -290,7 +290,8 @@ def build_enriched_stages_data(extracted_data: dict) -> dict:
     # C1-C4 End of Life
     eol = dict(extracted_data.get("end_of_life", {}))
     if not eol.get("deconstruction_provider_id"):
-        eol["deconstruction_provider_id"] = "ecoinvent_diesel_dismantling_glo"
+        # Row 2621: "diesel, burned in building machine" | GLO | MJ (verified v3.12)
+        eol["deconstruction_provider_id"] = "ecoinvent_row_2621"
     if not eol.get("waste_transport_provider_id"):
         eol["waste_transport_provider_id"] = "ecoinvent_transport_lorry_32t_rer"
     if not eol.get("waste_transport_km"):
@@ -300,11 +301,14 @@ def build_enriched_stages_data(extracted_data: dict) -> dict:
     if eol.get("landfill_rate_percent") is None:
         eol["landfill_rate_percent"] = 10.0
     if not eol.get("recycling_process_provider_id"):
-        eol["recycling_process_provider_id"] = "ecoinvent_waste_metal_recycling_glo"
+        # Row 20713: "sorting and pressing of iron scrap" | RoW | kg (verified v3.12)
+        eol["recycling_process_provider_id"] = "ecoinvent_row_20713"
     if not eol.get("incineration_process_provider_id"):
-        eol["incineration_process_provider_id"] = "ecoinvent_waste_incineration_glo"
+        # Row 22918: "treatment of municipal solid waste, municipal incineration" | RoW | kg (verified v3.12)
+        eol["incineration_process_provider_id"] = "ecoinvent_row_22918"
     if not eol.get("landfill_process_provider_id"):
-        eol["landfill_process_provider_id"] = "ecoinvent_waste_landfill_glo"
+        # Row 14191: "market for process-specific burdens, sanitary landfill" | RoW | kg (verified v3.12)
+        eol["landfill_process_provider_id"] = "ecoinvent_row_14191"
     
     eol["deconstruction_provider_id_reference_unit"] = resolve_reference_unit(eol["deconstruction_provider_id"], "MJ")
     eol["waste_transport_provider_id_reference_unit"] = resolve_reference_unit(eol["waste_transport_provider_id"], "tkm")
@@ -315,9 +319,11 @@ def build_enriched_stages_data(extracted_data: dict) -> dict:
     # Module D Circularity
     circ_d = dict(extracted_data.get("circularity_d", {}))
     if not circ_d.get("virgin_material_provider_id"):
-        circ_d["virgin_material_provider_id"] = "ecoinvent_virgin_steel_primary_glo"
+        # Row 15528: "market for steel, low-alloyed, hot rolled" | GLO | kg (verified v3.12)
+        circ_d["virgin_material_provider_id"] = "ecoinvent_row_15528"
     if not circ_d.get("recycled_process_provider_id"):
-        circ_d["recycled_process_provider_id"] = "ecoinvent_secondary_steel_electric_glo"
+        # Row 15529: "market for steel, structural, 100% scrap" | GLO | kg (verified v3.12)
+        circ_d["recycled_process_provider_id"] = "ecoinvent_row_15529"
     
     # Replace per-material recovery fields with overall_recovery_rate_percent
     overall_rate = circ_d.get("overall_recovery_rate_percent")

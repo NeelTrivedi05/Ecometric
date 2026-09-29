@@ -34,6 +34,16 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+.landing-page-root section[id],
+.landing-page-root div[id] {
+  scroll-margin-top: 80px;
+}
+
 .landing-page-root *,
 .landing-page-root *::before,
 .landing-page-root *::after {

@@ -522,3 +522,59 @@ export function getMethodology(keyOrName) {
   );
   return found || METHODOLOGIES.traci21 || ALL_METHODOLOGIES[0];
 }
+
+// ─── PCR / GPI Indicator Filter Sets ────────────────────────────────────────
+// Used by ResultsView to toggle which rows are shown in the EPD matrix.
+
+/**
+ * PCR_MANDATORY_CODES — Canonical category keyword fragments that map to the
+ * 16 EN 15804+A2 + UL 10010-4 mandated midpoint impact indicators.
+ * Sub-split rows (e.g. "biogenic", "inorganics") are intentionally excluded
+ * when this filter is active; only the aggregate totals are shown.
+ *
+ * Source: EN 15804+A2 Table B.1, UL 10010-4 Table 3, GPI v5.0.1 §3.2
+ */
+export const PCR_MANDATORY_CODES = [
+  'climate change | global warming potential',          // GWP100 total
+  'acidification | accumulated exceedance',             // AP
+  'eutrophication: freshwater | fraction of nutrients', // EP freshwater
+  'eutrophication: marine | fraction of nutrients',     // EP marine
+  'eutrophication: terrestrial | accumulated exceedance', // EP terrestrial
+  'photochemical oxidant formation: human health',      // POCP
+  'ozone depletion | ozone depletion potential',        // ODP
+  'particulate matter formation',                       // PMFP
+  'ionising radiation: human health',                   // IR
+  'energy resources: non-renewable',                    // ADP fossil
+  'material resources: metals/minerals',                // ADP elements
+  'land use | soil quality index',                      // LU
+  'water use | user deprivation potential',             // WDP
+  'ecotoxicity: freshwater | comparative toxic unit for ecosystems', // FAETP total
+  'human toxicity: carcinogenic | comparative toxic unit for human', // HTP-c total
+  'human toxicity: non-carcinogenic | comparative toxic unit for human', // HTP-nc total
+];
+
+/**
+ * GPI_CORE_CODES — The 6 primary indicators highlighted in the International EPD System
+ * GPI v5.0.1 and typically required on the first page of a verified EPD declaration.
+ */
+export const GPI_CORE_CODES = [
+  'climate change | global warming potential',          // GWP100
+  'ozone depletion | ozone depletion potential',        // ODP
+  'acidification | accumulated exceedance',             // AP
+  'eutrophication: freshwater | fraction of nutrients', // EP freshwater
+  'photochemical oxidant formation: human health',      // POCP
+  'energy resources: non-renewable',                    // ADP fossil
+];
+
+/**
+ * Check whether a raw indicator category key passes a given filter.
+ * @param {string} rawCategory — full key string from the EPD results (lowercase-compared)
+ * @param {'all' | 'pcr' | 'gpi'} filter
+ * @returns {boolean}
+ */
+export function indicatorPassesFilter(rawCategory, filter) {
+  if (!filter || filter === 'all') return true;
+  const lc = (rawCategory || '').toLowerCase();
+  const codes = filter === 'pcr' ? PCR_MANDATORY_CODES : GPI_CORE_CODES;
+  return codes.some(fragment => lc.includes(fragment.toLowerCase()));
+}

@@ -36,6 +36,8 @@ export default function UserReviewView() {
     updateRefurbishmentB5,
     setActivePhase,
     showNotif,
+    results,
+    lca,
   } = useStudio();
 
   const bom = extractedData.bom || [];
@@ -52,6 +54,20 @@ export default function UserReviewView() {
   const project_info = extractedData.project_info || {};
 
   const STANDARD_DATABASE_PROVIDERS_MAP = {
+    // Verified direct row-index IDs from ecoinvent v3.12 Cutoff
+    ecoinvent_row_15528: { activity_name: 'market for steel, low-alloyed, hot rolled', geography: 'GLO', reference_unit: 'kg' },
+    ecoinvent_row_15529: { activity_name: 'market for steel, structural, 100% scrap', geography: 'GLO', reference_unit: 'kg' },
+    ecoinvent_row_15830: { activity_name: 'wire drawing, copper', geography: 'GLO', reference_unit: 'kg' },
+    ecoinvent_row_2621: { activity_name: 'diesel, burned in building machine', geography: 'GLO', reference_unit: 'MJ' },
+    ecoinvent_row_3879: { activity_name: 'market for electricity, medium voltage', geography: 'US', reference_unit: 'kWh' },
+    ecoinvent_row_24419: { activity_name: 'transport, freight, lorry >32 metric ton, EURO 6', geography: 'RER', reference_unit: 'tkm' },
+    ecoinvent_row_24440: { activity_name: 'transport, freight, sea, container ship', geography: 'GLO', reference_unit: 'tkm' },
+    ecoinvent_row_20713: { activity_name: 'sorting and pressing of iron scrap', geography: 'RoW', reference_unit: 'kg' },
+    ecoinvent_row_22918: { activity_name: 'treatment of municipal solid waste, municipal incineration', geography: 'RoW', reference_unit: 'kg' },
+    ecoinvent_row_14191: { activity_name: 'market for process-specific burdens, sanitary landfill', geography: 'RoW', reference_unit: 'kg' },
+    ecoinvent_row_20286: { activity_name: 'lubricating oil production', geography: 'GLO', reference_unit: 'kg' },
+    ecoinvent_row_2485: { activity_name: 'heat production, natural gas, at boiler industrial >100kW', geography: 'GLO', reference_unit: 'MJ' },
+    ecoinvent_row_25950: { activity_name: 'deionised water production', geography: 'GLO', reference_unit: 'm3' },
     ecoinvent_steel_hot_rolled_glo: { activity_name: 'steel production, low-alloyed, hot rolled', geography: 'GLO', reference_unit: 'kg' },
     ecoinvent_copper_tube_wire_glo: { activity_name: 'wire drawing, copper', geography: 'GLO', reference_unit: 'kg' },
     ecoinvent_electric_motor_industrial_glo: { activity_name: 'electric motor production, vehicle auxiliary engine', geography: 'GLO', reference_unit: 'unit' },
@@ -409,11 +425,12 @@ export default function UserReviewView() {
     setNewComp({
       name: '',
       material: 'Steel',
-      mass: 100,
+      mass: 0,
+      unit: 'kg',
       module: 'A1',
       supplier: '',
-      dataset: 'Steel, low-alloyed, hot rolled [GLO]',
-      ecoinvent_id: 'ecoinvent_steel_hot_rolled_glo',
+      dataset: '',
+      ecoinvent_id: 'ecoinvent_row_15528',
     });
     setIsAddModalOpen(false);
   };
@@ -493,7 +510,7 @@ export default function UserReviewView() {
         <div className="card" style={{ padding: '16px 20px', borderLeft: '4px solid #D9822B' }}>
           <div style={{ fontSize: '11px', color: '#8A7A72', fontWeight: 600, textTransform: 'uppercase' }}>Inbound Freight Legs</div>
           <div style={{ fontSize: '22px', fontWeight: 700, color: '#2C221E', marginTop: '4px' }}>
-            {transport.length || 1} <span style={{ fontSize: '13px', fontWeight: 500 }}>leg(s)</span>
+            {transport.length} <span style={{ fontSize: '13px', fontWeight: 500 }}>leg(s)</span>
           </div>
           <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Module A2 transport routes</div>
         </div>
@@ -501,7 +518,7 @@ export default function UserReviewView() {
         <div className="card" style={{ padding: '16px 20px', borderLeft: '4px solid #5C4E46' }}>
           <div style={{ fontSize: '11px', color: '#8A7A72', fontWeight: 600, textTransform: 'uppercase' }}>Plant Utility Power</div>
           <div style={{ fontSize: '22px', fontWeight: 700, color: '#2C221E', marginTop: '4px' }}>
-            {manufacturing.annual_facility_kwh ? Number(manufacturing.annual_facility_kwh).toLocaleString() : '34,000'} <span style={{ fontSize: '13px', fontWeight: 500 }}>kWh/yr</span>
+            {manufacturing.annual_facility_kwh ? Number(manufacturing.annual_facility_kwh).toLocaleString() : '0'} <span style={{ fontSize: '13px', fontWeight: 500 }}>kWh/yr</span>
           </div>
           <div style={{ fontSize: '11px', color: '#8A7A72', marginTop: '2px' }}>Module A3 factory electricity</div>
         </div>
@@ -509,9 +526,13 @@ export default function UserReviewView() {
         <div className="card" style={{ padding: '16px 20px', borderLeft: '4px solid #2E7D32' }}>
           <div style={{ fontSize: '11px', color: '#8A7A72', fontWeight: 600, textTransform: 'uppercase' }}>Circularity & Avoided Burden</div>
           <div style={{ fontSize: '22px', fontWeight: 700, color: '#2E7D32', marginTop: '4px' }}>
-            {end_of_life.recycling_rate_percent || 92.4}%
+            {end_of_life.recycling_rate_percent || 0}%
           </div>
-          <div style={{ fontSize: '11px', color: '#2E7D32', marginTop: '2px' }}>{circularity_d.net_avoided_burden_gwp_kg || -3210} kg CO₂e offset</div>
+          <div style={{ fontSize: '11px', color: '#2E7D32', marginTop: '2px' }}>
+            {(results?.module_d_gwp ?? results?.d_gwp ?? lca?.module_d_gwp) != null && (lca?.isCalculated || results?.epd_results)
+              ? `${Number(results?.module_d_gwp ?? results?.d_gwp ?? lca?.module_d_gwp).toFixed(1)} kg CO₂e offset`
+              : 'Awaiting calculation'}
+          </div>
         </div>
       </div>
 
@@ -844,7 +865,7 @@ export default function UserReviewView() {
                       {/* Leg-Specific Provider Selection */}
                       {renderProviderSelector(
                         'Leg Emission Factor Provider',
-                        leg.provider_id || (leg.mode?.toLowerCase().includes('ship') ? 'ecoinvent_transport_container_ship_glo' : 'ecoinvent_transport_lorry_32t_rer'),
+                        leg.provider_id || (leg.mode?.toLowerCase().includes('ship') ? 'ecoinvent_row_24440' : 'ecoinvent_row_24419'),
                         (val) => updateTransportLeg(lIdx, { provider_id: val }),
                         'Transport'
                       )}
@@ -914,19 +935,19 @@ export default function UserReviewView() {
               <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #EED8C5', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', minWidth: 0 }}>
                 {renderProviderSelector(
                   'Grid Electricity Provider',
-                  manufacturing.electricity_provider_id || 'ecoinvent_elec_mv_us',
+                  manufacturing.electricity_provider_id || 'ecoinvent_row_3879',
                   (val) => updateManufacturing({ electricity_provider_id: val }),
                   'Grids'
                 )}
                 {renderProviderSelector(
                   'Fuel / Gas Provider',
-                  manufacturing.gas_provider_id || 'ecoinvent_gas_burned_boiler_glo',
+                  manufacturing.gas_provider_id || 'ecoinvent_row_2485',
                   (val) => updateManufacturing({ gas_provider_id: val }),
                   'Fuels'
                 )}
                 {renderProviderSelector(
                   'Process Water Provider',
-                  manufacturing.water_provider_id || 'ecoinvent_water_deionised_glo',
+                  manufacturing.water_provider_id || 'ecoinvent_row_25950',
                   (val) => updateManufacturing({ water_provider_id: val }),
                   'Water'
                 )}
@@ -968,7 +989,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'A4 Delivery Transport Provider',
-                  installation.outbound_provider_id || 'ecoinvent_transport_lorry_32t_rer',
+                  installation.outbound_provider_id || 'ecoinvent_row_24419',
                   (val) => updateInstallation({ outbound_provider_id: val }),
                   'Transport'
                 )}
@@ -1016,13 +1037,13 @@ export default function UserReviewView() {
               <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #EED8C5', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px', minWidth: 0 }}>
                 {renderProviderSelector(
                   'Installation Energy Provider',
-                  installation.installation_energy_provider_id || 'ecoinvent_elec_mv_us',
+                  installation.installation_energy_provider_id || 'ecoinvent_row_3879',
                   (val) => updateInstallation({ installation_energy_provider_id: val }),
                   'Grids'
                 )}
                 {renderProviderSelector(
                   'Consumables / Crane Diesel Provider',
-                  installation.consumable_provider_id || 'ecoinvent_diesel_burned_building_machine_glo',
+                  installation.consumable_provider_id || 'ecoinvent_row_2621',
                   (val) => updateInstallation({ consumable_provider_id: val }),
                   'Fuels'
                 )}
@@ -1099,7 +1120,7 @@ export default function UserReviewView() {
                   <input
                     type="number"
                     className="form-input"
-                    value={maintenance_b2.maintenance_cycles_per_rsl || 25}
+                    value={maintenance_b2.maintenance_cycles_per_rsl ?? ''}
                     onChange={(e) => updateMaintenanceB2({ maintenance_cycles_per_rsl: parseInt(e.target.value, 10) || 0 })}
                     placeholder="25"
                   />
@@ -1116,7 +1137,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'Maintenance Material Provider',
-                  maintenance_b2.provider_id || 'ecoinvent_lubricating_oil_glo',
+                  maintenance_b2.provider_id || 'ecoinvent_row_20286',
                   (val) => updateMaintenanceB2({ provider_id: val }),
                   'Consumables'
                 )}
@@ -1134,7 +1155,7 @@ export default function UserReviewView() {
                   <input
                     type="number"
                     className="form-input"
-                    value={repair_b3.repair_events_per_rsl || 2}
+                    value={repair_b3.repair_events_per_rsl ?? ''}
                     onChange={(e) => updateRepairB3({ repair_events_per_rsl: parseInt(e.target.value, 10) || 0 })}
                     placeholder="2"
                   />
@@ -1147,14 +1168,14 @@ export default function UserReviewView() {
                     type="number"
                     step="0.1"
                     className="form-input"
-                    value={repair_b3.part_mass_kg || 18.5}
+                    value={repair_b3.part_mass_kg ?? ''}
                     onChange={(e) => updateRepairB3({ part_mass_kg: parseFloat(e.target.value) || 0 })}
                     placeholder="18.5"
                   />
                 </div>
                 {renderProviderSelector(
                   'Replaced Part Material Provider',
-                  repair_b3.provider_id || 'ecoinvent_steel_hot_rolled_glo',
+                  repair_b3.provider_id || 'ecoinvent_row_15528',
                   (val) => updateRepairB3({ provider_id: val }),
                   'Metals'
                 )}
@@ -1172,7 +1193,7 @@ export default function UserReviewView() {
                   <input
                     type="number"
                     className="form-input"
-                    value={replacement_b4.esl_years || project_info.lifespan_years || 25}
+                    value={replacement_b4.esl_years ?? ''}
                     onChange={(e) => updateReplacementB4({ esl_years: parseInt(e.target.value, 10) || 1 })}
                     placeholder="25"
                   />
@@ -1188,10 +1209,12 @@ export default function UserReviewView() {
                 }}>
                   <div style={{ color: '#7A6B63', fontWeight: 600 }}>Derived Replacement Cycles:</div>
                   <div style={{ fontSize: '13px', fontWeight: 700, color: '#C25A23' }}>
-                    {Math.max(0, (replacement_b4.esl_years || project_info.lifespan_years || 25) / (project_info.lifespan_years || 25) - 1).toFixed(2)} cycle(s)
+                    {replacement_b4.esl_years && project_info.lifespan_years
+                      ? Math.max(0, (replacement_b4.esl_years / project_info.lifespan_years) - 1).toFixed(2)
+                      : '0.00'} cycle(s)
                   </div>
                   <div style={{ fontSize: '10px', color: '#8A7A72' }}>
-                    Formula: (ESL {replacement_b4.esl_years || 25} yrs ÷ RSL {project_info.lifespan_years || 25} yrs − 1)
+                    Formula: (ESL {replacement_b4.esl_years || 0} yrs ÷ RSL {project_info.lifespan_years || 25} yrs − 1)
                   </div>
                 </div>
               </div>
@@ -1208,7 +1231,7 @@ export default function UserReviewView() {
                   <input
                     type="number"
                     className="form-input"
-                    value={refurbishment_b5.refurbishment_events_per_rsl || 1}
+                    value={refurbishment_b5.refurbishment_events_per_rsl ?? ''}
                     onChange={(e) => updateRefurbishmentB5({ refurbishment_events_per_rsl: parseInt(e.target.value, 10) || 0 })}
                     placeholder="1"
                   />
@@ -1221,14 +1244,14 @@ export default function UserReviewView() {
                     type="number"
                     step="0.1"
                     className="form-input"
-                    value={refurbishment_b5.mass_kg || 45.0}
+                    value={refurbishment_b5.mass_kg ?? ''}
                     onChange={(e) => updateRefurbishmentB5({ mass_kg: parseFloat(e.target.value) || 0 })}
                     placeholder="45.0"
                   />
                 </div>
                 {renderProviderSelector(
                   'Refurbishment Material/Energy Provider',
-                  refurbishment_b5.provider_id || 'ecoinvent_copper_tube_wire_glo',
+                  refurbishment_b5.provider_id || 'ecoinvent_row_15830',
                   (val) => updateRefurbishmentB5({ provider_id: val }),
                   'Metals'
                 )}
@@ -1267,7 +1290,7 @@ export default function UserReviewView() {
 
                 {renderProviderSelector(
                   'B6 Main Operational Grid Provider',
-                  operational.energy_provider_id || 'ecoinvent_elec_mv_us',
+                  operational.energy_provider_id || 'ecoinvent_row_3879',
                   (val) => updateOperational({ energy_provider_id: val }),
                   'Grids'
                 )}
@@ -1285,7 +1308,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'B7 Operational Water Provider',
-                  operational.water_provider_id || 'ecoinvent_water_deionised_glo',
+                  operational.water_provider_id || 'ecoinvent_row_25950',
                   (val) => updateOperational({ water_provider_id: val }),
                   'Water'
                 )}
@@ -1326,7 +1349,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C1 Deconstruction Power Provider',
-                  end_of_life.deconstruction_provider_id || 'ecoinvent_diesel_dismantling_glo',
+                  end_of_life.deconstruction_provider_id || 'ecoinvent_row_2621',
                   (val) => updateEndOfLife({ deconstruction_provider_id: val }),
                   'Decommissioning'
                 )}
@@ -1342,7 +1365,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C2 Waste Transport Provider',
-                  end_of_life.waste_transport_provider_id || 'ecoinvent_transport_lorry_32t_rer',
+                  end_of_life.waste_transport_provider_id || 'ecoinvent_row_24419',
                   (val) => updateEndOfLife({ waste_transport_provider_id: val }),
                   'Transport'
                 )}
@@ -1401,7 +1424,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C3 Recycling Process Provider',
-                  end_of_life.recycling_process_provider_id || 'ecoinvent_waste_metal_recycling_glo',
+                  end_of_life.recycling_process_provider_id || 'ecoinvent_row_20713',
                   (val) => updateEndOfLife({ recycling_process_provider_id: val }),
                   'Waste Processing'
                 )}
@@ -1421,7 +1444,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C3 Incineration Process Provider',
-                  end_of_life.incineration_process_provider_id || 'ecoinvent_waste_incineration_glo',
+                  end_of_life.incineration_process_provider_id || 'ecoinvent_row_22918',
                   (val) => updateEndOfLife({ incineration_process_provider_id: val }),
                   'Waste Processing'
                 )}
@@ -1441,7 +1464,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C4 Landfill Process Provider',
-                  end_of_life.landfill_process_provider_id || 'ecoinvent_waste_landfill_glo',
+                  end_of_life.landfill_process_provider_id || 'ecoinvent_row_14191',
                   (val) => updateEndOfLife({ landfill_process_provider_id: val }),
                   'Disposal'
                 )}
@@ -1474,9 +1497,9 @@ export default function UserReviewView() {
                   min="0"
                   max="100"
                   className="form-input"
-                  value={circularity_d.overall_recovery_rate_percent != null ? circularity_d.overall_recovery_rate_percent : 90.0}
+                  value={circularity_d.overall_recovery_rate_percent ?? ''}
                   onChange={(e) => updateCircularityD({ overall_recovery_rate_percent: Math.max(0, parseFloat(e.target.value) || 0) })}
-                  placeholder="90.0"
+                  placeholder="e.g. 90.0"
                 />
               </div>
 
@@ -1484,13 +1507,13 @@ export default function UserReviewView() {
               <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', paddingTop: '8px', borderTop: '1px solid #C8E6C9' }}>
                 {renderProviderSelector(
                   'Module D Virgin Material Provider (Displaced Primary)',
-                  circularity_d.virgin_material_provider_id || 'ecoinvent_virgin_steel_primary_glo',
+                  circularity_d.virgin_material_provider_id || 'ecoinvent_row_15528',
                   (val) => updateCircularityD({ virgin_material_provider_id: val }),
                   'Virgin'
                 )}
                 {renderProviderSelector(
                   'Module D Secondary Recycled Process Provider',
-                  circularity_d.recycled_process_provider_id || 'ecoinvent_secondary_steel_electric_glo',
+                  circularity_d.recycled_process_provider_id || 'ecoinvent_row_15529',
                   (val) => updateCircularityD({ recycled_process_provider_id: val }),
                   'Recycled'
                 )}

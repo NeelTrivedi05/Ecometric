@@ -41,7 +41,7 @@ export default function TheSolution() {
           </div>
           <h2 className="section-title">One workflow from product data → EPD</h2>
           <p className="section-subtitle">
-            An end-to-end automated platform that replaces fragmented consulting steps with a continuous, traceable digital pipeline.
+            Upload your BOM and utility bills. EcoMetric maps processes to ecoinvent, validates cut-off rules, and exports verified declarations.
           </p>
         </div>
 

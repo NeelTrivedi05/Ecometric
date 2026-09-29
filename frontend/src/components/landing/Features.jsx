@@ -30,7 +30,7 @@ export default function Features() {
   ];
 
   return (
-    <section style={{ padding: '80px 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #EFE4D8', borderBottom: '1px solid #EFE4D8' }}>
+    <section id="features" style={{ padding: '80px 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #EFE4D8', borderBottom: '1px solid #EFE4D8' }}>
       <div className="lp-container">
         <div className="section-header">
           <div className="section-badge">
@@ -38,7 +38,7 @@ export default function Features() {
           </div>
           <h2 className="section-title">Features</h2>
           <p className="section-subtitle">
-            Everything your team needs to model, validate, and publish verified environmental product declarations.
+            Model, validate, and publish Type III declarations against EN 15804+A2 and ISO 14025.
           </p>
         </div>
 

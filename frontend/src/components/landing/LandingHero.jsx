@@ -13,7 +13,7 @@ export default function LandingHero({ onLaunchApp }) {
         </h1>
 
         <p className="lp-hero-sub" style={{ maxWidth: '640px', margin: '0 auto 32px auto' }}>
-          Automate your Life Cycle Assessment and Environmental Product Declaration workflow.
+          Ingest engineering BOMs, map 26,000+ ecoinvent activities, verify PCR rules, and publish Type III EPDs.
         </p>
 
         <div className="lp-hero-actions" style={{ marginBottom: '48px' }}>
@@ -29,6 +29,14 @@ export default function LandingHero({ onLaunchApp }) {
 
           <a
             href="#how-it-works"
+            onClick={(e) => {
+              e.preventDefault();
+              const el = document.getElementById('how-it-works');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.history.pushState(null, '', '#how-it-works');
+              }
+            }}
             className="btn-lp-secondary"
             style={{ padding: '14px 28px', fontSize: '15px' }}
           >

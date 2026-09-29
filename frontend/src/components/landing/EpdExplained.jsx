@@ -26,7 +26,7 @@ export default function EpdExplained() {
           </div>
           <h2 className="section-title">EPD Explained</h2>
           <p className="section-subtitle">
-            Essential principles behind Type III environmental declarations and international compliance standards.
+            What Type III declarations require and why green building specifications mandate them.
           </p>
         </div>
 
