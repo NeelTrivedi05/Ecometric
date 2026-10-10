@@ -15,18 +15,16 @@ if str(backend_dir) not in sys.path:
 try:
     from app.database import get_db
     from app.models import Project, TechnicalData, Result, Report
-    from app.schemas import ProjectCreate, LcaCalculationInput, LcaSummaryResponse, ReportResponse
+    from app.schemas import ProjectCreate, LcaCalculationInput, LcaSummaryResponse
     from app.engines.pcr_validation import validate_chiller_inputs
     from app.engines.calc_engine import calculate_chiller_lca, calculate_anti_lca
-    from app.engines.report_gen import generate_epd_report
     from app.engines.extract_ef_values import extract_ef_for_payload
 except ImportError:
     from ..database import get_db
     from ..models import Project, TechnicalData, Result, Report
-    from ..schemas import ProjectCreate, LcaCalculationInput, LcaSummaryResponse, ReportResponse
+    from ..schemas import ProjectCreate, LcaCalculationInput, LcaSummaryResponse
     from ..engines.pcr_validation import validate_chiller_inputs
     from ..engines.calc_engine import calculate_chiller_lca, calculate_anti_lca
-    from ..engines.report_gen import generate_epd_report
     from ..engines.extract_ef_values import extract_ef_for_payload
 
 router = APIRouter(prefix="/api/epd", tags=["EPD"])
@@ -85,29 +83,6 @@ def calculate_epd(input_data: LcaCalculationInput, db: Session = Depends(get_db)
             db.commit()
 
     return calc_result
-
-@router.post("/report", response_model=ReportResponse)
-def generate_report(project_id: str = "demo_project", db: Session = Depends(get_db)):
-    project_name = "Chiller_EPD_Assessment"
-    if project_id != "demo_project":
-        project = db.query(Project).filter(Project.id == project_id).first()
-        if project:
-            project_name = project.name
-            project.status = "REPORTED"
-
-    # Delegate report generation to engine
-    report_data = generate_epd_report(project_id, project_name)
-
-    if project_id != "demo_project":
-        db.add(Report(
-            project_id=project_id,
-            pdf_url=report_data["pdf_url"],
-            version="1.0",
-            disclaimer_text_snapshot=report_data["disclaimer"]
-        ))
-        db.commit()
-
-    return report_data
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 RESULTS_DIR = Path(os.getenv("RESULTS_DIR", str(REPO_ROOT / "results")))
@@ -564,25 +539,6 @@ def get_lcia_methodologies_endpoint():
     }
 
 
-@router.post("/generate-nsf-document")
-def generate_nsf_document_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)):
-    """
-    Generates a full NSF / UL 10010-4 compliant EPD declaration document
-    and HTML report based on template 'epd_chiller_nsf_ul10010-4_v2'.
-    """
-    from app.engines.epd_document_generator import generate_nsf_chiller_epd
-    data = payload or {}
-    methodology = data.get("methodology", "TRACI 2.1")
-
-    # If calc results not passed directly in payload, calculate them
-    results = data.get("results")
-    if not results or not results.get("epd_results"):
-        results = calculate_anti_endpoint(data)
-
-    doc = generate_nsf_chiller_epd(data, results, methodology)
-    return doc
-
-
 # =========================================================================
 # Phase 4: DQR Scoring, openEPD Serializer & Third-Party Verification Bundle
 # =========================================================================
@@ -631,11 +587,11 @@ def export_verification_bundle_endpoint(payload: Dict[str, Any] = Body(default_f
     """
     Generates and returns an audited Third-Party Verification ZIP package containing:
     1. 01_openepd_declaration_v2.json
-    2. 02_nsf_ul10010_4_declaration.json
+    2. 02_epd_report_document.json
     3. 03_lcia_characterization_matrix.csv
     4. 04_data_quality_rating_pef3.json
     5. 05_pre_audit_quality_gates.json
-    6. 06_official_epd_report.html
+    6. 06_official_epd_report.html (app.epd_report)
     7. checksums_sha256.txt
     """
     from app.engines.verification_package import build_verification_bundle
@@ -864,91 +820,4 @@ def save_report_details_endpoint(
     db.commit()
     return {"success": True, "message": "Report details saved successfully", "project_id": project_id}
 
-
-@router.post("/validate-pre-export")
-def validate_pre_export_endpoint(payload: Dict[str, Any] = Body(...)):
-    """
-    Runs Part G pre-export validation gate checks.
-    """
-    from app.engines.epd_validator import validate_pre_export
-
-    extracted_data = payload.get("extracted_data") or {}
-    results = payload.get("results") or {}
-    report_details = payload.get("report_details") or {}
-
-    val_res = validate_pre_export(extracted_data, results, report_details)
-    return val_res
-
-
-@router.post("/export-pdf-preview")
-def export_pdf_preview_endpoint(payload: Dict[str, Any] = Body(...)):
-    """
-    Generates standalone full HTML report for preview before PDF compilation.
-    """
-    from app.engines.epd_pdf_generator import EpdReport, generate_full_epd_html
-
-    extracted_data = payload.get("extracted_data") or {}
-    results = payload.get("results") or {}
-    report_details = payload.get("report_details") or {}
-
-    report = EpdReport(extracted_data, results, report_details)
-    html_content = generate_full_epd_html(report)
-    return {"html": html_content}
-
-
-@router.post("/export-pdf")
-def export_epd_pdf_endpoint(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
-    """
-    Compiles publication-grade PDF modeled on reference EPD11017.
-    Enforces Part G validation gate before rendering.
-    """
-    from app.engines.epd_pdf_generator import export_epd_to_pdf
-    from app.models import Report
-
-    extracted_data = payload.get("extracted_data") or {}
-    results = payload.get("results") or {}
-    report_details = payload.get("report_details") or {}
-    project_id = payload.get("project_id") or "export_project"
-
-    try:
-        pdf_bytes = export_epd_to_pdf(extracted_data, results, report_details)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail={"error": "Pre-Export Validation Failed", "details": str(ve)})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail={"error": "PDF Generation Failed", "details": str(e)})
-
-    decl_no = report_details.get("declaration_number", "EPD").replace(" ", "_")
-    prod_name = (report_details.get("product_name") or "Declaration").replace(" ", "_")[:30]
-    filename = f"{decl_no}_{prod_name}.pdf"
-
-    # Save record to reports table if project exists
-    try:
-        pdf_dir = REPO_ROOT / "results" / "pdfs"
-        pdf_dir.mkdir(parents=True, exist_ok=True)
-        pdf_file = pdf_dir / filename
-        with open(pdf_file, "wb") as f:
-            f.write(pdf_bytes)
-
-        db.add(Report(
-            project_id=project_id,
-            pdf_url=f"/results/pdfs/{filename}",
-            version="1.0",
-            disclaimer_text_snapshot="NSF EPD11017 Modeled Verified Declaration"
-        ))
-        db.commit()
-    except Exception as db_err:
-        print(f"[PDF Export] Warning saving report DB record: {db_err}")
-
-    headers = {
-        "Content-Disposition": f'attachment; filename="{filename}"',
-        "Content-Type": "application/pdf",
-        "X-Declaration-Number": decl_no,
-        "X-EPD-Version": "2.0-EPD11017",
-    }
-
-    return Response(
-        content=pdf_bytes,
-        media_type="application/pdf",
-        headers=headers
-    )
 

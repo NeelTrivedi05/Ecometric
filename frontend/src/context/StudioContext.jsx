@@ -4,6 +4,15 @@ import { PRESET_DATASETS } from '../data/presetDatasets';
 
 const API_BASE = '/api';
 
+async function epdReportError(res) {
+  const body = await res.json().catch(() => ({}));
+  const detail = body.detail || {};
+  const err = new Error(detail.error || (typeof detail === 'string' ? detail : 'Report request failed'));
+  err.errors = Array.isArray(detail.errors) ? detail.errors : [];
+  err.status = res.status;
+  return err;
+}
+
 const StudioContext = createContext(null);
 
 export function StudioProvider({ children }) {
@@ -141,7 +150,8 @@ export function StudioProvider({ children }) {
 
   // Characterized results from backend
   const [results, setResults] = useState(null);
-  const [nsfDocument, setNsfDocument] = useState(null);
+  // Calculation outputs kept per LCIA methodology so a report can include several methods.
+  const [resultsByMethod, setResultsByMethod] = useState({});
   const [dqrReport, setDqrReport] = useState(null);
   const [openepdDocument, setOpenepdDocument] = useState(null);
 
@@ -316,7 +326,7 @@ export function StudioProvider({ children }) {
     setGaps([]);
     setTraceabilityFlow(null);
     setValidationResults({ checks: [], overall_pass: false, run_at: null });
-    setNsfDocument(null);
+    setResultsByMethod({});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -380,6 +390,7 @@ export function StudioProvider({ children }) {
           project_info: { ...EMPTY_STUDIO_STATE.project_info, ...(prev.project_info || {}), ...(data.extracted.project_info || {}) },
         }));
         setResults(null);
+        setResultsByMethod({});
         setGaps(data.gaps || []);
         setTraceabilityFlow(data.traceability_flow || null);
         targetFiles.forEach(f => updateFileStatus(f.id, 'done'));
@@ -846,6 +857,12 @@ export function StudioProvider({ children }) {
         if (res.ok) {
           const data = await res.json();
           setResults(data);
+          if (data.epd_results && Object.keys(data.epd_results).length > 0) {
+            setResultsByMethod(prev => ({
+              ...prev,
+              [targetMethod]: { epd_results: data.epd_results, epd_metadata: data.epd_metadata },
+            }));
+          }
           if (data.pcr_evaluation) {
             setPcrEvaluation(data.pcr_evaluation);
           }
@@ -1190,58 +1207,6 @@ export function StudioProvider({ children }) {
     showNotif('ILCD+EPD JSON package exported successfully', 'Export Complete');
   }, [selectedMethodology, projectInfo, lca, extractedData, showNotif]);
 
-  // ─── NSF / UL 10010-4 CHILLER EPD DOCUMENT GENERATOR ───
-  const generateNsfDocument = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/epd/generate-nsf-document', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          extracted_data: extractedData,
-          methodology: selectedMethodology,
-          results: results
-        })
-      });
-      if (res.ok) {
-        const doc = await res.json();
-        setNsfDocument(doc);
-        showNotif('Official NSF / UL 10010-4 EPD generated', 'EPD Ready');
-        return doc;
-      } else {
-        throw new Error('Server returned error during NSF generation');
-      }
-    } catch (err) {
-      console.error('NSF document generation error:', err);
-      showNotif('Failed to generate NSF EPD document', 'Generation Error');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [extractedData, selectedMethodology, results, showNotif]);
-
-  const downloadNsfJson = useCallback((docToDownload) => {
-    const doc = docToDownload || nsfDocument;
-    if (!doc) return;
-    const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${doc.header?.declaration_number || 'EPD_Declaration'}_NSF_UL10010.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-    showNotif('NSF EPD Declaration JSON downloaded', 'Downloaded');
-  }, [nsfDocument, showNotif]);
-
-  const openNsfHtmlReport = useCallback((docToView) => {
-    const doc = docToView || nsfDocument;
-    if (!doc?.html_report) return;
-    const win = window.open('', '_blank');
-    if (win) {
-      win.document.write(doc.html_report);
-      win.document.close();
-    }
-  }, [nsfDocument]);
-
   // ─── DQR DATA QUALITY ASSESSMENT (Phase 4) ───
   const generateDqrReport = useCallback(async () => {
     setIsLoading(true);
@@ -1378,93 +1343,85 @@ export function StudioProvider({ children }) {
     }
   }, [reportDetails, setExtractedData]);
 
-  const validatePreExport = useCallback(async (detailsToValidate) => {
-    const details = detailsToValidate || reportDetails;
-    try {
-      const res = await fetch(`${API_BASE}/epd/validate-pre-export`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          project_id: 'current_project',
-          extracted_data: extractedData,
-          results: results,
-          report_details: details
-        })
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-      return { valid: false, errors: ['Server returned error during validation check'], warnings: [] };
-    } catch (err) {
-      console.error('[StudioContext] Pre-export validation error:', err);
-      return { valid: false, errors: [err.message || 'Validation request failed'], warnings: [] };
+  // ─── EPD REPORT (app/epd_report via /api/epd-reports) ───
+  const buildEpdReportRequest = useCallback((selection = {}, options = {}, detailsOverride) => {
+    let byMethod = resultsByMethod;
+    if (Object.keys(byMethod).length === 0 && results?.epd_results && Object.keys(results.epd_results).length > 0) {
+      byMethod = { [selectedMethodology]: { epd_results: results.epd_results, epd_metadata: results.epd_metadata } };
     }
-  }, [reportDetails, extractedData, results]);
+    return {
+      projectId: 'current_project',
+      extractedData,
+      resultsByMethod: byMethod,
+      reportDetails: detailsOverride || reportDetails,
+      selection,
+      options,
+    };
+  }, [resultsByMethod, results, selectedMethodology, extractedData, reportDetails]);
+
+  const fetchEpdReportOptions = useCallback(async () => {
+    const res = await fetch(`${API_BASE}/epd-reports/options`);
+    if (!res.ok) throw new Error('Could not load report options');
+    return res.json();
+  }, []);
+
+  /** Returns {html, warnings, filename, meta}; throws an Error with `.errors` (structured) on 422. */
+  const previewEpdReport = useCallback(async (selection, options, signal, detailsOverride) => {
+    const res = await fetch(`${API_BASE}/epd-reports/preview`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildEpdReportRequest(selection, options, detailsOverride)),
+      signal,
+    });
+    if (!res.ok) throw await epdReportError(res);
+    return res.json();
+  }, [buildEpdReportRequest]);
+
+  const downloadEpdReport = useCallback(async (selection, options, detailsOverride) => {
+    const res = await fetch(`${API_BASE}/epd-reports`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildEpdReportRequest(selection, options, detailsOverride)),
+    });
+    if (!res.ok) throw await epdReportError(res);
+    const blob = await res.blob();
+    const disp = res.headers.get('Content-Disposition') || '';
+    const match = disp.match(/filename="?([^";]+)"?/i);
+    const filename = (match && match[1]) || res.headers.get('X-EPD-Filename') || 'EPD.pdf';
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+    showNotif(`${filename} downloaded`, 'EPD Report');
+    return filename;
+  }, [buildEpdReportRequest, showNotif]);
+
+  // Report Details modal helpers, built on the same report API.
+  const validatePreExport = useCallback(async (detailsToValidate) => {
+    try {
+      const data = await previewEpdReport({}, {}, undefined, detailsToValidate);
+      const msgs = (lvl) => (data.warnings || []).filter(w => w.level === lvl).map(w => w.message);
+      return { valid: msgs('error').length === 0, errors: msgs('error'), warnings: msgs('warning') };
+    } catch (err) {
+      return { valid: false, errors: err.errors?.map(e => e.message) || [err.message], warnings: [] };
+    }
+  }, [previewEpdReport]);
 
   const getEpdPdfPreview = useCallback(async (detailsForPreview) => {
-    const details = detailsForPreview || reportDetails;
-    try {
-      const res = await fetch(`${API_BASE}/epd/export-pdf-preview`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          project_id: 'current_project',
-          extracted_data: extractedData,
-          results: results,
-          report_details: details
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return data.html || '';
-      }
-      throw new Error('Preview request failed');
-    } catch (err) {
-      console.error('[StudioContext] PDF preview error:', err);
-      throw err;
-    }
-  }, [reportDetails, extractedData, results]);
+    const data = await previewEpdReport({}, {}, undefined, detailsForPreview);
+    return data.html || '';
+  }, [previewEpdReport]);
 
   const exportEpdPdf = useCallback(async (detailsForExport) => {
     setIsLoading(true);
-    const details = detailsForExport || reportDetails;
     try {
-      const res = await fetch(`${API_BASE}/epd/export-pdf`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          project_id: 'current_project',
-          extracted_data: extractedData,
-          results: results,
-          report_details: details
-        })
-      });
-
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.detail?.details || errJson.detail?.error || 'PDF compilation failed');
-      }
-
-      const blob = await res.blob();
-      const dispHeader = res.headers.get('Content-Disposition') || '';
-      let filename = `EPD_${(details.declaration_number || '11017')}_${(details.product_name || 'Chiller').replace(/\s+/g, '_')}.pdf`;
-      const match = dispHeader.match(/filename="?([^";]+)"?/i);
-      if (match && match[1]) filename = match[1];
-
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(url);
-      showNotif('EPD11017 Publication PDF downloaded successfully', 'Export Complete');
-    } catch (err) {
-      console.error('[StudioContext] PDF export error:', err);
-      throw err;
+      await downloadEpdReport({}, {}, detailsForExport);
     } finally {
       setIsLoading(false);
     }
-  }, [reportDetails, extractedData, results, showNotif]);
+  }, [downloadEpdReport]);
 
   return (
     <StudioContext.Provider
@@ -1501,11 +1458,7 @@ export function StudioProvider({ children }) {
         projectInfo,
         downloadIlcdJson,
         runCalculation,
-        nsfDocument,
-        setNsfDocument,
-        generateNsfDocument,
-        downloadNsfJson,
-        openNsfHtmlReport,
+        resultsByMethod,
         dqrReport,
         setDqrReport,
         generateDqrReport,
@@ -1549,6 +1502,10 @@ export function StudioProvider({ children }) {
         validatePreExport,
         getEpdPdfPreview,
         exportEpdPdf,
+        buildEpdReportRequest,
+        fetchEpdReportOptions,
+        previewEpdReport,
+        downloadEpdReport,
       }}
     >
       {children}

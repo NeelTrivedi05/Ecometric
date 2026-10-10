@@ -1,0 +1,60 @@
+{
+  "selection": {
+    "methods": [
+      "TRACI 2.1"
+    ]
+  },
+  "product": {
+    "name": "Minimal Product"
+  },
+  "functionalUnit": {
+    "description": "1 kg of product"
+  },
+  "results": [
+    {
+      "method": "TRACI 2.1",
+      "rows": [
+        {
+          "indicatorCode": "GWP",
+          "values": {
+            "A1": 2.1,
+            "A2": 0.21000000000000002,
+            "A3": 0.42000000000000004
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "A1": 1.2e-07,
+            "A2": 1.2e-08,
+            "A3": 2.4e-08
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "A1": 0.008,
+            "A2": 0.0008,
+            "A3": 0.0016
+          }
+        },
+        {
+          "indicatorCode": "EP",
+          "values": {
+            "A1": 0.0041,
+            "A2": 0.00041000000000000005,
+            "A3": 0.0008200000000000001
+          }
+        },
+        {
+          "indicatorCode": "SFP",
+          "values": {
+            "A1": 0.11,
+            "A2": 0.011000000000000001,
+            "A3": 0.022000000000000002
+          }
+        }
+      ]
+    }
+  ]
+}

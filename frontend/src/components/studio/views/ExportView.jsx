@@ -10,10 +10,6 @@ export default function ExportView() {
     downloadIlcdJson,
     showNotif,
     setActivePhase,
-    nsfDocument,
-    generateNsfDocument,
-    downloadNsfJson,
-    openNsfHtmlReport,
     dqrReport,
     generateDqrReport,
     openepdDocument,
@@ -25,17 +21,11 @@ export default function ExportView() {
     setIsReportDetailsModalOpen,
     exportEpdPdf,
     reportDetails,
+    results,
   } = useStudio();
 
-  const [activeTab, setActiveTab] = useState('nsf'); // 'nsf' | 'cert' | 'openepd' | 'dqr' | 'json'
+  const [activeTab, setActiveTab] = useState('report'); // 'report' | 'cert' | 'openepd' | 'dqr' | 'json'
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-
-  // Auto-generate NSF document on first load if not present
-  useEffect(() => {
-    if (!nsfDocument && !isLoading) {
-      generateNsfDocument();
-    }
-  }, [nsfDocument, generateNsfDocument, isLoading]);
 
   // Pre-fetch DQR and openEPD when tab switches
   useEffect(() => {
@@ -51,16 +41,10 @@ export default function ExportView() {
     window.print();
   };
 
-  const handleCopyHash = () => {
-    const hash = nsfDocument?.header?.verification_hash || 'SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069';
-    navigator.clipboard?.writeText(hash);
-    showNotif('EPD verification cryptographic hash copied to clipboard', 'Hash Copied');
-  };
-
   const handleDirectPdfExport = async () => {
     setIsGeneratingPdf(true);
     try {
-      showNotif('Compiling 13-page EPD publication PDF via Chromium...', 'Compiling PDF');
+      showNotif('Generating the EPD report PDF...', 'Compiling PDF');
       await exportEpdPdf(reportDetails);
     } catch (err) {
       console.error('Direct PDF export failed:', err);
@@ -70,11 +54,7 @@ export default function ExportView() {
     }
   };
 
-  const genInfo = nsfDocument?.general_information || {};
-  const lcaRules = nsfDocument?.lca_methodology || {};
-  const lciaRes = nsfDocument?.lcia_results || {};
-  const interpretation = nsfDocument?.interpretation || {};
-  const header = nsfDocument?.header || {};
+  const header = { declaration_number: reportDetails?.declaration_number };
 
   return (
     <div className="phase-container export-view" style={{ maxWidth: 1240, margin: '0 auto', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif' }}>
@@ -98,7 +78,7 @@ export default function ExportView() {
               Export EPD &amp; Verification Publishing Suite
             </h2>
             <p className="section-subtitle" style={{ color: '#86868B', fontSize: 13, marginTop: 4, marginBottom: 0 }}>
-              Official NSF / UL 10010-4 Declaration, openEPD® digital standard, PEF 3.0 DQR scoring, and audited 7-file verification ZIP package.
+              EPD report (PDF), openEPD® digital standard, PEF 3.0 DQR scoring, and audited 7-file verification ZIP package.
             </p>
           </div>
 
@@ -123,24 +103,6 @@ export default function ExportView() {
             <button
               type="button"
               className="btn"
-              onClick={handleCopyHash}
-              title="Copy audit hash"
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #D2D2D7',
-                borderRadius: 9999,
-                padding: '6px 14px',
-                color: '#1D1D1F',
-                cursor: 'pointer'
-              }}
-            >
-              Copy Hash
-            </button>
-            <button
-              type="button"
-              className="btn"
               onClick={handlePrint}
               style={{
                 fontSize: 12,
@@ -154,25 +116,6 @@ export default function ExportView() {
               }}
             >
               Print / Save View
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => openNsfHtmlReport()}
-              disabled={!nsfDocument || isLoading}
-              title="Open standalone verified HTML report in new tab"
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #D2D2D7',
-                borderRadius: 9999,
-                padding: '6px 14px',
-                color: '#1D1D1F',
-                cursor: 'pointer'
-              }}
-            >
-              Preview Official HTML
             </button>
             <button
               type="button"
@@ -196,28 +139,6 @@ export default function ExportView() {
             >
               <DownloadIcon className="w-3.5 h-3.5" />
               <span>openEPD (JSON)</span>
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => downloadNsfJson()}
-              disabled={!nsfDocument || isLoading}
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #D2D2D7',
-                borderRadius: 9999,
-                padding: '6px 14px',
-                color: '#1D1D1F',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                cursor: 'pointer'
-              }}
-            >
-              <DownloadIcon className="w-3.5 h-3.5" />
-              <span>NSF EPD (JSON)</span>
             </button>
           </div>
         </div>
@@ -258,38 +179,15 @@ export default function ExportView() {
                 letterSpacing: '-0.3px',
                 fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif'
               }}>
-                Official EPD Publication Document (EPD11017 Reference Standard)
+                Environmental Product Declaration report
               </h3>
-              <span style={{
-                fontSize: 11,
-                fontWeight: 600,
-                backgroundColor: '#E8F2FE',
-                color: '#0071E3',
-                padding: '2px 8px',
-                borderRadius: 9999
-              }}>
-                13 Pages High-DPI
-              </span>
             </div>
 
             <p style={{ margin: '0 0 12px 0', fontSize: 13, color: '#636366', lineHeight: 1.45 }}>
-              Generates the publication-grade Environmental Product Declaration conforming to UL 10010-4 Part B v2.0, EN 15804+A2, and ISO 14025. Includes 16 life cycle stages (A1–D), TRACI 2.1 &amp; PEF parameter matrices, and verifier credentials.
+              Builds the EPD from the current calculation results, product data and Report Details, with the LCIA methods,
+              standard and product category you selected. Configure verifier and program operator details before publishing.
             </p>
 
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['16 Life Cycle Stages (A1–D)', 'Carrier AquaEdge® 19DV Benchmark', 'TRACI 2.1 & EN 15804+A2', 'Cryptographic Seal'].map((chip, idx) => (
-                <span key={idx} style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  backgroundColor: '#F2F2F7',
-                  color: '#1D1D1F',
-                  padding: '3px 10px',
-                  borderRadius: 9999
-                }}>
-                  {chip}
-                </span>
-              ))}
-            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-end' }}>
@@ -316,12 +214,12 @@ export default function ExportView() {
               {isGeneratingPdf ? (
                 <>
                   <RefreshCwIcon size={16} className="spin" />
-                  <span>Compiling PDF via Chromium...</span>
+                  <span>Generating PDF...</span>
                 </>
               ) : (
                 <>
                   <DownloadIcon className="w-4 h-4" />
-                  <span>Download Publication PDF</span>
+                  <span>Download EPD Report (PDF)</span>
                 </>
               )}
             </button>
@@ -376,7 +274,7 @@ export default function ExportView() {
             overflowX: 'auto'
           }}>
             {[
-              { id: 'nsf', label: 'Official NSF / UL 10010-4 Declaration' },
+              { id: 'report', label: 'EPD Report' },
               { id: 'cert', label: 'EN 15804+A2 Summary Certificate' },
               { id: 'openepd', label: 'openEPD® Standard (v2.0)' },
               { id: 'dqr', label: 'PEF 3.0 Data Quality Rating (DQR)' },
@@ -413,287 +311,20 @@ export default function ExportView() {
       </div>
 
       {/* TAB 1: OFFICIAL NSF / UL 10010-4 DECLARATION */}
-      {activeTab === 'nsf' && (
-        <div>
-          {isLoading && !nsfDocument ? (
-            <div className="card" style={{ padding: 48, textAlign: 'center' }}>
-              <div className="spin" style={{ display: 'inline-block', marginBottom: 16 }}>
-                <RefreshCwIcon size={32} style={{ color: 'var(--accent)' }} />
-              </div>
-              <h3>Generating Official NSF / UL 10010-4 EPD Document...</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', marginTop: 8 }}>
-                Characterizing impacts into scientific notation (3 significant digits) across stages A1–D according to UL 10010-4 Part B v2.0 rules.
-              </p>
-            </div>
-          ) : !nsfDocument ? (
-            <div className="card" style={{ padding: 48, textAlign: 'center' }}>
-              <h3>NSF Document Not Yet Generated</h3>
-              <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>
-                Click below to compute the full compliant NSF Chiller EPD specification.
-              </p>
-              <button
-                type="button"
-                className="btn btn-accent"
-                onClick={() => generateNsfDocument()}
-              >
-                Generate Official NSF EPD Now
-              </button>
-            </div>
-          ) : (
-            <div className="printable-doc" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 32, boxShadow: 'var(--shadow-md)' }}>
-              {/* DOCUMENT BANNER & HEADER */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border)', paddingBottom: 20, marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
-                <div>
-                  <span className="badge badge-accent" style={{ fontWeight: 700, marginBottom: 6, display: 'inline-block' }}>
-                    NSF Certified EPD • UL 10010-4 Part B v2.0
-                  </span>
-                  <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, margin: '4px 0 6px 0' }}>
-                    Environmental Product Declaration
-                  </h1>
-                  <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
-                    {header.product_and_fu}
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right', fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
-                  <div><strong>Declaration No:</strong> <span style={{ fontFamily: 'var(--mono)' }}>{header.declaration_number}</span></div>
-                  <div><strong>Validity:</strong> {header.date_of_issue} – {header.period_of_validity}</div>
-                  <div><strong>Methodology:</strong> {nsfDocument.global?.selected_methodology}</div>
-                  <div><strong>Lineage:</strong> ecoinvent 3.12 Cut-off</div>
-                </div>
-              </div>
-
-              {/* SECTION 1: GENERAL INFORMATION */}
-              <div style={{ marginBottom: 32 }}>
-                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, marginBottom: 16 }}>
-                  1. General Information &amp; Program Operator Block
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, fontSize: 'var(--text-xs)' }}>
-                  <div className="card" style={{ padding: 16, margin: 0 }}>
-                    <p style={{ margin: '4px 0' }}><strong>Program Operator:</strong> {genInfo.program_operator}</p>
-                    <p style={{ margin: '4px 0' }}><strong>Declaration Holder:</strong> {genInfo.declaration_holder}</p>
-                    <p style={{ margin: '4px 0' }}><strong>Product Name:</strong> {genInfo.product_name}</p>
-                    <p style={{ margin: '4px 0' }}><strong>Functional Unit:</strong> {nsfDocument.global?.functional_unit}</p>
-                  </div>
-                  <div className="card" style={{ padding: 16, margin: 0 }}>
-                    <p style={{ margin: '4px 0' }}><strong>Reference PCR:</strong> {genInfo.reference_pcr}</p>
-                    <p style={{ margin: '4px 0' }}><strong>Reference Service Life (RSL):</strong> {genInfo.product_rsl}</p>
-                    <p style={{ margin: '4px 0' }}><strong>Building Estimated Service Life:</strong> {genInfo.building_esl}</p>
-                    <p style={{ margin: '4px 0' }}><strong>Scope of Declaration:</strong> {genInfo.epd_scope}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* SECTION 2: TECHNICAL DATA & BOM */}
-              <div style={{ marginBottom: 32 }}>
-                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, marginBottom: 16 }}>
-                  2. Technical Operating Specifications &amp; Material Breakdown
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
-                  <div>
-                    <h4 style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>
-                      Operating Parameters (Table 1)
-                    </h4>
-                    <table className="data-table" style={{ width: '100%', fontSize: 'var(--text-xs)' }}>
-                      <thead>
-                        <tr>
-                          <th>Parameter</th>
-                          <th>Value</th>
-                          <th>Unit</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {lcaRules.technical_data_table_1?.map((t, idx) => (
-                          <tr key={idx}>
-                            <td>{t.name}</td>
-                            <td><strong>{t.value}</strong></td>
-                            <td>{t.unit}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div>
-                    <h4 style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>
-                      Material Composition (Table 3)
-                    </h4>
-                    <table className="data-table" style={{ width: '100%', fontSize: 'var(--text-xs)' }}>
-                      <thead>
-                        <tr>
-                          <th>Component / Material</th>
-                          <th>Mass</th>
-                          <th>Per FU</th>
-                          <th>Share</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {lcaRules.bill_of_materials_table_3?.map((b, idx) => (
-                          <tr key={idx}>
-                            <td>{b.material}</td>
-                            <td>{b.mass}</td>
-                            <td>{b.mass_per_fu}</td>
-                            <td><strong>{b.percentage}</strong></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-
-              {/* SECTION 3: LCA RESULTS IN SCIENTIFIC NOTATION */}
-              <div style={{ marginBottom: 32 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
-                  <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, margin: 0 }}>
-                    3. Life Cycle Assessment Results (Scientific Notation, 3 Sig Figs)
-                  </h3>
-                  <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                    Declared per 1 ton of chilling capacity (RT) • Methodology: <strong>{nsfDocument.global?.selected_methodology}</strong>
-                  </span>
-                </div>
-
-                <div className="table-wrapper" style={{ overflowX: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
-                  <table className="data-table" style={{ width: '100%', fontSize: '11px', whiteSpace: 'nowrap' }}>
-                    <thead>
-                      <tr>
-                        <th style={{ position: 'sticky', left: 0, background: 'var(--bg-card)', zIndex: 2 }}>Environmental Indicator</th>
-                        <th>Unit</th>
-                        <th className="num">A1</th>
-                        <th className="num">A2</th>
-                        <th className="num">A3</th>
-                        <th className="num" style={{ background: 'rgba(196, 119, 90, 0.08)' }}>A1–A3</th>
-                        <th className="num">A4</th>
-                        <th className="num">A5</th>
-                        <th className="num">B1</th>
-                        <th className="num">B2</th>
-                        <th className="num">B3</th>
-                        <th className="num">B4</th>
-                        <th className="num">B5</th>
-                        <th className="num">B6</th>
-                        <th className="num">B7</th>
-                        <th className="num">C1</th>
-                        <th className="num">C2</th>
-                        <th className="num">C3</th>
-                        <th className="num">C4</th>
-                        <th className="num" style={{ background: 'rgba(196, 119, 90, 0.08)' }}>C1–C4</th>
-                        <th className="num" style={{ color: 'var(--success)' }}>D</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {lciaRes.characterization_matrix?.length > 0 ? (
-                        lciaRes.characterization_matrix.map((row, idx) => (
-                          <tr key={idx}>
-                            <td style={{ position: 'sticky', left: 0, background: 'var(--bg-card)', fontWeight: 700, zIndex: 1 }}>
-                              {row.indicator}
-                            </td>
-                            <td><span className="item-badge" style={{ fontSize: '0.65rem' }}>{row.unit}</span></td>
-                            <td className="num">{row['A1']}</td>
-                            <td className="num">{row['A2']}</td>
-                            <td className="num">{row['A3']}</td>
-                            <td className="num" style={{ fontWeight: 700, background: 'rgba(196, 119, 90, 0.06)' }}>{row['A1-A3']}</td>
-                            <td className="num">{row['A4']}</td>
-                            <td className="num">{row['A5']}</td>
-                            <td className="num">{row['B1']}</td>
-                            <td className="num">{row['B2']}</td>
-                            <td className="num">{row['B3']}</td>
-                            <td className="num">{row['B4']}</td>
-                            <td className="num">{row['B5']}</td>
-                            <td className="num">{row['B6']}</td>
-                            <td className="num">{row['B7']}</td>
-                            <td className="num">{row['C1']}</td>
-                            <td className="num">{row['C2']}</td>
-                            <td className="num">{row['C3']}</td>
-                            <td className="num">{row['C4']}</td>
-                            <td className="num" style={{ fontWeight: 700, background: 'rgba(196, 119, 90, 0.06)' }}>{row['C1-C4']}</td>
-                            <td className="num" style={{ color: 'var(--success)' }}>{row['D']}</td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={21} style={{ textAlign: 'center', padding: 24, color: 'var(--text-muted)' }}>
-                            Run calculation to generate full characterization matrix.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* SECTION 4: INTERPRETATION */}
-              <div style={{ marginBottom: 32 }}>
-                <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 700, marginBottom: 16 }}>
-                  4. Life Cycle Interpretation &amp; Carbon Breakdown
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-                  <div className="card" style={{ padding: 16, margin: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 'var(--text-xs)', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 6 }}>
-                      Primary Life Cycle Driver
-                    </div>
-                    <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
-                      {interpretation.dominance_analysis}
-                    </p>
-                  </div>
-
-                  <div className="card" style={{ padding: 16, margin: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 'var(--text-xs)', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 6 }}>
-                      Refrigerant Fugitive Emissions
-                    </div>
-                    <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
-                      {interpretation.refrigerant_impact}
-                    </p>
-                  </div>
-
-                  <div className="card" style={{ padding: 16, margin: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 'var(--text-xs)', color: 'var(--success)', textTransform: 'uppercase', marginBottom: 6 }}>
-                      Circularity Potential (Module D)
-                    </div>
-                    <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
-                      Module D accounts for the net avoidance of virgin copper, aluminium, and structural steel through high scrap recovery yields at end-of-life deconstruction.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* SECTION 5: VERIFICATION & AUDIT GATES */}
-              <div style={{ borderTop: '1px solid var(--border)', paddingTop: 20 }}>
-                <div style={{ marginTop: 12, padding: 16, background: 'var(--bg-card2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 10 }}>
-                    <div>
-                      <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700 }}>Independent Third-Party Verification &amp; Deterministic Lineage</div>
-                      <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-secondary)' }}>
-                        In accordance with ISO 14025:2006, ISO 14040:2006, ISO 14044:2006, and UL 10010-4 Part B v2.0
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ backgroundColor: 'var(--success-soft, #ecfdf5)', color: 'var(--success, #10b981)', padding: '3px 10px', borderRadius: 4, fontWeight: 700, fontSize: 'var(--text-2xs)' }}>
-                        VERDICT: {header.compliance_verdict || 'COMPLIANT'} ({header.compliance_score || '100%'})
-                      </span>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 10, paddingTop: 10, borderTop: '1px dashed var(--border)' }}>
-                    <div>
-                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Background Dataset Lineage (ecoinvent 3.12 Cut-off):</span>
-                      <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-primary)', wordBreak: 'break-all', marginTop: 2 }}>
-                        SHA256: {header.lineage_hash || '6bc4e6475877e8e90d8a6184b681366154cc5f6ec42c7cec54eb871224b33e02'}
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>EPD Declaration Package Integrity Hash:</span>
-                      <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', fontWeight: 700, color: 'var(--accent)', wordBreak: 'break-all', marginTop: 2 }}>
-                        {header.verification_hash}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+      {activeTab === 'report' && (
+        <div className="view-section" style={{ backgroundColor: '#FFFFFF', borderRadius: 20, border: '1px solid #E5E5EA', padding: '24px 28px' }}>
+          <h3 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 600, color: '#1D1D1F' }}>EPD report</h3>
+          <p style={{ margin: '0 0 14px', fontSize: 13, color: '#636366', lineHeight: 1.5 }}>
+            The report is generated by the EPD report module from your calculation results and Report Details.
+            Use “Configure Report Details” to fill in the declaration, program operator and verification, and
+            preview it there before downloading.
+          </p>
+          <button type="button" className="btn-apple-action-blue" onClick={handleDirectPdfExport} disabled={isGeneratingPdf || isLoading}>
+            {isGeneratingPdf ? 'Generating PDF...' : 'Download EPD Report (PDF)'}
+          </button>
         </div>
       )}
 
-      {/* TAB 2: EN 15804+A2 SUMMARY CERTIFICATE */}
       {activeTab === 'cert' && (
         <div className="certificate-document printable-doc" id="epd-certificate" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 32, boxShadow: 'var(--shadow-md)' }}>
           <div className="cert-top-strip" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>
@@ -1027,7 +658,7 @@ export default function ExportView() {
               type="button"
               className="btn btn-sm btn-outline"
               onClick={() => {
-                navigator.clipboard?.writeText(JSON.stringify(nsfDocument, null, 2));
+                navigator.clipboard?.writeText(JSON.stringify(results, null, 2));
                 showNotif('Complete JSON copied to clipboard', 'Copied');
               }}
             >
@@ -1035,7 +666,7 @@ export default function ExportView() {
             </button>
           </div>
           <pre style={{ maxHeight: 500, overflow: 'auto', background: 'var(--bg-card2)', padding: 16, borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', fontFamily: 'var(--mono)', fontSize: 'var(--text-2xs)' }}>
-            {JSON.stringify(nsfDocument, null, 2)}
+            {JSON.stringify(results, null, 2)}
           </pre>
         </div>
       )}

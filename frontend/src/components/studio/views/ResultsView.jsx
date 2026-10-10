@@ -14,7 +14,6 @@ export default function ResultsView() {
     showNotif,
     isLoading,
     runCalculation,
-    generateNsfDocument,
     extractedData,
   } = useStudio();
 
@@ -466,15 +465,11 @@ export default function ResultsView() {
           <button
             type="button"
             className="btn-apple-secondary-pill"
-            onClick={async () => {
-              showNotif('Generating official NSF / UL 10010-4 EPD document...', 'Generating EPD');
-              await generateNsfDocument();
-              setActivePhase('export');
-            }}
+            onClick={() => setActivePhase('export')}
             disabled={isLoading}
             style={{ display: 'flex', alignItems: 'center', gap: 6 }}
           >
-            <span>Generate Official NSF EPD</span>
+            <span>Generate EPD Report</span>
             <ChevronRightIcon size={14} />
           </button>
 
