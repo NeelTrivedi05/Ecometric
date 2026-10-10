@@ -28,6 +28,7 @@ export default function LandingNavbar({ onLaunchApp }) {
             <a href="#how-it-works" className="apple-global-link" onClick={(e) => handleScrollTo(e, 'how-it-works')}>Methodology</a>
             <a href="#features" className="apple-global-link" onClick={(e) => handleScrollTo(e, 'features')}>Capabilities</a>
             <a href="#epds" className="apple-global-link" onClick={(e) => handleScrollTo(e, 'epds')}>openEPD & Standards</a>
+            <a href="#about" className="apple-global-link" onClick={(e) => handleScrollTo(e, 'about')}>More Info</a>
             <a href="#faq" className="apple-global-link" onClick={(e) => handleScrollTo(e, 'faq')}>Verification FAQ</a>
           </div>
 
@@ -56,6 +57,7 @@ export default function LandingNavbar({ onLaunchApp }) {
             <a href="#solution" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'solution')}>Pipeline</a>
             <a href="#stages" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'stages')}>Modules</a>
             <a href="#how-it-works" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'how-it-works')}>How it works</a>
+            <a href="#about" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'about')}>More Info</a>
             <a href="#faq" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'faq')}>FAQ</a>
 
             <button

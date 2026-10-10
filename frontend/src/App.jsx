@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
+import InfoPage from './pages/InfoPage';
 import { StudioProvider } from './context/StudioContext';
 import StudioWorkspace from './components/studio/StudioWorkspace';
 
@@ -10,6 +11,10 @@ export default function App() {
       <Routes>
         {/* Marketing / Landing Page at Root */}
         <Route path="/" element={<LandingPage />} />
+
+        {/* Knowledge Base & Detailed Info Pages */}
+        <Route path="/info" element={<InfoPage />} />
+        <Route path="/info/:topicId" element={<InfoPage />} />
 
         {/* EcoMetric Calculation Studio Workspace */}
         <Route
