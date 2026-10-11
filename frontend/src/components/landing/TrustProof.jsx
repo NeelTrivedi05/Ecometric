@@ -44,7 +44,7 @@ export default function TrustProof() {
                 letterSpacing: '-0.1px'
               }}
             >
-              <CheckCircleIcon size={14} style={{ color: '#28cd41' }} />
+              <CheckCircleIcon size={14} style={{ color: '#2e9e5b' }} />
               <span>{name}</span>
             </div>
           ))}

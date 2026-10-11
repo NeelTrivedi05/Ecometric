@@ -89,7 +89,7 @@ export default function TheSolution() {
             </span>
             <span style={{
               fontSize: '12px',
-              color: '#28cd41',
+              color: '#2e9e5b',
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
@@ -112,7 +112,7 @@ export default function TheSolution() {
 
           <p style={{
             fontSize: '17px',
-            color: '#6e6e73',
+            color: '#5b6f62',
             lineHeight: '1.47',
             letterSpacing: '-0.374px',
             marginBottom: '24px'
@@ -127,7 +127,7 @@ export default function TheSolution() {
             paddingTop: '20px',
             borderTop: '1px solid var(--apple-hairline)',
             fontSize: '13px',
-            color: '#86868b'
+            color: '#7a8f81'
           }}>
             <span>EN 15804+A2 & ISO 14025 Aligned</span>
             <span style={{ color: 'var(--apple-primary)', fontWeight: 600, cursor: 'pointer' }} onClick={() => setActiveStep((activeStep + 1) % workflowSteps.length)}>

@@ -78,7 +78,7 @@ export default function HowItWorks() {
                 </h3>
                 <p style={{
                   fontSize: '14px',
-                  color: '#6e6e73',
+                  color: '#5b6f62',
                   lineHeight: '1.47'
                 }}>
                   {step.desc}

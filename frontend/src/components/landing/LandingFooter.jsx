@@ -22,7 +22,7 @@ export default function LandingFooter() {
             <h2 className="apple-section-title" style={{ fontSize: '32px', marginBottom: '8px' }}>
               Everything you need to know about EPDs
             </h2>
-            <p className="apple-section-subtitle" style={{ fontSize: '15px', color: '#6e6e73' }}>
+            <p className="apple-section-subtitle" style={{ fontSize: '15px', color: '#5b6f62' }}>
               Comprehensive technical standards, life cycle frameworks, and calculation methodologies. Select any topic to view full detailed specifications.
             </p>
           </div>
@@ -56,7 +56,7 @@ export default function LandingFooter() {
                 EcoMetric
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: '#6e6e73', lineHeight: '1.5', maxWidth: '320px', margin: 0 }}>
+            <p style={{ fontSize: '13px', color: '#5b6f62', lineHeight: '1.5', maxWidth: '320px', margin: 0 }}>
               Automated Life Cycle Assessment & Environmental Product Declaration software for HVAC, mechanical equipment, and industrial manufacturing.
             </p>
           </div>

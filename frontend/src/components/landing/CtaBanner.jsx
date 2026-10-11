@@ -1,10 +1,12 @@
 import React from 'react';
 import { ChevronRightIcon } from '../studio/Icons';
+import { BannerBackdrop } from './EcoBackdrop';
 
 export default function CtaBanner({ onLaunchApp }) {
   return (
-    <section id="pricing" className="product-tile-dark-3" style={{ textAlign: 'center', padding: '96px 0' }}>
-      <div className="lp-container">
+    <section id="pricing" className="product-tile-dark-3 eco-banner" style={{ textAlign: 'center', padding: '96px 0 152px' }}>
+      <BannerBackdrop />
+      <div className="lp-container eco-layer">
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>
           <div className="apple-section-eyebrow on-dark" style={{ marginBottom: '16px' }}>
             Instant Deployment

@@ -53,8 +53,8 @@ export default function TheProblem() {
                 <span style={{
                   fontSize: '14px',
                   fontWeight: 600,
-                  backgroundColor: 'rgba(255, 69, 58, 0.15)',
-                  color: '#ff453a',
+                  backgroundColor: 'rgba(31, 122, 76, 0.10)',
+                  color: 'var(--apple-primary-on-dark)',
                   width: '28px',
                   height: '28px',
                   borderRadius: 'var(--apple-radius-sm)',

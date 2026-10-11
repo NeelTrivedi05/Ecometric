@@ -36,9 +36,9 @@ export default function LifeCycleRibbon() {
                 key={stg.id}
                 onClick={() => setActiveStageId(stg.id)}
                 style={{
-                  backgroundColor: isActive ? 'var(--apple-surface-tile-1)' : 'rgba(255, 255, 255, 0.04)',
+                  backgroundColor: '#ffffff',
                   border: '1px solid',
-                  borderColor: isActive ? 'var(--apple-primary-on-dark)' : 'rgba(255, 255, 255, 0.1)',
+                  borderColor: isActive ? 'var(--apple-primary)' : '#d9eadf',
                   borderRadius: 'var(--apple-radius-lg)',
                   padding: '16px',
                   cursor: 'pointer',
@@ -51,8 +51,8 @@ export default function LifeCycleRibbon() {
                     fontWeight: 600,
                     padding: '2px 8px',
                     borderRadius: 'var(--apple-radius-sm)',
-                    backgroundColor: isActive ? 'var(--apple-primary-on-dark)' : 'rgba(255, 255, 255, 0.12)',
-                    color: isActive ? '#000000' : '#ffffff'
+                    backgroundColor: isActive ? 'var(--apple-primary)' : 'rgba(31, 122, 76, 0.08)',
+                    color: isActive ? '#ffffff' : 'var(--apple-primary)'
                   }}>
                     {stg.code}
                   </span>
@@ -73,9 +73,9 @@ export default function LifeCycleRibbon() {
 
         {/* Selected Stage Detail Panel */}
         <div style={{
-          backgroundColor: 'var(--apple-surface-tile-1)',
+          backgroundColor: '#ffffff',
           borderRadius: 'var(--apple-radius-lg)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
+          border: '1px solid #d9eadf',
           padding: '32px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
@@ -111,13 +111,13 @@ export default function LifeCycleRibbon() {
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingTop: '20px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            borderTop: '1px solid var(--apple-divider-soft)',
             fontSize: '13px',
-            color: '#a1a1a6',
+            color: '#5b6f62',
             flexWrap: 'wrap',
             gap: '8px'
           }}>
-            <span>Boundary: <strong style={{ color: '#ffffff' }}>{currentStage.boundary}</strong></span>
+            <span>Boundary: <strong style={{ color: 'var(--apple-ink)' }}>{currentStage.boundary}</strong></span>
             <span>Typical Benchmark GWP Impact: <strong style={{ color: 'var(--apple-primary-on-dark)', fontFamily: 'var(--apple-font-mono)' }}>{currentStage.gwpShare}</strong></span>
           </div>
         </div>

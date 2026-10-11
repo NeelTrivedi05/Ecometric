@@ -35,7 +35,7 @@ export default function DashboardPreview({ onLaunchApp }) {
               <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--apple-ink)', letterSpacing: '-0.2px' }}>
                 EcoMetric Studio
               </span>
-              <span style={{ fontSize: '13px', color: '#86868b' }}>
+              <span style={{ fontSize: '13px', color: '#7a8f81' }}>
                 / Water-Cooled Chiller 500RT / EN 15804+A2
               </span>
             </div>
@@ -84,8 +84,8 @@ export default function DashboardPreview({ onLaunchApp }) {
                     borderRadius: 'var(--apple-radius-sm)',
                     border: 'none',
                     backgroundColor: activeView === tab.id ? 'var(--apple-canvas)' : 'transparent',
-                    boxShadow: activeView === tab.id ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
-                    color: activeView === tab.id ? 'var(--apple-primary)' : '#6e6e73',
+                    boxShadow: activeView === tab.id ? '0 1px 3px rgba(16, 52, 33, 0.06)' : 'none',
+                    color: activeView === tab.id ? 'var(--apple-primary)' : '#5b6f62',
                     fontWeight: activeView === tab.id ? 600 : 400,
                     fontSize: '13px',
                     cursor: 'pointer',
@@ -106,14 +106,14 @@ export default function DashboardPreview({ onLaunchApp }) {
                     <h4 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--apple-ink)' }}>
                       Environmental Impact Results (EF 3.1)
                     </h4>
-                    <span style={{ fontSize: '12px', color: '#28cd41', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '12px', color: '#2e9e5b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <CheckCircleIcon size={14} /> DQR Rating 1.42
                     </span>
                   </div>
 
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                     <thead>
-                      <tr style={{ borderBottom: '1px solid var(--apple-hairline)', color: '#6e6e73', textAlign: 'left' }}>
+                      <tr style={{ borderBottom: '1px solid var(--apple-hairline)', color: '#5b6f62', textAlign: 'left' }}>
                         <th style={{ padding: '8px' }}>INDICATOR</th>
                         <th style={{ padding: '8px' }}>UNIT</th>
                         <th style={{ padding: '8px', textAlign: 'right' }}>A1–A3</th>
@@ -126,30 +126,30 @@ export default function DashboardPreview({ onLaunchApp }) {
                     <tbody>
                       <tr style={{ borderBottom: '1px solid var(--apple-divider-soft)' }}>
                         <td style={{ padding: '10px 8px', fontWeight: 600 }}>GWP-total</td>
-                        <td style={{ padding: '10px 8px', color: '#86868b' }}>kg CO₂e</td>
+                        <td style={{ padding: '10px 8px', color: '#7a8f81' }}>kg CO₂e</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)', fontWeight: 600, color: 'var(--apple-primary)' }}>20,700</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>1,450</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>4,820</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>920</td>
-                        <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)', color: '#28cd41' }}>-3,840</td>
+                        <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)', color: '#2e9e5b' }}>-3,840</td>
                       </tr>
                       <tr style={{ borderBottom: '1px solid var(--apple-divider-soft)' }}>
                         <td style={{ padding: '10px 8px', fontWeight: 600 }}>ODP</td>
-                        <td style={{ padding: '10px 8px', color: '#86868b' }}>kg CFC-11e</td>
+                        <td style={{ padding: '10px 8px', color: '#7a8f81' }}>kg CFC-11e</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>1.24e-4</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>8.10e-6</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>2.10e-5</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>3.40e-6</td>
-                        <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)', color: '#28cd41' }}>-2.10e-5</td>
+                        <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)', color: '#2e9e5b' }}>-2.10e-5</td>
                       </tr>
                       <tr style={{ borderBottom: '1px solid var(--apple-divider-soft)' }}>
                         <td style={{ padding: '10px 8px', fontWeight: 600 }}>AP</td>
-                        <td style={{ padding: '10px 8px', color: '#86868b' }}>mol H+ eq</td>
+                        <td style={{ padding: '10px 8px', color: '#7a8f81' }}>mol H+ eq</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>94.2</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>6.12</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>14.8</td>
                         <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)' }}>3.40</td>
-                        <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)', color: '#28cd41' }}>-18.4</td>
+                        <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--apple-font-mono)', color: '#2e9e5b' }}>-18.4</td>
                       </tr>
                     </tbody>
                   </table>
@@ -157,7 +157,7 @@ export default function DashboardPreview({ onLaunchApp }) {
               )}
 
               {activeView !== 'results' && (
-                <div style={{ textAlign: 'center', padding: '48px 0', color: '#6e6e73' }}>
+                <div style={{ textAlign: 'center', padding: '48px 0', color: '#5b6f62' }}>
                   <p style={{ fontSize: '15px', marginBottom: '16px' }}>
                     Active module: <strong>{activeView.toUpperCase()}</strong>
                   </p>

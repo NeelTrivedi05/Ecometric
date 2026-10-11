@@ -61,7 +61,7 @@ export default function Features() {
               </div>
               <p style={{
                 fontSize: '15px',
-                color: '#6e6e73',
+                color: '#5b6f62',
                 lineHeight: '1.47',
                 margin: 0
               }}>
