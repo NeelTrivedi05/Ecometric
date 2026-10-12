@@ -1,0 +1,1749 @@
+{
+  "ruleset_id": "ul-10010-4-chiller-v2.0",
+  "title": "UL 10010-4 Part B: Water Cooled Chiller EPD Requirements",
+  "program_operator": "UL Environment",
+  "document": {
+    "code": "UL 10010-4",
+    "version": "2.0 (Second Edition)",
+    "published": "2018-06-29",
+    "valid_until": "2022-06",
+    "status_note": "The PCR states a 5-year validity ending June 2022; ul.com PCR list shows 'Water Cooled Chillers (NA Addendum)' as expired (checked 2026-10-12).",
+    "source_file": "Chiller_UL-10010-4_Part-B_Water-Cooled-Chiller_v2.0_2018.pdf"
+  },
+  "parent_rulesets": [
+    "ul-10010-part-a-v3"
+  ],
+  "depends_on_unavailable": [
+    "UL Environment Part A: Life Cycle Assessment Calculation Rules and Report Requirements (v3.0 Dec 2017 / v3.1 Feb 2018) - indicator Tables 4-8, cut-off rules (Section 2.9), data quality (3.1.1), allocation (3.3), packaging defaults (2.8.5 Table 2), hazardous substances (4.11), RSL rules (2.8.2)",
+    "Centrifugal Chillers Average Efficiency Calculator.xlsx (UL template referenced for B6 hours and efficiency)",
+    "AHRI 550/590 (efficiency rating conditions)"
+  ],
+  "product_category": "water_cooled_chiller",
+  "defaults": {
+    "rsl_years": {
+      "value": 25,
+      "unit": "years",
+      "source": "§2.14, p.11"
+    },
+    "esl_years": {
+      "value": 75,
+      "unit": "years",
+      "source": "§I p.3; §4.1 p.15"
+    },
+    "scenarios.A4.distance_km": {
+      "value": 500,
+      "unit": "km",
+      "source": "§2.11 Table 2, p.10"
+    },
+    "scenarios.A4.vehicle": {
+      "value": "diesel truck/trailer",
+      "unit": "-",
+      "source": "§2.11 Table 2, p.10"
+    },
+    "scenarios.C2.distance_km": {
+      "value": 100,
+      "unit": "km",
+      "source": "§2.11 Table 2, p.10"
+    },
+    "scenarios.C2.vehicle": {
+      "value": "diesel truck/trailer",
+      "unit": "-",
+      "source": "§2.11 Table 2, p.10"
+    },
+    "scenarios.A5.installation_energy_kwh": {
+      "value": 0,
+      "unit": "kWh",
+      "source": "§2.11 Table 2 (manual installation), p.10"
+    },
+    "scenarios.C1.deconstruction_energy_kwh": {
+      "value": 0,
+      "unit": "kWh",
+      "source": "§2.11 Table 2 (manual deconstruction), p.10"
+    },
+    "scenarios.B2.refrigerant_loss_pct_per_year": {
+      "value": 2.0,
+      "unit": "%/yr",
+      "source": "§2.14, p.11"
+    },
+    "scenarios.B4.replacement_cycles": {
+      "value": 2,
+      "unit": "-",
+      "source": "§4.1, p.15 (75/25 - 1)"
+    },
+    "product.packaging.reusable_reuse_count": {
+      "value": 1,
+      "unit": "reuses",
+      "source": "§2.10, p.10"
+    },
+    "product.packaging.reusable_end_of_life": {
+      "value": "landfill",
+      "unit": "-",
+      "source": "§2.10, p.10"
+    },
+    "product.packaging.non_reusable_plastic_and_corrugated_end_of_life": {
+      "value": "landfill",
+      "unit": "-",
+      "source": "§2.10, p.10"
+    }
+  },
+  "rules": [
+    {
+      "id": "UL10010-4.SCOPE.01",
+      "title": "Product is a water-cooled chiller",
+      "requirement": "The PCR covers only water-cooled packaged chillers used to cool water for air-conditioning or process cooling in commercial buildings; air-cooled chillers are out of scope.",
+      "source": {
+        "section": "II Scope",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "not_one_of",
+        "path": "product.technical_data.condenser_type",
+        "values": [
+          "air-cooled",
+          "air cooled"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCOPE.02",
+      "title": "Product classification within CSI 23 64 00 water-cooled scope",
+      "requirement": "The product sub-category must be one of the listed CSI MasterFormat 23 64 xx water chiller codes; the air-cooled codes 23 64 23.13, 23 64 26.13 and 23 64 33.13 are excluded.",
+      "source": {
+        "section": "II Applicable / Non-Applicable Products",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "product.classification_codes[csi]",
+        "values": [
+          "15620",
+          "23 64 00",
+          "23 64 13",
+          "23 64 13.13",
+          "23 64 13.16",
+          "23 64 16",
+          "23 64 16.16",
+          "23 64 19",
+          "23 64 23",
+          "23 64 23.16",
+          "23 64 26",
+          "23 64 26.16",
+          "23 64 33",
+          "23 64 33.16"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCOPE.03",
+      "title": "EPD type is product-specific",
+      "requirement": "Industry-average EPDs are not covered by this PCR; declarations must be product-specific.",
+      "source": {
+        "section": "II / III",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "epd.type",
+        "value": "product-specific"
+      }
+    },
+    {
+      "id": "UL10010-4.SCOPE.04",
+      "title": "EPD scope is cradle to grave",
+      "requirement": "The system boundary for EPDs under this PCR is cradle to grave.",
+      "source": {
+        "section": "II System Boundary; 1 General Information",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "epd.scope",
+        "value": "cradle-to-grave"
+      }
+    },
+    {
+      "id": "UL10010-4.MOD.01",
+      "title": "All modules A1-A5, B1-B7, C1-C4 reported",
+      "requirement": "Every module from product stage through end of life (A1-A5, B1-B7, C1-C4) must be reported.",
+      "source": {
+        "section": "3.2; 5 Table 15",
+        "page": 12
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "A4",
+          "A5",
+          "B1",
+          "B2",
+          "B3",
+          "B4",
+          "B5",
+          "B6",
+          "B7",
+          "C1",
+          "C2",
+          "C3",
+          "C4"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.MOD.02",
+      "title": "Product stage declared as A1-A3 or A1, A2, A3",
+      "requirement": "Modules A1, A2 and A3 may be declared individually or as one aggregated A1-A3 module.",
+      "source": {
+        "section": "5",
+        "page": 17
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "modules_any_of",
+        "groups": [
+          [
+            "A1-A3"
+          ],
+          [
+            "A1",
+            "A2",
+            "A3"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.MOD.03",
+      "title": "Module D not declared",
+      "requirement": "The system boundary table marks module D (benefits and loads beyond the system boundary) as not allowed for this PCR.",
+      "source": {
+        "section": "5 Table 15",
+        "page": 17
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "modules_forbidden",
+        "modules": [
+          "D"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.FU.01",
+      "title": "Functional unit is 1 ton of chilling capacity",
+      "requirement": "Results are expressed per one ton (refrigeration ton) of chilling capacity.",
+      "source": {
+        "section": "3.1; Table 3",
+        "page": 11
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "functional_unit.value == 1 and functional_unit.unit in ['ton chilling capacity', 'RT', 'ton of refrigeration']"
+      }
+    },
+    {
+      "id": "UL10010-4.FU.02",
+      "title": "Mass of one delivered product declared",
+      "requirement": "The mass of one declared product (or weighted-average mass for a product group), including required installation accessories, must be stated in kg.",
+      "source": {
+        "section": "3.1; Table 3",
+        "page": 11
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "product.mass_per_unit_kg",
+        "min": 1e-06,
+        "unit": "kg"
+      }
+    },
+    {
+      "id": "UL10010-4.FU.03",
+      "title": "Conversion factor to 1 kg declared",
+      "requirement": "A conversion factor between the functional unit (1 ton of capacity) and 1 kg of product must be provided.",
+      "source": {
+        "section": "3.1; Table 3",
+        "page": 11
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "conversion_factor_to_kg"
+      }
+    },
+    {
+      "id": "UL10010-4.FU.04",
+      "title": "Conversion factor consistent with mass and capacity",
+      "requirement": "The kg-per-ton conversion factor should equal the delivered product mass divided by the declared chilling capacity.",
+      "source": {
+        "section": "3.1; Table 3",
+        "page": 11
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "formula",
+        "target": "conversion_factor_to_kg",
+        "expression": "product.mass_per_unit_kg / product.technical_data.capacity_rt",
+        "tolerance_pct": 1
+      }
+    },
+    {
+      "id": "UL10010-4.FU.05",
+      "title": "Product sub-category stated",
+      "requirement": "The product sub-category (per the CSI list in Section II) must be indicated alongside the functional unit.",
+      "source": {
+        "section": "3.1",
+        "page": 11
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.sub_category"
+      }
+    },
+    {
+      "id": "UL10010-4.RSL.01",
+      "title": "RSL defaults to 25 years unless substantiated",
+      "requirement": "A reference service life of 25 years applies unless a different value is stated and substantiated.",
+      "source": {
+        "section": "2.14",
+        "page": 11
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "default_or_justified",
+        "path": "rsl_years",
+        "default": 25,
+        "unit": "years",
+        "justification_path": "rsl_justification"
+      }
+    },
+    {
+      "id": "UL10010-4.RSL.02",
+      "title": "RSL does not exceed building ESL",
+      "requirement": "The product reference service life must not be longer than the building estimated service life.",
+      "source": {
+        "section": "2.14",
+        "page": 11
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "rsl_years <= esl_years"
+      }
+    },
+    {
+      "id": "UL10010-4.RSL.03",
+      "title": "Building ESL is 75 years",
+      "requirement": "The PCR assumes a 75-year building service life for replacement calculations.",
+      "source": {
+        "section": "I; 4.1",
+        "page": 3
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "esl_years",
+        "value": 75
+      }
+    },
+    {
+      "id": "UL10010-4.RSL.04",
+      "title": "RSL and its in-use conditions declared",
+      "requirement": "The RSL must be declared (mandatory when B1-B7 are covered) together with the in-use conditions it relies on.",
+      "source": {
+        "section": "2.14; Table 7",
+        "page": 11
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.B1.rsl_conditions"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.A4.01",
+      "title": "A4 transport defaults to 500 km diesel truck",
+      "requirement": "Without primary data, transport from point of purchase to site is 500 km by diesel truck/trailer; any deviation must be justified.",
+      "source": {
+        "section": "2.11 Table 2",
+        "page": 10
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "default_or_justified",
+        "path": "scenarios.A4.distance_km",
+        "default": 500,
+        "unit": "km",
+        "justification_path": "scenarios.A4.justification"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.A4.02",
+      "title": "A4 scenario table fields present",
+      "requirement": "Transport to site must report fuel use (l/100 km), distance (km), capacity utilisation including empty runs (%), gross density of transported products (kg/m3) and capacity utilisation volume factor.",
+      "source": {
+        "section": "4 Table 5",
+        "page": 14
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.A4",
+        "fields": [
+          "fuel_l_per_100km",
+          "distance_km",
+          "capacity_utilisation_pct",
+          "gross_density_kg_m3",
+          "capacity_utilisation_volume_factor"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.A5.01",
+      "title": "A5 scenario table fields present",
+      "requirement": "Installation must report auxiliary materials, net freshwater use by source and fate, other resources, electricity, other energy carriers, product loss, installation waste, outputs of on-site waste processing by route, and direct emissions.",
+      "source": {
+        "section": "4 Table 6",
+        "page": 14
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.A5",
+        "fields": [
+          "auxiliary_materials_kg",
+          "water_m3",
+          "other_resources_kg",
+          "electricity_kwh",
+          "other_energy_mj",
+          "product_loss_kg",
+          "waste_kg",
+          "output_materials_kg",
+          "direct_emissions_kg"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.A5.02",
+      "title": "Installation defaults to manual with no energy",
+      "requirement": "Without primary data, installation and deconstruction are assumed manual with no operational energy; deviations must be justified.",
+      "source": {
+        "section": "2.11 Table 2",
+        "page": 10
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "default_or_justified",
+        "path": "scenarios.A5.electricity_kwh",
+        "default": 0,
+        "unit": "kWh",
+        "justification_path": "scenarios.A5.justification"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B1.01",
+      "title": "B1 table reports RSL",
+      "requirement": "The use-stage table must report the RSL in years.",
+      "source": {
+        "section": "4 Table 7",
+        "page": 14
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.B1.rsl_years"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B2.01",
+      "title": "Refrigerant loss defaults to 2% unless justified",
+      "requirement": "Refrigerant losses and replacement rates are assumed at 2% unless otherwise justified.",
+      "source": {
+        "section": "2.14",
+        "page": 11
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "default_or_justified",
+        "path": "scenarios.B2.refrigerant_loss_pct_per_year",
+        "default": 2.0,
+        "unit": "%/yr",
+        "justification_path": "scenarios.B2.refrigerant_loss_justification"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B2.02",
+      "title": "B2 scenario table fields present",
+      "requirement": "Maintenance must report process information, cycles per RSL and per ESL, water, auxiliary materials, other resources, electricity, other energy, refrigerant replacement by type, material loss and direct emissions.",
+      "source": {
+        "section": "4 Table 8",
+        "page": 14
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.B2",
+        "fields": [
+          "process_info",
+          "cycles_per_rsl",
+          "cycles_per_esl",
+          "water_m3",
+          "auxiliary_materials_kg",
+          "other_resources_kg",
+          "electricity_kwh",
+          "other_energy_mj",
+          "refrigerant_replacement_kg",
+          "refrigerant_type",
+          "material_loss_kg",
+          "direct_emissions_kg"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B2.03",
+      "title": "Refrigerant replacement consistent with charge and loss rate",
+      "requirement": "Refrigerant replacement over the RSL should equal charge x annual loss rate x RSL.",
+      "source": {
+        "section": "2.14; Table 8",
+        "page": 11
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "formula",
+        "target": "scenarios.B2.refrigerant_replacement_kg",
+        "expression": "product.technical_data.refrigerant_charge_kg * scenarios.B2.refrigerant_loss_pct_per_year / 100 * rsl_years",
+        "tolerance_pct": 2
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B3.01",
+      "title": "B3 scenario table fields present",
+      "requirement": "Repair must report repair and inspection process information, cycles per RSL and ESL, water, auxiliary materials, other resources, electricity, other energy, material loss and direct emissions.",
+      "source": {
+        "section": "4 Table 9",
+        "page": 15
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.B3",
+        "fields": [
+          "process_info",
+          "inspection_info",
+          "cycles_per_rsl",
+          "cycles_per_esl",
+          "water_m3",
+          "auxiliary_materials_kg",
+          "other_resources_kg",
+          "electricity_kwh",
+          "other_energy_mj",
+          "material_loss_kg",
+          "direct_emissions_kg"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B4.01",
+      "title": "Replacement cycles = ESL / RSL - 1",
+      "requirement": "The number of replacements over the 75-year building life equals ESL divided by RSL, minus one.",
+      "source": {
+        "section": "4.1; Table 10",
+        "page": 15
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "formula",
+        "target": "scenarios.B4.replacement_cycles",
+        "expression": "ceil_tenth(esl_years / rsl_years - 1)",
+        "tolerance_pct": 0
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B4.02",
+      "title": "Cycles rounded up to nearest tenth",
+      "requirement": "Repair, replacement and refurbishment cycles, and replacements over the ESL, are rounded up to the nearest tenth (e.g. 1.47 becomes 1.5).",
+      "source": {
+        "section": "2.14; footnote 3",
+        "page": 15
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "rounding",
+        "path": "scenarios.B4.replacement_cycles",
+        "rule": "ceil_tenth"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B4.03",
+      "title": "B4 impacts approximately cycles x (A1-A5)",
+      "requirement": "Module B4 impacts correspond to the product and construction stages repeated once per replacement cycle (about twice A1-A5 with default RSL and ESL).",
+      "source": {
+        "section": "4.1",
+        "page": 15
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "abs(results.GWP.B4 - scenarios.B4.replacement_cycles * (results.GWP['A1-A3'] + results.GWP.A4 + results.GWP.A5)) <= 0.05 * abs(scenarios.B4.replacement_cycles * (results.GWP['A1-A3'] + results.GWP.A4 + results.GWP.A5))"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B4.04",
+      "title": "B4 scenario table fields present",
+      "requirement": "Replacement must report cycles, electricity, other energy, water, replaced worn parts and direct emissions.",
+      "source": {
+        "section": "4 Table 10",
+        "page": 15
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.B4",
+        "fields": [
+          "replacement_cycles",
+          "electricity_kwh",
+          "other_energy_mj",
+          "water_m3",
+          "worn_parts_kg",
+          "direct_emissions_kg"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B5.01",
+      "title": "B5 scenario table fields present",
+      "requirement": "Refurbishment must report process description, cycles per RSL and ESL, electricity, other energy, water, material inputs, waste and direct emissions.",
+      "source": {
+        "section": "4 Table 11",
+        "page": 16
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.B5",
+        "fields": [
+          "process_info",
+          "cycles_per_rsl",
+          "cycles_per_esl",
+          "electricity_kwh",
+          "other_energy_mj",
+          "water_m3",
+          "material_inputs_kg",
+          "waste_kg",
+          "direct_emissions_kg"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B6.01",
+      "title": "B6 electricity = hours x kW/ton x tons x RSL",
+      "requirement": "Lifetime electricity use equals annual operating hours times efficiency (kW/ton) times chiller capacity (tons) times product life (years).",
+      "source": {
+        "section": "3.3.1",
+        "page": 12
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "formula",
+        "target": "scenarios.B6.electricity_kwh",
+        "expression": "scenarios.B6.annual_operating_hours * scenarios.B6.efficiency_kw_per_ton * product.technical_data.capacity_rt * rsl_years",
+        "tolerance_pct": 1
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B6.02",
+      "title": "B6 location is one of the PCR reference cities",
+      "requirement": "Operating hours and efficiency come from the UL calculator's weather data for the listed global reference cities, independent of the actual sales market.",
+      "source": {
+        "section": "3.3.1",
+        "page": 12
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "scenarios.B6.city",
+        "values": [
+          "Atlanta",
+          "Bangkok",
+          "Beijing",
+          "Cairo",
+          "Cape Town",
+          "Caracas",
+          "Chicago",
+          "Dallas",
+          "Denver",
+          "Dubai",
+          "Hanoi",
+          "Ho Chi Minh",
+          "Hong Kong",
+          "Houston",
+          "Jerusalem",
+          "Kansas City",
+          "London",
+          "Los Angeles",
+          "Melbourne",
+          "Mexico City",
+          "Miami",
+          "Moscow",
+          "Mumbai",
+          "New Delhi",
+          "Ottawa",
+          "Paris",
+          "Perth",
+          "Phoenix",
+          "Riyadh",
+          "Rome",
+          "Sao Paulo",
+          "Seattle",
+          "Seoul",
+          "Shanghai",
+          "Singapore",
+          "Sydney",
+          "Taipei",
+          "Tokyo",
+          "Vancouver",
+          "Warsaw",
+          "Washington, D.C."
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B6.03",
+      "title": "Chiller capacity equals declared nameplate capacity",
+      "requirement": "The capacity used in the B6 calculation is the chilling capacity declared on the product.",
+      "source": {
+        "section": "3.3.1",
+        "page": 12
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "scenarios.B6.capacity_rt == product.technical_data.capacity_rt"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B6.04",
+      "title": "Positive-displacement chillers report AHRI and actual efficiency",
+      "requirement": "For positive-displacement (screw, scroll, reciprocating) chillers, efficiency must be reported at both AHRI rating conditions and actual conditions.",
+      "source": {
+        "section": "3.3.1",
+        "page": 12
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.technical_data.compressor_type in ['screw', 'scroll', 'reciprocating', 'rotary-screw']",
+      "check": {
+        "type": "required_field",
+        "path": "product.technical_data.efficiency_actual_kw_per_ton"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.B6.05",
+      "title": "B6/B7 scenario table fields present",
+      "requirement": "Operational energy and water must report net freshwater use by source and fate, electricity, other energy carriers and equipment output (kW).",
+      "source": {
+        "section": "4 Table 12",
+        "page": 16
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.B6",
+        "fields": [
+          "water_m3",
+          "electricity_kwh",
+          "other_energy_mj",
+          "equipment_output_kw"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.C.01",
+      "title": "C2 waste transport defaults to 100 km diesel truck",
+      "requirement": "Without primary data, transport from the building site to waste processing is 100 km by diesel truck/trailer; deviations must be justified.",
+      "source": {
+        "section": "2.11 Table 2",
+        "page": 10
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "default_or_justified",
+        "path": "scenarios.C2.distance_km",
+        "default": 100,
+        "unit": "km",
+        "justification_path": "scenarios.C2.justification"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.C.02",
+      "title": "End-of-life routes table present",
+      "requirement": "End of life must report mass collected separately, collected as mixed waste, reused, recycled, energy recovered and landfilled.",
+      "source": {
+        "section": "4 Table 13",
+        "page": 16
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.C",
+        "fields": [
+          "collected_separately_kg",
+          "collected_mixed_kg",
+          "reuse_kg",
+          "recycling_kg",
+          "energy_recovery_kg",
+          "landfill_kg"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.C.03",
+      "title": "End-of-life routes account for product mass",
+      "requirement": "Reuse, recycling, energy recovery and landfill masses should together account for the delivered product mass.",
+      "source": {
+        "section": "4 Table 13",
+        "page": 16
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "abs(scenarios.C.reuse_kg + scenarios.C.recycling_kg + scenarios.C.energy_recovery_kg + scenarios.C.landfill_kg - product.mass_per_unit_kg) <= 0.05 * product.mass_per_unit_kg"
+      }
+    },
+    {
+      "id": "UL10010-4.SCEN.C.04",
+      "title": "Exported energy from waste treatment reported",
+      "requirement": "Net energy benefits from energy recovery declared as exported energy in C3 (R>0.6) and C4 (R<0.6), and from material flows to energy recovery, must be reported in MJ.",
+      "source": {
+        "section": "4 Table 14",
+        "page": 17
+      },
+      "phase": "document",
+      "severity": "minor",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "scenarios.C.energy_recovery_kg > 0",
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.C",
+        "fields": [
+          "exported_energy_c3_mj",
+          "exported_energy_c4_mj",
+          "energy_recovery_material_mj"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.PKG.01",
+      "title": "Packaging declared with end-of-life pathway",
+      "requirement": "Each packaging material must be described by type and composition with its disposal pathway (reuse, recycling or landfill).",
+      "source": {
+        "section": "2.10",
+        "page": 10
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.packaging",
+        "fields": [
+          "material",
+          "mass_kg",
+          "reusable",
+          "end_of_life"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.TECH.01",
+      "title": "Chilled capacity declared in RT",
+      "requirement": "Technical data must state chilled capacity in tons of refrigeration (kW optional).",
+      "source": {
+        "section": "2.5 Table 1",
+        "page": 9
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "product.technical_data.capacity_rt",
+        "min": 1e-06,
+        "unit": "RT"
+      }
+    },
+    {
+      "id": "UL10010-4.TECH.02",
+      "title": "Efficiency declared in kW/ton at load and ECWT points",
+      "requirement": "Energy efficiency must be given in kW/ton at combinations of load percentage and entering condenser water temperature.",
+      "source": {
+        "section": "2.5 Table 1",
+        "page": 9
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.technical_data.efficiency_points",
+        "fields": [
+          "load_pct",
+          "ecwt",
+          "kw_per_ton"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.TECH.03",
+      "title": "Pressure drop declared",
+      "requirement": "Pressure drops must be given in feet of water (kPa optional).",
+      "source": {
+        "section": "2.5 Table 1",
+        "page": 9
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.technical_data.pressure_drop_ft_water"
+      }
+    },
+    {
+      "id": "UL10010-4.TECH.04",
+      "title": "Rating and compliance standards listed",
+      "requirement": "All standards used to specify, test and approve the product (e.g. AHRI 550/590) must be listed.",
+      "source": {
+        "section": "2.5",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "list_min_length",
+        "path": "product.standards",
+        "min": 1
+      }
+    },
+    {
+      "id": "UL10010-4.TECH.05",
+      "title": "Delivered dimensions stated",
+      "requirement": "Dimensions and quantities of the product as delivered to site must be stated.",
+      "source": {
+        "section": "2.6",
+        "page": 9
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.technical_data.dimensions_as_delivered"
+      }
+    },
+    {
+      "id": "UL10010-4.MAT.01",
+      "title": "Material composition as % of total mass",
+      "requirement": "Material composition must be disclosed as percentages (or ranges) of total product mass.",
+      "source": {
+        "section": "2.7",
+        "page": 9
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.material_composition",
+        "fields": [
+          "material",
+          "mass_pct"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.MAT.02",
+      "title": "Composition percentages total 100%",
+      "requirement": "Disclosed material shares should add up to the whole product.",
+      "source": {
+        "section": "2.7",
+        "page": 9
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "abs(sum(product.material_composition[].mass_pct) - 100) <= 1"
+      }
+    },
+    {
+      "id": "UL10010-4.MAT.03",
+      "title": "No 'free of' or 'harmless' claims",
+      "requirement": "Statements of non-inclusion such as 'free of' and interpretive claims such as 'entirely harmless' are not permitted.",
+      "source": {
+        "section": "2.7; 8",
+        "page": 9
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_forbidden",
+        "patterns": [
+          "free of",
+          "is free from",
+          "entirely harmless",
+          "completely harmless"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.01",
+      "title": "General information table complete",
+      "requirement": "The EPD's general information block must include program operator, program instructions and version, declaration holder, declaration number, declared product and functional unit, product definition, reference PCR and version, markets, issue date, validity period, EPD type and scope, year(s) of primary data, LCA software, LCI databases, LCIA method (each with versions), and who reviewed the PCR, conducted the LCA and verified it.",
+      "source": {
+        "section": "1 General Information",
+        "page": 7
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "epd",
+        "fields": [
+          "program_operator.name",
+          "general_program_instructions",
+          "declaration_holder.name",
+          "declaration_holder.address",
+          "declaration_number",
+          "reference_pcr.name",
+          "reference_pcr.version",
+          "markets",
+          "date_of_issue",
+          "valid_until",
+          "type",
+          "scope",
+          "verification.type",
+          "verification.verifier",
+          "verification.pcr_review_by",
+          "verification.lca_by"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.02",
+      "title": "LCA software, database and LCIA method versions stated",
+      "requirement": "LCA software, LCI database(s) and LCIA methodology must each be named with version numbers.",
+      "source": {
+        "section": "1 General Information",
+        "page": 7
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca",
+        "fields": [
+          "software.name",
+          "software.version",
+          "databases",
+          "lcia_methods",
+          "reference_year"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.03",
+      "title": "Comparability limitation statement present",
+      "requirement": "The EPD must state that declarations from different programs may not be comparable and that comparisons must consider building-level use.",
+      "source": {
+        "section": "1 Limitations",
+        "page": 7
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "from different programs",
+          "may not be comparable"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.04",
+      "title": "Manufacturer and production sites named",
+      "requirement": "The manufacturing entity and place(s) of production must be given.",
+      "source": {
+        "section": "2.1; 2.8",
+        "page": 8
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "list_min_length",
+        "path": "manufacturer.production_sites",
+        "min": 1
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.05",
+      "title": "Product identification with brand and image",
+      "requirement": "Products must be identified by brand name, material type, production code if applicable, and a photo or illustration.",
+      "source": {
+        "section": "2.2.1",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product",
+        "fields": [
+          "brand",
+          "name",
+          "image"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.06",
+      "title": "Production flow diagram included",
+      "requirement": "A flow diagram of the main production processes within the declared scope must be included.",
+      "source": {
+        "section": "2.2.3",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.flow_diagram"
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.07",
+      "title": "Averaging method described for product groups",
+      "requirement": "When several products or sites are averaged, the production-volume weighting method and represented sites must be described.",
+      "source": {
+        "section": "2.2.4",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "len(product.variants) > 1 or len(manufacturer.production_sites) > 1",
+      "check": {
+        "type": "required_field",
+        "path": "lca.averaging_method"
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.08",
+      "title": "Representative sample of up to 100 units",
+      "requirement": "Product-family EPDs should use a representative sample of the previous calendar year's production, up to 100 units spanning the sizes sold.",
+      "source": {
+        "section": "2.2.4",
+        "page": 8
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "applies_when": "len(product.variants) > 1",
+      "check": {
+        "type": "numeric_range",
+        "path": "lca.sample_size_units",
+        "min": 1,
+        "max": 100,
+        "unit": "units"
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.09",
+      "title": "Application, functional unit and RSL stated",
+      "requirement": "The intended application(s), functional unit and RSL must be stated.",
+      "source": {
+        "section": "2.3",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.application"
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.10",
+      "title": "No-exclusion statement present",
+      "requirement": "The methodological framework must include the statement that no known flows are deliberately excluded.",
+      "source": {
+        "section": "2.4",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "no known flows are deliberately excluded"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.11",
+      "title": "Allocation and cut-off procedures described",
+      "requirement": "Allocation and cut-off procedures must be described in the methodological framework.",
+      "source": {
+        "section": "2.4; 3.6; 3.10",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca",
+        "fields": [
+          "allocation.basis",
+          "cutoff.description"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.12",
+      "title": "Disposal channels indicated",
+      "requirement": "Possible disposal channels must be stated per the Part A waste classification.",
+      "source": {
+        "section": "2.16",
+        "page": 11
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.disposal"
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.13",
+      "title": "Re-use and recycling possibilities described",
+      "requirement": "Possibilities for re-use and recycling must be described.",
+      "source": {
+        "section": "2.15",
+        "page": 11
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.reuse_phase"
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.14",
+      "title": "Environmental activities and certifications section",
+      "requirement": "Other environmental activities (e.g. recycling or take-back programs) must be described, and any listed certification must say where details can be found.",
+      "source": {
+        "section": "7.5",
+        "page": 18
+      },
+      "phase": "document",
+      "severity": "minor",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.environmental_activities"
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.15",
+      "title": "Interpretation section present",
+      "requirement": "The EPD must include an interpretation discussing assumptions and limitations of the results.",
+      "source": {
+        "section": "6",
+        "page": 17
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.interpretation"
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.16",
+      "title": "Reference PCR cited",
+      "requirement": "The Part B PCR the EPD is based on must be referenced.",
+      "source": {
+        "section": "9",
+        "page": 19
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "UL 10010-4",
+          "Water Cooled Chiller EPD Requirements"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.17",
+      "title": "Period under review documented",
+      "requirement": "The period under review used for averages must be documented.",
+      "source": {
+        "section": "3.9",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.period_under_review",
+        "fields": [
+          "start",
+          "end"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.DOC.18",
+      "title": "Data quality evaluation provided",
+      "requirement": "Data quality must be evaluated for temporal, geographical and technological representativeness and completeness.",
+      "source": {
+        "section": "3.8",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.data_quality",
+        "fields": [
+          "temporal",
+          "geographical",
+          "technological",
+          "completeness"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.ALLOC.01",
+      "title": "Mass-based allocation unless justified",
+      "requirement": "Co-product allocation uses mass as the primary basis; other bases need a justification.",
+      "source": {
+        "section": "3.10",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "default_or_justified",
+        "path": "lca.allocation.basis",
+        "default": "mass",
+        "unit": "-",
+        "justification_path": "lca.allocation.justification"
+      }
+    },
+    {
+      "id": "UL10010-4.FMT.01",
+      "title": "LCIA results in scientific notation, 3 significant digits",
+      "requirement": "LCIA results must be declared in scientific notation with three significant digits, formatted uniformly for every indicator and module.",
+      "source": {
+        "section": "5",
+        "page": 17
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "number_format",
+        "scope": "results",
+        "style": "scientific",
+        "significant_digits": 3
+      }
+    },
+    {
+      "id": "UL10010-4.FMT.02",
+      "title": "SI units for all results",
+      "requirement": "All LCA results must be in SI units; other regional units are optional extras.",
+      "source": {
+        "section": "3.5",
+        "page": 13
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "not_one_of",
+        "path": "results.units[]",
+        "values": [
+          "lb",
+          "BTU",
+          "ft2",
+          "ft3",
+          "degF"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.FMT.03",
+      "title": "Imperial conversions use mandated factors",
+      "requirement": "If imperial units are also shown, conversions must use 10.76391 ft2/m2, 2.204622 lb/kg, 947.8170 BTU/MJ, 35.31466 ft3/m3 and the stated temperature formula.",
+      "source": {
+        "section": "3.5 Table 4",
+        "page": 13
+      },
+      "phase": "document",
+      "severity": "minor",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "exists(document.imperial_units)",
+      "check": {
+        "type": "relation",
+        "expression": "document.conversion_factors.ft2_per_m2 == 10.76391 and document.conversion_factors.lb_per_kg == 2.204622 and document.conversion_factors.btu_per_mj == 947.8170 and document.conversion_factors.ft3_per_m3 == 35.31466"
+      }
+    },
+    {
+      "id": "UL10010-4.IND.01",
+      "title": "TRACI results for North American market",
+      "requirement": "EPDs for North America declare LCIA results with the TRACI indicator set from Part A Table 7.",
+      "source": {
+        "section": "5",
+        "page": 17
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "'North America' in epd.markets or 'US' in epd.markets or 'Canada' in epd.markets",
+      "check": {
+        "type": "required_field",
+        "path": "results.TRACI_2_1"
+      }
+    },
+    {
+      "id": "UL10010-4.IND.02",
+      "title": "CML results for EU market",
+      "requirement": "EPDs for the EU declare LCIA results with the CML indicator set from Part A Table 8.",
+      "source": {
+        "section": "5",
+        "page": 17
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "'EU' in epd.markets or 'Europe' in epd.markets",
+      "check": {
+        "type": "required_field",
+        "path": "results.CML"
+      }
+    },
+    {
+      "id": "UL10010-4.IND.03",
+      "title": "LCI resource, waste and carbon indicators reported",
+      "requirement": "Resource use indicators (Part A Table 4), output flows and waste categories (Table 5), and carbon emissions and removals (Table 6) must be reported.",
+      "source": {
+        "section": "5",
+        "page": 17
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "results",
+        "fields": [
+          "resource_use",
+          "output_flows_waste",
+          "carbon_emissions_removals"
+        ]
+      }
+    },
+    {
+      "id": "UL10010-4.VER.01",
+      "title": "Verification type declared",
+      "requirement": "The EPD must state whether ISO 14025 verification was internal or external.",
+      "source": {
+        "section": "1 General Information",
+        "page": 7
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.verification.type",
+        "values": [
+          "internal",
+          "external"
+        ]
+      }
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "UL10010-4.M.01",
+      "title": "Capital goods included when significant",
+      "source": {
+        "section": "3.2",
+        "page": 12
+      },
+      "reason": "Whether capital goods significantly affect conclusions is a judgement; software can only check that capital-goods lifetimes are documented."
+    },
+    {
+      "id": "UL10010-4.M.02",
+      "title": "Omitted aspects justified",
+      "source": {
+        "section": "3.2",
+        "page": 12
+      },
+      "reason": "Adequacy of justification for any impact not covered by a module needs reviewer judgement."
+    },
+    {
+      "id": "UL10010-4.M.03",
+      "title": "Deviations from default scenarios explained",
+      "source": {
+        "section": "2.11",
+        "page": 10
+      },
+      "reason": "Software checks a justification exists (default_or_justified rules); its adequacy needs review."
+    },
+    {
+      "id": "UL10010-4.M.04",
+      "title": "Confidential composition exemptions",
+      "source": {
+        "section": "2.7",
+        "page": 9
+      },
+      "reason": "Withholding proprietary composition is allowed with appropriate justification; acceptability is a reviewer decision."
+    },
+    {
+      "id": "UL10010-4.M.05",
+      "title": "Health and environment measures during manufacturing and installation",
+      "source": {
+        "section": "2.9; 7.1; 7.2",
+        "page": 10
+      },
+      "reason": "Narrative content; presence can be checked but quality cannot."
+    },
+    {
+      "id": "UL10010-4.M.06",
+      "title": "Extraordinary effects (fire, water, mechanical destruction)",
+      "source": {
+        "section": "7.3",
+        "page": 18
+      },
+      "reason": "'Should' narrative sections whose relevance depends on the product."
+    },
+    {
+      "id": "UL10010-4.M.07",
+      "title": "Supporting test documentation and detection limits",
+      "source": {
+        "section": "8",
+        "page": 19
+      },
+      "reason": "Requires reviewing test certificates."
+    },
+    {
+      "id": "UL10010-4.M.08",
+      "title": "Comparisons only between similar-capacity systems",
+      "source": {
+        "section": "3.11",
+        "page": 13
+      },
+      "reason": "Applies to how results are used, not to EPD content."
+    },
+    {
+      "id": "UL10010-4.M.09",
+      "title": "B6 hours and efficiency from the UL calculator",
+      "source": {
+        "section": "3.3.1",
+        "page": 12
+      },
+      "reason": "Values must come from the UL 'Centrifugal Chillers Average Efficiency Calculator' workbook, which is not available; software can only check the formula and city list."
+    }
+  ],
+  "notes": [
+    "Unit conversions in Table 1 (p.9) appear inverted in the source: it gives 'kW = 0.2843 * RT' and 'kPa = 0.3346 * ft'. Correct factors are 1 RT = 3.517 kW and 1 ft of water = 2.989 kPa (0.2843 and 0.3346 are the reciprocals). Use the correct factors in software.",
+    "Section 3.3.1 says 50 global cities but lists only 41 names (p.12). The rule uses the 41 listed names.",
+    "Existing backend/data/pcr_rules.json lists 'Frankfurt' as a B6 city; Frankfurt is not in the PCR list.",
+    "Existing backend/data/pcr_rules.json lists Module D as optional; Table 15 (p.17) marks D as 'Not allowed' for this PCR.",
+    "The 2% refrigerant loss in §2.14 does not state a time basis; it is interpreted as % of charge per year, consistent with LEED v4 Enhanced Refrigerant Management, which the PCR cites.",
+    "Indicator names, units and cut-off percentages are defined in UL Part A, which is not available, so IND rules check only that the indicator groups exist.",
+    "New field paths introduced: product.technical_data.{condenser_type, compressor_type, capacity_rt, efficiency_points[], efficiency_actual_kw_per_ton, pressure_drop_ft_water, dimensions_as_delivered, refrigerant_charge_kg}, product.classification_codes[csi], product.variants[], rsl_justification, scenarios.<module>.justification, scenarios.B1.rsl_conditions, scenarios.B2.refrigerant_loss_pct_per_year, scenarios.B6.{city, annual_operating_hours, efficiency_kw_per_ton, capacity_rt, equipment_output_kw}, scenarios.C.* (Table 13 end-of-life routes covering C1-C4), lca.averaging_method, lca.sample_size_units, results.units[], results.{resource_use, output_flows_waste, carbon_emissions_removals}, document.conversion_factors.*, document.imperial_units.",
+    "Licence: the UL PDF grants internal, non-commercial use only and prohibits derivative works. Rules here are paraphrased requirements with section references; confirm with UL before shipping them in a commercial product."
+  ]
+}

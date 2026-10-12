@@ -1,0 +1,2969 @@
+{
+  "ruleset_id": "epd-intl-pcr-2024-06-v1.0.1",
+  "title": "PCR 2024:06 Electronic and electric equipment, and electronic components (non-construction)",
+  "program_operator": "EPD International AB (The International EPD System)",
+  "document": {
+    "code": "PCR 2024:06",
+    "version": "1.0.1",
+    "published": "2024-12-09",
+    "valid_until": "2029-10-28",
+    "status_note": "Validity taken from the document (v1.0.0 2024-10-28, v1.0.1 2024-12-09); current status on environdec.com not checked.",
+    "source_file": "PCR-2024-06_Electronic-Electric-Equipment_(parent-for-cable).pdf"
+  },
+  "parent_rulesets": [],
+  "depends_on_unavailable": [
+    "www.environdec.com/indicators - default list of mandatory/optional environmental performance indicators, methods and units (only GWP-GHG is named in the PCR itself)",
+    "EN 50693:2019 - Annex G (G.2/G.4 recovery-benefit rules, Table G.4 default material recovery rates) and Annex A (A.1 homogeneous-family extrapolation)",
+    "General Programme Instructions of the International EPD System (v4.0 cited as conformance basis; v5.0.0 rules partly adopted; latest GPI for verification)",
+    "PEP Ecopassport PSRs (PSR0002/0003/0005/0006/0007/0009/0010/0014/0018) for RSLs",
+    "Commission Regulation (EU) 2023/826 - operating mode definitions used in the TEC formula"
+  ],
+  "product_category": "electronic_electric_equipment_non_construction",
+  "defaults": {
+    "lca.temporal_boundary_years": {
+      "value": 100,
+      "unit": "years",
+      "source": "§4.3.3.3 p20"
+    },
+    "scenarios.use.hours_per_day_total": {
+      "value": 24,
+      "unit": "h",
+      "source": "§4.7.5.2 p28"
+    },
+    "scenarios.use.days_per_year": {
+      "value": 365,
+      "unit": "days",
+      "source": "§4.7.5.2 p29 (worked TEC example; derived)"
+    },
+    "lca.cutoff.total_pct": {
+      "value": 5,
+      "unit": "%",
+      "source": "§4.5 p20"
+    }
+  },
+  "rules": [
+    {
+      "id": "PCR2024-06.SCOPE.01",
+      "title": "Construction products are out of scope",
+      "requirement": "Electronic/electric equipment or components that classify as construction products (EU CPR definition) are excluded; such products fall under PCR 2019:14.",
+      "source": {
+        "section": "2.2.1",
+        "page": 7
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "product.is_construction_product",
+        "value": false
+      }
+    },
+    {
+      "id": "PCR2024-06.SCOPE.02",
+      "title": "UN CPC division within PCR scope",
+      "requirement": "The product category corresponds to UN CPC divisions 43-48 and 84 (and HS code 85); the product's UN CPC division should fall in that range.",
+      "source": {
+        "section": "2.2.1",
+        "page": 7
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "one_of",
+        "path": "product.un_cpc_division",
+        "values": [
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "84"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.SCOPE.03",
+      "title": "Geographical scope declared",
+      "requirement": "The PCR may be used globally; the EPD must state the geographical location(s) of use and end-of-life for which performance was calculated.",
+      "source": {
+        "section": "2.2.2 / 5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "list_min_length",
+        "path": "epd.markets[]",
+        "min": 1
+      }
+    },
+    {
+      "id": "PCR2024-06.FU.01",
+      "title": "Functional or declared unit defined",
+      "requirement": "A functional unit (preferred) or, if not possible, a declared unit shall be clearly defined and documented in the EPD.",
+      "source": {
+        "section": "4.1",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_any",
+        "paths": [
+          "functional_unit.description",
+          "declared_unit.description"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.FU.02",
+      "title": "Results expressed per functional/declared unit",
+      "requirement": "Environmental performance results shall be expressed per functional or declared unit.",
+      "source": {
+        "section": "4.1",
+        "page": 13
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_present",
+        "doc_section": "environmental_performance",
+        "any_of": [
+          "per functional unit",
+          "per declared unit",
+          "functional unit",
+          "declared unit"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.FU.03",
+      "title": "Functional unit states the function provided",
+      "requirement": "When a functional unit is used, it shall specify the function(s) the product provides to the user.",
+      "source": {
+        "section": "4.1.1",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "functional_unit.function"
+      },
+      "applies_when": "functional_unit.unit"
+    },
+    {
+      "id": "PCR2024-06.FU.04",
+      "title": "Functional unit states the reference/performance level",
+      "requirement": "When a functional unit is used, it shall specify the reference or performance level(s) related to it.",
+      "source": {
+        "section": "4.1.1",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "functional_unit.performance_level"
+      },
+      "applies_when": "functional_unit.unit"
+    },
+    {
+      "id": "PCR2024-06.FU.05",
+      "title": "Declared unit only when a functional unit cannot be defined",
+      "requirement": "A declared unit may only be used when a functional unit cannot be defined (e.g. complex functions or multiple use scenarios of a component); the reason should be recorded.",
+      "source": {
+        "section": "4.1 / 4.1.2",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "required_field",
+        "path": "declared_unit.justification"
+      },
+      "applies_when": "declared_unit.unit"
+    },
+    {
+      "id": "PCR2024-06.FU.06",
+      "title": "Declared unit is one item, one assembly, or one unit of a product property",
+      "requirement": "A declared unit shall equal one (1) item, one assembly of items, or one unit of a product property (e.g. 1 kg or 1 m).",
+      "source": {
+        "section": "4.1.2",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "declared_unit.value",
+        "value": 1
+      },
+      "applies_when": "declared_unit.unit"
+    },
+    {
+      "id": "PCR2024-06.FU.07",
+      "title": "Declared unit detailed with item weight",
+      "requirement": "The declared unit shall be further detailed with relevant technical properties, including item weight (kg).",
+      "source": {
+        "section": "4.1.2",
+        "page": 13
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.mass_per_unit_kg"
+      },
+      "applies_when": "declared_unit.unit"
+    },
+    {
+      "id": "PCR2024-06.RSL.01",
+      "title": "Reference service life defined",
+      "requirement": "An RSL shall be defined for the product and stated in the EPD as part of the functional unit.",
+      "source": {
+        "section": "4.2",
+        "page": 14
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "rsl_years",
+        "min": 0,
+        "unit": "years"
+      }
+    },
+    {
+      "id": "PCR2024-06.RSL.02",
+      "title": "RSL reference use conditions stated",
+      "requirement": "The properties and reference use conditions used to estimate the RSL shall be declared together with the RSL.",
+      "source": {
+        "section": "4.2",
+        "page": 14
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.use.reference_use_conditions"
+      }
+    },
+    {
+      "id": "PCR2024-06.RSL.03",
+      "title": "RSL shown in product information",
+      "requirement": "The product information section shall state the RSL and/or technical/actual lifespan and applied standards, if relevant.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "product_information",
+        "any_of": [
+          "reference service life",
+          "RSL"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.RSL.04",
+      "title": "Number of products needed over the RSL",
+      "requirement": "If the product's proven lifespan differs from the RSL, the quantity of product needed to fulfil the functional unit equals RSL divided by lifespan (e.g. 2 products for a 5-year lifespan and 10-year RSL).",
+      "source": {
+        "section": "4.2",
+        "page": 14
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "formula",
+        "target": "scenarios.use.product_units_per_fu",
+        "expression": "rsl_years / product.lifespan_years",
+        "tolerance_pct": 1
+      },
+      "applies_when": "product.lifespan_years"
+    },
+    {
+      "id": "PCR2024-06.SB.01",
+      "title": "Scope is cradle-to-grave",
+      "requirement": "EPDs based on this PCR shall have cradle-to-grave scope.",
+      "source": {
+        "section": "4.3",
+        "page": 14
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "epd.scope",
+        "value": "cradle-to-grave"
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.02",
+      "title": "Four main life-cycle stages declared",
+      "requirement": "Results shall be divided into and declared for the manufacturing, distribution, use and end-of-life stages.",
+      "source": {
+        "section": "4.3.1",
+        "page": 15
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "manufacturing",
+          "distribution",
+          "use",
+          "end_of_life"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.03",
+      "title": "Cradle-to-grave described in the EPD",
+      "requirement": "The product information section shall describe that the system boundary is cradle-to-grave and include a system diagram split by life-cycle stage.",
+      "source": {
+        "section": "5.4.3",
+        "page": 37
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "product_information",
+        "any_of": [
+          "cradle-to-grave",
+          "cradle to grave"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.04",
+      "title": "System diagram included",
+      "requirement": "The EPD shall include a system diagram of the processes in the LCA divided into life-cycle stages.",
+      "source": {
+        "section": "4.4 / 5.4.3",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.flow_diagram"
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.05",
+      "title": "Omitted life-cycle stages justified",
+      "requirement": "The EPD shall state which life-cycle stages (if any) are not considered, with a justification for the omission.",
+      "source": {
+        "section": "5.4.3",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.omitted_stages_justification"
+      },
+      "applies_when": "lca.omitted_stages[]"
+    },
+    {
+      "id": "PCR2024-06.SB.06",
+      "title": "95% coverage of energy use",
+      "requirement": "All environmentally relevant processes should be included so that at least 95% of total energy use is accounted for.",
+      "source": {
+        "section": "4.3",
+        "page": 15
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "cutoff",
+        "total_pct": 5,
+        "basis": "energy"
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.07",
+      "title": "95% coverage of product mass",
+      "requirement": "All environmentally relevant processes should be included so that at least 95% of the mass of product content is accounted for.",
+      "source": {
+        "section": "4.3",
+        "page": 15
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "cutoff",
+        "total_pct": 5,
+        "basis": "mass"
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.08",
+      "title": "Reject rates accounted for",
+      "requirement": "Reject rates (defective products) in manufacturing shall be accounted for in the LCA model.",
+      "source": {
+        "section": "4.3.1.1",
+        "page": 17
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.manufacturing.reject_rate_pct"
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.09",
+      "title": "Warehouse storage energy covers at least 75% of product mass",
+      "requirement": "Upstream transport to a distribution point shall include energy for warehouse storage of raw materials/components covering at least 75% of the product mass.",
+      "source": {
+        "section": "4.3.1.1",
+        "page": 16
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "lca.manufacturing.warehouse_storage_mass_coverage_pct",
+        "min": 75,
+        "max": 100,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.10",
+      "title": "Component EPDs document use/end-of-life assumptions",
+      "requirement": "For components, assumptions (and their rationale) on use and end-of-life as part of a final product shall be communicated in the product information section.",
+      "source": {
+        "section": "4.3.1",
+        "page": 16
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.use.assumptions_rationale"
+      },
+      "applies_when": "product.technical_data.product_type == 'component'"
+    },
+    {
+      "id": "PCR2024-06.SB.11",
+      "title": "Capital goods inclusion described",
+      "requirement": "Infrastructure/capital goods are generally excluded; if included, the EPD shall describe it (stages/processes concerned) unless a sensitivity analysis shows <10% contribution to cradle-to-gate results for all declared impact indicators.",
+      "source": {
+        "section": "4.3.2",
+        "page": 19
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "lca.capital_goods.included == false or lca.capital_goods.description or lca.capital_goods.max_share_cradle_to_gate_pct < 10"
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.12",
+      "title": "Datasets containing capital goods named",
+      "requirement": "If capital goods are included via generic datasets whose full dataset contributes >5% to cradle-to-gate results of any impact indicator, the dataset name and source database shall be declared.",
+      "source": {
+        "section": "4.3.2",
+        "page": 19
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.capital_goods.datasets[]",
+        "fields": [
+          "name",
+          "database"
+        ]
+      },
+      "applies_when": "lca.capital_goods.included == true"
+    },
+    {
+      "id": "PCR2024-06.SB.13",
+      "title": "Temporal boundary of 100 years",
+      "requirement": "By default, inputs and outputs shall be accounted for over 100 years from the year the LCA model best represents.",
+      "source": {
+        "section": "4.3.3.3 / 4.7.1",
+        "page": 20
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "default_or_justified",
+        "path": "lca.temporal_boundary_years",
+        "default": 100,
+        "unit": "years",
+        "justification_path": "lca.temporal_boundary_justification"
+      }
+    },
+    {
+      "id": "PCR2024-06.SB.14",
+      "title": "Repair/reuse/refurbishment assumptions documented",
+      "requirement": "Repair, reuse and refurbishment are optional; if modelled, key assumptions shall be documented in the LCA report and the EPD.",
+      "source": {
+        "section": "4.3.1 / 4.7.5.2",
+        "page": 27
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.use.repair_reuse_refurbishment_assumptions"
+      },
+      "applies_when": "scenarios.use.repair_reuse_refurbishment_included == true"
+    },
+    {
+      "id": "PCR2024-06.CO.01",
+      "title": "Cut-off limited to 5% over the life cycle",
+      "requirement": "The cut-off rule is 5% over the product life cycle: inputs/outputs known or expected to contribute more than 5% to any environmental performance indicator shall be included.",
+      "source": {
+        "section": "4.5",
+        "page": 20
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "cutoff",
+        "per_flow_pct": 5,
+        "total_pct": 5,
+        "basis": "impact"
+      }
+    },
+    {
+      "id": "PCR2024-06.CO.02",
+      "title": "Cut-offs described in the EPD",
+      "requirement": "Any application of cut-off rules, including the LCI data excluded, shall be described in the EPD.",
+      "source": {
+        "section": "4.5",
+        "page": 20
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.cutoff.description"
+      },
+      "applies_when": "lca.cutoff.excluded_flows[]"
+    },
+    {
+      "id": "PCR2024-06.CO.03",
+      "title": "Components and materials that may never be cut off",
+      "requirement": "Batteries/accumulators, PCBA, electronic displays, gold, silver, copper and alloys, antimony trioxide, insulating gas (e.g. SF6), coolants, rare earths (indium, molybdenum, neodymium), microprocessors, magnesium anodes, tantalum capacitors and arsenic-gallium capacitors shall always be included.",
+      "source": {
+        "section": "4.5",
+        "page": 21
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "not_one_of",
+        "path": "lca.cutoff.excluded_flows[].category",
+        "values": [
+          "battery",
+          "accumulator",
+          "pcba",
+          "electronic_display",
+          "gold",
+          "silver",
+          "copper",
+          "copper_alloy",
+          "antimony_trioxide",
+          "insulating_gas",
+          "sf6",
+          "coolant",
+          "indium",
+          "molybdenum",
+          "neodymium",
+          "microprocessor",
+          "magnesium_anode",
+          "tantalum_capacitor",
+          "arsenic_gallium_capacitor"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.AL.01",
+      "title": "Co-product allocation follows the stepwise hierarchy",
+      "requirement": "Co-product allocation shall be avoided by subdivision where possible, otherwise based on physical properties, otherwise on economic value.",
+      "source": {
+        "section": "4.6.1",
+        "page": 21
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "lca.allocation.basis",
+        "values": [
+          "none",
+          "subdivision",
+          "mass",
+          "volume",
+          "area",
+          "energy",
+          "economic"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.AL.02",
+      "title": "Allocation choice justified",
+      "requirement": "When allocation by physical or economic properties is used, the reason the previous step of the hierarchy was not applicable should be documented.",
+      "source": {
+        "section": "4.6.1",
+        "page": 21
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "required_field",
+        "path": "lca.allocation.justification"
+      },
+      "applies_when": "lca.allocation.basis != 'none' and lca.allocation.basis != 'subdivision'"
+    },
+    {
+      "id": "PCR2024-06.AL.03",
+      "title": "Waste allocation uses point of substitution",
+      "requirement": "Allocation of waste shall follow the point-of-substitution principle with cut-off allocation at the system boundary (differs from GPI and EN 15804 end-of-waste).",
+      "source": {
+        "section": "4.6.2",
+        "page": 21
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "lca.allocation.waste_method",
+        "value": "point-of-substitution"
+      }
+    },
+    {
+      "id": "PCR2024-06.AL.04",
+      "title": "EN 50693 Annex G rule stated when recovery occurs",
+      "requirement": "If there is any material/energy recovery, the EPD shall specify whether EN 50693 Annex G Section G.2 or G.4 rules were used.",
+      "source": {
+        "section": "4.6.2",
+        "page": 22
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "lca.recovery_benefits.en50693_annex_g_rule",
+        "values": [
+          "G.2",
+          "G.4"
+        ]
+      },
+      "applies_when": "lca.recovery_benefits.recovery_occurs == true"
+    },
+    {
+      "id": "PCR2024-06.AL.05",
+      "title": "G.4 when benefits declared, G.2 when not",
+      "requirement": "If recovery benefits are declared, EN 50693 G.4 rules shall be followed; if they are not declared, G.2 rules shall be followed.",
+      "source": {
+        "section": "4.6.2",
+        "page": 22
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "(lca.recovery_benefits.declared == true and lca.recovery_benefits.en50693_annex_g_rule == 'G.4') or (lca.recovery_benefits.declared == false and lca.recovery_benefits.en50693_annex_g_rule == 'G.2')"
+      },
+      "applies_when": "lca.recovery_benefits.recovery_occurs == true"
+    },
+    {
+      "id": "PCR2024-06.AL.06",
+      "title": "Recovery benefits declared separately per stage",
+      "requirement": "Any calculated benefits from material/energy recovery shall be accounted for in the stage where recovery occurs and declared separately from the other results of each stage.",
+      "source": {
+        "section": "4.6.2 / 5.4.5.1",
+        "page": 22
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "results.recovery_benefits"
+      },
+      "applies_when": "lca.recovery_benefits.declared == true"
+    },
+    {
+      "id": "PCR2024-06.DQ.01",
+      "title": "Specific data reference year at most 5 years old",
+      "requirement": "The reference year of specific data shall not be more than five years old (representativeness reconfirmed by the data provider within five years).",
+      "source": {
+        "section": "4.7.1",
+        "page": 23
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "data_age",
+        "path": "lca.reference_year",
+        "max_years": 5
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.02",
+      "title": "Specific data averaged over at least one year",
+      "requirement": "Specific data should be averaged over at least one year of operations; deviations shall be justified.",
+      "source": {
+        "section": "4.7.1",
+        "page": 23
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "lca.period_under_review.length_months >= 12 or lca.period_under_review.justification"
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.03",
+      "title": "Multi-site data weighted by production volume",
+      "requirement": "When data is averaged over several machines or manufacturing sites, production volume per site shall be accounted for (shares sum to 100%).",
+      "source": {
+        "section": "4.7.1",
+        "page": 23
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "sum(manufacturer.production_sites[].production_volume_share_pct) == 100",
+        "tolerance_pct": 1
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.04",
+      "title": "Generic data reference year at most 10 years old",
+      "requirement": "Selected generic data shall not represent a reference year older than 10 years.",
+      "source": {
+        "section": "4.7.2",
+        "page": 24
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "data_age",
+        "path": "lca.generic_data_oldest_reference_year",
+        "max_years": 10
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.05",
+      "title": "Generic datasets are attributional",
+      "requirement": "Selected generic datasets shall be based on attributional modelling (no marginal data, no system-expansion credits).",
+      "source": {
+        "section": "4.7.2",
+        "page": 24
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "lca.generic_data_modelling",
+        "value": "attributional"
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.06",
+      "title": "Database version no older than two years",
+      "requirement": "Datasets should come from the latest database version; otherwise the version shall not be older than two years from publication of the EPD.",
+      "source": {
+        "section": "4.7.2",
+        "page": 24
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "data_age",
+        "path": "lca.databases[].release_year",
+        "max_years": 2
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.07",
+      "title": "Proxy data at most 10% of impacts",
+      "requirement": "Environmental impacts associated with proxy data shall not exceed 10% of the overall environmental impact of the product system.",
+      "source": {
+        "section": "4.7.2",
+        "page": 24
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "lca.data_quality.proxy_data_impact_share_pct",
+        "min": 0,
+        "max": 10,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.08",
+      "title": "Share of specific data declared",
+      "requirement": "The EPD shall declare the share of specific data contributing to manufacturing-stage GWP-GHG results (\">90%\" may be reported above 90%).",
+      "source": {
+        "section": "4.7.4",
+        "page": 25
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "lca.data_quality.share_specific_data_gwp_ghg_pct",
+        "min": 0,
+        "max": 100,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.09",
+      "title": "Share-of-specific-data explanatory statement",
+      "requirement": "Next to the share of specific data, the EPD shall include the prescribed statement that it is calculated from GWP-GHG results and is a simplified data-quality indicator not comparable across product categories.",
+      "source": {
+        "section": "4.7.4",
+        "page": 25
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "share of specific data is calculated based on GWP-GHG results"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.10",
+      "title": "Data-quality summary when proxy data used",
+      "requirement": "If proxy data is used, the EPD shall include a summary of the data quality declaration, including why the proxy data does not meet requirements.",
+      "source": {
+        "section": "4.7.4",
+        "page": 25
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.data_quality.proxy_summary"
+      },
+      "applies_when": "lca.data_quality.proxy_data_used == true"
+    },
+    {
+      "id": "PCR2024-06.DQ.11",
+      "title": "Consumer packaging modelled with specific data when required",
+      "requirement": "Specific data shall be used for consumer packaging production if under the organisation's direct control or if it exceeds 10% of product indicator results.",
+      "source": {
+        "section": "4.7.5.1",
+        "page": 26
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "lca.packaging.consumer_packaging_data_type == 'specific' or (lca.packaging.consumer_packaging_direct_control == false and lca.packaging.consumer_packaging_impact_share_pct <= 10)"
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.12",
+      "title": "Use-stage measurement standards cited",
+      "requirement": "Existing standards for measurement/test methods shall justify use-stage calculations, and these normative references shall be mentioned in the EPD.",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "list_min_length",
+        "path": "scenarios.use.measurement_standards[]",
+        "min": 1
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.13",
+      "title": "Data years declared",
+      "requirement": "The product information section shall declare the year(s) covered by the data used in the LCA and other relevant reference years.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_any",
+        "paths": [
+          "lca.reference_year",
+          "lca.period_under_review.start"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.14",
+      "title": "Databases referenced with version",
+      "requirement": "The main database(s) for generic data and their versions shall be referenced in the EPD, if relevant.",
+      "source": {
+        "section": "5.4.3 / 4.7.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.databases[]",
+        "fields": [
+          "name",
+          "version"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DQ.15",
+      "title": "LCA software referenced",
+      "requirement": "The LCA software used shall be referenced in the EPD, if relevant.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.software.name"
+      }
+    },
+    {
+      "id": "PCR2024-06.EL.01",
+      "title": "Manufacturing electricity follows the modelling hierarchy",
+      "requirement": "Electricity in processes modelled with specific data shall be modelled in priority: (1) supplier-specific mix backed by Guarantee of Origin or similar, (2) residual mix, (3) consumption mix of the market.",
+      "source": {
+        "section": "4.7.5.1",
+        "page": 26
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "lca.electricity.manufacturing.model",
+        "values": [
+          "contractual_instrument",
+          "residual_mix",
+          "consumption_mix"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.EL.02",
+      "title": "No consumption mix under direct control when residual mix is public",
+      "requirement": "The consumption-mix option shall not be used for processes under the EPD owner's direct control as long as the residual grid mix composition is publicly disclosed.",
+      "source": {
+        "section": "4.7.5.1",
+        "page": 26
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "lca.electricity.manufacturing.model != 'consumption_mix' or lca.electricity.manufacturing.residual_mix_publicly_disclosed == false"
+      }
+    },
+    {
+      "id": "PCR2024-06.EL.03",
+      "title": "Manufacturing electricity mix documented",
+      "requirement": "The electricity mix used in manufacturing/production processes shall be documented in the EPD, where relevant.",
+      "source": {
+        "section": "4.7.5.1",
+        "page": 26
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.electricity.manufacturing.mix_description"
+      }
+    },
+    {
+      "id": "PCR2024-06.EL.04",
+      "title": "Use-stage electricity uses market consumption mix",
+      "requirement": "Electricity used in the region/country of use shall be modelled with the electricity consumption mix of that market.",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "lca.electricity.use.model",
+        "value": "consumption_mix"
+      }
+    },
+    {
+      "id": "PCR2024-06.EL.05",
+      "title": "Sales-weighted use-stage electricity for multiple markets",
+      "requirement": "When the product is used in two or more markets with distinct electricity mixes, sales shares per market shall weight use-stage electricity (shares sum to 100%).",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "sum(scenarios.use.electricity_markets[].sales_share_pct) == 100",
+        "tolerance_pct": 1
+      },
+      "applies_when": "scenarios.use.electricity_markets[]"
+    },
+    {
+      "id": "PCR2024-06.EL.06",
+      "title": "Use-stage electricity mix composition declared",
+      "requirement": "The product information section shall declare the use-stage electricity mix (percentage per source).",
+      "source": {
+        "section": "5.4.3 / 4.7.5.2",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.electricity.use.mix_composition"
+      }
+    },
+    {
+      "id": "PCR2024-06.EL.07",
+      "title": "Use-stage electricity emission factor declared",
+      "requirement": "The product information section shall declare the emission factor of the use-stage electricity mix.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.electricity.use.emission_factor_kg_co2e_per_kwh"
+      }
+    },
+    {
+      "id": "PCR2024-06.USE.01",
+      "title": "Total energy consumption (TEC) formula",
+      "requirement": "For equipment continuously connected to mains, TEC may be calculated as the sum over modes (on, off, standby, networked standby, other) of power x daily time, multiplied over the RSL (worked example: x 365 days x RSL years).",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 28
+      },
+      "phase": "results",
+      "severity": "minor",
+      "obligation": "may",
+      "derived": false,
+      "check": {
+        "type": "formula",
+        "target": "scenarios.use.total_energy_consumption_kwh",
+        "expression": "((scenarios.use.p_on_w * scenarios.use.t_on_h) + (scenarios.use.p_off_w * scenarios.use.t_off_h) + (scenarios.use.p_standby_w * scenarios.use.t_standby_h) + (scenarios.use.p_net_standby_w * scenarios.use.t_net_standby_h) + (scenarios.use.p_other_w * scenarios.use.t_other_h)) * scenarios.use.days_per_year * rsl_years / 1000",
+        "tolerance_pct": 1
+      },
+      "applies_when": "product.technical_data.product_type == 'equipment'"
+    },
+    {
+      "id": "PCR2024-06.USE.02",
+      "title": "Mode times sum to 24 hours",
+      "requirement": "The time spent in each operating mode per day should sum to 24 hours and reflect normal operating conditions.",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 28
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "formula",
+        "target": "scenarios.use.hours_per_day_total",
+        "expression": "scenarios.use.t_on_h + scenarios.use.t_off_h + scenarios.use.t_standby_h + scenarios.use.t_net_standby_h + scenarios.use.t_other_h",
+        "tolerance_pct": 0.5
+      },
+      "applies_when": "product.technical_data.product_type == 'equipment'"
+    },
+    {
+      "id": "PCR2024-06.USE.03",
+      "title": "ICT infrastructure energy reported separately",
+      "requirement": "When ICT-infrastructure energy use is included, its impacts shall be reported separately from the direct use impacts of the product.",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "results.ict_use"
+      },
+      "applies_when": "scenarios.use.ict_energy_included == true"
+    },
+    {
+      "id": "PCR2024-06.DIST.01",
+      "title": "Distribution transport data basis",
+      "requirement": "Transport to the customer shall use, in priority, actual modes/distances for a specific customer or market, else a weighted average over several customers/markets.",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "scenarios.distribution.data_basis",
+        "values": [
+          "actual",
+          "weighted_average"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DIST.02",
+      "title": "Distribution transport described",
+      "requirement": "The transport of the product to the customer shall be described in the EPD, where relevant.",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.distribution.description"
+      }
+    },
+    {
+      "id": "PCR2024-06.EOL.01",
+      "title": "End-of-life key assumptions documented",
+      "requirement": "Key assumptions for the end-of-life scenario shall be documented in the LCA report and in the EPD.",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.end_of_life.key_assumptions"
+      }
+    },
+    {
+      "id": "PCR2024-06.IND.01",
+      "title": "GWP-GHG declared for all mandatory stages",
+      "requirement": "In addition to the default environdec indicator list, the EPD shall declare GWP-GHG (GWP-total with biogenic CO2 characterisation factor set to zero) per stage and in aggregate; ND is not allowed for mandatory indicators.",
+      "source": {
+        "section": "4.8 / 5.4.5.1",
+        "page": 29
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "indicators_required",
+        "method": "environdec_default",
+        "indicators": [
+          {
+            "name": "GWP-GHG",
+            "key": "gwp_ghg",
+            "unit": "kg CO2 eq."
+          }
+        ],
+        "modules": [
+          "manufacturing",
+          "distribution",
+          "use",
+          "end_of_life",
+          "total"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.IND.02",
+      "title": "LCIA methods reported with source and version",
+      "requirement": "The source and version of the impact assessment methods and characterisation factors shall be reported in the EPD.",
+      "source": {
+        "section": "4.8 / 5.4.5.1",
+        "page": 29
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.lcia_methods[]",
+        "fields": [
+          "name",
+          "version"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.IND.03",
+      "title": "Default environdec indicator list version recorded",
+      "requirement": "The EPD shall declare the default environmental performance indicators listed on www.environdec.com/indicators; the list version applied should be recorded for verification.",
+      "source": {
+        "section": "4.8",
+        "page": 29
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "required_field",
+        "path": "lca.indicator_list_version"
+      }
+    },
+    {
+      "id": "PCR2024-06.IND.04",
+      "title": "Aggregated result equals sum of stages",
+      "requirement": "Results shall be declared per life-cycle stage and in aggregated form; the aggregate should equal the sum of declared stages (shown for GWP-GHG, apply to every indicator).",
+      "source": {
+        "section": "5.4.5.1",
+        "page": 38
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "formula",
+        "target": "results.environdec_default.gwp_ghg.total",
+        "expression": "results.environdec_default.gwp_ghg.manufacturing + results.environdec_default.gwp_ghg.distribution + results.environdec_default.gwp_ghg.installation + results.environdec_default.gwp_ghg.use + results.environdec_default.gwp_ghg.de_installation + results.environdec_default.gwp_ghg.end_of_life",
+        "tolerance_pct": 1
+      }
+    },
+    {
+      "id": "PCR2024-06.IND.05",
+      "title": "No normalisation results",
+      "requirement": "Results of normalisation are not allowed in the EPD.",
+      "source": {
+        "section": "5 (footnote 23)",
+        "page": 32
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_forbidden",
+        "patterns": [
+          "normalised result",
+          "normalized result",
+          "normalisation factor",
+          "normalization factor"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.01",
+      "title": "Three significant figures",
+      "requirement": "Three significant figures should be adopted for all results; the number of significant digits shall be appropriate and consistent.",
+      "source": {
+        "section": "5.2",
+        "page": 32
+      },
+      "phase": "document",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "rounding",
+        "path": "results",
+        "rule": "sig_digits:3"
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.02",
+      "title": "English version or English executive summary",
+      "requirement": "If the EPD is not available in English, it shall contain an executive summary in English (subject to verification).",
+      "source": {
+        "section": "5.1 / 5.4.11",
+        "page": 32
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "epd.language == 'en' or document.sections.executive_summary_en"
+      }
+    },
+    {
+      "id": "PCR2024-06.VAL.01",
+      "title": "EPD validity of at most five years",
+      "requirement": "An EPD shall be valid for five years from the date of the verification report (approval date).",
+      "source": {
+        "section": "2.2.3",
+        "page": 8
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "date_rule",
+        "start_path": "epd.verification.approval_date",
+        "end_path": "epd.valid_until",
+        "max_years": 5
+      }
+    },
+    {
+      "id": "PCR2024-06.VAL.02",
+      "title": "Issued while the PCR is valid",
+      "requirement": "The EPD should be issued within the validity of PCR 2024:06 (valid until 2029-10-28).",
+      "source": {
+        "section": "2.1",
+        "page": 6
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "epd.date_of_issue <= '2029-10-28'"
+      }
+    },
+    {
+      "id": "PCR2024-06.MP.01",
+      "title": "Grouping option for multiple products",
+      "requirement": "An EPD covering several similar products shall use one of: production-weighted average, a representative product, or worst-case results.",
+      "source": {
+        "section": "4.9.1",
+        "page": 30
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.multiple_products.option",
+        "values": [
+          "average",
+          "representative",
+          "worst_case"
+        ]
+      },
+      "applies_when": "epd.multiple_products.products[]"
+    },
+    {
+      "id": "PCR2024-06.MP.02",
+      "title": "Average weighted by production volume",
+      "requirement": "Average results shall be weighted according to production volumes of the included products, if relevant.",
+      "source": {
+        "section": "4.9.1",
+        "page": 30
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "sum(epd.multiple_products.products[].production_share_pct) == 100",
+        "tolerance_pct": 1
+      },
+      "applies_when": "epd.multiple_products.option == 'average'"
+    },
+    {
+      "id": "PCR2024-06.MP.03",
+      "title": "Representative product choice justified",
+      "requirement": "If a representative product is used, its choice shall be justified in the EPD (e.g. by production volume).",
+      "source": {
+        "section": "4.9.1",
+        "page": 30
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.multiple_products.representative_justification"
+      },
+      "applies_when": "epd.multiple_products.option == 'representative'"
+    },
+    {
+      "id": "PCR2024-06.MP.04",
+      "title": "Variation above 10% declared",
+      "requirement": "If impact results differ by more than 10% between included products, the EPD shall declare the variation for each indicator exceeding 10%.",
+      "source": {
+        "section": "4.9.1",
+        "page": 30
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "epd.multiple_products.max_variation_pct <= 10 or epd.multiple_products.variation_by_indicator"
+      },
+      "applies_when": "epd.multiple_products.products[]"
+    },
+    {
+      "id": "PCR2024-06.MP.05",
+      "title": "Multiple-product statement and list on cover",
+      "requirement": "EPDs covering multiple products shall state so on the cover page and list all products covered.",
+      "source": {
+        "section": "5.4.1",
+        "page": 34
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "list_min_length",
+        "path": "epd.multiple_products.products[]",
+        "min": 2
+      },
+      "applies_when": "epd.multiple_products.option"
+    },
+    {
+      "id": "PCR2024-06.MP.06",
+      "title": "Content declaration representation explained",
+      "requirement": "EPDs of multiple products or sector EPDs shall describe what the content declaration represents.",
+      "source": {
+        "section": "5.4.4",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.content_declaration_basis"
+      },
+      "applies_when": "epd.multiple_products.option or epd.type == 'sector'"
+    },
+    {
+      "id": "PCR2024-06.SEC.01",
+      "title": "Sector EPD lists contributing manufacturers",
+      "requirement": "A sector EPD shall list the contributing manufacturers it covers.",
+      "source": {
+        "section": "4.9.2 / 5.4.8",
+        "page": 40
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "list_min_length",
+        "path": "epd.sector.contributing_manufacturers[]",
+        "min": 1
+      },
+      "applies_when": "epd.type == 'sector'"
+    },
+    {
+      "id": "PCR2024-06.SEC.02",
+      "title": "Sector EPD selection and averaging described",
+      "requirement": "A sector EPD shall describe how sites/products were selected and how the average was determined.",
+      "source": {
+        "section": "4.9.2 / 5.4.8",
+        "page": 40
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.sector.selection_method"
+      },
+      "applies_when": "epd.type == 'sector'"
+    },
+    {
+      "id": "PCR2024-06.SEC.03",
+      "title": "Sector EPD representativeness percentage",
+      "requirement": "A sector EPD shall state it covers average values for an entire/partial category, specifying the percentage of representativeness.",
+      "source": {
+        "section": "4.9.2 / 5.4.8",
+        "page": 40
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "epd.sector.representativeness_pct",
+        "min": 0,
+        "max": 100,
+        "unit": "%"
+      },
+      "applies_when": "epd.type == 'sector'"
+    },
+    {
+      "id": "PCR2024-06.SEC.04",
+      "title": "Sector EPD 'not available for purchase' statement",
+      "requirement": "A sector EPD shall state that the declared product is an average not available for purchase on the market, and the cover page shall state it is a Sector EPD.",
+      "source": {
+        "section": "4.9.2 / 5.4.1 / 5.4.8",
+        "page": 40
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "not available for purchase"
+        ]
+      },
+      "applies_when": "epd.type == 'sector'"
+    },
+    {
+      "id": "PCR2024-06.TR.01",
+      "title": "Trader EPD transport based on specific data",
+      "requirement": "A trader EPD shall include transport from manufacturer(s) to central warehouse or market border (and to the retail store, for retailers), based on specific data.",
+      "source": {
+        "section": "4.10",
+        "page": 31
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.distribution.trader_transport_specific_data"
+      },
+      "applies_when": "epd.published_by_trader == true"
+    },
+    {
+      "id": "PCR2024-06.TR.02",
+      "title": "Trader packaging based on specific data",
+      "requirement": "If the trader uses its own packaging, its production shall be included based on specific data.",
+      "source": {
+        "section": "4.10",
+        "page": 31
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "lca.packaging.trader_packaging_data_type",
+        "value": "specific"
+      },
+      "applies_when": "epd.published_by_trader == true and lca.packaging.trader_own_packaging == true"
+    },
+    {
+      "id": "PCR2024-06.FMT.S01",
+      "title": "Section present: Cover page",
+      "requirement": "The EPD reporting format shall include a 'Cover page' section.",
+      "source": {
+        "section": "5.4 / 5.4.1",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.cover_page"
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.S02",
+      "title": "Section present: Programme information",
+      "requirement": "The EPD reporting format shall include a 'Programme information' section.",
+      "source": {
+        "section": "5.4 / 5.4.2",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.programme_information"
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.S03",
+      "title": "Section present: Product information",
+      "requirement": "The EPD reporting format shall include a 'Product information' section.",
+      "source": {
+        "section": "5.4 / 5.4.3",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.product_information"
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.S04",
+      "title": "Section present: Content declaration",
+      "requirement": "The EPD reporting format shall include a 'Content declaration' section.",
+      "source": {
+        "section": "5.4 / 5.4.4",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.content_declaration"
+      },
+      "applies_when": "product.content_declaration_relevant != false"
+    },
+    {
+      "id": "PCR2024-06.FMT.S05",
+      "title": "Section present: Environmental performance",
+      "requirement": "The EPD reporting format shall include a 'Environmental performance' section.",
+      "source": {
+        "section": "5.4 / 5.4.5",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.environmental_performance"
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.S06",
+      "title": "Section present: Additional environmental information",
+      "requirement": "The EPD reporting format shall include a 'Additional environmental information' section.",
+      "source": {
+        "section": "5.4 / 5.4.6",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.additional_environmental_information"
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.S07",
+      "title": "Section present: Additional social and economic information",
+      "requirement": "The EPD reporting format shall include a 'Additional social and economic information' section.",
+      "source": {
+        "section": "5.4 / 5.4.7",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.additional_social_economic_information"
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.S08",
+      "title": "Section present: References",
+      "requirement": "The EPD reporting format shall include a 'References' section.",
+      "source": {
+        "section": "5.4 / 5.4.10",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.references"
+      }
+    },
+    {
+      "id": "PCR2024-06.FMT.S09",
+      "title": "Differences versus previous versions",
+      "requirement": "Updated EPDs shall include a description of differences versus previously published versions.",
+      "source": {
+        "section": "5.4.9",
+        "page": 40
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.differences_vs_previous_versions"
+      },
+      "applies_when": "epd.previous_version"
+    },
+    {
+      "id": "PCR2024-06.FMT.S10",
+      "title": "Revision date on cover for updated EPDs",
+      "requirement": "Updated EPDs shall show a revision date on the cover page.",
+      "source": {
+        "section": "5.4.1 / 5.4.9",
+        "page": 40
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.date_of_revision"
+      },
+      "applies_when": "epd.previous_version"
+    },
+    {
+      "id": "PCR2024-06.DOC.01",
+      "title": "Product name on cover",
+      "requirement": "The cover page shall include the product name.",
+      "source": {
+        "section": "5.4.1",
+        "page": 33
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.name"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.02",
+      "title": "Product image on cover",
+      "requirement": "The cover page shall include a product image.",
+      "source": {
+        "section": "5.4.1",
+        "page": 33
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.image"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.03",
+      "title": "EPD owner name and logotype on cover",
+      "requirement": "The cover page shall include the name and logotype of the EPD owner.",
+      "source": {
+        "section": "5.4.1",
+        "page": 33
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "epd.declaration_holder.name and epd.declaration_holder.logo"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.04",
+      "title": "'Environmental Product Declaration' on cover",
+      "requirement": "The cover page shall include the text 'Environmental Product Declaration' and/or 'EPD'.",
+      "source": {
+        "section": "5.4.1",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "Environmental Product Declaration",
+          "EPD"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.05",
+      "title": "Programme named on cover",
+      "requirement": "The cover page shall name the programme: The International EPD System, www.environdec.com.",
+      "source": {
+        "section": "5.4.1",
+        "page": 33
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "International EPD System"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.06",
+      "title": "Programme operator is EPD International AB",
+      "requirement": "The programme operator shall be EPD International AB.",
+      "source": {
+        "section": "5.4.1",
+        "page": 33
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "epd.program_operator.name",
+        "value": "EPD International AB"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.07",
+      "title": "Registration number from the programme operator",
+      "requirement": "The cover page shall show the EPD registration number issued by the programme operator.",
+      "source": {
+        "section": "5.4.1",
+        "page": 34
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.declaration_number"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.08",
+      "title": "Date of publication on cover",
+      "requirement": "The cover page shall show the date of publication (issue).",
+      "source": {
+        "section": "5.4.1",
+        "page": 34
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.date_of_issue"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.09",
+      "title": "Validity date on cover",
+      "requirement": "The cover page shall show the date of validity.",
+      "source": {
+        "section": "5.4.1",
+        "page": 34
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.valid_until"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.10",
+      "title": "Validity note on cover",
+      "requirement": "The cover page shall note that the stated validity is subject to continued registration and publication on www.environdec.com.",
+      "source": {
+        "section": "5.4.1",
+        "page": 34
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "subject to the continued registration and publication"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.11",
+      "title": "Conformity with ISO 14025 stated",
+      "requirement": "The cover page shall state conformity with ISO 14025.",
+      "source": {
+        "section": "5.4.1",
+        "page": 34
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "ISO 14025"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.12",
+      "title": "Conformity with EN 50693 stated",
+      "requirement": "The cover page shall state conformity with EN 50693.",
+      "source": {
+        "section": "5.4.1",
+        "page": 34
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "EN 50693"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.13",
+      "title": "Programme operator address",
+      "requirement": "The programme information shall give the address of EPD International AB (Box 210 60, SE-100 31 Stockholm, Sweden) and support e-mail.",
+      "source": {
+        "section": "5.4.2",
+        "page": 34
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "Box 210 60"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.14",
+      "title": "Comparability statement",
+      "requirement": "The programme information shall include the prescribed ISO 14025-based statement on comparability of EPDs.",
+      "source": {
+        "section": "5.4.2",
+        "page": 34
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "from different programmes may not be comparable"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.15",
+      "title": "Sole ownership statement",
+      "requirement": "The programme information shall state that the EPD owner has sole ownership, liability and responsibility for the EPD.",
+      "source": {
+        "section": "5.4.2",
+        "page": 34
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "sole ownership, liability, and responsibility",
+          "sole ownership, liability and responsibility"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.16",
+      "title": "EN 50693 as core PCR statement",
+      "requirement": "The PCR information table shall state that CEN standard EN 50693 serves as the core PCR.",
+      "source": {
+        "section": "5.4.2 (Table 4)",
+        "page": 35
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "EN 50693 serves as the core"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.17",
+      "title": "PCR name, registration number and version",
+      "requirement": "The PCR used shall be identified by name, registration number (2024:06) and version (and UN CPC codes); any reference to the PCR shall include registration number, name and version.",
+      "source": {
+        "section": "1.1 / 5.4.2 (Table 4)",
+        "page": 35
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "epd.reference_pcr[]",
+        "fields": [
+          "name",
+          "registration_number",
+          "version"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.18",
+      "title": "PCR review chair stated",
+      "requirement": "The PCR information shall name the PCR review chair and how to contact them via the programme operator.",
+      "source": {
+        "section": "5.4.2 (Table 4)",
+        "page": 35
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.verification.pcr_review_by"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.19",
+      "title": "Third-party verification",
+      "requirement": "The declaration and data shall be externally and independently (third-party) verified per ISO 14025, following the latest GPI verification rules.",
+      "source": {
+        "section": "5.4.2 (Table 5)",
+        "page": 35
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "epd.verification.type",
+        "value": "external"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.20",
+      "title": "Verification route stated",
+      "requirement": "The verification information shall indicate individual EPD verification, EPD Process Certification, or a pre-verified LCA/EPD tool.",
+      "source": {
+        "section": "5.4.2 (Table 5)",
+        "page": 35
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.verification.route",
+        "values": [
+          "individual",
+          "process_certification",
+          "pre_verified_tool"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.21",
+      "title": "Third-party verifier named",
+      "requirement": "The name and organisation of the verifier (or certification body) shall be stated, with approval/accreditation.",
+      "source": {
+        "section": "5.4.2 (Table 5)",
+        "page": 35
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.verification.verifier"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.22",
+      "title": "Pre-verified tool named",
+      "requirement": "If a pre-verified LCA/EPD tool is used, its name and version and tool verifier shall be stated.",
+      "source": {
+        "section": "5.4.2 (Table 5)",
+        "page": 35
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "epd.verification.tool.name and epd.verification.tool.version and epd.verification.tool.verifier"
+      },
+      "applies_when": "epd.verification.route == 'pre_verified_tool'"
+    },
+    {
+      "id": "PCR2024-06.DOC.23",
+      "title": "Follow-up procedure declared",
+      "requirement": "The verification table shall state (Yes/No) whether the follow-up of data during EPD validity involves a third-party verifier.",
+      "source": {
+        "section": "5.4.2 (Table 5)",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.verification.follow_up_with_verifier",
+        "values": [
+          true,
+          false
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.24",
+      "title": "EPD owner address and contact",
+      "requirement": "Product information shall include address and contact information of the EPD owner.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.declaration_holder.address"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.25",
+      "title": "Description of the organisation",
+      "requirement": "Product information shall include a description of the organisation.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.declaration_holder.description"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.26",
+      "title": "Production site location (city)",
+      "requirement": "Product information shall give the location of the production site(s), at minimum the city or municipality.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "manufacturer.production_sites[]",
+        "fields": [
+          "city"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.27",
+      "title": "Unambiguous product identification",
+      "requirement": "The product shall be identified by name and unambiguously by standards, concessions or other means.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.identification"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.28",
+      "title": "UN CPC code declared",
+      "requirement": "The product shall be identified according to the UN CPC scheme (other codes such as CPV, UNSPSC, NACE/CPA, ANZSIC, GTIN may be added).",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.un_cpc_code"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.29",
+      "title": "Product description",
+      "requirement": "Product information shall include a description of the product.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.description"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.30",
+      "title": "Technical purpose and intended use",
+      "requirement": "Product information shall describe the technical purpose of the product including its application/intended use.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.intended_use"
+      }
+    },
+    {
+      "id": "PCR2024-06.DOC.31",
+      "title": "Background system description",
+      "requirement": "Product information shall describe the background system, including the main technological aspects.",
+      "source": {
+        "section": "5.4.3",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.background_system_description"
+      }
+    },
+    {
+      "id": "PCR2024-06.CD.01",
+      "title": "Mass of one product unit declared",
+      "requirement": "The mass of one unit of product, as purchased or per declared unit, shall be declared.",
+      "source": {
+        "section": "5.4.4",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.mass_per_unit_kg"
+      }
+    },
+    {
+      "id": "PCR2024-06.CD.02",
+      "title": "Materials and substances listed with mass",
+      "requirement": "The content declaration shall list materials and substances with their mass (confidential items may be generic terms or reasonable ranges).",
+      "source": {
+        "section": "5.4.4",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.material_composition[]",
+        "fields": [
+          "material",
+          "mass_kg"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.CD.03",
+      "title": "Packaging mass and content declared",
+      "requirement": "The mass and content of distribution and/or consumer packaging shall be declared, when applicable.",
+      "source": {
+        "section": "5.4.4",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.packaging[]",
+        "fields": [
+          "material",
+          "mass_kg"
+        ]
+      },
+      "applies_when": "product.packaging[]"
+    },
+    {
+      "id": "PCR2024-06.CD.04",
+      "title": "Content declaration covers 100% of product mass",
+      "requirement": "The gross mass in the content declaration shall cover 100% of one unit of product (and its packaging).",
+      "source": {
+        "section": "5.4.4",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "formula",
+        "target": "product.mass_per_unit_kg",
+        "expression": "sum(product.material_composition[].mass_kg)",
+        "tolerance_pct": 1
+      }
+    },
+    {
+      "id": "PCR2024-06.CD.05",
+      "title": "Biogenic content above 5% declared with biogenic carbon",
+      "requirement": "If biogenic content exceeds 5% of the product, its mass-% and the biogenic carbon content (kg C per unit) shall be declared.",
+      "source": {
+        "section": "5.4.4",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.biogenic_carbon_kg_c"
+      },
+      "applies_when": "product.biogenic_content_pct > 5"
+    },
+    {
+      "id": "PCR2024-06.CD.06",
+      "title": "Post-consumer recycled content above 5% declared",
+      "requirement": "If post-consumer recycled content exceeds 5%, this share shall be declared; pre-consumer content, if declared, shall be shown separately.",
+      "source": {
+        "section": "5.4.4",
+        "page": 37
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "content_declaration",
+        "any_of": [
+          "post-consumer"
+        ]
+      },
+      "applies_when": "product.post_consumer_recycled_content_pct > 5"
+    },
+    {
+      "id": "PCR2024-06.CD.07",
+      "title": "Packaging biogenic content above 5% declared",
+      "requirement": "If biogenic content in the packaging exceeds 5%, this share shall be declared.",
+      "source": {
+        "section": "5.4.4",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.packaging_biogenic_content_pct"
+      },
+      "applies_when": "product.packaging_biogenic_content_pct > 5"
+    },
+    {
+      "id": "PCR2024-06.CD.08",
+      "title": "SVHCs above 0.1% declared",
+      "requirement": "Substances on the ECHA SVHC candidate list exceeding 0.1% of product weight shall be declared with their environmental/hazardous properties, regardless of LCA cut-off.",
+      "source": {
+        "section": "5.4.4",
+        "page": 38
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.hazardous_substances[]",
+        "fields": [
+          "name",
+          "cas",
+          "mass_pct",
+          "hazard_classification"
+        ]
+      }
+    },
+    {
+      "id": "PCR2024-06.REF.01",
+      "title": "GPI with version referenced",
+      "requirement": "The reference section shall list the GPI, including version number.",
+      "source": {
+        "section": "5.4.10",
+        "page": 40
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.general_program_instructions"
+      }
+    },
+    {
+      "id": "PCR2024-06.REF.02",
+      "title": "PCR referenced in references section",
+      "requirement": "The reference section shall list the PCR (registration number, name and version) used.",
+      "source": {
+        "section": "5.4.10",
+        "page": 40
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "references",
+        "any_of": [
+          "2024:06"
+        ]
+      }
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "PCR2024-06.MAN.01",
+      "title": "Applicable c-PCR used",
+      "source": {
+        "section": "1.2",
+        "page": 5
+      },
+      "reason": "Whether a published c-PCR applies to the product category (and must then be used, with its functional unit) depends on the current environdec.com c-PCR list."
+    },
+    {
+      "id": "PCR2024-06.MAN.02",
+      "title": "Excluded product categories covered by other PCRs",
+      "source": {
+        "section": "2.2.1",
+        "page": 8
+      },
+      "reason": "Bearings (CPC 433), lifts (43540), motors/generators (46112, 46131), air-conditioners (43912), special-purpose machinery (449), liquid-food filling (439211), machine-tools (44214, 44211), construction-sector cables (463, 41513, 41533) are generally excluded unless WEEE-classified and EN 50693 compliance is sought; needs judgement."
+    },
+    {
+      "id": "PCR2024-06.MAN.03",
+      "title": "Product meets EEE/component definition",
+      "source": {
+        "section": "2.2.1 (footnotes 3-4)",
+        "page": 7
+      },
+      "reason": "EEE defined as dependent on electric currents with voltage rating <=1000 V AC / <=1500 V DC; components defined separately. Classification requires expert judgement."
+    },
+    {
+      "id": "PCR2024-06.MAN.04",
+      "title": "Functional unit captures the function quantitatively",
+      "source": {
+        "section": "4.1.1",
+        "page": 13
+      },
+      "reason": "Whether the defined functional unit adequately captures the product function(s) cannot be evaluated automatically."
+    },
+    {
+      "id": "PCR2024-06.MAN.05",
+      "title": "Declared unit technical properties where relevant",
+      "source": {
+        "section": "4.1.2",
+        "page": 13
+      },
+      "reason": "Item size, unit of operation and rated input/output (V, Hz, A, W) are required 'where relevant'; relevance needs judgement."
+    },
+    {
+      "id": "PCR2024-06.MAN.06",
+      "title": "RSL estimation basis and PEP PSR RSLs considered",
+      "source": {
+        "section": "4.2",
+        "page": 14
+      },
+      "reason": "RSL should follow harmonised product standards; PEP Ecopassport PSR RSLs shall be considered for products in their scope. Needs expert review."
+    },
+    {
+      "id": "PCR2024-06.MAN.07",
+      "title": "Installation and de-installation stages included if relevant",
+      "source": {
+        "section": "4.3.1",
+        "page": 15
+      },
+      "reason": "Installation and de-installation stages are mandatory only 'if relevant'."
+    },
+    {
+      "id": "PCR2024-06.MAN.08",
+      "title": "Required manufacturing processes included",
+      "source": {
+        "section": "4.3.1.1",
+        "page": 16
+      },
+      "reason": "Inclusion of PCB components/energy for electronic devices, regular product testing, packaging, internal transport, manufacturing waste EoL must be verified against the inventory."
+    },
+    {
+      "id": "PCR2024-06.MAN.09",
+      "title": "Excluded processes not included",
+      "source": {
+        "section": "4.3.1.1",
+        "page": 17
+      },
+      "reason": "Capital goods (with exceptions), service facilities, business travel, commuting, R&D/marketing shall not be included; requires inventory inspection."
+    },
+    {
+      "id": "PCR2024-06.MAN.10",
+      "title": "Cut-off justified by sensitivity analysis",
+      "source": {
+        "section": "4.5",
+        "page": 20
+      },
+      "reason": "Exclusions must be based on sensitivity analysis/conservative assumptions documented verifiably in the LCA report; cut-offs shall not hide data."
+    },
+    {
+      "id": "PCR2024-06.MAN.11",
+      "title": "Economic allocation sensitivity analysis",
+      "source": {
+        "section": "4.6.1",
+        "page": 21
+      },
+      "reason": "If economic allocation is used, the LCA report shall include a sensitivity analysis on the economic values chosen."
+    },
+    {
+      "id": "PCR2024-06.MAN.12",
+      "title": "Point of substitution criteria and hazardous waste",
+      "source": {
+        "section": "4.6.2",
+        "page": 22
+      },
+      "reason": "Whether recovered flows meet all five point-of-substitution criteria, conservative assumptions when unknown, and hazardous waste assignment require judgement."
+    },
+    {
+      "id": "PCR2024-06.MAN.13",
+      "title": "Specific data prioritised; on-site data for controlled processes",
+      "source": {
+        "section": "4.7 / 4.7.5.1",
+        "page": 23
+      },
+      "reason": "Specific data shall be prioritised and processes under direct management control shall use on-site specific data; requires review of data sources."
+    },
+    {
+      "id": "PCR2024-06.MAN.14",
+      "title": "Generic data representativeness and EN 50693 Annex A extrapolation",
+      "source": {
+        "section": "4.7.2",
+        "page": 24
+      },
+      "reason": "Technological/geographical/temporal coverage of generic data and use of Annex A extrapolation need expert review."
+    },
+    {
+      "id": "PCR2024-06.MAN.15",
+      "title": "Data quality assessment in LCA report",
+      "source": {
+        "section": "4.7.4",
+        "page": 25
+      },
+      "reason": "LCA report shall assess precision, completeness, representativeness, consistency and boundary alignment per ISO 14044, and show share-of-specific-data calculations."
+    },
+    {
+      "id": "PCR2024-06.MAN.16",
+      "title": "Use-stage data representativeness",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "reason": "Use-stage data shall be specific where available, otherwise manufacturer default settings; emissions based on recognised tests; actual documented use overrides defaults."
+    },
+    {
+      "id": "PCR2024-06.MAN.17",
+      "title": "Operating modes and peak/nominal power considered",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 28
+      },
+      "reason": "Evaluation of non-on modes and nominal/peak power distribution (EN 50564/EN 50643) should be included; needs review."
+    },
+    {
+      "id": "PCR2024-06.MAN.18",
+      "title": "End-of-life scenario practicable and regulation-compliant",
+      "source": {
+        "section": "4.7.5.2",
+        "page": 27
+      },
+      "reason": "EoL scenario shall be technically/economically practicable and not contradict collection, recycling or landfill rules in the EPD's geography; EN 50693 Table G.4 rates are reference defaults."
+    },
+    {
+      "id": "PCR2024-06.MAN.19",
+      "title": "Additional indicators justified and explained",
+      "source": {
+        "section": "4.8 / 5.4.5",
+        "page": 29
+      },
+      "reason": "Additional indicators/alternative LCIA methods require justification and an explanation of differences; extra inventory data only in an annex."
+    },
+    {
+      "id": "PCR2024-06.MAN.20",
+      "title": "Representative product requires homogeneous family; grouping justified",
+      "source": {
+        "section": "4.9.1",
+        "page": 30
+      },
+      "reason": "Homogeneity (same function, standards, technology) and LCA-report justification for >10% variation require judgement."
+    },
+    {
+      "id": "PCR2024-06.MAN.21",
+      "title": "Sector EPD communication not attributed to a manufacturer",
+      "source": {
+        "section": "4.9.2",
+        "page": 30
+      },
+      "reason": "Sector EPD results shall not be claimed representative of a manufacturer; same PCR and unit for all covered products."
+    },
+    {
+      "id": "PCR2024-06.MAN.22",
+      "title": "Trader EPD based on manufacturer EPD of same PCR major version",
+      "source": {
+        "section": "4.10",
+        "page": 31
+      },
+      "reason": "Underlying manufacturer EPD must use same PCR first-digit version, be accessible to the verifier, and trigger re-verification when updated."
+    },
+    {
+      "id": "PCR2024-06.MAN.23",
+      "title": "EPD content not misleading; no ratings or comparisons",
+      "source": {
+        "section": "5",
+        "page": 32
+      },
+      "reason": "Content shall follow ISO 14020, be verifiable/accurate/relevant and contain no ratings, judgements or direct comparisons; machine-readable versions shall match."
+    },
+    {
+      "id": "PCR2024-06.MAN.24",
+      "title": "Results table cell rules",
+      "source": {
+        "section": "5.2",
+        "page": 33
+      },
+      "reason": "Result tables may only contain values or 'ND' (ND not allowed for mandatory indicators), no blanks/hyphens/</>; '0' only when calculated as zero; footnotes for limitations. No check type validates per-cell content."
+    },
+    {
+      "id": "PCR2024-06.MAN.25",
+      "title": "SI units, number style and ISO 8601 dates",
+      "source": {
+        "section": "5.2",
+        "page": 32
+      },
+      "reason": "SI units, SI-style thousand separator/decimal mark (state symbols if confusing) and YYYY-MM-DD dates; no suitable check type for formats."
+    },
+    {
+      "id": "PCR2024-06.MAN.26",
+      "title": "Images used with caution",
+      "source": {
+        "section": "5.3",
+        "page": 33
+      },
+      "reason": "Nature imagery unrelated to the product may be an environmental claim; requires judgement."
+    },
+    {
+      "id": "PCR2024-06.MAN.27",
+      "title": "Regional hub and dual registration information",
+      "source": {
+        "section": "5.4.1",
+        "page": 34
+      },
+      "reason": "Regional hub references and dual-registration details apply only where applicable."
+    },
+    {
+      "id": "PCR2024-06.MAN.28",
+      "title": "No certification-body registration number",
+      "source": {
+        "section": "5.4.1 (footnote 26)",
+        "page": 34
+      },
+      "reason": "The EPD shall not show a certification-body 'registration number' that could be confused with the programme operator's."
+    },
+    {
+      "id": "PCR2024-06.MAN.29",
+      "title": "Verification disclaimer",
+      "source": {
+        "section": "5.4.2 (Table 5)",
+        "page": 36
+      },
+      "reason": "Table 5 says to 'include disclaimer in all cases' but the disclaimer text is not given in the PCR (GPI dependency)."
+    },
+    {
+      "id": "PCR2024-06.MAN.30",
+      "title": "Content declaration consistency, SVHC screening, 'free-of' claims",
+      "source": {
+        "section": "5.4.4",
+        "page": 38
+      },
+      "reason": "Consistency with technical data sheet, SDS availability to verifier, actual (not dataset) recycled/biogenic shares, regulated hazardous substances per market, and 'free of' claims require review."
+    },
+    {
+      "id": "PCR2024-06.MAN.31",
+      "title": "Additional environmental/social information substantiated",
+      "source": {
+        "section": "5.4.6 / 5.4.7",
+        "page": 39
+      },
+      "reason": "Additional information shall be substantiated, verifiable, not misleading; alternative use/EoL scenarios only in additional information; EMI/EMC info recommended."
+    },
+    {
+      "id": "PCR2024-06.MAN.32",
+      "title": "EPD update after significant change",
+      "source": {
+        "section": "2.2.3",
+        "page": 8
+      },
+      "reason": "EPD shall be updated and re-verified (or de-registered) if any impact indicator rises >=10%, errors are found, or declared information changes significantly; requires annual follow-up comparison."
+    },
+    {
+      "id": "PCR2024-06.MAN.33",
+      "title": "Capital goods inclusion exceptions",
+      "source": {
+        "section": "4.3.2",
+        "page": 19
+      },
+      "reason": "Whether capital goods meet the single-use or non-separable-dataset exceptions requires judgement."
+    }
+  ],
+  "notes": [
+    "Life-cycle stages: this PCR is not an EN 15804 PCR. Stage keys used in `scenarios.<stage>`, `results.<method>.<indicator>.<stage>`, `results.modules_declared[]` and in `modules_required`/`indicators_required` are: manufacturing (maps to A1-A3), distribution (A4), installation (A5, if relevant), use (B1-B7; repair/reuse/refurbishment optional), de_installation (C1, if relevant), end_of_life (C2-C4), plus `total` for the aggregated result. There is no module D: recovery benefits are declared separately per stage (path `results.recovery_benefits`). (§4.3.1, Table 2, p15-16)",
+    "Table 2 (p15-16) labels both 'De-installation' and 'End of life' as 'Module C1-C4', but the sub-modules list C1 for de-installation and C2-C4 for end-of-life; the mapping above follows the sub-modules.",
+    "Indicators: the PCR does not list indicators itself; it requires the default list on www.environdec.com/indicators (not provided) plus GWP-GHG (kg CO2 eq.). Only GWP-GHG is encoded in indicators_required (PCR2024-06.IND.01); the adapter must add the environdec default indicator set (version recorded in lca.indicator_list_version) before this ruleset is complete. Use of resources mandatory indicators (§5.4.5.2) and optional waste/output-flow indicators (§5.4.5.3) are likewise defined only on that website.",
+    "Results method key `environdec_default` is used in results paths. Indicator keys in paths are lowercase snake_case of the abbreviation (e.g. GWP-GHG -> gwp_ghg) because '-' is the minus operator in expressions; `indicators_required` entries carry both display `name` and path `key`.",
+    "Schema extension: some rules carry an optional rule-level `applies_when` expression; the rule should be evaluated only when it is true (otherwise skipped/not applicable). Expressions here also use single-quoted string literals, true/false, and a bare path that evaluates true when non-empty (same semantics as required_field). Engine support for these is needed.",
+    "New field paths introduced (not in README vocabulary): product.is_construction_product, product.un_cpc_code, product.un_cpc_division, product.intended_use, product.lifespan_years, product.content_declaration_basis, product.content_declaration_relevant, product.biogenic_content_pct, product.biogenic_carbon_kg_c, product.post_consumer_recycled_content_pct, product.packaging_biogenic_content_pct, product.technical_data.product_type ('equipment'|'component'), functional_unit.function, functional_unit.performance_level, declared_unit.justification, epd.reference_pcr[].registration_number (reference_pcr treated as a list of {name, registration_number, version, un_cpc_codes?} covering parent PCR and c-PCR), epd.declaration_holder.{logo,description}, epd.date_of_revision, epd.previous_version, epd.language, epd.published_by_trader, epd.verification.{approval_date,route,tool.{name,version,verifier},follow_up_with_verifier}, epd.multiple_products.{option,products[].production_share_pct,representative_justification,max_variation_pct,variation_by_indicator}, epd.sector.{contributing_manufacturers[],selection_method,representativeness_pct}, lca.omitted_stages[], lca.omitted_stages_justification, lca.manufacturing.{reject_rate_pct,warehouse_storage_mass_coverage_pct}, lca.capital_goods.{included,description,max_share_cradle_to_gate_pct,datasets[]}, lca.temporal_boundary_years, lca.temporal_boundary_justification, lca.cutoff.excluded_flows[].category, lca.allocation.waste_method, lca.recovery_benefits.{recovery_occurs,declared,en50693_annex_g_rule}, lca.period_under_review.{length_months,justification}, lca.generic_data_oldest_reference_year, lca.generic_data_modelling, lca.databases[].release_year, lca.data_quality.{proxy_data_impact_share_pct,share_specific_data_gwp_ghg_pct,proxy_data_used,proxy_summary}, lca.packaging.{consumer_packaging_data_type,consumer_packaging_direct_control,consumer_packaging_impact_share_pct,trader_packaging_data_type,trader_own_packaging}, lca.electricity.manufacturing.{model,residual_mix_publicly_disclosed,mix_description}, lca.electricity.use.{model,mix_composition,emission_factor_kg_co2e_per_kwh}, lca.indicator_list_version, lca.background_system_description, manufacturer.production_sites[].{city,production_volume_share_pct}, scenarios.use.{reference_use_conditions,product_units_per_fu,assumptions_rationale,repair_reuse_refurbishment_included,repair_reuse_refurbishment_assumptions,measurement_standards[],electricity_markets[].sales_share_pct,total_energy_consumption_kwh,p_on_w,t_on_h,p_off_w,t_off_h,p_standby_w,t_standby_h,p_net_standby_w,t_net_standby_h,p_other_w,t_other_h,days_per_year,hours_per_day_total,ict_energy_included}, scenarios.distribution.{data_basis,description,trader_transport_specific_data}, scenarios.end_of_life.key_assumptions, results.recovery_benefits, results.ict_use, document.sections.{cover_page,programme_information,product_information,content_declaration,environmental_performance,additional_environmental_information,additional_social_economic_information,references,differences_vs_previous_versions,executive_summary_en}.",
+    "TEC formula (§4.7.5.2 p28) as printed omits the days-per-year factor and Wh->kWh conversion, while the worked example (p29: (80 W x 4 h + 0.5 W x 20 h) x 365 d x 7 y = 843.15 kWh) includes them; USE.01 encodes the example's form. The PCR presents the formula as optional ('can be taken into consideration') and states the energy-consumption section does not apply to electronic components. The Pon definition erroneously lists all modes, and 'Tstandy' is a typo.",
+    "Cut-off ambiguity (§4.5 p20): the rule is '5% over the product life cycle' yet also says each input/output contributing >5% to any indicator shall be included; CO.01 encodes both per-flow and total 5% on an impact basis. The 95% energy/mass coverage (§4.3 p15) is a 'should'.",
+    "Copper and alloys are on the never-cut-off list (§4.5 p21) - highly relevant for cables.",
+    "Residual mix is defined against the 'total consumption mix' in §4.7.5.1 but against the 'total production mix' in §4.7.5.2 (p27); the use stage nevertheless mandates the consumption mix, so the residual-mix text there appears to be leftover.",
+    "Consumer packaging rule (§4.7.5.1 p26) says '>10% of all product environmental indicators' results' - unclear whether 'all' or 'any' indicator; DQ.11 uses a single share field.",
+    "RSL (§4.2 p14) is required for 'an EPD developed based on this PCR' as part of the functional unit; it is unclear whether declared-unit EPDs of components must also state an RSL. RSL.01 is applied to all EPDs.",
+    "Content declaration (§5.4.4 p37) is required 'if relevant' and the PCR was meant to specify when it is not relevant, but it does not; treat as required unless explicitly marked not relevant.",
+    "GPI version inconsistency: standards conformance lists GPI 4.02 (p7) and §3.3 says developed per GPI 4.0, while p6 and footnotes reference GPI 5.0.0; verification follows the latest GPI. IEC 63366 is mistyped as IEC 63666 in §1.3 (p5) and EN 50693 as EN 50694 in §3.3 (p10); references list EN 50693:2022 whereas elsewhere EN 50693:2019.",
+    "Waste allocation intentionally deviates from GPI/EN 15804: point-of-substitution (EN 50693) instead of polluter-pays/end-of-waste (footnote 6 p10, Annex 2 p47-48). Conformance to this PCR does not ensure EN 15804+A2 conformance.",
+    "§5.4.3 product-information optional list ends with a dangling 'and' (p37) - possibly a truncated item.",
+    "Version 1.0.1 only corrected footnote 16 (p26) to refer to the third (not fourth) electricity option."
+  ]
+}

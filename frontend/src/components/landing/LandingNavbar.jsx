@@ -27,7 +27,6 @@ export default function LandingNavbar({ onLaunchApp }) {
           <a href="#stages" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'stages')}>Modules</a>
           <a href="#how-it-works" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'how-it-works')}>How it works</a>
           <a href="#features" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'features')}>Capabilities</a>
-          <a href="#about" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'about')}>More Info</a>
           <a href="#faq" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'faq')}>FAQ</a>
         </nav>
 

@@ -1,0 +1,5068 @@
+{
+  "ruleset_id": "epd-intl-pcr-2019-14-v2.0.1",
+  "title": "PCR 2019:14 Construction products (EN 15804+A2), version 2.0.1",
+  "program_operator": "EPD International AB (The International EPD System)",
+  "document": {
+    "code": "PCR 2019:14",
+    "version": "2.0.1",
+    "published": "2025-06-05",
+    "valid_until": "2030-04-07",
+    "status_note": "Validity as stated in the document; may change, see environdec.com (not re-checked online).",
+    "source_file": "PCR-2019-14_Construction-Products_EN15804+A2_v2.0.1_(parent-for-concrete-glass-pipes).pdf"
+  },
+  "parent_rulesets": [],
+  "depends_on_unavailable": [
+    "EN 15804:2012+A2:2019/AC:2021 (indicator Tables 3-7, Table 5 disclaimers, scenario Tables 10-15, Annex D)",
+    "EN 15941:2024 (data quality assessment and reporting)",
+    "General Programme Instructions of the International EPD System v5.0.1",
+    "ECO Platform standards (2024-12-20)",
+    "ISO 21930:2017 (indicator sets for ISO 21930 compliance)"
+  ],
+  "product_category": "construction_products",
+  "defaults": {
+    "epd.validity_years": {
+      "value": 5,
+      "unit": "years",
+      "source": "§2.2.4, p.12"
+    },
+    "lca.data_collection_period_months": {
+      "value": 12,
+      "unit": "months",
+      "source": "§4.6.2, p.28"
+    },
+    "lca.time_boundary_years": {
+      "value": 100,
+      "unit": "years",
+      "source": "§4.3.8, p.21"
+    },
+    "lca.allocation.price_averaging_years": {
+      "value": 3,
+      "unit": "years",
+      "source": "§4.5.1.1, p.23 (recommended minimum)"
+    },
+    "scenarios.C1.diesel_kwh_per_tonne.concrete_reinforced_concrete": {
+      "value": 10,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C1.diesel_kwh_per_tonne.masonry_tiles_pavers": {
+      "value": 5,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C1.diesel_kwh_per_tonne.steel_wood_other": {
+      "value": 1.1,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C2.distance_km_not_incinerated": {
+      "value": 80,
+      "unit": "km",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C2.distance_km_incinerated": {
+      "value": 130,
+      "unit": "km",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C2.vehicle_type": {
+      "value": "16-32 tonne lorry (EURO 5)",
+      "unit": null,
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C2.load_factor_pct": {
+      "value": 50,
+      "unit": "%",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C3.loading_unloading_diesel_kwh_per_tonne": {
+      "value": 1.8,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C3.mechanical_sorting_electricity_kwh_per_tonne": {
+      "value": 2.2,
+      "unit": "kWh electricity/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C3.crushing_concrete_diesel_kwh_per_tonne": {
+      "value": 2.0,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C3.crushing_masonry_tiles_pavers_diesel_kwh_per_tonne": {
+      "value": 1.5,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C3.fragging_steel_diesel_kwh_per_tonne": {
+      "value": 7.4,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C3.chipping_wood_diesel_kwh_per_tonne": {
+      "value": 6,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C3.other_materials_diesel_kwh_per_tonne": {
+      "value": 0.8,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.C4.compaction_diesel_kwh_per_tonne": {
+      "value": 1.6,
+      "unit": "kWh diesel/tonne",
+      "source": "§4.8.4 Table 4, p.40"
+    },
+    "scenarios.D.mmr_out_basis": {
+      "value": "PEF R2",
+      "unit": null,
+      "source": "§4.8.5, p.41 (PEF Annex C R2 values unless c-PCR gives M_MR,out)"
+    }
+  },
+  "rules": [
+    {
+      "id": "PCR2019-14.SCOPE.01",
+      "title": "EPD system-boundary type is one of the six PCR types",
+      "requirement": "The EPD must be one of the system-boundary types a) to f) defined by the PCR (cradle-to-gate with C+D, cradle-to-gate with options + C+D, cradle-to-grave + D, cradle-to-gate, cradle-to-gate with options, construction service A1-A5).",
+      "source": {
+        "section": "2.2.2",
+        "page": 9
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.boundary_type",
+        "values": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.SCOPE.02",
+      "title": "Scope keyword consistent with allowed scopes",
+      "requirement": "The declared scope must be cradle-to-gate, cradle-to-gate with options, or cradle-to-grave; no other scope label is permitted.",
+      "source": {
+        "section": "2.2.2",
+        "page": 9
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "one_of",
+        "path": "epd.scope",
+        "values": [
+          "cradle-to-gate",
+          "cradle-to-gate-with-options",
+          "cradle-to-grave"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.SCOPE.03",
+      "title": "Cradle-to-grave (type c) needs a functional unit",
+      "requirement": "A type c EPD (cradle to grave and module D) must be based on a functional unit; this is stricter than EN 15804.",
+      "source": {
+        "section": "2.2.2",
+        "page": 10
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type == 'c'",
+      "check": {
+        "type": "required_field",
+        "path": "functional_unit.value"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCOPE.04",
+      "title": "Cradle-to-grave (type c) needs a c-PCR",
+      "requirement": "A type c EPD must use a complementary PCR together with this main PCR, so at least two PCRs must be referenced.",
+      "source": {
+        "section": "2.2.2",
+        "page": 10
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type == 'c'",
+      "check": {
+        "type": "list_min_length",
+        "path": "epd.reference_pcr[]",
+        "min": 2
+      }
+    },
+    {
+      "id": "PCR2019-14.SCOPE.05",
+      "title": "Module C exclusion requires all four criteria",
+      "requirement": "Excluding the end-of-life stage (types d and e) is only allowed if the product is physically integrated with other products, is no longer identifiable at end of life, contains no biogenic carbon, and the EPD is not for business-to-consumer use.",
+      "source": {
+        "section": "2.2.2.1",
+        "page": 10
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type == 'd' or epd.boundary_type == 'e'",
+      "check": {
+        "type": "relation",
+        "expression": "lca.module_c_exclusion.physically_integrated == true and lca.module_c_exclusion.not_identifiable_at_eol == true and lca.module_c_exclusion.no_biogenic_carbon == true and lca.module_c_exclusion.not_b2c == true"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCOPE.06",
+      "title": "Module C exclusion: product biogenic carbon must be zero",
+      "requirement": "For types d and e, the declared biogenic carbon content of the product must be zero, as products containing biogenic carbon cannot exclude module C.",
+      "source": {
+        "section": "2.2.2.1",
+        "page": 10
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "epd.boundary_type == 'd' or epd.boundary_type == 'e'",
+      "check": {
+        "type": "numeric_range",
+        "path": "product.content.biogenic_carbon_kg_c",
+        "min": 0,
+        "max": 0,
+        "unit": "kg C"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCOPE.07",
+      "title": "PCR referenced with registration number, name and version",
+      "requirement": "Any reference to this PCR must state its registration number (2019:14), name and version number.",
+      "source": {
+        "section": "1.1",
+        "page": 4
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "2019:14"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.SCOPE.08",
+      "title": "Reference PCR entries are complete",
+      "requirement": "Each PCR used (main PCR and any c-PCR) must be identified with name, registration number and version.",
+      "source": {
+        "section": "1.1; 6.4.2.2",
+        "page": 4
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "epd.reference_pcr[]",
+        "fields": [
+          "name",
+          "registration_number",
+          "version"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.SCOPE.09",
+      "title": "EPDs without a c-PCR use a declared unit",
+      "requirement": "When the EPD is based on this PCR alone (no c-PCR), a declared unit must be used rather than a functional unit.",
+      "source": {
+        "section": "4.2",
+        "page": 17
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.uses_c_pcr == false",
+      "check": {
+        "type": "required_field",
+        "path": "declared_unit.value"
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.01",
+      "title": "A1-A3 declared, in aggregated form",
+      "requirement": "Modules A1-A3 are mandatory for every EPD type and their results must be declared aggregated as A1-A3.",
+      "source": {
+        "section": "2.2.2 Table 2; 4.9",
+        "page": 43
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "A1-A3"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.02",
+      "title": "C1-C4 and D mandatory for types a, b and c",
+      "requirement": "EPDs of types a, b and c must declare all end-of-life modules C1-C4 and module D.",
+      "source": {
+        "section": "2.2.2 Table 2",
+        "page": 11
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type == 'a' or epd.boundary_type == 'b' or epd.boundary_type == 'c'",
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "D"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.03",
+      "title": "Cradle-to-grave declares all A4-A5 and B modules",
+      "requirement": "Type c EPDs must declare A4, A5 and all use-stage modules B1-B7 in addition to A1-A3, C1-C4 and D.",
+      "source": {
+        "section": "2.2.2 Table 2",
+        "page": 11
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type == 'c'",
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "A4",
+          "A5",
+          "B1",
+          "B2",
+          "B3",
+          "B4",
+          "B5",
+          "B6",
+          "B7"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.04",
+      "title": "Type a: no A4-A5 or B modules",
+      "requirement": "For type a (cradle to gate with C1-C4 and D), modules A4-A5 and B1-B7 are not applicable.",
+      "source": {
+        "section": "2.2.2 Table 2",
+        "page": 11
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "epd.boundary_type == 'a'",
+      "check": {
+        "type": "modules_forbidden",
+        "modules": [
+          "A4",
+          "A5",
+          "B1",
+          "B2",
+          "B3",
+          "B4",
+          "B5",
+          "B6",
+          "B7"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.05",
+      "title": "Type d: only A1-A3",
+      "requirement": "A type d EPD (cradle to gate) covers A1-A3 only; no other modules may be declared.",
+      "source": {
+        "section": "2.2.2",
+        "page": 10
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "epd.boundary_type == 'd'",
+      "check": {
+        "type": "modules_forbidden",
+        "modules": [
+          "A4",
+          "A5",
+          "B1",
+          "B2",
+          "B3",
+          "B4",
+          "B5",
+          "B6",
+          "B7",
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "D"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.06",
+      "title": "Type e: only A4 and/or A5 as options",
+      "requirement": "A type e EPD (cradle to gate with options) may add only A4 and/or A5 to A1-A3; B, C and D modules are not part of this type.",
+      "source": {
+        "section": "2.2.2",
+        "page": 10
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "epd.boundary_type == 'e'",
+      "check": {
+        "type": "modules_forbidden",
+        "modules": [
+          "B1",
+          "B2",
+          "B3",
+          "B4",
+          "B5",
+          "B6",
+          "B7",
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "D"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.07",
+      "title": "Construction services declare A4 and A5",
+      "requirement": "EPDs of construction services (type f, and type b when the product is a service) must include modules A4 and A5; the execution of the service is assigned to A5 and transport to site to A4.",
+      "source": {
+        "section": "2.2.2 Table 2; 4.3.4",
+        "page": 11
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type == 'f' or product.is_service == true",
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "A4",
+          "A5"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.08",
+      "title": "Service with reused physical product declares C and D",
+      "requirement": "A service EPD involving a physical product used across several construction works (e.g., rental) must declare C1-C4 and D.",
+      "source": {
+        "section": "2.2.2 Table 2 fn 10",
+        "page": 11
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type == 'f' and product.service_involves_reused_physical_product == true",
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "D"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.09",
+      "title": "Packaging with biogenic carbon requires A5",
+      "requirement": "If the packaging contains biogenic carbon, module A5 must be included unless the EPD is of type a or d.",
+      "source": {
+        "section": "2.2.2.2; Annex 2",
+        "page": 10
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.packaging_biogenic_carbon_kg_c > 0 and epd.boundary_type != 'a' and epd.boundary_type != 'd'",
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "A5"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.10",
+      "title": "Energy-using products include B6",
+      "requirement": "Products that use energy in the use stage, directly or indirectly (e.g., through losses), must include module B6.",
+      "source": {
+        "section": "2.2.2.3; 4.3.7",
+        "page": 20
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.uses_energy_in_use_stage == true",
+      "check": {
+        "type": "modules_required",
+        "modules": [
+          "B6"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.11",
+      "title": "No sub-totals or totals across modules (other than A1-A3)",
+      "requirement": "Apart from the mandatory A1-A3 aggregate, results of individual modules must not be summed into totals or sub-totals of stages A, B, C or D.",
+      "source": {
+        "section": "4.9",
+        "page": 43
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "modules_forbidden",
+        "modules": [
+          "A1-A5",
+          "A4-A5",
+          "B1-B7",
+          "B1-B5",
+          "B6-B7",
+          "C1-C4",
+          "A-C",
+          "A-D",
+          "A1-C4",
+          "A1-D",
+          "Total"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.MOD.12",
+      "title": "Trader EPD includes A3 trader processes",
+      "requirement": "For EPDs owned by a trader, transport to the central warehouse/market border (and to the store for retailers) and any own packaging must be included and assigned to module A3.",
+      "source": {
+        "section": "4.10.4",
+        "page": 47
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.owner_is_trader == true",
+      "check": {
+        "type": "required_field",
+        "path": "lca.trader.a3_transport_description"
+      }
+    },
+    {
+      "id": "PCR2019-14.FU.01",
+      "title": "Declared unit should be in SI units",
+      "requirement": "The declared unit should relate to typical applications and be in SI units (kg, J, m, etc.); other units such as kW or kWh may be used if more relevant.",
+      "source": {
+        "section": "4.2",
+        "page": 17
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "applies_when": "epd.uses_c_pcr == false",
+      "check": {
+        "type": "one_of",
+        "path": "declared_unit.unit",
+        "values": [
+          "kg",
+          "t",
+          "g",
+          "m",
+          "m2",
+          "m3",
+          "J",
+          "MJ",
+          "kWh",
+          "kW",
+          "piece",
+          "item"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.FU.02",
+      "title": "Conversion factor to mass when unit is not mass",
+      "requirement": "If mass is not the declared/functional unit, a factor converting results to mass must be declared (not applicable to services).",
+      "source": {
+        "section": "4.2; 4.9.1; 6.4.6",
+        "page": 44
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared_unit.unit != 'kg' and declared_unit.unit != 't' and product.is_service != true",
+      "check": {
+        "type": "required_field",
+        "path": "conversion_factor_to_kg"
+      }
+    },
+    {
+      "id": "PCR2019-14.FU.03",
+      "title": "Mass conversion factor shown in LCA information section",
+      "requirement": "Conversion factors to mass belong in the LCA information section; other conversion factors go in the additional environmental information section.",
+      "source": {
+        "section": "4.9.1",
+        "page": 44
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared_unit.unit != 'kg' and declared_unit.unit != 't' and product.is_service != true",
+      "check": {
+        "type": "text_present",
+        "doc_section": "lca_information",
+        "any_of": [
+          "conversion factor"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.FU.04",
+      "title": "Area unit: area density and thickness declared",
+      "requirement": "If the declared unit is an area, area density (kg/m2) and thickness (m) must be declared.",
+      "source": {
+        "section": "6.4.6",
+        "page": 61
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared_unit.unit == 'm2'",
+      "check": {
+        "type": "required_field",
+        "path": "product.technical_data.area_density_kg_m2"
+      }
+    },
+    {
+      "id": "PCR2019-14.FU.05",
+      "title": "Area unit: thickness declared",
+      "requirement": "If the declared unit is an area, the product thickness (m) must be declared.",
+      "source": {
+        "section": "6.4.6",
+        "page": 61
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared_unit.unit == 'm2'",
+      "check": {
+        "type": "required_field",
+        "path": "product.technical_data.thickness_m"
+      }
+    },
+    {
+      "id": "PCR2019-14.FU.06",
+      "title": "Volume or other unit: density declared",
+      "requirement": "If the declared unit is a volume or any unit other than area, length, piece or mass, volumetric mass density (kg/m3) must be declared.",
+      "source": {
+        "section": "6.4.6",
+        "page": 61
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared_unit.unit != 'm2' and declared_unit.unit != 'm' and declared_unit.unit != 'piece' and declared_unit.unit != 'item' and declared_unit.unit != 'kg' and declared_unit.unit != 't' and product.is_service != true",
+      "check": {
+        "type": "required_field",
+        "path": "product.technical_data.density_kg_m3"
+      }
+    },
+    {
+      "id": "PCR2019-14.FU.07",
+      "title": "Length unit: linear mass density declared",
+      "requirement": "If the declared unit is a length, linear mass density (kg/m) must be declared.",
+      "source": {
+        "section": "6.4.6",
+        "page": 61
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared_unit.unit == 'm'",
+      "check": {
+        "type": "required_field",
+        "path": "product.technical_data.linear_density_kg_m"
+      }
+    },
+    {
+      "id": "PCR2019-14.FU.08",
+      "title": "Piece unit: mass per piece declared",
+      "requirement": "If the declared unit is a piece or item, the mass per piece/item (kg) must be declared.",
+      "source": {
+        "section": "6.4.6",
+        "page": 61
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared_unit.unit == 'piece' or declared_unit.unit == 'item'",
+      "check": {
+        "type": "required_field",
+        "path": "product.mass_per_unit_kg"
+      }
+    },
+    {
+      "id": "PCR2019-14.RSL.01",
+      "title": "RSL only declared when part of a c-PCR functional unit",
+      "requirement": "A reference service life is declared only if a c-PCR defines it as part of the functional unit; EPDs on a declared unit should not state an RSL.",
+      "source": {
+        "section": "4.2.1",
+        "page": 17
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "rsl_years == null or functional_unit.value != null"
+      }
+    },
+    {
+      "id": "PCR2019-14.RSL.02",
+      "title": "Product lifespan declared when use stage is included",
+      "requirement": "A product lifespan must be declared where relevant, typically when use-stage modules are included (always the case for cradle-to-grave EPDs).",
+      "source": {
+        "section": "4.2.2; 6.4.4",
+        "page": 17
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type == 'c' or declared('B1') or declared('B2') or declared('B3') or declared('B4') or declared('B5') or declared('B6') or declared('B7')",
+      "check": {
+        "type": "required_field",
+        "path": "product.lifespan.value"
+      }
+    },
+    {
+      "id": "PCR2019-14.RSL.03",
+      "title": "Lifespan expressed in a relevant unit",
+      "requirement": "Product lifespan must be expressed in relevant units such as years, operating hours or kilometres travelled.",
+      "source": {
+        "section": "4.2.2",
+        "page": 17
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.lifespan.value != null",
+      "check": {
+        "type": "one_of",
+        "path": "product.lifespan.unit",
+        "values": [
+          "years",
+          "hours",
+          "operating hours",
+          "km",
+          "cycles"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.RSL.04",
+      "title": "RSL and its relation to lifespan stated in LCA information",
+      "requirement": "Where an RSL applies, the LCA information section must state it and its relationship with the technical/actual lifespan.",
+      "source": {
+        "section": "6.4.6",
+        "page": 62
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "rsl_years != null",
+      "check": {
+        "type": "text_present",
+        "doc_section": "lca_information",
+        "any_of": [
+          "reference service life",
+          "RSL"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.CUT.01",
+      "title": "Cut-off by mass: 1% per unit process, 5% per module group",
+      "requirement": "Included LCI data must cover at least 99% of total mass inflows per unit process and 95% per module group (A1-A3, A4-A5, B1-B5, B6-B7, C1-C4, D).",
+      "source": {
+        "section": "4.4",
+        "page": 21
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "cutoff",
+        "per_flow_pct": 1,
+        "per_module_pct": 5,
+        "basis": "mass"
+      }
+    },
+    {
+      "id": "PCR2019-14.CUT.02",
+      "title": "Cut-off by energy: 1% per unit process, 5% per module group",
+      "requirement": "Included LCI data must cover at least 99% of total energy inflows per unit process and 95% per module group.",
+      "source": {
+        "section": "4.4",
+        "page": 21
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "cutoff",
+        "per_flow_pct": 1,
+        "per_module_pct": 5,
+        "basis": "energy"
+      }
+    },
+    {
+      "id": "PCR2019-14.CUT.03",
+      "title": "Cut-off by impact: 5% per module group (ISO 21930 rule)",
+      "requirement": "The PCR also applies the expanded ISO 21930 rule: at least 95% of environmental impact per aggregated module group must be included.",
+      "source": {
+        "section": "4.4",
+        "page": 21
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "cutoff",
+        "per_module_pct": 5,
+        "basis": "impact"
+      }
+    },
+    {
+      "id": "PCR2019-14.CUT.04",
+      "title": "Applied cut-offs described in the EPD",
+      "requirement": "Any use of cut-off rules, including the LCI data excluded, must be described in the EPD.",
+      "source": {
+        "section": "4.4",
+        "page": 21
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.cutoff.description"
+      }
+    },
+    {
+      "id": "PCR2019-14.CUT.05",
+      "title": "Excluded flows documented with justification",
+      "requirement": "Each flow excluded by cut-off must be justified by sensitivity analysis and/or conservative assumptions and documented verifiably in the LCA report.",
+      "source": {
+        "section": "4.4",
+        "page": 21
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.cutoff.excluded_flows[]",
+        "fields": [
+          "name",
+          "module",
+          "mass_pct",
+          "energy_pct",
+          "justification"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.CUT.06",
+      "title": "Infrastructure/capital goods >10% described in EPD",
+      "requirement": "If infrastructure/capital goods are included and contribute more than 10% to A1-A3 (A1-A5 for services) results of any declared impact indicator, the EPD must describe for which stages/processes they are included.",
+      "source": {
+        "section": "4.3.6",
+        "page": 20
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.capital_goods.max_contribution_a1a3_pct > 10",
+      "check": {
+        "type": "text_present",
+        "doc_section": "lca_information",
+        "any_of": [
+          "capital goods",
+          "infrastructure"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.CUT.07",
+      "title": "Database declared for datasets with embedded capital goods >5%",
+      "requirement": "If a generic dataset that includes capital goods contributes over 5% to cradle-to-gate results of any impact indicator, its source database must be declared in the EPD.",
+      "source": {
+        "section": "4.3.6",
+        "page": 20
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.capital_goods.dataset_max_contribution_pct > 5",
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.databases[]",
+        "fields": [
+          "name",
+          "version"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.CUT.08",
+      "title": "Power-plant construction included for A3 electricity/heat",
+      "requirement": "For electricity/heat used in A3 (A5 for services) and other processes under the EPD owner's control, at least power-plant construction must be included in the datasets.",
+      "source": {
+        "section": "4.3.6",
+        "page": 20
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "lca.electricity.a3.includes_powerplant_infrastructure",
+        "value": true
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.01",
+      "title": "No system expansion/substitution to solve allocation",
+      "requirement": "Allocation problems must be solved by subdivision or allocation, never by system expansion or substitution credits (attributional approach).",
+      "source": {
+        "section": "4.1; 4.5.1",
+        "page": 17
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "not_one_of",
+        "path": "lca.allocation.basis",
+        "values": [
+          "system_expansion",
+          "substitution",
+          "avoided_burden"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.02",
+      "title": "Allocation basis is one of the permitted methods",
+      "requirement": "Co-product allocation follows the stepwise procedure: subdivision, then physical allocation, otherwise economic allocation; conservative assumptions are permitted.",
+      "source": {
+        "section": "4.5.1",
+        "page": 23
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "lca.allocation.basis",
+        "values": [
+          "none",
+          "subdivision",
+          "physical",
+          "economic",
+          "conservative"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.03",
+      "title": "Physical allocation only if revenue difference <25%",
+      "requirement": "Physical allocation is only allowed when a relevant physical relationship exists and the revenue per mass (or energy) of product and co-products differs by less than 25%.",
+      "source": {
+        "section": "4.5.1",
+        "page": 23
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.allocation.basis == 'physical'",
+      "check": {
+        "type": "relation",
+        "expression": "lca.allocation.revenue_difference_pct < 25"
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.04",
+      "title": "Economic allocation requires sensitivity analysis",
+      "requirement": "Where economic allocation is used, the LCA report must include a sensitivity analysis on the choice of economic value.",
+      "source": {
+        "section": "4.5.1",
+        "page": 23
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.allocation.basis == 'economic'",
+      "check": {
+        "type": "required_field",
+        "path": "lca.allocation.sensitivity_analysis"
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.05",
+      "title": "Allocation basis justified",
+      "requirement": "The allocation procedure applied must be documented and justified (LCA report, and EPD where recycled material is a main flow).",
+      "source": {
+        "section": "4.5; 5.2",
+        "page": 50
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.allocation.justification"
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.06",
+      "title": "SCM co-products for cement/concrete: economic allocation only",
+      "requirement": "Co-products used in cement and concrete (e.g., GGBS, BOF slag, fly ash, artificial gypsum, silica fume, alumina-rich residues) must be allocated economically; physical partitioning or system expansion is not allowed.",
+      "source": {
+        "section": "4.5.1.1",
+        "page": 23
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.allocation.scm_coproducts_used == true",
+      "check": {
+        "type": "equals",
+        "path": "lca.allocation.scm_coproduct_basis",
+        "value": "economic"
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.07",
+      "title": "Economic allocation prices averaged over >=3 years",
+      "requirement": "Economic allocation for cement/concrete co-products should use market prices averaged over a long period, recommended at least 3 years.",
+      "source": {
+        "section": "4.5.1.1",
+        "page": 23
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "applies_when": "lca.allocation.scm_coproducts_used == true",
+      "check": {
+        "type": "numeric_range",
+        "path": "lca.allocation.price_averaging_years",
+        "min": 3,
+        "unit": "years"
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.08",
+      "title": "Incineration below 60/65% efficiency is disposal (C4)",
+      "requirement": "Waste incineration in stage C counts as energy recovery (C3) only if energy efficiency is at least 60% (plants permitted before 2009) or 65% (after 2009); otherwise, and always for hazardous waste, it is disposal in C4.",
+      "source": {
+        "section": "4.5.2",
+        "page": 26
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "scenarios.C3.incineration_share_pct > 0",
+      "check": {
+        "type": "relation",
+        "expression": "scenarios.C3.incineration_energy_efficiency_pct >= 60 and scenarios.C3.incinerated_hazardous_waste != true"
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.09",
+      "title": "Recycled-material allocation described in EPD",
+      "requirement": "If pre- or post-consumer recycled material is a main input or output, the EPD must describe the allocation applied, including whether real data or estimates were used and the share assumed to carry/not carry burden.",
+      "source": {
+        "section": "4.5.3; 6.4.6",
+        "page": 27
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.recycled_material_is_main_flow == true",
+      "check": {
+        "type": "required_field",
+        "path": "lca.allocation.recycled_material_burden_share_pct"
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.10",
+      "title": "GWP-GHG intensity of recycled inputs declared when >10%",
+      "requirement": "If recycled material inputs contribute more than 10% to A1-A3 GWP-GHG, the GWP-GHG intensity of that recycled material (kg CO2 eq./tonne) must be declared.",
+      "source": {
+        "section": "4.5.3",
+        "page": 27
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.recycled_inputs.gwp_ghg_share_a1a3_pct > 10",
+      "check": {
+        "type": "required_field",
+        "path": "lca.recycled_inputs.gwp_ghg_kg_co2e_per_tonne"
+      }
+    },
+    {
+      "id": "PCR2019-14.ALLOC.11",
+      "title": "Mass balance approaches not used",
+      "requirement": "Mass balance approaches for claiming biobased, renewable or recycled content are not allowed (except grid biogas and the rolling-average percentage method).",
+      "source": {
+        "section": "4.7.1",
+        "page": 32
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "lca.uses_mass_balance_approach",
+        "value": false
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.01",
+      "title": "Primary data reference year <= 5 years",
+      "requirement": "Primary data reference year (latest year the data provider confirmed representativeness) must be no more than five years old.",
+      "source": {
+        "section": "4.6.2",
+        "page": 28
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "data_age",
+        "path": "lca.reference_year",
+        "max_years": 5
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.02",
+      "title": "Secondary data reference year <= 10 years",
+      "requirement": "Representative secondary data must not have a reference year older than 10 years; older data counts as proxy data.",
+      "source": {
+        "section": "4.6.3",
+        "page": 29
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "data_age",
+        "path": "lca.secondary_data.oldest_reference_year",
+        "max_years": 10
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.03",
+      "title": "Database version not older than 3 years",
+      "requirement": "Database datasets should be from the latest version; if not, the database version must be no more than three years old when the EPD is published.",
+      "source": {
+        "section": "4.6.3",
+        "page": 29
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "data_age",
+        "path": "lca.databases[].release_date",
+        "max_years": 3
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.04",
+      "title": "Primary data cover at least one year of operations",
+      "requirement": "Primary data should be averaged over at least one year of operations; any shorter period must be justified.",
+      "source": {
+        "section": "4.6.2",
+        "page": 28
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "relation",
+        "expression": "lca.data_collection_period_months >= 12 or lca.data_collection_period_justification != null"
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.05",
+      "title": "Data collection period declared in EPD",
+      "requirement": "The data quality summary in the EPD must state the data collection period of primary manufacturing (or service provision) data, with justification for any deviation from one year.",
+      "source": {
+        "section": "4.6.5",
+        "page": 30
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.period_under_review.start"
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.06",
+      "title": "Data quality assessment covers >=80% of each impact indicator",
+      "requirement": "A data quality assessment per EN 15941 must cover data contributing at least 80% of the results of each declared environmental impact indicator.",
+      "source": {
+        "section": "4.6.5",
+        "page": 30
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "lca.data_quality.coverage_pct",
+        "min": 80,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.07",
+      "title": "Data quality assessment scheme",
+      "requirement": "The assessment must use the data quality schemes of the UN Environment Global Guidance or the PEF method.",
+      "source": {
+        "section": "4.6.5",
+        "page": 30
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "lca.data_quality.scheme",
+        "values": [
+          "UNEP Global Guidance",
+          "PEF"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.08",
+      "title": "Data quality summary in LCA information section",
+      "requirement": "A summary of the data quality assessment must be included in the LCA information section of the EPD.",
+      "source": {
+        "section": "4.6.5; 6.4.6",
+        "page": 30
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "lca_information",
+        "any_of": [
+          "data quality"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.09",
+      "title": "Data source declaration for key A1-A3 processes",
+      "requirement": "For each process contributing over 10% of A1-A3 GWP-GHG (A1-A5 for services), the EPD must give source type, source, reference year and data category; other processes may be grouped.",
+      "source": {
+        "section": "4.6.5",
+        "page": 30
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.data_sources[]",
+        "fields": [
+          "process",
+          "source_type",
+          "source",
+          "reference_year",
+          "data_category"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.10",
+      "title": "A3 reference year always declared",
+      "requirement": "The reference year(s) of manufacturing data in A3 (service provision in A5) must be declared even if below the 10% threshold.",
+      "source": {
+        "section": "4.6.5",
+        "page": 30
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.reference_year"
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.11",
+      "title": "Share of primary data for A1-A3 GWP-GHG declared",
+      "requirement": "The total share of primary data in A1-A3 GWP-GHG results (A1-A5 for services) must be declared; '>90%' is allowed above 90%.",
+      "source": {
+        "section": "4.6.5.1",
+        "page": 31
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "lca.data_quality.primary_data_share_gwp_ghg_pct",
+        "min": 0,
+        "max": 100,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.12",
+      "title": "Primary-data-share explanatory statement",
+      "requirement": "Next to the primary data share, the EPD must include the prescribed statement that the share is calculated on GWP-GHG results, is a simplified data quality indicator and is not comparable across product categories.",
+      "source": {
+        "section": "4.6.5.1",
+        "page": 31
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "share of primary data is calculated based on GWP-GHG results"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.13",
+      "title": "Uncertainty statement when upstream EPD share is estimated",
+      "requirement": "If the primary data share of an upstream EPD had to be estimated, the EPD must state that the reported share is uncertain because data-source EPD(s) lack this information.",
+      "source": {
+        "section": "4.6.5.1",
+        "page": 31
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.data_quality.upstream_primary_share_estimated == true",
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "reported share of primary data is associated with uncertainty"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.14",
+      "title": "Statement when a non-compliant upstream EPD is used",
+      "requirement": "If an upstream EPD not fully compliant with the applicable LCA rules is used as data source, the EPD must describe the deviation and why that EPD was used.",
+      "source": {
+        "section": "4.6.4",
+        "page": 30
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.uses_noncompliant_upstream_epd == true",
+      "check": {
+        "type": "required_field",
+        "path": "lca.upstream_epd_deviation_statement"
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.15",
+      "title": "Statement when old-EF-version data are used",
+      "requirement": "If results based on an older EF version were used as input, the EPD must state this and that it was assessed to give identical or conservative results; the EPD is still described as using the current EF version.",
+      "source": {
+        "section": "4.9.2",
+        "page": 45
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.uses_old_ef_version_data == true",
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "identical or conservative"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.16",
+      "title": "Primary data for processes under operational control",
+      "requirement": "Primary data must be used at least for processes under the manufacturer's (or service provider's) operational control, i.e., A3 manufacturing for goods and A5 for services.",
+      "source": {
+        "section": "4.6.1; 4.8.1",
+        "page": 28
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "lca.data_quality.a3_data_category",
+        "value": "primary"
+      }
+    },
+    {
+      "id": "PCR2019-14.DQ.17",
+      "title": "Proxy data limited (coverage of data quality assessment)",
+      "requirement": "Proxy data use must be identified in the data quality assessment covering at least 80% of each core impact indicator result.",
+      "source": {
+        "section": "4.6.1",
+        "page": 28
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "required_field",
+        "path": "lca.data_quality.proxy_data_share_pct"
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.01",
+      "title": "A3 electricity modelled market-based",
+      "requirement": "Grid electricity for A1-A3 processes under the manufacturer's control must be modelled market-based (contractual instrument or residual mix); location-based consumption mix is not allowed for main results.",
+      "source": {
+        "section": "4.7.2.3; 4.8.1",
+        "page": 36
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "lca.electricity.a3.mix_type",
+        "values": [
+          "contractual_instrument",
+          "residual_mix",
+          "internal_generation",
+          "direct_supplier"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.02",
+      "title": "A3 electricity GWP-GHG intensity declared (kg CO2 eq./kWh)",
+      "requirement": "The EPD must declare the climate impact of electricity used in A3 (A5 for services) in kg CO2 eq./kWh using GWP-GHG.",
+      "source": {
+        "section": "4.7.2.5",
+        "page": 35
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.electricity.a3.gwp_ghg_kg_co2e_per_kwh"
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.03",
+      "title": "A3 electricity energy source and modelling described",
+      "requirement": "The EPD must state how A3 electricity was modelled (e.g., contractual instrument, residual mix) and the energy source behind it.",
+      "source": {
+        "section": "4.7.2.5",
+        "page": 35
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.electricity.a3.energy_source"
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.04",
+      "title": "Electricity intensity unit shown in EPD",
+      "requirement": "The electricity climate impact must be expressed in kg CO2 eq./kWh in the EPD.",
+      "source": {
+        "section": "4.7.2.5",
+        "page": 35
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "kg CO2 eq./kWh",
+          "kg CO2-eq./kWh",
+          "kg CO2e/kWh"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.05",
+      "title": "Residual mix calculation method reported",
+      "requirement": "When a residual mix had to be calculated, the method used (AIB method for AIB members) must be reported in the LCA report and the EPD.",
+      "source": {
+        "section": "4.7.2.3",
+        "page": 34
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.electricity.a3.mix_type == 'residual_mix' and lca.electricity.a3.residual_mix_calculated == true",
+      "check": {
+        "type": "required_field",
+        "path": "lca.electricity.a3.residual_mix_method"
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.06",
+      "title": "Sub-national grid for AU, BR, CA, CN, IN, US",
+      "requirement": "The electricity market is the country grid, except Australia, Brazil, Canada, China, India and the USA, where a sub-national grid mix must be used.",
+      "source": {
+        "section": "4.7.2.3",
+        "page": 34
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.electricity.a3.country == 'AU' or lca.electricity.a3.country == 'BR' or lca.electricity.a3.country == 'CA' or lca.electricity.a3.country == 'CN' or lca.electricity.a3.country == 'IN' or lca.electricity.a3.country == 'US'",
+      "check": {
+        "type": "required_field",
+        "path": "lca.electricity.a3.subnational_region"
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.07",
+      "title": "Contractual instrument documentation complete",
+      "requirement": "Documentation of purchased and cancelled contractual instruments must identify generator, electricity type and quantity, purchaser, and issue/validity periods.",
+      "source": {
+        "section": "4.7.2.3",
+        "page": 33
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.electricity.a3.mix_type == 'contractual_instrument'",
+      "check": {
+        "type": "each_has_fields",
+        "path": "lca.electricity.contractual_instruments[]",
+        "fields": [
+          "generator",
+          "electricity_type",
+          "quantity_kwh",
+          "purchaser",
+          "issue_period",
+          "validity_period",
+          "country"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.08",
+      "title": "Contractual instrument volume covers annual production",
+      "requirement": "Contractual instruments bought per year must correspond to the electricity used to produce the annual sales volume of all products at the site.",
+      "source": {
+        "section": "4.7.2.3",
+        "page": 34
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "lca.electricity.a3.mix_type == 'contractual_instrument'",
+      "check": {
+        "type": "relation",
+        "expression": "sum(lca.electricity.contractual_instruments[].quantity_kwh) >= lca.electricity.a3.site_annual_consumption_kwh"
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.09",
+      "title": "Location-based results only in separate subsection",
+      "requirement": "Location-based electricity/biogas results may only be given in a clearly described subsection of the environmental performance section, not as main results.",
+      "source": {
+        "section": "4.7.2.3; 6.4.7",
+        "page": 63
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.electricity.location_based_results_declared == true",
+      "check": {
+        "type": "text_present",
+        "doc_section": "additional_lca_results",
+        "any_of": [
+          "location-based"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.10",
+      "title": "B6 electricity mix declared",
+      "requirement": "Electricity in the use stage is modelled with the market consumption mix (unless under the EPD owner's control) and the mix must be declared in the EPD where relevant.",
+      "source": {
+        "section": "4.8.3",
+        "page": 38
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('B6')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.B6.electricity_mix"
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.11",
+      "title": "A3 biogas GWP-GHG intensity declared (kg CO2 eq./MJ)",
+      "requirement": "If biogas is used in A3 (A5 for services), the EPD must describe its modelling and declare its climate impact in kg CO2 eq./MJ using GWP-GHG.",
+      "source": {
+        "section": "4.7.3.3",
+        "page": 36
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.biogas.used_in_a3 == true",
+      "check": {
+        "type": "required_field",
+        "path": "lca.biogas.a3.gwp_ghg_kg_co2e_per_mj"
+      }
+    },
+    {
+      "id": "PCR2019-14.ELEC.12",
+      "title": "Grid biogas modelled market-based",
+      "requirement": "Grid biogas for energy must be modelled with certificates or the residual gas mix (often 100% natural gas); internal/dedicated supply may be modelled as biogas if no certificates were sold.",
+      "source": {
+        "section": "4.7.3",
+        "page": 35
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.biogas.used_in_a3 == true",
+      "check": {
+        "type": "one_of",
+        "path": "lca.biogas.a3.mix_type",
+        "values": [
+          "internal_generation",
+          "dedicated_supply",
+          "certificate",
+          "residual_mix"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.BIO.01",
+      "title": "Biogenic content >5%: share declared",
+      "requirement": "If the product contains more than 5% biogenic material, its share (mass-%) must be declared in the content declaration.",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.content.biogenic_mass_pct > 5",
+      "check": {
+        "type": "text_present",
+        "doc_section": "content_declaration",
+        "any_of": [
+          "biogenic"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.BIO.02",
+      "title": "Biogenic content >5%: kg C per unit declared",
+      "requirement": "If biogenic content exceeds 5%, the biogenic carbon content must be declared in kg C per product or declared unit.",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.content.biogenic_mass_pct > 5",
+      "check": {
+        "type": "required_field",
+        "path": "product.content.biogenic_carbon_kg_c"
+      }
+    },
+    {
+      "id": "PCR2019-14.BIO.03",
+      "title": "ISO 21930 claim: biogenic carbon in kg CO2 eq.",
+      "requirement": "EPDs claiming ISO 21930 compliance must also declare the biogenic carbon content of product and packaging in kg CO2 eq. per product or declared unit.",
+      "source": {
+        "section": "1.4; 6.4.5",
+        "page": 59
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.claims_iso_21930 == true",
+      "check": {
+        "type": "required_field",
+        "path": "product.content.biogenic_carbon_kg_co2e"
+      }
+    },
+    {
+      "id": "PCR2019-14.BIO.04",
+      "title": "Biogenic carbon kg CO2 eq. = kg C x 44/12",
+      "requirement": "1 kg biogenic carbon corresponds to 44/12 kg CO2; declared kg C and kg CO2 eq. values must be consistent.",
+      "source": {
+        "section": "6.4.5 Table 7 fn 104",
+        "page": 61
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "product.content.biogenic_carbon_kg_co2e != null",
+      "check": {
+        "type": "formula",
+        "target": "product.content.biogenic_carbon_kg_co2e",
+        "expression": "product.content.biogenic_carbon_kg_c * 44 / 12",
+        "tolerance_pct": 1
+      }
+    },
+    {
+      "id": "PCR2019-14.BIO.05",
+      "title": "Packaging biogenic content >5% declared",
+      "requirement": "If packaging contains more than 5% biogenic material, this share must be declared.",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.packaging_biogenic_mass_pct > 5",
+      "check": {
+        "type": "text_present",
+        "doc_section": "content_declaration",
+        "any_of": [
+          "biogenic"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.BIO.06",
+      "title": "Biogenic carbon balances to zero over A-C",
+      "requirement": "Biogenic carbon taken up and the biogenic carbon emitted or leaving the system over the life cycle must sum to zero; no credits for storage or delayed emissions.",
+      "source": {
+        "section": "Annex 2",
+        "page": 77
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "epd.boundary_type == 'a' or epd.boundary_type == 'b' or epd.boundary_type == 'c'",
+      "check": {
+        "type": "relation",
+        "expression": "abs(lca.biogenic_carbon.uptake_kg_co2 - lca.biogenic_carbon.release_kg_co2) <= 0.01 * abs(lca.biogenic_carbon.uptake_kg_co2)"
+      }
+    },
+    {
+      "id": "PCR2019-14.BIO.07",
+      "title": "Statement when biogenic packaging carbon balanced in A1-A3",
+      "requirement": "For type a/d EPDs with biogenic packaging, the packaging uptake must be balanced by a virtual emission in A3 and this must be stated in the environmental performance section.",
+      "source": {
+        "section": "Annex 2; 6.4.7",
+        "page": 77
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.packaging_biogenic_carbon_kg_c > 0 and (epd.boundary_type == 'a' or epd.boundary_type == 'd')",
+      "check": {
+        "type": "text_present",
+        "doc_section": "environmental_performance",
+        "any_of": [
+          "balanced out",
+          "balanced"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.BIO.08",
+      "title": "GWP-GHG A1-A3 consistent with GWP-total + biogenic content",
+      "requirement": "For A1-A3, GWP-GHG may be computed as GWP-total plus product and packaging biogenic carbon content times 44/12; results should be consistent with this identity.",
+      "source": {
+        "section": "4.9",
+        "page": 42
+      },
+      "phase": "results",
+      "severity": "minor",
+      "obligation": "may",
+      "derived": true,
+      "check": {
+        "type": "formula",
+        "target": "results.EN 15804+A2.GWP-GHG.A1-A3",
+        "expression": "results.EN 15804+A2.GWP-total.A1-A3 + (product.content.biogenic_carbon_kg_c + product.packaging_biogenic_carbon_kg_c) * 44 / 12",
+        "tolerance_pct": 5
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.01",
+      "title": "Core environmental impact indicators (EN 15804+A2)",
+      "requirement": "All mandatory core impact indicators of EN 15804+A2 (EF 3.1 reference package) must be declared for every declared module; ND is not allowed for mandatory indicators.",
+      "source": {
+        "section": "4.9; 6.2",
+        "page": 42
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "indicators_required",
+        "method": "EN 15804+A2",
+        "lcia_package": "EF 3.1",
+        "indicators": [
+          {
+            "name": "GWP-total",
+            "unit": "kg CO2 eq."
+          },
+          {
+            "name": "GWP-fossil",
+            "unit": "kg CO2 eq."
+          },
+          {
+            "name": "GWP-biogenic",
+            "unit": "kg CO2 eq."
+          },
+          {
+            "name": "GWP-luluc",
+            "unit": "kg CO2 eq."
+          },
+          {
+            "name": "ODP",
+            "unit": "kg CFC-11 eq."
+          },
+          {
+            "name": "AP",
+            "unit": "mol H+ eq."
+          },
+          {
+            "name": "EP-freshwater",
+            "unit": "kg P eq."
+          },
+          {
+            "name": "EP-marine",
+            "unit": "kg N eq."
+          },
+          {
+            "name": "EP-terrestrial",
+            "unit": "mol N eq."
+          },
+          {
+            "name": "POCP",
+            "unit": "kg NMVOC eq."
+          },
+          {
+            "name": "ADP-minerals&metals",
+            "unit": "kg Sb eq."
+          },
+          {
+            "name": "ADP-fossil",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "WDP",
+            "unit": "m3 world eq. deprived"
+          }
+        ],
+        "modules": "results.modules_declared[]"
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.02",
+      "title": "Supplementary GWP-GHG indicator",
+      "requirement": "GWP-GHG (GWP-total with biogenic CO2 characterisation factor set to zero) must additionally be declared for every declared module.",
+      "source": {
+        "section": "4.9",
+        "page": 42
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "indicators_required",
+        "method": "EN 15804+A2",
+        "lcia_package": "EF 3.1",
+        "indicators": [
+          {
+            "name": "GWP-GHG",
+            "unit": "kg CO2 eq."
+          }
+        ],
+        "modules": "results.modules_declared[]"
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.03",
+      "title": "Resource use indicators",
+      "requirement": "The EN 15804 resource use indicators, including the six primary energy indicators (MJ, net calorific value), secondary materials, secondary fuels and net fresh water, must be declared for every declared module.",
+      "source": {
+        "section": "4.9; Annex 3",
+        "page": 79
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "indicators_required",
+        "method": "EN 15804+A2",
+        "indicators": [
+          {
+            "name": "PERE",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "PERM",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "PERT",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "PENRE",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "PENRM",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "PENRT",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "SM",
+            "unit": "kg"
+          },
+          {
+            "name": "RSF",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "NRSF",
+            "unit": "MJ, net calorific value"
+          },
+          {
+            "name": "FW",
+            "unit": "m3"
+          }
+        ],
+        "modules": "results.modules_declared[]"
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.04",
+      "title": "Waste indicators",
+      "requirement": "The EN 15804 waste category indicators (hazardous, non-hazardous, radioactive waste disposed) must be declared for every declared module.",
+      "source": {
+        "section": "4.9",
+        "page": 42
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "indicators_required",
+        "method": "EN 15804+A2",
+        "indicators": [
+          {
+            "name": "HWD",
+            "unit": "kg"
+          },
+          {
+            "name": "NHWD",
+            "unit": "kg"
+          },
+          {
+            "name": "RWD",
+            "unit": "kg"
+          }
+        ],
+        "modules": "results.modules_declared[]"
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.05",
+      "title": "Output flow indicators, exported energy per carrier",
+      "requirement": "The EN 15804 output flow indicators must be declared for every declared module, with exported energy split into electricity and thermal energy.",
+      "source": {
+        "section": "4.9",
+        "page": 43
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "indicators_required",
+        "method": "EN 15804+A2",
+        "indicators": [
+          {
+            "name": "CRU",
+            "unit": "kg"
+          },
+          {
+            "name": "MFR",
+            "unit": "kg"
+          },
+          {
+            "name": "MER",
+            "unit": "kg"
+          },
+          {
+            "name": "EEE",
+            "unit": "MJ"
+          },
+          {
+            "name": "EET",
+            "unit": "MJ"
+          }
+        ],
+        "modules": "results.modules_declared[]"
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.06",
+      "title": "Additional EN 15804 impact indicators calculated",
+      "requirement": "The additional EN 15804 impact indicators must be calculated and given in the LCA report; declaring them in the EPD (or a public report) is optional but recommended.",
+      "source": {
+        "section": "4.9",
+        "page": 43
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "indicators_required",
+        "method": "EN 15804+A2",
+        "lcia_package": "EF 3.1",
+        "indicators": [
+          {
+            "name": "PM",
+            "unit": "disease incidence"
+          },
+          {
+            "name": "IRP",
+            "unit": "kBq U235 eq."
+          },
+          {
+            "name": "ETP-fw",
+            "unit": "CTUe"
+          },
+          {
+            "name": "HTP-c",
+            "unit": "CTUh"
+          },
+          {
+            "name": "HTP-nc",
+            "unit": "CTUh"
+          },
+          {
+            "name": "SQP",
+            "unit": "dimensionless"
+          }
+        ],
+        "modules": "results.modules_declared[]"
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.07",
+      "title": "Characterisation factors based on EF 3.1",
+      "requirement": "Since 2024-09-01, characterisation factors from the EN 15804 reference package based on EF 3.1 (or a later version) must be used.",
+      "source": {
+        "section": "4.9",
+        "page": 43
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "lca.lcia_methods[].version",
+        "values": [
+          "EF 3.1"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.08",
+      "title": "Reference package version stated in EPD",
+      "requirement": "The EPD must state which EN 15804 reference package version was used (e.g., EF 3.1) with references to characterisation methods for all declared indicators.",
+      "source": {
+        "section": "4.9; 6.4.6",
+        "page": 62
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "lca_information",
+        "any_of": [
+          "EF 3.1"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.09",
+      "title": "Impact results disclaimer",
+      "requirement": "Next to the impact indicator results, the EPD must state that estimated impact results are relative statements that do not indicate endpoints, threshold exceedance, safety margins or risks.",
+      "source": {
+        "section": "6.4.7",
+        "page": 63
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "environmental_performance",
+        "any_of": [
+          "only relative statements, which do not indicate the endpoints"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.10",
+      "title": "End-of-life consideration statement",
+      "requirement": "If the EPD covers the end-of-life stage, it must state that results of C1-C4 should be considered together with A1-A3 (A1-A5 for services).",
+      "source": {
+        "section": "6.4.7",
+        "page": 63
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('C1') or declared('C2') or declared('C3') or declared('C4')",
+      "check": {
+        "type": "text_present",
+        "doc_section": "environmental_performance",
+        "any_of": [
+          "results of the end-of-life stage (modules C1-C4) should be considered"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.11",
+      "title": "EN 15804 indicator disclaimers present",
+      "requirement": "The EPD must include the EN 15804 disclaimers belonging to the declared indicators (e.g., the 'use with care' disclaimer for ADP and WDP).",
+      "source": {
+        "section": "4.9",
+        "page": 42
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_present",
+        "doc_section": "environmental_performance",
+        "any_of": [
+          "shall be used with care as the uncertainties on these results are high"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.12",
+      "title": "Primary energy option (A/B/C) stated next to results",
+      "requirement": "The option chosen (A, B or C) for splitting primary energy into raw-material and energy-carrier use must be described directly with the primary energy results.",
+      "source": {
+        "section": "Annex 3",
+        "page": 79
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "lca.primary_energy_option",
+        "values": [
+          "A",
+          "B",
+          "C"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.13",
+      "title": "Statement when recovered energy balanced in A1-A3",
+      "requirement": "If recovered energy leaving in A5 or C is balanced out in A1-A3 because those modules are not included, this must be stated in the environmental performance section.",
+      "source": {
+        "section": "Annex 3; 6.4.7",
+        "page": 79
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.recovered_energy_balanced_in_a1a3 == true",
+      "check": {
+        "type": "text_present",
+        "doc_section": "environmental_performance",
+        "any_of": [
+          "balanced out",
+          "balanced"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.IND.14",
+      "title": "EN 15804+A1 indicators clearly labelled",
+      "requirement": "If EN 15804+A1 indicators are additionally declared, the EPD must make clear they are A1 characterisation methods while all other rules follow EN 15804+A2, without claiming A1 compliance.",
+      "source": {
+        "section": "4.9",
+        "page": 43
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "lca.declares_en15804_a1_indicators == true",
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "EN 15804:2012+A1:2013"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.FMT.01",
+      "title": "EPD published in English",
+      "requirement": "EPDs must at minimum be published in English; other language versions must have identical content and the same registration number.",
+      "source": {
+        "section": "6.1",
+        "page": 52
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.language",
+        "values": [
+          "en",
+          "en-GB",
+          "en-US",
+          "English"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.FMT.02",
+      "title": "Machine-readable ILCD+EPD version available",
+      "requirement": "EPDs under this PCR must also be made digitally available in the machine-readable ILCD+EPD format.",
+      "source": {
+        "section": "6",
+        "page": 52
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.digital_formats.ilcd_epd"
+      }
+    },
+    {
+      "id": "PCR2019-14.FMT.03",
+      "title": "Two significant figures for results",
+      "requirement": "Results and the content declaration should use two significant figures; scientific notation (e.g., 1.2E+2) may be used.",
+      "source": {
+        "section": "6.2",
+        "page": 53
+      },
+      "phase": "document",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "number_format",
+        "scope": "results",
+        "style": "any",
+        "significant_digits": 2
+      }
+    },
+    {
+      "id": "PCR2019-14.FMT.04",
+      "title": "Number style is one of the SI styles",
+      "requirement": "Thousand separator and decimal mark must follow SI English (1 234.56) or SI French (1 234,56) style.",
+      "source": {
+        "section": "6.2",
+        "page": 53
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.number_style",
+        "values": [
+          "SI-English",
+          "SI-French"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.FMT.05",
+      "title": "Result tables use ND, never MND, blanks or symbols",
+      "requirement": "Result tables may only hold values or 'ND' (for optional indicators lacking data); no blank cells, hyphens, < or > signs, or other letters.",
+      "source": {
+        "section": "6.2",
+        "page": 53
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_forbidden",
+        "patterns": [
+          "MND",
+          "n/a",
+          "N/A"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.FMT.06",
+      "title": "No ratings, judgements or comparisons",
+      "requirement": "The EPD must not contain ratings, judgements, normalisation/weighting results, or comparisons with other products, earlier versions or competitors.",
+      "source": {
+        "section": "6",
+        "page": 52
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_forbidden",
+        "patterns": [
+          "market leader",
+          "more sustainable than",
+          "best in class",
+          "greener than",
+          "normalised results",
+          "weighted results",
+          "single score"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.FMT.07",
+      "title": "No carbon-neutrality or MBA-based claims",
+      "requirement": "Additional information must not include claims inconsistent with the PCR LCA rules, e.g., carbon-neutrality claims or GHG reductions based on mass balance.",
+      "source": {
+        "section": "6.4.8",
+        "page": 64
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_forbidden",
+        "patterns": [
+          "carbon neutral",
+          "carbon-neutral",
+          "climate neutral",
+          "climate-neutral",
+          "CO2 neutral",
+          "net zero product"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.FMT.08",
+      "title": "Variation calculated relative to the mean of the two values",
+      "requirement": "Percentage variation between two numbers is |difference| divided by their average, times 100; where several values are compared, the maximum variation is declared.",
+      "source": {
+        "section": "6.2",
+        "page": 53
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.multi_product_basis == 'average' or epd.multi_product_basis == 'representative' or epd.multi_product_basis == 'several-representative' or epd.multi_product_basis == 'worst-case'",
+      "check": {
+        "type": "formula",
+        "target": "results.variation.products_gwp_ghg_a1a3_pct",
+        "expression": "abs(results.variation.declared_gwp_ghg_a1a3 - results.variation.furthest_gwp_ghg_a1a3) / ((results.variation.declared_gwp_ghg_a1a3 + results.variation.furthest_gwp_ghg_a1a3) / 2) * 100",
+        "tolerance_pct": 1
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.01",
+      "title": "Section present: Cover page",
+      "requirement": "The EPD must contain the 'Cover page' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.1",
+        "page": 53
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.cover_page"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.02",
+      "title": "Section present: General information: programme information",
+      "requirement": "The EPD must contain the 'General information: programme information' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.2.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.programme_information"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.03",
+      "title": "Section present: General information: PCR and verification",
+      "requirement": "The EPD must contain the 'General information: PCR and verification' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.2.2",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.pcr_and_verification"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.04",
+      "title": "Section present: General information: ownership and limitations on use",
+      "requirement": "The EPD must contain the 'General information: ownership and limitations on use' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.2.4",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.ownership_and_limitations"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.05",
+      "title": "Section present: Information about EPD owner",
+      "requirement": "The EPD must contain the 'Information about EPD owner' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.3",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.epd_owner"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.06",
+      "title": "Section present: Product information",
+      "requirement": "The EPD must contain the 'Product information' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.4",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.product_information"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.07",
+      "title": "Section present: Content declaration",
+      "requirement": "The EPD must contain the 'Content declaration' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.5",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.content_declaration"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.08",
+      "title": "Section present: LCA information",
+      "requirement": "The EPD must contain the 'LCA information' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.6",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.lca_information"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.09",
+      "title": "Section present: Environmental performance",
+      "requirement": "The EPD must contain the 'Environmental performance' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.7",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.environmental_performance"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.10",
+      "title": "Section present: Abbreviations",
+      "requirement": "The EPD must contain the 'Abbreviations' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.12",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.abbreviations"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.11",
+      "title": "Section present: References",
+      "requirement": "The EPD must contain the 'References' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.13",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.references"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.12",
+      "title": "Section present: Version history",
+      "requirement": "The EPD must contain the 'Version history' section required by the PCR's fixed EPD structure.",
+      "source": {
+        "section": "6.4; 6.4.11",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.version_history"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.13",
+      "title": "Sector EPD information section",
+      "requirement": "Sector EPDs must include the section with information related to sector EPDs.",
+      "source": {
+        "section": "6.4; 6.4.10",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.type == 'sector'",
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.sector_epd_information"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.14",
+      "title": "Cover: product name",
+      "requirement": "The cover page must show the product name.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.name"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.15",
+      "title": "Cover: EPD owner name",
+      "requirement": "The cover page must show the EPD owner's name.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.declaration_holder.name"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.16",
+      "title": "Cover: EPD owner logotype",
+      "requirement": "The cover page must show the EPD owner's logotype.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.assets.owner_logo"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.17",
+      "title": "Cover: 'Environmental Product Declaration' text",
+      "requirement": "The cover page must contain the text 'Environmental Product Declaration' and/or 'EPD'.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "Environmental Product Declaration",
+          "EPD"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.18",
+      "title": "Cover: programme name and website",
+      "requirement": "The cover page must name the programme as The International EPD System with www.environdec.com.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "The International EPD System"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.19",
+      "title": "Cover: programme operator",
+      "requirement": "The cover page must name the programme operator EPD International AB.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "EPD International AB"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.20",
+      "title": "Cover: programme/licensee logotype",
+      "requirement": "The cover page must show the International EPD System logotype (or the licensee/CLC logotype).",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.assets.programme_logo"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.21",
+      "title": "Cover: registration number",
+      "requirement": "The cover page must show the EPD registration number issued by the programme operator (not a certification-body number).",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.declaration_number"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.22",
+      "title": "Cover: version date",
+      "requirement": "The cover page must show the version date (YYYY-MM-DD).",
+      "source": {
+        "section": "6.4.1; 2.2.4",
+        "page": 54
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.date_of_issue"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.23",
+      "title": "Cover: validity date",
+      "requirement": "The cover page must show the validity date; version date and validity period must be stated in the EPD.",
+      "source": {
+        "section": "6.4.1; 2.2.4",
+        "page": 54
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.valid_until"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.24",
+      "title": "Cover: update/depublish statement",
+      "requirement": "The cover page must say that the EPD may be updated or depublished if conditions change and point to www.environdec.com for the latest version.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "may be updated or depublished if conditions change"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.25",
+      "title": "Cover: ISO 14025 conformity",
+      "requirement": "The cover page must state conformity with ISO 14025.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "ISO 14025"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.26",
+      "title": "Cover: EN 15804+A2/AC conformity",
+      "requirement": "The cover page must state conformity with EN 15804:2012+A2:2019/AC:2021.",
+      "source": {
+        "section": "6.4.1",
+        "page": 54
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "EN 15804:2012+A2:2019/AC:2021"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.27",
+      "title": "Cover: ISO 21930 conformity when claimed",
+      "requirement": "If ISO 21930 compliance is claimed, the cover page must state conformity with ISO 21930:2017.",
+      "source": {
+        "section": "6.4.1",
+        "page": 55
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.claims_iso_21930 == true",
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "ISO 21930"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.28",
+      "title": "Cover: ECO EPD logotype",
+      "requirement": "The cover page must show the ECO EPD logotype approved by ECO Platform.",
+      "source": {
+        "section": "6.4.1",
+        "page": 55
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.assets.eco_epd_logo"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.29",
+      "title": "Cover: licensee name",
+      "requirement": "If registered via a regional/national licensee, the cover page must name the licensee.",
+      "source": {
+        "section": "6.4.1",
+        "page": 55
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.registered_via_licensee == true",
+      "check": {
+        "type": "required_field",
+        "path": "epd.licensee.name"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.30",
+      "title": "Cover: multiple-products statement and type",
+      "requirement": "EPDs of multiple products must state on the cover that they cover multiple products and which option (average, representative product, several representative products, worst-case) is used.",
+      "source": {
+        "section": "4.10.1; 6.4.1",
+        "page": 46
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.multi_product_basis == 'average' or epd.multi_product_basis == 'representative' or epd.multi_product_basis == 'several-representative' or epd.multi_product_basis == 'worst-case'",
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "EPD of multiple products, based on the average results of the product group",
+          "EPD of multiple products, based on a representative product",
+          "EPD of multiple products, based on several representative products",
+          "EPD of multiple products, based on worst-case results"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.31",
+      "title": "Cover: list of products covered",
+      "requirement": "EPDs of multiple products must list all covered products on the cover (or, if more than 10, in product information with a reference on the cover).",
+      "source": {
+        "section": "6.4.1",
+        "page": 55
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.multi_product_basis == 'average' or epd.multi_product_basis == 'representative' or epd.multi_product_basis == 'several-representative' or epd.multi_product_basis == 'worst-case'",
+      "check": {
+        "type": "list_min_length",
+        "path": "epd.products_covered[]",
+        "min": 2
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.32",
+      "title": "Cover: sector EPD type statement",
+      "requirement": "Sector EPDs must state on the cover whether they are based on an average or a worst-case product.",
+      "source": {
+        "section": "4.10.3; 6.4.1",
+        "page": 55
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.type == 'sector'",
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "Sector EPD based on an average product",
+          "Sector EPD based on a worst-case product"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.33",
+      "title": "Not-yet-on-market disclaimer",
+      "requirement": "EPDs of products not yet on the market must carry the prescribed 'not yet on the market' use-with-care disclaimer on the cover and in product information.",
+      "source": {
+        "section": "4.10.5; 6.4.1",
+        "page": 48
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.market_status == 'not_yet_on_market'",
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "not yet on the market"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.34",
+      "title": "Recently-on-market disclaimer",
+      "requirement": "EPDs whose A3 data cover less than one year of production must carry the prescribed 'recently on the market' disclaimer on the cover and in product information.",
+      "source": {
+        "section": "4.10.6; 6.4.1",
+        "page": 49
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.market_status == 'recently_on_market'",
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "recently on the market"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.35",
+      "title": "Self-declared translation disclaimer",
+      "requirement": "A self-declared translation must carry a cover disclaimer that it is a translation of the verified EPD and that only the original is binding.",
+      "source": {
+        "section": "6.4.1",
+        "page": 55
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.is_self_declared_translation == true",
+      "check": {
+        "type": "text_present",
+        "doc_section": "cover_page",
+        "any_of": [
+          "self-declared translation"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.36",
+      "title": "Programme operator address",
+      "requirement": "The programme information must give the operator address: EPD International AB, Box 210 60, SE-100 31 Stockholm, Sweden, support@environdec.com.",
+      "source": {
+        "section": "6.4.2.1",
+        "page": 55
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "Box 210 60"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.37",
+      "title": "PCR statement: EN 15804 as core PCR",
+      "requirement": "The PCR information must state that CEN standard EN 15804 serves as the core PCR (adding ISO 21930 if compliance is claimed).",
+      "source": {
+        "section": "6.4.2.2 Table 5",
+        "page": 56
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "pcr_and_verification",
+        "any_of": [
+          "EN 15804 serves as the core Product Category Rules"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.38",
+      "title": "PCR statement: name, number, version, UN CPC",
+      "requirement": "The PCR information must give the PCR name, registration number, version and UN CPC code(s), plus the same for any c-PCR.",
+      "source": {
+        "section": "6.4.2.2 Table 5",
+        "page": 56
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "pcr_and_verification",
+        "any_of": [
+          "2019:14"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.39",
+      "title": "PCR review chair named",
+      "requirement": "The EPD must name the PCR review chair and organisation and how to contact them via the programme operator.",
+      "source": {
+        "section": "6.4.2.2 Table 5",
+        "page": 56
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.verification.pcr_review_by"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.40",
+      "title": "Ownership statement",
+      "requirement": "The EPD must state that the EPD owner has sole ownership, liability and responsibility for the EPD.",
+      "source": {
+        "section": "6.4.2.4",
+        "page": 57
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "sole ownership, liability, and responsibility"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.41",
+      "title": "Comparability limitation statement",
+      "requirement": "The EPD must include the prescribed statement that EPDs from different programmes may not be comparable and the conditions for comparability.",
+      "source": {
+        "section": "6.4.2.4",
+        "page": 57
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "published in different EPD programmes, may not be comparable"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.42",
+      "title": "EPD owner address and contact",
+      "requirement": "The EPD must give the address and contact details of the EPD owner.",
+      "source": {
+        "section": "6.4.3",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.declaration_holder.address"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.43",
+      "title": "EPD owner organisation description",
+      "requirement": "The EPD must describe the EPD owner's organisation.",
+      "source": {
+        "section": "6.4.3",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.declaration_holder.description"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.44",
+      "title": "LCA practitioner contact",
+      "requirement": "If an LCA practitioner was commissioned, their address and contact information must be given.",
+      "source": {
+        "section": "6.4.3",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.verification.lca_by"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.45",
+      "title": "Product unambiguous identification",
+      "requirement": "The product must be identified by name and unambiguously by standards, concessions or other means.",
+      "source": {
+        "section": "6.4.4",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.identification"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.46",
+      "title": "Product image",
+      "requirement": "Product information must include a visual representation (e.g., image) of the product.",
+      "source": {
+        "section": "6.4.4",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.image"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.47",
+      "title": "UN CPC classification code",
+      "requirement": "The product must be identified by UN CPC name and code where an applicable code exists.",
+      "source": {
+        "section": "6.4.4",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "list_min_length",
+        "path": "product.classification_codes[]",
+        "min": 1
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.48",
+      "title": "Product description and intended use",
+      "requirement": "Product information must describe the product, its technical performance, intended use and any restriction to construction types.",
+      "source": {
+        "section": "6.4.4",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.description"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.49",
+      "title": "Main manufacturing processes described",
+      "requirement": "Product information must briefly describe the main manufacturing (or service provision) processes.",
+      "source": {
+        "section": "6.4.4",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.process_description"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.50",
+      "title": "Manufacturer name",
+      "requirement": "If the manufacturer or service provider differs from the EPD owner, it must be named.",
+      "source": {
+        "section": "6.4.4",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "manufacturer.name"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.51",
+      "title": "Manufacturing site locations (city)",
+      "requirement": "The location of every manufacturing site must be given, at least to city/municipality level; multi-site EPDs must list all A3 sites.",
+      "source": {
+        "section": "6.4.4; 4.10.2",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "manufacturer.production_sites[]",
+        "fields": [
+          "city",
+          "country"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.52",
+      "title": "At least one manufacturing site listed",
+      "requirement": "At least one manufacturing site (or service location) must be listed.",
+      "source": {
+        "section": "6.4.4",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "product.is_service != true",
+      "check": {
+        "type": "list_min_length",
+        "path": "manufacturer.production_sites[]",
+        "min": 1
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.53",
+      "title": "Trader: final controlled site location",
+      "requirement": "Trader-owned EPDs must state the city of the final site under the trader's direct control (warehouse or store) as well as manufacturing sites.",
+      "source": {
+        "section": "4.10.4; 6.4.4",
+        "page": 58
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.owner_is_trader == true",
+      "check": {
+        "type": "required_field",
+        "path": "lca.trader.final_site_city"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.54",
+      "title": "Mass per unit declared",
+      "requirement": "The mass of one unit of product, as purchased or per declared unit, must be declared.",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.is_intangible_service != true",
+      "check": {
+        "type": "required_field",
+        "path": "product.mass_per_unit_kg"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.55",
+      "title": "Material/substance list with masses",
+      "requirement": "Content must be declared as a list of materials/substances with their masses (confidential items may be generic or ranged).",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.is_intangible_service != true",
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.material_composition[]",
+        "fields": [
+          "material",
+          "mass_kg"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.56",
+      "title": "Material list not empty",
+      "requirement": "The content declaration must contain at least one material entry (an empty declaration needs an explanation, services only).",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "product.is_intangible_service != true",
+      "check": {
+        "type": "list_min_length",
+        "path": "product.material_composition[]",
+        "min": 1
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.57",
+      "title": "Packaging mass and content",
+      "requirement": "Mass and material content of distribution/consumer packaging must be declared where applicable.",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.packaging[]",
+        "fields": [
+          "material",
+          "mass_kg"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.58",
+      "title": "Content declaration covers 100% of unit mass",
+      "requirement": "Declared material masses must add up to 100% of one product unit (except worst-case multi-product EPDs).",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "applies_when": "epd.multi_product_basis != 'worst-case' and product.is_intangible_service != true",
+      "check": {
+        "type": "formula",
+        "target": "product.mass_per_unit_kg",
+        "expression": "sum(product.material_composition[].mass_kg)",
+        "tolerance_pct": 1
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.59",
+      "title": "Post-consumer recycled content >5% declared",
+      "requirement": "If post-consumer recycled content exceeds 5%, its share must be declared (pre-consumer, if declared, separately).",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.content.post_consumer_recycled_pct > 5",
+      "check": {
+        "type": "text_present",
+        "doc_section": "content_declaration",
+        "any_of": [
+          "post-consumer"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.60",
+      "title": "SVHC above 0.1% declared",
+      "requirement": "Substances on the REACH SVHC candidate list above 0.1% by weight of the product or any component must be declared with their properties.",
+      "source": {
+        "section": "6.4.5",
+        "page": 60
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "each_has_fields",
+        "path": "product.hazardous_substances[]",
+        "fields": [
+          "name",
+          "ec_number",
+          "cas",
+          "mass_pct"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.61",
+      "title": "Multi-product/sector: content declaration basis explained",
+      "requirement": "EPDs of multiple products and sector EPDs must explain what the content declaration represents (average, representative or worst-case).",
+      "source": {
+        "section": "6.4.5",
+        "page": 60
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.multi_product_basis == 'average' or epd.multi_product_basis == 'representative' or epd.multi_product_basis == 'several-representative' or epd.multi_product_basis == 'worst-case' or epd.type == 'sector'",
+      "check": {
+        "type": "text_present",
+        "doc_section": "content_declaration",
+        "any_of": [
+          "average",
+          "representative",
+          "worst-case"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.62",
+      "title": "Geographical scope per module",
+      "requirement": "The LCA information must state the geographical scope per module (A1-A5) and for stages B and C, by country code or region name.",
+      "source": {
+        "section": "6.4.6",
+        "page": 61
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.geographical_scope_per_module"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.63",
+      "title": "System boundary description phrase",
+      "requirement": "The LCA information must describe the system boundary with one of the six prescribed phrases matching the EPD type.",
+      "source": {
+        "section": "6.4.6",
+        "page": 62
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "lca_information",
+        "any_of": [
+          "cradle-to-gate with modules C1-C4 and module D",
+          "cradle-to-gate with options, modules C1-C4, module D and optional modules",
+          "cradle-to-grave and module D",
+          "cradle-to-gate with modules A1-A5 and optional modules",
+          "cradle-to-gate with options",
+          "cradle-to-gate"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.64",
+      "title": "Omitted life-cycle stages justified",
+      "requirement": "Life-cycle stages not considered must be listed with a justification.",
+      "source": {
+        "section": "6.4.6",
+        "page": 62
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.boundary_type != 'c'",
+      "check": {
+        "type": "required_field",
+        "path": "lca.omitted_stages_justification"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.65",
+      "title": "Process flow diagram",
+      "requirement": "A process flow diagram by stage/module showing main processes, the system boundary and end-of-waste points must be included.",
+      "source": {
+        "section": "6.4.6",
+        "page": 62
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "product.flow_diagram"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.66",
+      "title": "LCA software name and version",
+      "requirement": "Name and version of the LCA software must be stated, if applicable.",
+      "source": {
+        "section": "6.4.6",
+        "page": 62
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "lca.software.version"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.67",
+      "title": "Version history: original version",
+      "requirement": "The version history must describe the current and previous versions with dates, with the first labelled 'original version of the EPD'.",
+      "source": {
+        "section": "6.4.11",
+        "page": 65
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "version_history",
+        "any_of": [
+          "original version of the EPD"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.68",
+      "title": "References: GPI and PCR",
+      "requirement": "The reference list must include the GPI (with version) and the PCR (registration number, name, version).",
+      "source": {
+        "section": "6.4.13",
+        "page": 65
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "references",
+        "any_of": [
+          "General Programme Instructions"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.69",
+      "title": "Sector EPD: list of manufacturers",
+      "requirement": "Sector EPDs must list the contributing manufacturers covered.",
+      "source": {
+        "section": "6.4.10",
+        "page": 64
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.type == 'sector'",
+      "check": {
+        "type": "list_min_length",
+        "path": "epd.sector.manufacturers[]",
+        "min": 2
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.70",
+      "title": "Sector EPD: not purchasable statement",
+      "requirement": "Sector EPDs must state they cover average/worst-case values for all or part of a category (with % representativeness) and that the declared product is not available for purchase.",
+      "source": {
+        "section": "6.4.10",
+        "page": 65
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.type == 'sector'",
+      "check": {
+        "type": "text_present",
+        "doc_section": "sector_epd_information",
+        "any_of": [
+          "not available for purchase"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.71",
+      "title": "Representative product choice justified",
+      "requirement": "When results of one or several representative products are declared, the choice must be justified in the EPD.",
+      "source": {
+        "section": "4.10.1",
+        "page": 45
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.multi_product_basis == 'representative' or epd.multi_product_basis == 'several-representative'",
+      "check": {
+        "type": "required_field",
+        "path": "epd.representative_product_justification"
+      }
+    },
+    {
+      "id": "PCR2019-14.DOC.72",
+      "title": "ISO 14026 claim: uncertainty information",
+      "requirement": "EPDs claiming ISO 14026 compliance must include quantitative or qualitative information on uncertainties of LCA results.",
+      "source": {
+        "section": "6.4.6",
+        "page": 62
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.claims_iso_14026 == true",
+      "check": {
+        "type": "text_present",
+        "doc_section": "lca_information",
+        "any_of": [
+          "uncertaint"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.01",
+      "title": "External third-party verification",
+      "requirement": "The EPD and data must be verified externally and independently (third party) according to ISO 14025.",
+      "source": {
+        "section": "6.4.2.3 Table 6",
+        "page": 56
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "epd.verification.type",
+        "value": "external"
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.02",
+      "title": "Verification route is one of the five permitted",
+      "requirement": "Verification must be via individual verification (with/without pre-verified tool), EPD process certification (with/without pre-verified tool) or a fully pre-verified EPD tool.",
+      "source": {
+        "section": "6.4.2.3 Table 6",
+        "page": 56
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.verification.procedure",
+        "values": [
+          "individual",
+          "individual_with_preverified_tool",
+          "process_certification",
+          "process_certification_with_preverified_tool",
+          "fully_preverified_tool"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.03",
+      "title": "Third-party verifier named",
+      "requirement": "The EPD must name the third-party verifier (individual and organisation) or certification body.",
+      "source": {
+        "section": "6.4.2.3 Table 6",
+        "page": 56
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.verification.verifier"
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.04",
+      "title": "Verifier approval/accreditation stated",
+      "requirement": "The EPD must state who approved (The International EPD System) or accredited (accreditation body and number) the verifier.",
+      "source": {
+        "section": "6.4.2.3 Table 6",
+        "page": 56
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "epd.verification.approved_or_accredited_by"
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.05",
+      "title": "Pre-verified tool name and version",
+      "requirement": "When a pre-verified LCA/EPD tool is used, its name and version and the verifier accountable for tool verification must be stated.",
+      "source": {
+        "section": "6.4.2.3 Table 6",
+        "page": 56
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.verification.procedure == 'individual_with_preverified_tool' or epd.verification.procedure == 'process_certification_with_preverified_tool' or epd.verification.procedure == 'fully_preverified_tool'",
+      "check": {
+        "type": "required_field",
+        "path": "epd.verification.tool.version"
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.06",
+      "title": "Process certification explanatory statement",
+      "requirement": "Where EPD process certification is used, the EPD must include the explanatory footnote on what process certification involves.",
+      "source": {
+        "section": "6.4.2.3 Table 6",
+        "page": 57
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.verification.procedure == 'process_certification' or epd.verification.procedure == 'process_certification_with_preverified_tool'",
+      "check": {
+        "type": "text_present",
+        "doc_section": "pcr_and_verification",
+        "any_of": [
+          "EPD process certification involves an accredited certification body"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.07",
+      "title": "Follow-up involvement of verifier declared (Yes/No)",
+      "requirement": "The EPD must state whether the follow-up procedure during validity involves the third-party verifier.",
+      "source": {
+        "section": "6.4.2.3 Table 6",
+        "page": 57
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "one_of",
+        "path": "epd.verification.follow_up_by_verifier",
+        "values": [
+          true,
+          false
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.08",
+      "title": "Verifier in follow-up for not-yet/recently-on-market EPDs",
+      "requirement": "For products not yet or recently on the market, the verifier contract must ensure the verifier takes part in follow-up during validity.",
+      "source": {
+        "section": "4.10.5; 4.10.6",
+        "page": 49
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.market_status == 'not_yet_on_market' or product.market_status == 'recently_on_market'",
+      "check": {
+        "type": "equals",
+        "path": "epd.verification.follow_up_by_verifier",
+        "value": true
+      }
+    },
+    {
+      "id": "PCR2019-14.VER.09",
+      "title": "Verification statement text",
+      "requirement": "The verification section must state external and independent (third-party) verification according to ISO 14025:2006.",
+      "source": {
+        "section": "6.4.2.3 Table 6",
+        "page": 56
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "pcr_and_verification",
+        "any_of": [
+          "third-party",
+          "External and independent"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.VAL.01",
+      "title": "Validity period at most five years",
+      "requirement": "An EPD is normally valid for five years from its version date; shorter periods are allowed, longer are not.",
+      "source": {
+        "section": "2.2.4",
+        "page": 12
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "date_rule",
+        "start_path": "epd.date_of_issue",
+        "end_path": "epd.valid_until",
+        "max_years": 5
+      }
+    },
+    {
+      "id": "PCR2019-14.VAL.02",
+      "title": "Update if GWP-GHG/GWP-total rises >=10%",
+      "requirement": "The EPD must be updated and re-verified if changes raise aggregated GWP-GHG or GWP-total over all included stages by 10% or more (or be depublished).",
+      "source": {
+        "section": "2.2.4",
+        "page": 12
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.follow_up.previous_version != null",
+      "check": {
+        "type": "relation",
+        "expression": "epd.follow_up.gwp_ghg_increase_pct < 10 and epd.follow_up.gwp_total_increase_pct < 10"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAL.03",
+      "title": "Update if any other indicator rises >=30%",
+      "requirement": "The EPD must be updated if a change in processes under the owner's direct control increases any other declared indicator by 30% or more over all included stages.",
+      "source": {
+        "section": "2.2.4",
+        "page": 12
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.follow_up.previous_version != null",
+      "check": {
+        "type": "relation",
+        "expression": "epd.follow_up.max_other_indicator_increase_pct < 30"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAL.04",
+      "title": "Trader EPD validity not beyond manufacturer EPD",
+      "requirement": "A trader's EPD based on a manufacturer EPD may not be valid longer than that manufacturer EPD.",
+      "source": {
+        "section": "4.10.4",
+        "page": 48
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.owner_is_trader == true and epd.trader.based_on_manufacturer_epd == true",
+      "check": {
+        "type": "relation",
+        "expression": "epd.valid_until <= epd.trader.manufacturer_epd_valid_until"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAL.05",
+      "title": "Trader EPD references manufacturer EPDs",
+      "requirement": "A trader's EPD must reference the underlying manufacturer EPD(s) by registration number and programme.",
+      "source": {
+        "section": "4.10.4",
+        "page": 48
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.owner_is_trader == true and epd.trader.based_on_manufacturer_epd == true",
+      "check": {
+        "type": "each_has_fields",
+        "path": "epd.trader.manufacturer_epds[]",
+        "fields": [
+          "registration_number",
+          "programme",
+          "pcr_version"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.VAL.06",
+      "title": "Forthcoming product needs valid similar-product EPD",
+      "requirement": "An EPD for a product not yet on the market requires a published, valid EPD of a similar product from the same owner under the same PCR (same first-digit version).",
+      "source": {
+        "section": "4.10.5",
+        "page": 48
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.market_status == 'not_yet_on_market'",
+      "check": {
+        "type": "required_field",
+        "path": "epd.similar_product_epd.registration_number"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAL.07",
+      "title": "Re-verification within 6 months of one-year data",
+      "requirement": "EPDs of products not yet/recently on the market must be updated and re-verified within six months after one year of production data becomes available, otherwise depublished.",
+      "source": {
+        "section": "4.10.5; 4.10.6",
+        "page": 49
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "product.market_status == 'not_yet_on_market' or product.market_status == 'recently_on_market'",
+      "check": {
+        "type": "date_rule",
+        "start_path": "epd.follow_up.one_year_data_available_date",
+        "end_path": "epd.follow_up.reverification_date",
+        "max_years": 0.5
+      }
+    },
+    {
+      "id": "PCR2019-14.VAR.01",
+      "title": "ISO 21930 claim: <=10% variation across grouped products",
+      "requirement": "Multi-product EPDs claiming ISO 21930 compliance are only allowed if no impact indicator result (aggregated A-C) differs by more than 10% between included products (sector EPDs exempt).",
+      "source": {
+        "section": "1.4; 4.10.1",
+        "page": 46
+      },
+      "phase": "results",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.claims_iso_21930 == true and epd.type != 'sector' and (epd.multi_product_basis == 'average' or epd.multi_product_basis == 'representative' or epd.multi_product_basis == 'several-representative' or epd.multi_product_basis == 'worst-case')",
+      "check": {
+        "type": "relation",
+        "expression": "results.variation.max_impact_indicator_pct <= 10"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAR.02",
+      "title": "Variation >10% declared per indicator (no ISO 21930 claim)",
+      "requirement": "Without an ISO 21930 claim, multi-product EPDs with >10% variation must declare the variation and an explanation for each affected impact indicator in the LCA information (worst-case EPDs exempt).",
+      "source": {
+        "section": "4.10.1",
+        "page": 46
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.claims_iso_21930 != true and epd.multi_product_basis != 'worst-case' and results.variation.max_impact_indicator_pct > 10",
+      "check": {
+        "type": "each_has_fields",
+        "path": "results.variation.per_indicator[]",
+        "fields": [
+          "indicator",
+          "variation_pct",
+          "explanation"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.VAR.03",
+      "title": "Multi-product: A1-A3 GWP-GHG variation declared",
+      "requirement": "EPDs of multiple products must report the % difference in A1-A3 GWP-GHG (A1-A5 for services) between the declared result and the furthest product ('<10%' allowed).",
+      "source": {
+        "section": "4.10.1",
+        "page": 46
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.multi_product_basis == 'average' or epd.multi_product_basis == 'representative' or epd.multi_product_basis == 'several-representative' or epd.multi_product_basis == 'worst-case'",
+      "check": {
+        "type": "required_field",
+        "path": "results.variation.products_gwp_ghg_a1a3_pct"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAR.04",
+      "title": "Multi-site: A1-A3 GWP-GHG site variation declared",
+      "requirement": "EPDs based on several manufacturing sites must report the A1-A3 GWP-GHG difference between the declared result and the sites ('<10%' or the actual value if below 10%).",
+      "source": {
+        "section": "4.10.2",
+        "page": 46
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.multi_site == true",
+      "check": {
+        "type": "required_field",
+        "path": "results.variation.sites_gwp_ghg_a1a3_pct"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAR.05",
+      "title": "Single-site EPDs do not report 0% site variation",
+      "requirement": "EPDs of a single site must not report a site variation (e.g., 0%).",
+      "source": {
+        "section": "4.10.2 fn 78",
+        "page": 46
+      },
+      "phase": "results",
+      "severity": "minor",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.multi_site != true",
+      "check": {
+        "type": "relation",
+        "expression": "results.variation.sites_gwp_ghg_a1a3_pct == null"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAR.06",
+      "title": "Sector EPD: variation across companies/sites declared",
+      "requirement": "Sector EPDs must report the A1-A3 GWP-GHG variation across represented companies/sites, with a qualitative reason if above 10% ('<10%' otherwise).",
+      "source": {
+        "section": "4.10.3",
+        "page": 47
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.type == 'sector'",
+      "check": {
+        "type": "required_field",
+        "path": "results.variation.sector_gwp_ghg_a1a3_pct"
+      }
+    },
+    {
+      "id": "PCR2019-14.VAR.07",
+      "title": "Trader with several manufacturers: variation declared",
+      "requirement": "If a trader's product comes from several manufacturers, the A1-A3 GWP-GHG difference to the furthest manufacturer must be reported.",
+      "source": {
+        "section": "4.10.4",
+        "page": 48
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "epd.owner_is_trader == true and epd.trader.manufacturer_count > 1",
+      "check": {
+        "type": "required_field",
+        "path": "results.variation.manufacturers_gwp_ghg_a1a3_pct"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.01",
+      "title": "A4 transport scenario: distance",
+      "requirement": "Transport to the construction site must be described, including distance, in line with EN 15804 Table 10.",
+      "source": {
+        "section": "4.8.2",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('A4')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.A4.distance_km"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.02",
+      "title": "A4 transport scenario: vehicle/mode",
+      "requirement": "The A4 scenario must state the transport mode/vehicle and fuel, per EN 15804 Table 10.",
+      "source": {
+        "section": "4.8.2",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('A4')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.A4.vehicle_type"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.03",
+      "title": "A4 data basis follows priority order",
+      "requirement": "A4 transport must be based, in priority order, on actual modes/distances, a weighted average over customers/markets, or a c-PCR default scenario.",
+      "source": {
+        "section": "4.8.2",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('A4')",
+      "check": {
+        "type": "one_of",
+        "path": "scenarios.A4.basis",
+        "values": [
+          "actual",
+          "weighted_average",
+          "c_pcr_default"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.04",
+      "title": "A5 installation scenario described",
+      "requirement": "Any A5 scenario must be clearly described in the EPD, including EN 15804 Table 11 information.",
+      "source": {
+        "section": "4.8.2",
+        "page": 37
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('A5')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.A5.description"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.05",
+      "title": "Packaging end-of-life in A5",
+      "requirement": "End-of-life of product packaging is normally modelled in A5 following the end-of-life scenario rules.",
+      "source": {
+        "section": "4.8.2",
+        "page": 37
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('A5')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.A5.packaging_end_of_life"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.06",
+      "title": "B6 key assumptions documented",
+      "requirement": "Key assumptions of the B6 use scenario (normal use, geographically representative, regulation-compliant) must be documented in the EPD.",
+      "source": {
+        "section": "4.3.7",
+        "page": 20
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('B6')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.B6.description"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.07",
+      "title": "Mixed end-of-life scenario: 100% scenarios declared",
+      "requirement": "If any declared end-of-life scenario mixes routes (reuse, recycling, incineration, landfill), the corresponding relevant 100% scenarios must also be declared.",
+      "source": {
+        "section": "4.8.4",
+        "page": 38
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "scenarios.C.is_mixed == true",
+      "check": {
+        "type": "list_min_length",
+        "path": "scenarios.C.hundred_pct_scenarios[]",
+        "min": 2
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.08",
+      "title": "Alternative C scenarios each have a module D counterpart",
+      "requirement": "Each scenario for C3 or C4 must have a corresponding module D scenario.",
+      "source": {
+        "section": "4.8.5",
+        "page": 40
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('D')",
+      "check": {
+        "type": "each_has_fields",
+        "path": "scenarios.C.alternatives[]",
+        "fields": [
+          "name",
+          "module_d_scenario"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.09",
+      "title": "C2 described with distance and transport means",
+      "requirement": "The description of C2 must include transport distances and means of transport.",
+      "source": {
+        "section": "4.8.4",
+        "page": 39
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('C2')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.C2.distance_km"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.10",
+      "title": "C2 transport means stated",
+      "requirement": "The C2 description must state the means of transport (vehicle type).",
+      "source": {
+        "section": "4.8.4",
+        "page": 39
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('C2')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.C2.vehicle_type"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.11",
+      "title": "C3 description includes sorted material amount",
+      "requirement": "The description of C3 processes must include the amount of materials being sorted.",
+      "source": {
+        "section": "4.8.4",
+        "page": 39
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('C3')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.C3.sorted_mass_kg"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.12",
+      "title": "End-of-life scenario described per EN 15804 Table 15",
+      "requirement": "Assumed end-of-life scenarios must be described as realistic options for the EPD markets, including EN 15804 Table 15 information.",
+      "source": {
+        "section": "4.8.4",
+        "page": 39
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('C1') or declared('C2') or declared('C3') or declared('C4')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.C.description"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.13",
+      "title": "C2 default distance (not incinerated) 80 km",
+      "requirement": "Without market-specific data, C2 transport of products/materials not incinerated must use the default of 80 km by 16-32 t EURO 5 lorry at 50% load.",
+      "source": {
+        "section": "4.8.4 Table 4",
+        "page": 40
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('C2')",
+      "check": {
+        "type": "default_or_justified",
+        "path": "scenarios.C2.distance_km_not_incinerated",
+        "default": 80,
+        "unit": "km",
+        "justification_path": "scenarios.C.market_specific_data_source"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.14",
+      "title": "C2 default distance (incinerated) 130 km",
+      "requirement": "Without market-specific data, C2 transport of products/materials to incineration must use the default of 130 km by 16-32 t EURO 5 lorry at 50% load.",
+      "source": {
+        "section": "4.8.4 Table 4",
+        "page": 40
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('C2')",
+      "check": {
+        "type": "default_or_justified",
+        "path": "scenarios.C2.distance_km_incinerated",
+        "default": 130,
+        "unit": "km",
+        "justification_path": "scenarios.C.market_specific_data_source"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.15",
+      "title": "C4 landfill compaction default 1.6 kWh diesel/t",
+      "requirement": "Without market-specific data, compaction of inert construction waste in landfill (incl. backfilling) must use 1.6 kWh diesel per tonne.",
+      "source": {
+        "section": "4.8.4 Table 4",
+        "page": 40
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('C4') and scenarios.C4.inert_landfill == true",
+      "check": {
+        "type": "default_or_justified",
+        "path": "scenarios.C4.compaction_diesel_kwh_per_tonne",
+        "default": 1.6,
+        "unit": "kWh/tonne",
+        "justification_path": "scenarios.C.market_specific_data_source"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.16",
+      "title": "Module D assumptions declared",
+      "requirement": "Module D assumptions, including the net flow entering module D and quality adjustment factors, must be declared in the LCA report and the EPD.",
+      "source": {
+        "section": "4.8.5",
+        "page": 40
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('D')",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.D.net_flow_description"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.17",
+      "title": "Quality adjustment factor within 0-1",
+      "requirement": "Where recovered material is of lower quality than the substituted material, a quality adjustment factor QR_out/Q_sub between 0 and 100% must be applied.",
+      "source": {
+        "section": "4.8.5",
+        "page": 41
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('D')",
+      "check": {
+        "type": "numeric_range",
+        "path": "scenarios.D.quality_adjustment_factor",
+        "min": 0,
+        "max": 1,
+        "unit": "ratio"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.18",
+      "title": "Non-default M_MR,out basis justified with R2 values",
+      "requirement": "If neither c-PCR values nor PEF R2 factors are used for M_MR,out, the choice must be justified in the EPD and the default R2/c-PCR value reported alongside the value used.",
+      "source": {
+        "section": "4.8.5",
+        "page": 41
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('D') and scenarios.D.mmr_out_basis != 'PEF R2' and scenarios.D.mmr_out_basis != 'c-PCR'",
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.D.r2_default_value"
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.19",
+      "title": "R2 source and version referenced",
+      "requirement": "When PEF R2 values are used, their source and version (latest PEF Annex C file) must be included in the EPD references.",
+      "source": {
+        "section": "4.8.5 fn 63",
+        "page": 41
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "declared('D') and scenarios.D.mmr_out_basis == 'PEF R2'",
+      "check": {
+        "type": "text_present",
+        "doc_section": "references",
+        "any_of": [
+          "Annex_C",
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": "PCR2019-14.SCEN.20",
+      "title": "Additional scenario/method results clearly described",
+      "requirement": "Any additional scenario or alternative-modelling results in the separate subsection must describe the scenario/method and how it differs from the main results; the most representative scenario stays in the main results.",
+      "source": {
+        "section": "6.4.7",
+        "page": 63
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "applies_when": "results.additional_scenarios_declared == true",
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.additional_lca_results"
+      }
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "PCR2019-14.MAN.01",
+      "title": "Applicable c-PCR used if valid >= 90 days at verification",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "reason": "Requires checking the environdec.com c-PCR list and validity dates at verification time."
+    },
+    {
+      "id": "PCR2019-14.MAN.02",
+      "title": "Attributional modelling only (no marginal data, no credits outside D, no offsetting)",
+      "source": {
+        "section": "4.1",
+        "page": 17
+      },
+      "reason": "Requires review of the LCA model and datasets."
+    },
+    {
+      "id": "PCR2019-14.MAN.03",
+      "title": "Energy carriers, losses and their upstream burdens assigned to the module where they occur",
+      "source": {
+        "section": "4.3.1; 4.3.2",
+        "page": 18
+      },
+      "reason": "Model-structure check; packaging wasted in A5 has production in A3 and transport in A4."
+    },
+    {
+      "id": "PCR2019-14.MAN.04",
+      "title": "Supporting activities (heating, water use at premises) included",
+      "source": {
+        "section": "4.3.3",
+        "page": 19
+      },
+      "reason": "Completeness judgement on site inventory."
+    },
+    {
+      "id": "PCR2019-14.MAN.05",
+      "title": "Business travel, commuting and R&D excluded; not counted in cut-off percentages",
+      "source": {
+        "section": "4.3.5",
+        "page": 19
+      },
+      "reason": "Requires review of inventory scope."
+    },
+    {
+      "id": "PCR2019-14.MAN.06",
+      "title": "Infrastructure/capital goods generally excluded, with permitted exceptions",
+      "source": {
+        "section": "4.3.6",
+        "page": 20
+      },
+      "reason": "Depends on dataset contents and whether subtraction is feasible within reasonable effort."
+    },
+    {
+      "id": "PCR2019-14.MAN.07",
+      "title": "100-year time boundary and geographic boundary reflect physical reality",
+      "source": {
+        "section": "4.3.8",
+        "page": 21
+      },
+      "reason": "Modelling judgement."
+    },
+    {
+      "id": "PCR2019-14.MAN.08",
+      "title": "Cut-off exclusions based on sensitivity analysis / conservative assumptions, not used to hide data",
+      "source": {
+        "section": "4.4",
+        "page": 21
+      },
+      "reason": "Verifier decides what evidence is sufficient."
+    },
+    {
+      "id": "PCR2019-14.MAN.09",
+      "title": "Co-product vs waste classification via end-of-waste criteria; B/C outputs treated as waste",
+      "source": {
+        "section": "4.5; 4.5.2",
+        "page": 22
+      },
+      "reason": "Requires judgement on market value, legislation and specific purpose of each flow."
+    },
+    {
+      "id": "PCR2019-14.MAN.10",
+      "title": "Allocation of materials for recycling (scrap, internal recycling, unknown-origin scrap) and secondary datasets",
+      "source": {
+        "section": "4.5.3",
+        "page": 26
+      },
+      "reason": "Requires review of each recycled flow and dataset allocation; 5% tolerance justification for cut-off datasets."
+    },
+    {
+      "id": "PCR2019-14.MAN.11",
+      "title": "Heat sold externally allocated as co-product (economic at point of sale)",
+      "source": {
+        "section": "4.5.1",
+        "page": 23
+      },
+      "reason": "Model review."
+    },
+    {
+      "id": "PCR2019-14.MAN.12",
+      "title": "Secondary data plausibility and technological/geographical/temporal representativeness",
+      "source": {
+        "section": "4.6.3",
+        "page": 29
+      },
+      "reason": "Qualitative data quality judgement."
+    },
+    {
+      "id": "PCR2019-14.MAN.13",
+      "title": "Contractual instruments meet reliability criteria (unique claim, tracking/cancellation, timing, same market) and owner commits to buying for full validity",
+      "source": {
+        "section": "4.7.2.3",
+        "page": 33
+      },
+      "reason": "Requires documentary evidence reviewed by the verifier."
+    },
+    {
+      "id": "PCR2019-14.MAN.14",
+      "title": "Contractual instruments/biogas certificates evenly assigned across site products unless physically separate supply",
+      "source": {
+        "section": "4.7.2.3; 4.7.3.2",
+        "page": 34
+      },
+      "reason": "Requires contract and site-level evidence."
+    },
+    {
+      "id": "PCR2019-14.MAN.15",
+      "title": "Internally generated electricity/biogas not netted against purchases; exports handled via allocation and module D",
+      "source": {
+        "section": "4.7.2.1; 4.7.3.1",
+        "page": 34
+      },
+      "reason": "Model review."
+    },
+    {
+      "id": "PCR2019-14.MAN.16",
+      "title": "Module D: average market substitution, no marginal data, yield and biogenic CO2 balanced to zero in D",
+      "source": {
+        "section": "4.8.5",
+        "page": 40
+      },
+      "reason": "Model review; GWP-biogenic contribution of D-specific uptake cannot be isolated from declared results."
+    },
+    {
+      "id": "PCR2019-14.MAN.17",
+      "title": "End-of-life scenarios realistic, currently practised; most probable scenario as main result",
+      "source": {
+        "section": "4.8.4",
+        "page": 38
+      },
+      "reason": "Market judgement."
+    },
+    {
+      "id": "PCR2019-14.MAN.18",
+      "title": "Use-stage scenarios (B1-B7) per EN 15804 Table 12 and B1 emissions from recognised tests",
+      "source": {
+        "section": "4.8.3",
+        "page": 38
+      },
+      "reason": "Requires EN 15804 Table 12 and test evidence."
+    },
+    {
+      "id": "PCR2019-14.MAN.19",
+      "title": "GWP-biogenic calculated per Annex 2 (sub-indicators not declared in EPD)",
+      "source": {
+        "section": "Annex 2",
+        "page": 77
+      },
+      "reason": "Requires LCI-level biogenic carbon mass balance in the LCA report."
+    },
+    {
+      "id": "PCR2019-14.MAN.20",
+      "title": "Use of EF 3.0 results (toxicity, incineration climate) classified as proxy data",
+      "source": {
+        "section": "4.9.2",
+        "page": 45
+      },
+      "reason": "Requires knowledge of data provenance."
+    },
+    {
+      "id": "PCR2019-14.MAN.21",
+      "title": "Only one set of results in environmental performance section; additional indicators separated, justified and explained",
+      "source": {
+        "section": "4.9",
+        "page": 43
+      },
+      "reason": "Layout/semantic review of the document."
+    },
+    {
+      "id": "PCR2019-14.MAN.22",
+      "title": "Additional inventory data only in an annex",
+      "source": {
+        "section": "4.9",
+        "page": 44
+      },
+      "reason": "Layout review."
+    },
+    {
+      "id": "PCR2019-14.MAN.23",
+      "title": "Conversion factors are multiplying factors, verifiable, with stated limitations, and only for products covered",
+      "source": {
+        "section": "4.9.1",
+        "page": 44
+      },
+      "reason": "Requires LCA report evidence."
+    },
+    {
+      "id": "PCR2019-14.MAN.24",
+      "title": "Multi-product grouping valid (similar products, same PCR, same core A3 steps) and production-volume weighting",
+      "source": {
+        "section": "4.10.1",
+        "page": 45
+      },
+      "reason": "Product-similarity judgement."
+    },
+    {
+      "id": "PCR2019-14.MAN.25",
+      "title": "Worst-case content declaration uses lowest recycled/biogenic content and most hazardous substances",
+      "source": {
+        "section": "4.10.1; 4.10.3",
+        "page": 46
+      },
+      "reason": "Requires data on all included products."
+    },
+    {
+      "id": "PCR2019-14.MAN.26",
+      "title": "Sector EPD sampling per GPI 8.4.3 and communication not presented as manufacturer-specific",
+      "source": {
+        "section": "4.10.3",
+        "page": 47
+      },
+      "reason": "Depends on GPI and external communications."
+    },
+    {
+      "id": "PCR2019-14.MAN.27",
+      "title": "Trader EPD: manufacturer EPD on same PCR first-digit version; verifier access to manufacturer EPD",
+      "source": {
+        "section": "4.10.4",
+        "page": 48
+      },
+      "reason": "Requires access to third-party documents."
+    },
+    {
+      "id": "PCR2019-14.MAN.28",
+      "title": "Forthcoming product: sibling vs non-sibling EPD and proof of data quality",
+      "source": {
+        "section": "4.10.5",
+        "page": 48
+      },
+      "reason": "Model comparison judgement."
+    },
+    {
+      "id": "PCR2019-14.MAN.29",
+      "title": "LCA report content and English language per Section 5",
+      "source": {
+        "section": "5",
+        "page": 50
+      },
+      "reason": "LCA report is not part of the EPD payload."
+    },
+    {
+      "id": "PCR2019-14.MAN.30",
+      "title": "EPD content verifiable, accurate, not misleading, per ISO 14020; images relevant and not implying environmental claims",
+      "source": {
+        "section": "6; 6.3",
+        "page": 52
+      },
+      "reason": "Semantic judgement."
+    },
+    {
+      "id": "PCR2019-14.MAN.31",
+      "title": "No sections or headings other than those prescribed",
+      "source": {
+        "section": "6.4",
+        "page": 53
+      },
+      "reason": "Requires heading-level structural review."
+    },
+    {
+      "id": "PCR2019-14.MAN.32",
+      "title": "Confidential content ranges reasonable; content declaration consistent with technical data sheet; SDS available to verifier",
+      "source": {
+        "section": "6.4.5",
+        "page": 59
+      },
+      "reason": "Requires external documents."
+    },
+    {
+      "id": "PCR2019-14.MAN.33",
+      "title": "'Free of' claims follow ISO 14021",
+      "source": {
+        "section": "6.4.5",
+        "page": 60
+      },
+      "reason": "Semantic judgement."
+    },
+    {
+      "id": "PCR2019-14.MAN.34",
+      "title": "Additional environmental/social/economic information substantiated, verifiable and relevant",
+      "source": {
+        "section": "6.4.8; 6.4.9",
+        "page": 64
+      },
+      "reason": "Semantic judgement."
+    },
+    {
+      "id": "PCR2019-14.MAN.35",
+      "title": "Annual follow-up of EPD validity carried out",
+      "source": {
+        "section": "6.4.2.3",
+        "page": 57
+      },
+      "reason": "Process check over the validity period."
+    },
+    {
+      "id": "PCR2019-14.MAN.36",
+      "title": "Product name complies with regional laws on environmental claims",
+      "source": {
+        "section": "6.4.1 fn 92",
+        "page": 54
+      },
+      "reason": "Legal judgement."
+    }
+  ],
+  "notes": [
+    "Indicator names, abbreviations and units in IND.01-IND.06 come from EN 15804:2012+A2:2019/AC:2021 (Tables 3-7), which this PCR incorporates by reference (§4.9, p.42). The PCR itself only names GWP-GHG, GWP-total/-fossil/-biogenic/-luluc, EP-freshwater (kg P eq., p.70), the six primary energy indicators (Annex 3) and exported energy per energy carrier. Verify against EN 15804 if exact label wording matters. EEE/EET are the conventional abbreviations for exported energy electrical/thermal.",
+    "GWP-GHG is called GWP-IOBC/GHG in the ILCD+EPD+ format (§4.9 fn 65). For electricity, GWP-GHG equals GWP-total (fn 51).",
+    "The PCR uses 'ND' (Not Declared), not 'MND', both in result tables (§6.2) and the modules-declared table (§6.4.6). FMT.05 flags 'MND'. results.modules_declared[] should exclude ND modules.",
+    "Schema extensions used (not in README): (1) optional rule-level 'applies_when' expression; the rule is skipped when it is false. (2) expression function declared('<module>') meaning the module is in results.modules_declared[]. (3) literal null in expressions, meaning missing/empty. (4) '[]' paths in one_of/data_age/each_has_fields apply to every list element. (5) 'lcia_package' parameter in indicators_required. (6) indicators_required 'modules' given as the path results.modules_declared[], meaning every declared module.",
+    "New field paths introduced: epd.boundary_type, epd.uses_c_pcr, epd.reference_pcr[] (treated as a list with name/registration_number/version), epd.claims_iso_21930, epd.claims_iso_14026, epd.multi_product_basis, epd.multi_site, epd.owner_is_trader, epd.products_covered[], epd.language, epd.digital_formats.ilcd_epd, epd.number_style, epd.registered_via_licensee, epd.licensee.name, epd.is_self_declared_translation, epd.declaration_holder.description, epd.representative_product_justification, epd.similar_product_epd.registration_number, epd.sector.manufacturers[], epd.trader.{based_on_manufacturer_epd,manufacturer_epds[],manufacturer_epd_valid_until,manufacturer_count}, epd.follow_up.{previous_version,gwp_ghg_increase_pct,gwp_total_increase_pct,max_other_indicator_increase_pct,one_year_data_available_date,reverification_date}, epd.verification.{procedure,approved_or_accredited_by,tool.version,follow_up_by_verifier}, product.is_service, product.is_intangible_service, product.service_involves_reused_physical_product, product.uses_energy_in_use_stage, product.market_status, product.lifespan.{value,unit}, product.process_description, product.content.{biogenic_mass_pct,biogenic_carbon_kg_c,biogenic_carbon_kg_co2e,post_consumer_recycled_pct}, product.packaging_biogenic_mass_pct, product.packaging_biogenic_carbon_kg_c, product.technical_data.{area_density_kg_m2,thickness_m,density_kg_m3,linear_density_kg_m}, lca.module_c_exclusion.{physically_integrated,not_identifiable_at_eol,no_biogenic_carbon,not_b2c}, lca.capital_goods.{max_contribution_a1a3_pct,dataset_max_contribution_pct}, lca.allocation.{revenue_difference_pct,sensitivity_analysis,scm_coproducts_used,scm_coproduct_basis,price_averaging_years,recycled_material_burden_share_pct}, lca.recycled_material_is_main_flow, lca.recycled_inputs.{gwp_ghg_share_a1a3_pct,gwp_ghg_kg_co2e_per_tonne}, lca.uses_mass_balance_approach, lca.secondary_data.oldest_reference_year, lca.databases[].release_date, lca.data_collection_period_months, lca.data_collection_period_justification, lca.data_quality.{coverage_pct,scheme,primary_data_share_gwp_ghg_pct,upstream_primary_share_estimated,a3_data_category,proxy_data_share_pct}, lca.data_sources[], lca.uses_noncompliant_upstream_epd, lca.upstream_epd_deviation_statement, lca.uses_old_ef_version_data, lca.electricity.a3.{mix_type,gwp_ghg_kg_co2e_per_kwh,energy_source,residual_mix_method,residual_mix_calculated,country,subnational_region,site_annual_consumption_kwh,includes_powerplant_infrastructure}, lca.electricity.contractual_instruments[], lca.electricity.location_based_results_declared, lca.biogas.used_in_a3, lca.biogas.a3.{mix_type,gwp_ghg_kg_co2e_per_mj}, lca.biogenic_carbon.{uptake_kg_co2,release_kg_co2}, lca.primary_energy_option, lca.recovered_energy_balanced_in_a1a3, lca.declares_en15804_a1_indicators, lca.geographical_scope_per_module, lca.omitted_stages_justification, lca.trader.{a3_transport_description,final_site_city}, lca.time_boundary_years, results.variation.{max_impact_indicator_pct,per_indicator[],products_gwp_ghg_a1a3_pct,declared_gwp_ghg_a1a3,furthest_gwp_ghg_a1a3,sites_gwp_ghg_a1a3_pct,sector_gwp_ghg_a1a3_pct,manufacturers_gwp_ghg_a1a3_pct}, results.additional_scenarios_declared, scenarios.A4.{distance_km,vehicle_type,basis}, scenarios.A5.{description,packaging_end_of_life}, scenarios.B6.{description,electricity_mix}, scenarios.C.{description,is_mixed,hundred_pct_scenarios[],alternatives[],market_specific_data_source}, scenarios.C2.{distance_km,vehicle_type,distance_km_not_incinerated,distance_km_incinerated,load_factor_pct}, scenarios.C3.{sorted_mass_kg,incineration_share_pct,incineration_energy_efficiency_pct,incinerated_hazardous_waste}, scenarios.C4.{compaction_diesel_kwh_per_tonne,inert_landfill}, scenarios.D.{net_flow_description,quality_adjustment_factor,mmr_out_basis,r2_default_value}, document.assets.{owner_logo,programme_logo,eco_epd_logo}, document.sections.{cover_page,programme_information,pcr_and_verification,ownership_and_limitations,epd_owner,product_information,content_declaration,lca_information,environmental_performance,additional_lca_results,abbreviations,references,version_history,sector_epd_information}.",
+    "epd.type vocabulary does not distinguish the four multi-product options; epd.multi_product_basis ('average','representative','several-representative','worst-case') was added. Sector EPDs use epd.type == 'sector'.",
+    "Conflict: §2.2.2.3/§4.3.7 require B6 for energy-using products, but Table 2 marks stage B as 'not applicable' for types a, d and e. It is unclear whether energy-using products must therefore be type b or c. MOD.10 applies to all types.",
+    "Validity: §2.2.4 says validity is 'normally' five years and shorter periods are accepted. VAL.01 treats 5 years as the maximum.",
+    "§4.6.1 says proxy data use must be identified in a data quality assessment covering at least 80% of core indicator results, and §4.9.2 mentions a 'limit on the contribution from proxy data', but no numeric cap on proxy data is stated anywhere. No numeric proxy limit was encoded.",
+    "Cut-off: the 1%/5% limits apply to mass and energy (EN 15804) and the 5% limit also to environmental impact (ISO 21930). Module groups are A1-A3, A4-A5, B1-B5, B6-B7, C1-C4 and D. Processes excluded by system-boundary rules (personnel, capital goods) are not counted.",
+    "Incineration threshold: 60% applies to plants operating and permitted before 2009 and 65% to plants permitted after 2009. ALLOC.08 uses 60% as the floor; the engine needs plant permit data to apply 65%.",
+    "Cross-reference errors in the source: §2.2.2 points to Section 4.9.2 for EPD ownership types (actually 4.10); §1.3/§2.1/§2.2.3 point to a 'Section 1.5' that does not exist (ISO 21930 rules are in 1.4); §4.5.2 refers to 'the introduction to Section 4.4' (means 4.5); §4.1 cites 'Section A.7.5'; §5.2 cites 4.6.4 for data quality assessment (means 4.6.5); §4.3.8 has the URL typo 'www.environmental.com/indicators'.",
+    "Historical inconsistency: the v1.2 changelog (p.70) says a 0% variation shall be reported for single-site EPDs, but the current §4.10.2 fn 78 forbids this. VAR.05 follows the current text.",
+    "Depends on other documents: EN 15804+A2/AC (indicator tables, disclaimers, scenario Tables 10-15, Annex D), EN 15941 (data quality reporting), GPI 5.0.1 (verification, sampling §8.4.3, follow-up §8.4.8, de-registration), ECO Platform standards, and the c-PCRs (EN 16757 concrete, EN 17074 flat glass, EN 16904 plastic piping), which may override defaults such as the Table 4 C-module data and the A4 default scenario.",
+    "This PCR replaces the GPI rules on LCA method, LCA report and EPD content (Sections 4-6) (§1.1, p.3). The GPI still governs administration and verification procedures.",
+    "IND.07 lists only 'EF 3.1'. The PCR allows later EN 15804 reference packages once announced on environdec.com, so extend the list when a newer package is released.",
+    "ISO 21930 compliance is optional. It adds three requirements: product variation of 10% or less (VAR.01), declaration of ISO 21930 indicators for the relevant geography (not encoded because the indicator list depends on ISO 21930 and region), and biogenic carbon in kg CO2 eq. (BIO.03)."
+  ]
+}

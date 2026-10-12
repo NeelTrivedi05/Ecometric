@@ -1,0 +1,866 @@
+{
+  "ruleset_id": "ul-10010-7-flooring-v2.0",
+  "title": "UL 10010-7 Part B: Flooring EPD Requirements",
+  "program_operator": "UL Environment",
+  "document": {
+    "code": "UL 10010-7",
+    "version": "2.0 (Second Edition)",
+    "published": "2018-09-28",
+    "valid_until": "2026-12-31",
+    "status_note": "The PCR states a 5-year validity ending September 2023 (p.3); ul.com PCR list shows 'Flooring (North America)' valid under an extension to 31 Dec 2026 (checked 2026-10-12).",
+    "source_file": "Tiles_UL-10010-7_Part-B_Flooring_v2.0_2018.pdf"
+  },
+  "parent_rulesets": ["ul-10010-part-a-v3.2"],
+  "depends_on_unavailable": [
+    "UL Environment Part A v3.2 (Sept 2018): indicator Tables 4-8, cut-off rules (2.9), data quality (3.1.1), allocation (3.3), averaging methods (2.5.1/2.5.2), packaging defaults (2.8.5 Table 3), disposal routes (2.8.5/2.8.6), hazardous substances (4.11), RSL rules (2.8.2), variation criteria (Section 5)",
+    "ULE General Program Instructions v2.3 (Feb 2018)",
+    "CA Specification 01350 v1.2 (VOC emissions test method)",
+    "Product specification standards listed in Section 9 (e.g. ANSI A137.1 for ceramic tile)"
+  ],
+  "product_category": "flooring",
+  "product_subtypes": ["carpet", "ceramic_tile", "laminate", "resilient", "wood"],
+  "defaults": {
+    "esl_years": { "value": 75, "unit": "years", "source": "§I, p.3; B4/B5, p.17" },
+    "scenarios.A4.distance_km": { "value": 800, "unit": "km", "source": "§3.5 Table 7 (North America), p.15" },
+    "scenarios.A4.vehicle": { "value": "diesel truck/trailer", "unit": "-", "source": "§3.5 Table 7, p.15" },
+    "scenarios.C2.distance_km": { "value": 161, "unit": "km", "source": "§3.5 Table 7 (North America), p.15" },
+    "scenarios.C2.vehicle": { "value": "diesel truck/trailer", "unit": "-", "source": "§3.5 Table 7, p.15" },
+    "scenarios.A5.installation_energy_kwh": { "value": 0, "unit": "kWh", "source": "§3.5 Table 7 (manual installation), p.15" },
+    "scenarios.C1.deconstruction_energy_kwh": { "value": 0, "unit": "kWh", "source": "§3.5 Table 7 (manual deconstruction), p.15" },
+    "product.packaging.reusable_reuse_count": { "value": 1, "unit": "reuses", "source": "§2.9, p.13" },
+    "product.packaging.reusable_end_of_life": { "value": "landfill", "unit": "-", "source": "§2.9, p.13" }
+  },
+  "rules": [
+    {
+      "id": "UL10010-7.SCOPE.01",
+      "title": "Product is a flooring product in scope",
+      "requirement": "The PCR covers installed residential and commercial flooring: carpet/textile, ceramic tile, laminate, resilient (plastics, linoleum, cork, rubber) and wood flooring.",
+      "source": { "section": "II General Guidance", "page": 5 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "one_of", "path": "product.sub_category", "values": ["carpet", "ceramic_tile", "laminate", "resilient", "wood"] }
+    },
+    {
+      "id": "UL10010-7.SCOPE.02",
+      "title": "Excluded products not declared",
+      "requirement": "Stone products, fluid-applied flooring (CSI 09 67 00), resinous flooring (09 67 50) and loose-laid resilient mats are outside the scope.",
+      "source": { "section": "II Non-Applicable Products; General Guidance", "page": 6 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "not_one_of", "path": "product.classification_codes[csi]", "values": ["09 67 00", "09 67 50"] }
+    },
+    {
+      "id": "UL10010-7.SCOPE.03",
+      "title": "Not a stone or loose-laid mat product",
+      "requirement": "Stone flooring and loose-laid mats are excluded from the scope.",
+      "source": { "section": "II", "page": 5 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "not_one_of", "path": "product.technical_data.material_family", "values": ["stone", "natural stone", "loose-laid mat"] }
+    },
+    {
+      "id": "UL10010-7.SCOPE.04",
+      "title": "Classification within listed CSI / UNSPSC codes",
+      "requirement": "The product should fall under UNSPSC 30161700 or the listed CSI MasterFormat 09 60 00 / 09 30 00 sub-codes.",
+      "source": { "section": "II Applicable Products", "page": 6 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "one_of", "path": "product.classification_codes[csi]", "values": ["09 60 00", "09 62 00", "09 64 00", "09 65 00", "09 66 00", "09 68 00", "09 30 00", "09 31 00", "09 33 00", "09 35 00"] }
+    },
+    {
+      "id": "UL10010-7.SCOPE.05",
+      "title": "Packaged product incl. adhesives and sealants",
+      "requirement": "The PCR applies to the whole packaged product for individual sale, including supplied adhesives and sealants.",
+      "source": { "section": "II", "page": 6 },
+      "phase": "input", "severity": "minor", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "product.packaged_contents" }
+    },
+    {
+      "id": "UL10010-7.SCOPE.06",
+      "title": "EPD scope is cradle to grave",
+      "requirement": "EPDs under this PCR are cradle to grave.",
+      "source": { "section": "II System Boundary; 3.2", "page": 6 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "equals", "path": "epd.scope", "value": "cradle-to-grave" }
+    },
+    {
+      "id": "UL10010-7.SCOPE.07",
+      "title": "EPD type is industry-average or product-specific",
+      "requirement": "The EPD type must be declared as either industry-average or product-specific.",
+      "source": { "section": "1 General Information", "page": 9 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "one_of", "path": "epd.type", "values": ["industry-average", "product-specific"] }
+    },
+    {
+      "id": "UL10010-7.SCOPE.08",
+      "title": "Conforms to ISO 21930:2017",
+      "requirement": "EPDs must conform to ISO 21930:2017; EN 15804 conformance is optional.",
+      "source": { "section": "II System Boundary", "page": 6 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "text_present", "any_of": ["ISO 21930:2017", "ISO 21930"] }
+    },
+    {
+      "id": "UL10010-7.IA.01",
+      "title": "Industry-average EPD: at least 3 sites from 3 companies",
+      "requirement": "An industry-average EPD should represent at least three manufacturing locations from at least three companies, unless justified.",
+      "source": { "section": "III Involvement of Interested Parties", "page": 7 },
+      "phase": "input", "severity": "major", "obligation": "should", "derived": false,
+      "applies_when": "epd.type == 'industry-average'",
+      "check": { "type": "relation", "expression": "(len(lca.participants.sites) >= 3 and len(lca.participants.companies) >= 3) or exists(lca.participants.justification)" }
+    },
+    {
+      "id": "UL10010-7.IA.02",
+      "title": "Industry-average EPD expires after 5 years",
+      "requirement": "Industry-average EPDs created with this PCR expire five years after publication.",
+      "source": { "section": "III Industry-Average EPD Updates", "page": 8 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "epd.type == 'industry-average'",
+      "check": { "type": "date_rule", "start_path": "epd.date_of_issue", "end_path": "epd.valid_until", "max_years": 5 }
+    },
+    {
+      "id": "UL10010-7.IA.03",
+      "title": "Industry-average EPD reports variability",
+      "requirement": "Industry-average EPDs must report the variability of the data (mean, median, standard deviation).",
+      "source": { "section": "1 General Information", "page": 9 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "epd.type == 'industry-average'",
+      "check": { "type": "each_has_fields", "path": "results.variability", "fields": ["mean", "median", "std_dev"] }
+    },
+    {
+      "id": "UL10010-7.IA.04",
+      "title": "Industry-average averaging method described",
+      "requirement": "The method used to create an industry-average EPD must be described, and technical data averaged using each participant's production volume as weights.",
+      "source": { "section": "2.2.3.1; 2.5", "page": 10 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "epd.type == 'industry-average'",
+      "check": { "type": "required_field", "path": "lca.averaging_method" }
+    },
+    {
+      "id": "UL10010-7.IA.05",
+      "title": "Industry-average min/max per impact category in LCA report",
+      "requirement": "The LCA background report for an industry-average EPD should record the maximum and minimum result per impact category across participating products or facilities.",
+      "source": { "section": "III Retroactive participation", "page": 7 },
+      "phase": "results", "severity": "minor", "obligation": "should", "derived": false,
+      "applies_when": "epd.type == 'industry-average'",
+      "check": { "type": "each_has_fields", "path": "results.variability", "fields": ["min", "max"] }
+    },
+    {
+      "id": "UL10010-7.FU.01",
+      "title": "Functional unit is 1 m2 of floor covering",
+      "requirement": "Results are expressed per one square metre of floor covering.",
+      "source": { "section": "3.1; Table 6", "page": 14 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "relation", "expression": "functional_unit.value == 1 and functional_unit.unit in ['m2', 'm²']" }
+    },
+    {
+      "id": "UL10010-7.FU.02",
+      "title": "Mass per functional unit declared",
+      "requirement": "The mass (kg) of the declared product per functional unit must be stated, including installation materials when those are declared.",
+      "source": { "section": "3.1; Table 6", "page": 14 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "numeric_range", "path": "product.mass_per_unit_kg", "min": 0.000001, "unit": "kg/m2" }
+    },
+    {
+      "id": "UL10010-7.FU.03",
+      "title": "Mass based on material before yield losses",
+      "requirement": "Mass (and density) must be the total material needed to produce 1 m2 before yield losses, including facing and ancillary materials.",
+      "source": { "section": "2.2.2", "page": 10 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "equals", "path": "product.mass_basis", "value": "pre-yield-loss" }
+    },
+    {
+      "id": "UL10010-7.FU.04",
+      "title": "Product weight in technical data matches FU mass",
+      "requirement": "The product weight in g/m2 in the technical data table should agree with the mass per functional unit.",
+      "source": { "section": "2.5 Tables 1-5; 3.1 Table 6", "page": 11 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": true,
+      "check": { "type": "formula", "target": "product.mass_per_unit_kg", "expression": "product.technical_data.product_weight_g_m2 / 1000", "tolerance_pct": 5 }
+    },
+    {
+      "id": "UL10010-7.MOD.01",
+      "title": "All modules A1-C4 reported",
+      "requirement": "Product stage, construction stage, use stage (B1-B7, scenario-based) and end-of-life stage (C1-C4) modules are all required.",
+      "source": { "section": "3.2; 5 Table 18", "page": 20 },
+      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "modules_required", "modules": ["A4", "A5", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "C1", "C2", "C3", "C4"] }
+    },
+    {
+      "id": "UL10010-7.MOD.02",
+      "title": "Product stage as A1-A3 or A1, A2, A3",
+      "requirement": "A1, A2 and A3 may be reported individually or aggregated as A1-A3.",
+      "source": { "section": "5", "page": 19 },
+      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "modules_any_of", "groups": [["A1-A3"], ["A1", "A2", "A3"]] }
+    },
+    {
+      "id": "UL10010-7.MOD.03",
+      "title": "Module D optional",
+      "requirement": "Module D (benefits beyond the system boundary) is optional; when declared, its scenario information (Table 17) must be given.",
+      "source": { "section": "5 Table 18; 4 Table 17", "page": 19 },
+      "phase": "document", "severity": "minor", "obligation": "may", "derived": false,
+      "applies_when": "'D' in results.modules_declared",
+      "check": { "type": "each_has_fields", "path": "scenarios.D", "fields": ["process_efficiencies", "assumptions"] }
+    },
+    {
+      "id": "UL10010-7.MOD.04",
+      "title": "Capital goods and infrastructure excluded",
+      "requirement": "Capital goods and infrastructure flows are deemed insignificant for flooring and must be excluded from the LCIA model.",
+      "source": { "section": "3.2", "page": 14 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "equals", "path": "lca.capital_goods_included", "value": false }
+    },
+    {
+      "id": "UL10010-7.RSL.01",
+      "title": "RSL declared",
+      "requirement": "The RSL must be indicated because the EPD covers the full use stage (B1-B7).",
+      "source": { "section": "2.12; Table 10", "page": 14 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "numeric_range", "path": "rsl_years", "min": 0.000001, "unit": "years" }
+    },
+    {
+      "id": "UL10010-7.RSL.02",
+      "title": "Building ESL is 75 years",
+      "requirement": "Replacements are calculated over a 75-year building estimated service life.",
+      "source": { "section": "I; B4/B5", "page": 3 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "equals", "path": "esl_years", "value": 75 }
+    },
+    {
+      "id": "UL10010-7.RSL.03",
+      "title": "RSL reference in-use conditions declared",
+      "requirement": "The RSL must be accompanied by its reference in-use conditions (product properties, design application, installation quality, indoor/outdoor environment, use conditions, maintenance, as relevant).",
+      "source": { "section": "4 Table 10", "page": 16 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "scenarios.B1.rsl_conditions" }
+    },
+    {
+      "id": "UL10010-7.RSL.04",
+      "title": "RSL applicability statement present",
+      "requirement": "The EPD must state that the RSL applies only to the declared reference in-use conditions.",
+      "source": { "section": "4 Table 10", "page": 16 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "text_present", "any_of": ["only applies to", "applies only to the reference in-use conditions", "reference in-use conditions"] }
+    },
+    {
+      "id": "UL10010-7.RSL.05",
+      "title": "Intended application and RSL description in general information",
+      "requirement": "The general information block must describe the intended application and use (as used to set the RSL) and the product RSL.",
+      "source": { "section": "1 General Information", "page": 9 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "document.sections", "fields": ["application", "rsl_description"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.A4.01",
+      "title": "A4 transport defaults to 800 km diesel truck (North America)",
+      "requirement": "For North American sales without primary data, transport to site is 800 km by diesel truck/trailer; deviations (e.g. other geographies) must be justified.",
+      "source": { "section": "3.5 Table 7", "page": 15 },
+      "phase": "input", "severity": "major", "obligation": "should", "derived": false,
+      "applies_when": "'North America' in epd.markets or 'US' in epd.markets or 'Canada' in epd.markets",
+      "check": { "type": "default_or_justified", "path": "scenarios.A4.distance_km", "default": 800, "unit": "km", "justification_path": "scenarios.A4.justification" }
+    },
+    {
+      "id": "UL10010-7.SCEN.A4.02",
+      "title": "A4 scenario table fields present",
+      "requirement": "Transport to site must report fuel type, fuel use (l/100 km), vehicle type, distance, mass-based capacity utilisation, gross density (or weight and volume) and capacity utilisation volume factor.",
+      "source": { "section": "4 Table 8", "page": 16 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.A4", "fields": ["fuel_type", "fuel_l_per_100km", "vehicle_type", "distance_km", "capacity_utilisation_pct", "capacity_utilisation_volume_factor"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.A4.03",
+      "title": "A4 gross density, or weight and volume",
+      "requirement": "Either the gross density of transported products or both their weight and volume must be reported.",
+      "source": { "section": "4 Table 8", "page": 16 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "relation", "expression": "exists(scenarios.A4.gross_density_kg_m3) or (exists(scenarios.A4.weight_kg) and exists(scenarios.A4.volume_m3))" }
+    },
+    {
+      "id": "UL10010-7.SCEN.A5.01",
+      "title": "A5 scenario table fields present",
+      "requirement": "Installation must report ancillary materials, water by source and fate, other resources, electricity, other energy, product loss, installation waste, outputs of on-site waste processing, packaging waste by type, biogenic carbon in packaging (kg CO2), direct emissions and VOC emissions (µg/m3).",
+      "source": { "section": "4 Table 9", "page": 16 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.A5", "fields": ["ancillary_materials_kg", "water_m3", "other_resources_kg", "electricity_kwh", "other_energy_mj", "product_loss_kg", "waste_kg", "output_materials_kg", "packaging_waste_kg", "packaging_biogenic_carbon_kg_co2", "direct_emissions_kg", "voc_emissions_ug_m3"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.A5.02",
+      "title": "VOC emissions tested per CA Specification 01350",
+      "requirement": "VOC emissions must be determined with the CA Specification 01350 (v1.2) environmental chamber method.",
+      "source": { "section": "4 Table 9", "page": 16 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "one_of", "path": "scenarios.A5.voc_test_method", "values": ["CA Specification 01350 v1.2", "CDPH Standard Method v1.2", "CDPH/EHLB Standard Method V1.2"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.A5.03",
+      "title": "Installation defaults to manual with no energy",
+      "requirement": "Without primary data, installation and deconstruction are manual with no operational energy; deviations must be justified.",
+      "source": { "section": "3.5 Table 7", "page": 15 },
+      "phase": "input", "severity": "minor", "obligation": "should", "derived": false,
+      "check": { "type": "default_or_justified", "path": "scenarios.A5.electricity_kwh", "default": 0, "unit": "kWh", "justification_path": "scenarios.A5.justification" }
+    },
+    {
+      "id": "UL10010-7.SCEN.A5.04",
+      "title": "Installation method described",
+      "requirement": "The installation description must cover processing, machinery, tools, dust extraction and auxiliary materials used.",
+      "source": { "section": "2.10", "page": 13 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "document.sections.installation" }
+    },
+    {
+      "id": "UL10010-7.SCEN.B2.01",
+      "title": "Cleaning frequency and products declared",
+      "requirement": "Use-stage impacts depend on cleaning: cleaning frequency and cleaning products must follow the manufacturer's recommendations, or documented assumptions when no primary data exist.",
+      "source": { "section": "3.3", "page": 15 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.B2", "fields": ["cleaning_frequency", "cleaning_products", "cleaning_data_source"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.B2.02",
+      "title": "B2 scenario table fields present",
+      "requirement": "Maintenance must report process information, cycles per RSL and ESL, water, ancillary materials (e.g. cleaning agent), other resources, energy input, other energy carriers, equipment power output, maintenance waste and direct emissions.",
+      "source": { "section": "4 Table 11", "page": 17 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.B2", "fields": ["process_info", "cycles_per_rsl", "cycles_per_esl", "water_m3", "ancillary_materials_kg", "other_resources_kg", "energy_kwh", "other_energy_kwh", "equipment_power_kw", "waste_kg", "direct_emissions_kg"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.B2.03",
+      "title": "Maintenance cycles per ESL consistent with per RSL",
+      "requirement": "Maintenance cycles over the ESL should equal cycles per RSL scaled by ESL/RSL.",
+      "source": { "section": "4 Table 11", "page": 17 },
+      "phase": "input", "severity": "minor", "obligation": "shall", "derived": true,
+      "check": { "type": "formula", "target": "scenarios.B2.cycles_per_esl", "expression": "scenarios.B2.cycles_per_rsl * esl_years / rsl_years", "tolerance_pct": 2 }
+    },
+    {
+      "id": "UL10010-7.SCEN.B3.01",
+      "title": "B3 scenario table fields present",
+      "requirement": "Repair must report repair and inspection process information, cycles per RSL and ESL, water, ancillary materials, energy input, repair waste and direct emissions.",
+      "source": { "section": "4 Table 12", "page": 17 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.B3", "fields": ["process_info", "inspection_info", "cycles_per_rsl", "cycles_per_esl", "water_m3", "ancillary_materials_kg", "energy_kwh", "waste_kg", "direct_emissions_kg"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.B4.01",
+      "title": "Replacement cycles = ESL / RSL - 1",
+      "requirement": "The number of replacements over the 75-year building ESL must be declared, calculated as ESL divided by RSL minus one.",
+      "source": { "section": "B4/B5; Table 13", "page": 18 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "formula", "target": "scenarios.B4.replacement_cycles", "expression": "ceil_tenth(esl_years / rsl_years - 1)", "tolerance_pct": 0 }
+    },
+    {
+      "id": "UL10010-7.SCEN.B4.02",
+      "title": "Replacements rounded up to nearest tenth",
+      "requirement": "Replacement counts should be rounded up to the nearest tenth (e.g. 1.47 to 1.5).",
+      "source": { "section": "B4/B5", "page": 17 },
+      "phase": "input", "severity": "minor", "obligation": "should", "derived": false,
+      "check": { "type": "rounding", "path": "scenarios.B4.replacement_cycles", "rule": "ceil_tenth" }
+    },
+    {
+      "id": "UL10010-7.SCEN.B4.03",
+      "title": "Replacements declared when RSL < 75 years",
+      "requirement": "If the RSL is shorter than the 75-year ESL, the replacements needed over the ESL must be identified.",
+      "source": { "section": "B4/B5", "page": 17 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "rsl_years < esl_years",
+      "check": { "type": "numeric_range", "path": "scenarios.B4.replacement_cycles", "min": 0.000001, "unit": "-" }
+    },
+    {
+      "id": "UL10010-7.SCEN.B4.04",
+      "title": "B4 scenario table fields present",
+      "requirement": "Replacement must report RSL, replacement cycle, energy input, water, ancillary materials, replaced worn parts and direct emissions.",
+      "source": { "section": "4 Table 13", "page": 18 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.B4", "fields": ["rsl_years", "replacement_cycles", "energy_kwh", "water_m3", "ancillary_materials_kg", "worn_parts_kg", "direct_emissions_kg"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.B4.05",
+      "title": "B4 impacts approximately cycles x (A1-A5)",
+      "requirement": "Module B4 reflects producing and installing the replacement products, so it should approximate replacement cycles times the A1-A5 total.",
+      "source": { "section": "B4/B5", "page": 17 },
+      "phase": "results", "severity": "minor", "obligation": "shall", "derived": true,
+      "check": { "type": "relation", "expression": "abs(results.GWP.B4 - scenarios.B4.replacement_cycles * (results.GWP['A1-A3'] + results.GWP.A4 + results.GWP.A5)) <= 0.10 * abs(scenarios.B4.replacement_cycles * (results.GWP['A1-A3'] + results.GWP.A4 + results.GWP.A5))" }
+    },
+    {
+      "id": "UL10010-7.SCEN.B5.01",
+      "title": "B5 scenario table fields present",
+      "requirement": "Refurbishment must report process description, cycles per RSL and ESL, energy input, water, material inputs incl. ancillary materials, waste and direct emissions.",
+      "source": { "section": "4 Table 14", "page": 18 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.B5", "fields": ["process_info", "cycles_per_rsl", "cycles_per_esl", "energy_kwh", "water_m3", "material_inputs_kg", "waste_kg", "direct_emissions_kg"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.B6.01",
+      "title": "B6/B7 scenario table fields present",
+      "requirement": "Operational energy and water must report water by source and fate, ancillary materials, energy input, equipment power output, characteristic performance and direct emissions.",
+      "source": { "section": "4 Table 15", "page": 18 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.B6", "fields": ["water_m3", "ancillary_materials_kg", "energy_kwh", "equipment_power_kw", "characteristic_performance", "direct_emissions_kg"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.C.01",
+      "title": "C2 waste transport defaults to 161 km diesel truck (North America)",
+      "requirement": "For North American sales without primary data, transport to waste processing is 161 km by diesel truck/trailer; deviations must be justified.",
+      "source": { "section": "3.5 Table 7", "page": 15 },
+      "phase": "input", "severity": "major", "obligation": "should", "derived": false,
+      "applies_when": "'North America' in epd.markets or 'US' in epd.markets or 'Canada' in epd.markets",
+      "check": { "type": "default_or_justified", "path": "scenarios.C2.distance_km", "default": 161, "unit": "km", "justification_path": "scenarios.C2.justification" }
+    },
+    {
+      "id": "UL10010-7.SCEN.C.02",
+      "title": "End-of-life table fields present",
+      "requirement": "End of life must report scenario assumptions, mass collected separately and with mixed waste, reuse, recycling, landfill, incineration, incineration with energy recovery (with conversion efficiency), final deposition, and biogenic carbon removals excluding packaging.",
+      "source": { "section": "4 Table 16", "page": 18 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "scenarios.C", "fields": ["assumptions", "collected_separately_kg", "collected_mixed_kg", "reuse_kg", "recycling_kg", "landfill_kg", "incineration_kg", "incineration_energy_recovery_kg", "energy_conversion_efficiency", "final_deposition_kg", "biogenic_carbon_removals_kg_co2"] }
+    },
+    {
+      "id": "UL10010-7.SCEN.C.03",
+      "title": "End-of-life routes account for product mass",
+      "requirement": "Reuse, recycling, landfill, incineration and energy-recovery masses should together account for the product mass per functional unit.",
+      "source": { "section": "4 Table 16", "page": 18 },
+      "phase": "input", "severity": "minor", "obligation": "should", "derived": true,
+      "check": { "type": "relation", "expression": "abs(scenarios.C.reuse_kg + scenarios.C.recycling_kg + scenarios.C.landfill_kg + scenarios.C.incineration_kg + scenarios.C.incineration_energy_recovery_kg - product.mass_per_unit_kg) <= 0.05 * product.mass_per_unit_kg" }
+    },
+    {
+      "id": "UL10010-7.SCEN.D.01",
+      "title": "Exported energy from waste treatment reported",
+      "requirement": "Net energy benefits from energy recovery in C3 (R>0.6), thermal treatment in C4 (R<0.6) and material flows to energy recovery must be reported in MJ with process efficiencies.",
+      "source": { "section": "4 Table 17", "page": 19 },
+      "phase": "document", "severity": "minor", "obligation": "shall", "derived": false,
+      "applies_when": "scenarios.C.incineration_energy_recovery_kg > 0",
+      "check": { "type": "each_has_fields", "path": "scenarios.D", "fields": ["exported_energy_c3_mj", "exported_energy_c4_mj", "energy_recovery_material_mj", "process_efficiencies"] }
+    },
+    {
+      "id": "UL10010-7.TECH.01",
+      "title": "Ceramic tile technical data",
+      "requirement": "Ceramic tile EPDs must give class (P1-P4, E1-E4 or O1-O4), tile type, grade (standard or second), facial area (mm2), thickness (mm), product weight (g/m2) and dimensional category, each with its test standard.",
+      "source": { "section": "2.5 Table 2", "page": 11 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'ceramic_tile'",
+      "check": { "type": "each_has_fields", "path": "product.technical_data", "fields": ["tile_class", "tile_type", "grade", "facial_area_mm2", "thickness_mm", "product_weight_g_m2", "dimensional_category"] }
+    },
+    {
+      "id": "UL10010-7.TECH.02",
+      "title": "Ceramic tile class value valid",
+      "requirement": "Tile class must be one of P1-P4, E1-E4 or O1-O4.",
+      "source": { "section": "2.5 Table 2", "page": 11 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'ceramic_tile'",
+      "check": { "type": "one_of", "path": "product.technical_data.tile_class", "values": ["P1", "P2", "P3", "P4", "E1", "E2", "E3", "E4", "O1", "O2", "O3", "O4"] }
+    },
+    {
+      "id": "UL10010-7.TECH.03",
+      "title": "Ceramic tile type valid",
+      "requirement": "Tile type must be porcelain, pressed floor, mosaic, quarry, gauged or glass.",
+      "source": { "section": "2.5 Table 2; II", "page": 11 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'ceramic_tile'",
+      "check": { "type": "one_of", "path": "product.technical_data.tile_type", "values": ["porcelain", "pressed floor", "mosaic", "quarry", "gauged", "glass"] }
+    },
+    {
+      "id": "UL10010-7.TECH.04",
+      "title": "Ceramic tile grade and dimensional category valid",
+      "requirement": "Grade must be standard or second, and dimensional category natural, calibrated or rectified.",
+      "source": { "section": "2.5 Table 2", "page": 11 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'ceramic_tile'",
+      "check": { "type": "relation", "expression": "product.technical_data.grade in ['standard', 'second'] and product.technical_data.dimensional_category in ['natural', 'calibrated', 'rectified']" }
+    },
+    {
+      "id": "UL10010-7.TECH.05",
+      "title": "Carpet technical data",
+      "requirement": "Carpet EPDs must give yarn type, primary and secondary backing types, CRI rating (2.5 moderate, 3.0 heavy, 3.5 severe), total thickness, product weight, surface pile thickness and surface pile weight.",
+      "source": { "section": "2.5 Table 1", "page": 11 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'carpet'",
+      "check": { "type": "each_has_fields", "path": "product.technical_data", "fields": ["yarn_type", "primary_backing", "secondary_backing", "cri_rating", "total_thickness_mm", "product_weight_g_m2", "pile_thickness_mm", "pile_weight_g_m2"] }
+    },
+    {
+      "id": "UL10010-7.TECH.06",
+      "title": "Carpet CRI rating valid",
+      "requirement": "CRI rating must be 2.5 (moderate), 3.0 (heavy) or 3.5 (severe).",
+      "source": { "section": "2.5 Table 1", "page": 11 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'carpet'",
+      "check": { "type": "one_of", "path": "product.technical_data.cri_rating", "values": [2.5, 3.0, 3.5] }
+    },
+    {
+      "id": "UL10010-7.TECH.07",
+      "title": "Laminate technical data",
+      "requirement": "Laminate EPDs must give use rating, core type, thickness (mm), length and width (m), product weight (g/m2), density, and underlayment weight if attached.",
+      "source": { "section": "2.5 Table 3", "page": 11 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'laminate'",
+      "check": { "type": "each_has_fields", "path": "product.technical_data", "fields": ["use_rating", "core_type", "thickness_mm", "length_m", "width_m", "product_weight_g_m2", "density"] }
+    },
+    {
+      "id": "UL10010-7.TECH.08",
+      "title": "Resilient flooring technical data with min/avg/max",
+      "requirement": "Resilient flooring EPDs must give average, minimum and maximum product thickness, wear layer thickness (where applicable), product weight and product form dimensions (rolls, tiles or planks).",
+      "source": { "section": "2.5 Table 4", "page": 12 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'resilient'",
+      "check": { "type": "each_has_fields", "path": "product.technical_data", "fields": ["thickness_mm.avg", "thickness_mm.min", "thickness_mm.max", "product_weight_g_m2.avg", "product_weight_g_m2.min", "product_weight_g_m2.max", "product_form"] }
+    },
+    {
+      "id": "UL10010-7.TECH.09",
+      "title": "Resilient min <= average <= max",
+      "requirement": "For resilient flooring ranges, the average must lie between the minimum and maximum.",
+      "source": { "section": "2.5 Table 4", "page": 12 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": true,
+      "applies_when": "product.sub_category == 'resilient'",
+      "check": { "type": "relation", "expression": "product.technical_data.thickness_mm.min <= product.technical_data.thickness_mm.avg <= product.technical_data.thickness_mm.max and product.technical_data.product_weight_g_m2.min <= product.technical_data.product_weight_g_m2.avg <= product.technical_data.product_weight_g_m2.max" }
+    },
+    {
+      "id": "UL10010-7.TECH.10",
+      "title": "Wood flooring technical data",
+      "requirement": "Wood flooring EPDs must give thickness (mm), width (mm) and product weight (g/m2).",
+      "source": { "section": "2.5 Table 5", "page": 12 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "product.sub_category == 'wood'",
+      "check": { "type": "each_has_fields", "path": "product.technical_data", "fields": ["thickness_mm", "width_mm", "product_weight_g_m2"] }
+    },
+    {
+      "id": "UL10010-7.TECH.11",
+      "title": "Wood flooring dimensions within typical range",
+      "requirement": "Wood flooring is typically 5/16 in to 1 in thick (about 7.9-25.4 mm) and 1.5 in to 10 in wide (about 38-254 mm); values outside should be checked.",
+      "source": { "section": "2.5 Table 5", "page": 12 },
+      "phase": "input", "severity": "minor", "obligation": "may", "derived": true,
+      "applies_when": "product.sub_category == 'wood'",
+      "check": { "type": "relation", "expression": "7.9 <= product.technical_data.thickness_mm <= 25.4 and 38 <= product.technical_data.width_mm <= 254" }
+    },
+    {
+      "id": "UL10010-7.TECH.12",
+      "title": "Technical data cite test standards",
+      "requirement": "Each technical data value must reference the test standard used.",
+      "source": { "section": "2.2.2; 2.5", "page": 10 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "list_min_length", "path": "product.standards", "min": 1 }
+    },
+    {
+      "id": "UL10010-7.TECH.13",
+      "title": "Product specification standard provided",
+      "requirement": "The applicable ASTM or ANSI product specification must be stated (e.g. ANSI A137.1 for ceramic tile, ASTM F1700 for solid vinyl tile).",
+      "source": { "section": "2.2.2; 9", "page": 10 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "product.specification_standard" }
+    },
+    {
+      "id": "UL10010-7.TECH.14",
+      "title": "Ceramic tile specification standard is ANSI A137.x",
+      "requirement": "Ceramic, glass and gauged porcelain tile reference ANSI A137.1, A137.2 or A137.3 respectively.",
+      "source": { "section": "9 Ceramic Tile", "page": 23 },
+      "phase": "document", "severity": "minor", "obligation": "should", "derived": true,
+      "applies_when": "product.sub_category == 'ceramic_tile'",
+      "check": { "type": "one_of", "path": "product.specification_standard", "values": ["ANSI A137.1", "ANSI A137.2", "ANSI A137.3"] }
+    },
+    {
+      "id": "UL10010-7.TECH.15",
+      "title": "Market placement codes and regulations indicated",
+      "requirement": "The applicable standards, technical approvals or national regulations must be indicated, with a link to the evaluation report or certification where one exists.",
+      "source": { "section": "2.6", "page": 12 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "document.sections.market_placement" }
+    },
+    {
+      "id": "UL10010-7.MAT.01",
+      "title": "Material composition as % by mass",
+      "requirement": "Main components and materials must be listed as percentage by mass.",
+      "source": { "section": "2.7", "page": 12 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "product.material_composition", "fields": ["material", "mass_pct"] }
+    },
+    {
+      "id": "UL10010-7.MAT.02",
+      "title": "Composition percentages total 100%",
+      "requirement": "Material shares should add up to the whole product.",
+      "source": { "section": "2.7", "page": 12 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": true,
+      "check": { "type": "relation", "expression": "abs(sum(product.material_composition[].mass_pct) - 100) <= 1" }
+    },
+    {
+      "id": "UL10010-7.MAT.03",
+      "title": "Additives declared with functional chemical group",
+      "requirement": "Ancillary materials and additives remaining in the product must be declared; flame retardants, softeners and biocides must state their functional chemical group.",
+      "source": { "section": "2.7", "page": 12 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "len(product.additives) > 0",
+      "check": { "type": "each_has_fields", "path": "product.additives", "fields": ["name", "function", "chemical_group"] }
+    },
+    {
+      "id": "UL10010-7.MAT.04",
+      "title": "No 'free of' or 'harmless' claims",
+      "requirement": "Non-inclusion statements such as 'free of' and interpretive claims such as 'entirely harmless' are not permitted.",
+      "source": { "section": "2.7; 8", "page": 12 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "text_forbidden", "patterns": ["free of", "is free from", "entirely harmless", "completely harmless"] }
+    },
+    {
+      "id": "UL10010-7.MAT.05",
+      "title": "Hazardous substances reported",
+      "requirement": "Regulated hazardous and dangerous substances must be reported according to Part A Section 4.11.",
+      "source": { "section": "2.7", "page": 12 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "product.hazardous_substances" }
+    },
+    {
+      "id": "UL10010-7.PKG.01",
+      "title": "Packaging declared with end-of-life pathway",
+      "requirement": "Each packaging material must be described by type and composition with its disposal pathway (reuse, recycling or landfill).",
+      "source": { "section": "2.9", "page": 13 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "product.packaging", "fields": ["material", "mass_kg", "reusable", "end_of_life"] }
+    },
+    {
+      "id": "UL10010-7.BIO.01",
+      "title": "Biogenic carbon reporting when >10% biogenic content",
+      "requirement": "If the product has more than 10% biogenic content or biogenic carbon is in the reported GWP, carbon emissions and removals (Part A Table 6) must be reported.",
+      "source": { "section": "5", "page": 19 },
+      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "product.biogenic_content_pct > 10 or lca.gwp_includes_biogenic == true",
+      "check": { "type": "required_field", "path": "results.carbon_emissions_removals" }
+    },
+    {
+      "id": "UL10010-7.BIO.02",
+      "title": "Biogenic carbon excluded from GWP otherwise",
+      "requirement": "When biogenic content is 10% or less and biogenic carbon reporting is not used, biogenic carbon must be excluded from GWP.",
+      "source": { "section": "5", "page": 19 },
+      "phase": "results", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "product.biogenic_content_pct <= 10 and not exists(results.carbon_emissions_removals)",
+      "check": { "type": "equals", "path": "lca.gwp_includes_biogenic", "value": false }
+    },
+    {
+      "id": "UL10010-7.DOC.01",
+      "title": "General information table complete",
+      "requirement": "The general information block must include program and operator, program instructions and version, manufacturer name and address, declaration number, declared product and functional unit, reference PCR and version, markets, issue date, validity period, EPD type and scope, years of primary data, LCA software, LCI databases and LCIA method (with versions), and who reviewed the PCR, conducted and verified the LCA.",
+      "source": { "section": "1 General Information", "page": 9 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "epd", "fields": ["program_operator.name", "general_program_instructions", "declaration_holder.name", "declaration_holder.address", "declaration_number", "reference_pcr.name", "reference_pcr.version", "markets", "date_of_issue", "valid_until", "type", "scope", "verification.type", "verification.verifier", "verification.pcr_review_by", "verification.lca_by"] }
+    },
+    {
+      "id": "UL10010-7.DOC.02",
+      "title": "LCA software, database and LCIA method versions stated",
+      "requirement": "LCA software, LCI database(s) and LCIA methodology must each be named with versions, along with the year(s) of primary data.",
+      "source": { "section": "1 General Information", "page": 9 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "lca", "fields": ["software.name", "software.version", "databases", "lcia_methods", "reference_year"] }
+    },
+    {
+      "id": "UL10010-7.DOC.03",
+      "title": "Comparability limitation statement present",
+      "requirement": "The EPD must state that declarations from different programs may not be comparable and that comparisons must be made at building level.",
+      "source": { "section": "1 Limitations", "page": 9 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "text_present", "any_of": ["from different programs", "may not be comparable"] }
+    },
+    {
+      "id": "UL10010-7.DOC.04",
+      "title": "Manufacturer named",
+      "requirement": "The manufacturing entity (or entities) must be named.",
+      "source": { "section": "2.1", "page": 10 },
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "manufacturer.name" }
+    },
+    {
+      "id": "UL10010-7.DOC.05",
+      "title": "Manufacturing process and locations described",
+      "requirement": "The manufacturing process and all production locations must be described.",
+      "source": { "section": "2.8", "page": 13 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "list_min_length", "path": "manufacturer.production_sites", "min": 1 }
+    },
+    {
+      "id": "UL10010-7.DOC.06",
+      "title": "Product identification with brand and image",
+      "requirement": "Products must be identified by brand name, material type, production code if applicable, and a photo or illustration.",
+      "source": { "section": "2.2.1", "page": 10 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "product", "fields": ["brand", "name", "image"] }
+    },
+    {
+      "id": "UL10010-7.DOC.07",
+      "title": "Production flow diagram included",
+      "requirement": "A flow diagram of the main production processes within the declared scope must be included.",
+      "source": { "section": "2.8 Flow Diagram", "page": 13 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "product.flow_diagram" }
+    },
+    {
+      "id": "UL10010-7.DOC.08",
+      "title": "Product-specific averaging method described",
+      "requirement": "For product-group EPDs, the production-volume weighting method must be described.",
+      "source": { "section": "2.2.3.2", "page": 10 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "applies_when": "epd.type == 'product-specific' and len(product.variants) > 1",
+      "check": { "type": "required_field", "path": "lca.averaging_method" }
+    },
+    {
+      "id": "UL10010-7.DOC.09",
+      "title": "Intended application specified",
+      "requirement": "The intended application(s) of the product must be specified.",
+      "source": { "section": "2.3", "page": 10 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "document.sections.application" }
+    },
+    {
+      "id": "UL10010-7.DOC.10",
+      "title": "No-exclusion statement present",
+      "requirement": "The methodological framework must include the statement that no known flows are deliberately excluded.",
+      "source": { "section": "2.4", "page": 10 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "text_present", "any_of": ["no known flows are deliberately excluded"] }
+    },
+    {
+      "id": "UL10010-7.DOC.11",
+      "title": "Cut-off and allocation procedures described",
+      "requirement": "Cut-off and allocation procedures must be described per Part A Sections 2.9 and 3.3.",
+      "source": { "section": "2.4; 3.6; 3.10", "page": 10 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "lca", "fields": ["allocation.basis", "cutoff.description"] }
+    },
+    {
+      "id": "UL10010-7.DOC.12",
+      "title": "Re-use, recycling and energy recovery possibilities described",
+      "requirement": "Possibilities for re-use, recycling and energy recovery must be described.",
+      "source": { "section": "2.13", "page": 14 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "document.sections.reuse_phase" }
+    },
+    {
+      "id": "UL10010-7.DOC.13",
+      "title": "Disposal channels indicated",
+      "requirement": "Possible disposal channels must be indicated per the Part A disposal routes and waste classification.",
+      "source": { "section": "2.14", "page": 14 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "document.sections.disposal" }
+    },
+    {
+      "id": "UL10010-7.DOC.14",
+      "title": "Interpretation section present",
+      "requirement": "The EPD must include an interpretation of assumptions and limitations, including the variance of results when the EPD covers several products.",
+      "source": { "section": "6", "page": 20 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "required_field", "path": "document.sections.interpretation" }
+    },
+    {
+      "id": "UL10010-7.DOC.15",
+      "title": "Certification details location stated",
+      "requirement": "For each certification listed in the EPD, a statement must say where details of the certification program can be found.",
+      "source": { "section": "7.5", "page": 21 },
+      "phase": "document", "severity": "minor", "obligation": "shall", "derived": false,
+      "applies_when": "len(product.certifications) > 0",
+      "check": { "type": "each_has_fields", "path": "product.certifications", "fields": ["name", "details_url"] }
+    },
+    {
+      "id": "UL10010-7.DOC.16",
+      "title": "This Part B PCR referenced",
+      "requirement": "The EPD's references must cite this Part B PCR.",
+      "source": { "section": "9", "page": 21 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "text_present", "any_of": ["UL 10010-7", "Flooring EPD Requirements"] }
+    },
+    {
+      "id": "UL10010-7.DOC.17",
+      "title": "Period under review documented",
+      "requirement": "The period under review used for averages must be documented.",
+      "source": { "section": "3.9", "page": 15 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "lca.period_under_review", "fields": ["start", "end"] }
+    },
+    {
+      "id": "UL10010-7.DOC.18",
+      "title": "Data quality evaluation provided",
+      "requirement": "Data quality must be evaluated for temporal, geographical and technological representativeness and completeness.",
+      "source": { "section": "3.8", "page": 15 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "lca.data_quality", "fields": ["temporal", "geographical", "technological", "completeness"] }
+    },
+    {
+      "id": "UL10010-7.DOC.19",
+      "title": "Missing supporting documentation explained",
+      "requirement": "If supporting documentation (test protocols, certificates) is not provided, the EPD must state why.",
+      "source": { "section": "8", "page": 21 },
+      "phase": "document", "severity": "minor", "obligation": "shall", "derived": false,
+      "check": { "type": "required_any", "paths": ["document.sections.supporting_documentation", "document.sections.supporting_documentation_omission_reason"] }
+    },
+    {
+      "id": "UL10010-7.ALLOC.01",
+      "title": "Mass-based allocation unless justified",
+      "requirement": "Co-product allocation uses mass as the primary basis; other bases require justification, and allocations for recycled inputs and shared factory energy must be indicated.",
+      "source": { "section": "3.10", "page": 15 },
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "default_or_justified", "path": "lca.allocation.basis", "default": "mass", "unit": "-", "justification_path": "lca.allocation.justification" }
+    },
+    {
+      "id": "UL10010-7.FMT.01",
+      "title": "LCIA results in scientific notation, 3 digits",
+      "requirement": "LCIA results must be declared for each module in scientific notation with three significant digits, formatted uniformly.",
+      "source": { "section": "5", "page": 19 },
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": { "type": "number_format", "scope": "results", "style": "scientific", "significant_digits": 3 }
+    },
+    {
+      "id": "UL10010-7.FMT.02",
+      "title": "SI units for all results",
+      "requirement": "All LCA results must be given in SI units; regional units are optional extras.",
+      "source": { "section": "3.4", "page": 15 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "not_one_of", "path": "results.units[]", "values": ["lb", "BTU", "ft2", "ft3", "degF"] }
+    },
+    {
+      "id": "UL10010-7.IND.01",
+      "title": "TRACI results for North American market",
+      "requirement": "EPDs for North America declare LCIA results with the TRACI indicators of Part A Table 7.",
+      "source": { "section": "5", "page": 19 },
+      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "'North America' in epd.markets or 'US' in epd.markets or 'Canada' in epd.markets",
+      "check": { "type": "required_field", "path": "results.TRACI_2_1" }
+    },
+    {
+      "id": "UL10010-7.IND.02",
+      "title": "CML results for EU market",
+      "requirement": "EPDs for the EU declare LCIA results with the CML indicators of Part A Table 8.",
+      "source": { "section": "5", "page": 19 },
+      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
+      "applies_when": "'EU' in epd.markets or 'Europe' in epd.markets",
+      "check": { "type": "required_field", "path": "results.CML" }
+    },
+    {
+      "id": "UL10010-7.IND.03",
+      "title": "LCI resource use and waste indicators reported",
+      "requirement": "Resource use indicators (Part A Table 4) and output flow and waste category indicators (Part A Table 5) must be reported.",
+      "source": { "section": "5", "page": 19 },
+      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "each_has_fields", "path": "results", "fields": ["resource_use", "output_flows_waste"] }
+    },
+    {
+      "id": "UL10010-7.VER.01",
+      "title": "Verification type declared",
+      "requirement": "The EPD must state whether ISO 14025 verification was internal or external.",
+      "source": { "section": "1 General Information", "page": 9 },
+      "phase": "document", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": { "type": "one_of", "path": "epd.verification.type", "values": ["internal", "external"] }
+    }
+  ],
+  "manual_checks": [
+    { "id": "UL10010-7.M.01", "title": "Industry-average call for participation published", "source": { "section": "III", "page": 7 }, "reason": "Requires evidence of a notice in at least one trade publication." },
+    { "id": "UL10010-7.M.02", "title": "Retroactive participation in industry-average EPD", "source": { "section": "III", "page": 7 }, "reason": "Program operator decision based on practitioner recommendation." },
+    { "id": "UL10010-7.M.03", "title": "Confidential data handled by a third-party industry agent", "source": { "section": "III Data Responsibility", "page": 7 }, "reason": "Process and governance requirement; not visible in EPD data." },
+    { "id": "UL10010-7.M.04", "title": "Industry-average EPD uses latest software and impact assessment versions", "source": { "section": "III", "page": 8 }, "reason": "'Most recent available' version needs a current external reference list." },
+    { "id": "UL10010-7.M.05", "title": "Omitted aspects justified", "source": { "section": "3.2", "page": 14 }, "reason": "Adequacy of justification needs reviewer judgement." },
+    { "id": "UL10010-7.M.06", "title": "Deviations from default scenarios explained", "source": { "section": "3.5", "page": 15 }, "reason": "Software checks that a justification exists; its adequacy needs review." },
+    { "id": "UL10010-7.M.07", "title": "Confidential composition exemptions", "source": { "section": "2.7 Note", "page": 13 }, "reason": "Withholding proprietary composition is allowed with justification; acceptability is a reviewer decision." },
+    { "id": "UL10010-7.M.08", "title": "B4/B5 assumptions supported by manufacturer documentation", "source": { "section": "B4/B5", "page": 17 }, "reason": "Requires reviewing manufacturer guidelines and supporting documents." },
+    { "id": "UL10010-7.M.09", "title": "Health and environment information (manufacturing, installation)", "source": { "section": "7.1; 7.2", "page": 20 }, "reason": "Narrative content; presence can be checked but not quality." },
+    { "id": "UL10010-7.M.10", "title": "Extraordinary effects (fire, water, mechanical destruction)", "source": { "section": "7.3", "page": 20 }, "reason": "'Should' narrative sections; relevance depends on the product." },
+    { "id": "UL10010-7.M.11", "title": "Statements backed by measured data and detection limits", "source": { "section": "8", "page": 21 }, "reason": "Requires reviewing test certificates." }
+  ],
+  "notes": [
+    "Validity: the PCR text says it expires September 2023, but UL lists an extension to 31 Dec 2026; valid_until uses the extension date.",
+    "Table 2 (ceramic tile) lists the unit for 'Grade (standard or second)' as mm; grade is categorical, so the rule treats it as a text value.",
+    "Table 3 (laminate) gives density in g/m3, which is implausible for laminate; it is likely kg/m3 or g/cm3. The rule only checks that density is present.",
+    "Section 2.12 points to 'Section 4, Table 6' for RSL assumptions and 3.1 points to 'Table 3' for mass; the actual tables are Table 10 (RSL) and Table 6 (functional unit). Section II refers to product standards in 'Section 8' but they are listed in Section 9.",
+    "Table 11 gives 'Other energy carriers specified by type' in kWh rather than MJ.",
+    "Differences from the chiller PCR (UL 10010-4): Module D is optional here (not allowed for chillers); capital goods must be excluded; industry-average EPDs are allowed; default A4 is 800 km and C2 161 km (chillers: 500 km / 100 km); no default refrigerant or RSL value.",
+    "The PCR sets no default RSL for flooring; the RSL must come from the manufacturer with reference in-use conditions.",
+    "The 10% biogenic content threshold (Section 5) decides whether carbon emissions/removals are reported or biogenic carbon is excluded from GWP.",
+    "Indicator names, units and cut-off percentages are defined in UL Part A v3.2, which is not available, so IND rules check only that the indicator groups exist.",
+    "New field paths introduced: product.sub_category values (carpet, ceramic_tile, laminate, resilient, wood), product.technical_data.{material_family, tile_class, tile_type, grade, facial_area_mm2, thickness_mm, product_weight_g_m2, dimensional_category, yarn_type, primary_backing, secondary_backing, cri_rating, total_thickness_mm, pile_thickness_mm, pile_weight_g_m2, use_rating, core_type, length_m, width_m, width_mm, density, underlayment_weight_g_m2, product_form}, product.packaged_contents, product.mass_basis, product.specification_standard, product.additives[], product.certifications[], product.biogenic_content_pct, lca.participants.{sites, companies, justification}, lca.capital_goods_included, lca.gwp_includes_biogenic, results.variability, scenarios.A4.{fuel_type, vehicle_type, weight_kg, volume_m3}, scenarios.A5.{voc_emissions_ug_m3, voc_test_method, packaging_waste_kg, packaging_biogenic_carbon_kg_co2}, scenarios.B2.{cleaning_frequency, cleaning_products, cleaning_data_source}, scenarios.C.* (Table 16 routes), scenarios.D.*, document.sections.{market_placement, installation, rsl_description, supporting_documentation}.",
+    "Licence: the UL PDF grants internal, non-commercial use only and prohibits derivative works. Rules here are paraphrased requirements with section references; confirm with UL before shipping them in a commercial product."
+  ]
+}

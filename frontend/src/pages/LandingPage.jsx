@@ -10,7 +10,6 @@ import HowItWorks from '../components/landing/HowItWorks';
 import Features from '../components/landing/Features';
 import EpdExplained from '../components/landing/EpdExplained';
 import DashboardPreview from '../components/landing/DashboardPreview';
-import AboutSection from '../components/landing/AboutSection';
 import WhoItsFor from '../components/landing/WhoItsFor';
 import Faq from '../components/landing/Faq';
 import CtaBanner from '../components/landing/CtaBanner';
@@ -71,7 +70,6 @@ export default function LandingPage() {
         <Features />
         <EpdExplained />
         <DashboardPreview onLaunchApp={handleLaunchApp} />
-        <AboutSection />
         <WhoItsFor />
         <Faq />
         <CtaBanner onLaunchApp={handleLaunchApp} />
