@@ -8,7 +8,7 @@ export default function LifeCycleRibbon() {
   const currentStage = LCA_STAGES.find(s => s.id === activeStageId) || LCA_STAGES[0];
 
   return (
-    <section className="product-tile-dark-2" id="stages">
+    <section className="product-tile-dark-2 reveal-on-scroll" id="stages">
       <div className="lp-container">
         <div className="apple-section-header">
           <div className="apple-section-eyebrow on-dark">
@@ -35,6 +35,7 @@ export default function LifeCycleRibbon() {
               <div
                 key={stg.id}
                 onClick={() => setActiveStageId(stg.id)}
+                className="stagger-card"
                 style={{
                   backgroundColor: '#ffffff',
                   border: '1px solid',
@@ -42,7 +43,9 @@ export default function LifeCycleRibbon() {
                   borderRadius: 'var(--apple-radius-lg)',
                   padding: '16px',
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease'
+                  transform: isActive ? 'translateY(-2px)' : 'none',
+                  boxShadow: isActive ? '0 8px 24px -4px rgba(31, 122, 76, 0.2)' : 'none',
+                  transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -52,7 +55,8 @@ export default function LifeCycleRibbon() {
                     padding: '2px 8px',
                     borderRadius: 'var(--apple-radius-sm)',
                     backgroundColor: isActive ? 'var(--apple-primary)' : 'rgba(31, 122, 76, 0.08)',
-                    color: isActive ? '#ffffff' : 'var(--apple-primary)'
+                    color: isActive ? '#ffffff' : 'var(--apple-primary)',
+                    transition: 'all 0.2s ease'
                   }}>
                     {stg.code}
                   </span>
@@ -78,47 +82,49 @@ export default function LifeCycleRibbon() {
           border: '1px solid #d9eadf',
           padding: '32px'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--apple-primary-on-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              System Boundary Detail • {currentStage.code}
+          <div key={activeStageId} className="step-card-animate">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--apple-primary-on-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                System Boundary Detail • {currentStage.code}
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--apple-body-muted)' }}>
+                ecoinvent v3.12 Cut-off Allocation
+              </div>
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--apple-body-muted)' }}>
-              ecoinvent v3.12 Cut-off Allocation
+
+            <h3 style={{
+              fontFamily: 'var(--apple-font-display)',
+              fontSize: '24px',
+              fontWeight: 600,
+              color: 'var(--apple-body-on-dark)',
+              marginBottom: '12px'
+            }}>
+              {currentStage.name} ({currentStage.code})
+            </h3>
+
+            <p style={{
+              fontSize: '17px',
+              color: 'var(--apple-body-muted)',
+              lineHeight: '1.47',
+              marginBottom: '20px'
+            }}>
+              {currentStage.desc}
+            </p>
+
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingTop: '20px',
+              borderTop: '1px solid var(--apple-divider-soft)',
+              fontSize: '13px',
+              color: '#5b6f62',
+              flexWrap: 'wrap',
+              gap: '8px'
+            }}>
+              <span>Boundary: <strong style={{ color: 'var(--apple-ink)' }}>{currentStage.boundary}</strong></span>
+              <span>Typical Benchmark GWP Impact: <strong style={{ color: 'var(--apple-primary-on-dark)', fontFamily: 'var(--apple-font-mono)' }}>{currentStage.gwpShare}</strong></span>
             </div>
-          </div>
-
-          <h3 style={{
-            fontFamily: 'var(--apple-font-display)',
-            fontSize: '24px',
-            fontWeight: 600,
-            color: 'var(--apple-body-on-dark)',
-            marginBottom: '12px'
-          }}>
-            {currentStage.name} ({currentStage.code})
-          </h3>
-
-          <p style={{
-            fontSize: '17px',
-            color: 'var(--apple-body-muted)',
-            lineHeight: '1.47',
-            marginBottom: '20px'
-          }}>
-            {currentStage.desc}
-          </p>
-
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: '20px',
-            borderTop: '1px solid var(--apple-divider-soft)',
-            fontSize: '13px',
-            color: '#5b6f62',
-            flexWrap: 'wrap',
-            gap: '8px'
-          }}>
-            <span>Boundary: <strong style={{ color: 'var(--apple-ink)' }}>{currentStage.boundary}</strong></span>
-            <span>Typical Benchmark GWP Impact: <strong style={{ color: 'var(--apple-primary-on-dark)', fontFamily: 'var(--apple-font-mono)' }}>{currentStage.gwpShare}</strong></span>
           </div>
         </div>
       </div>

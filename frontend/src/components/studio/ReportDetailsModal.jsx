@@ -197,7 +197,7 @@ export default function ReportDetailsModal() {
   ];
 
   return (
-    <div style={{
+    <div className="modal-overlay" style={{
       position: 'fixed',
       inset: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.38)',
@@ -207,10 +207,9 @@ export default function ReportDetailsModal() {
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 10000,
-      padding: '24px 16px',
-      animation: 'fadeIn 0.2s ease-out'
+      padding: '24px 16px'
     }}>
-      <div style={{
+      <div className="modal-container" style={{
         backgroundColor: '#FFFFFF',
         color: '#1D1D1F',
         width: '100%',

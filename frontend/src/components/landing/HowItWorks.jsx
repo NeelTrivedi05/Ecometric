@@ -30,7 +30,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="product-tile-parchment" id="how-it-works">
+    <section className="product-tile-parchment reveal-on-scroll" id="how-it-works">
       <div className="lp-container">
         <div className="apple-section-header">
           <div className="apple-section-eyebrow">
@@ -48,7 +48,7 @@ export default function HowItWorks() {
           {steps.map((step, idx) => (
             <div
               key={idx}
-              className="store-utility-card"
+              className="store-utility-card stagger-card"
               style={{
                 display: 'flex',
                 flexDirection: 'column',

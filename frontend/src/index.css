@@ -85,6 +85,23 @@ html {
   scroll-padding-top: 80px;
 }
 
+/* Ultra-sleek modern scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.32);
+}
+
 *,
 *::before,
 *::after,
@@ -514,17 +531,19 @@ svg {
   font-family: var(--font);
   font-size: var(--text-xs);
   color: var(--text-secondary);
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  will-change: transform;
 }
 
 .sidebar-item:active {
-  transform: scale(0.97);
+  transform: scale(0.97) translateX(2px);
 }
 
 .sidebar-item:hover {
   background: var(--bg-hover);
   color: var(--text-primary);
+  transform: translateX(2.5px);
 }
 
 .sidebar-item.active {
@@ -532,7 +551,8 @@ svg {
   color: var(--accent);
   font-weight: 600;
   border: 1px solid var(--border);
-  box-shadow: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transform: none;
 }
 
 .sidebar-item.done .item-icon-wrapper {
@@ -547,6 +567,7 @@ svg {
   justify-content: center;
   flex-shrink: 0;
   color: var(--text-muted);
+  transition: color 0.2s ease;
 }
 
 .sidebar-item.active .item-icon-wrapper {
@@ -565,6 +586,7 @@ svg {
   color: var(--text-muted);
   background: rgba(0, 0, 0, 0.05);
   flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sidebar-item.active .item-step-indicator {
@@ -582,6 +604,12 @@ svg {
   align-items: center;
   justify-content: center;
   color: var(--success);
+  animation: checkmarkPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes checkmarkPop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .item-text-stack {
@@ -727,6 +755,25 @@ svg {
   overflow-x: hidden;
   padding: 32px 36px 56px;
   background: var(--bg-base);
+  scroll-behavior: smooth;
+}
+
+/* ─── VIEW TRANSITION ─── */
+.studio-view-transition {
+  animation: studioViewGlide 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  width: 100%;
+}
+
+@keyframes studioViewGlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ─── VIEW CONTAINERS ─── */
@@ -1353,9 +1400,10 @@ textarea.form-input {
   border: 1px solid var(--border);
   border-left: 4px solid var(--success);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05);
   z-index: 9999;
-  animation: toastSlideIn 0.3s ease;
+  animation: toastSpringIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  will-change: transform, opacity;
 }
 
 .toast-dot {
@@ -1364,6 +1412,18 @@ textarea.form-input {
   border-radius: 50%;
   background: var(--success);
   flex-shrink: 0;
+  animation: toastDotPulse 2s infinite ease-in-out;
+}
+
+@keyframes toastDotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.7;
+  }
 }
 
 .toast-content {
@@ -1383,15 +1443,45 @@ textarea.form-input {
   margin-top: 1px;
 }
 
-@keyframes toastSlideIn {
+@keyframes toastSpringIn {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(18px) scale(0.96);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ─── MODAL DIALOG SMOOTH ANIMATIONS ─── */
+.modal-overlay {
+  animation: modalOverlayFade 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-container {
+  animation: modalContainerScale 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes modalOverlayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalContainerScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 

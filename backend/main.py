@@ -37,6 +37,7 @@ app.include_router(documents.router)
 app.include_router(processes.router)
 
 @app.get("/health")
+@app.get("/api/health")
 def healthcheck():
     return {
         "status": "healthy",

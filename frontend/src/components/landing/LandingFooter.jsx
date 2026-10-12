@@ -11,7 +11,7 @@ export default function LandingFooter() {
   };
 
   return (
-    <footer id="about" className="apple-footer">
+    <footer id="footer" className="apple-footer">
       <div className="lp-container">
         {/* Knowledge Base / More Info Section inside Footer */}
         <div className="footer-kb-section" style={{ marginBottom: '56px', paddingBottom: '48px', borderBottom: '1px solid var(--apple-hairline)' }}>

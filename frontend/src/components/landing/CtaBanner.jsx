@@ -4,7 +4,7 @@ import { BannerBackdrop } from './EcoBackdrop';
 
 export default function CtaBanner({ onLaunchApp }) {
   return (
-    <section id="pricing" className="product-tile-dark-3 eco-banner" style={{ textAlign: 'center', padding: '96px 0 152px' }}>
+    <section id="pricing" className="product-tile-dark-3 eco-banner reveal-on-scroll" style={{ textAlign: 'center', padding: '96px 0 152px' }}>
       <BannerBackdrop />
       <div className="lp-container eco-layer">
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>

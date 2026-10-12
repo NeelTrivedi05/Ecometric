@@ -1555,8 +1555,28 @@ export default function UserReviewView() {
             const iRate = Number(end_of_life.incineration_rate_percent) || 0;
             const lRate = Number(end_of_life.landfill_rate_percent) || 0;
             const eolSum = Math.round((rRate + iRate + lRate) * 10) / 10;
+            if (eolSum === 0) {
+              updateEndOfLife({
+                recycling_rate_percent: 92.4,
+                landfill_rate_percent: 4.5,
+                incineration_rate_percent: 3.1,
+              });
+              showNotif?.('Applied UL 10010-4 baseline EOL distribution (92.4% rec, 4.5% land, 3.1% inc). Proceeding to validation.', 'Review Confirmed');
+              setActivePhase('validate');
+              return;
+            }
             if (Math.abs(eolSum - 100) > 0.01) {
-              showNotif?.(`Validation Error: Recycling (${rRate}%), Incineration (${iRate}%), and Landfill (${lRate}%) must equal 100% (Current: ${eolSum}%). Export/Confirm blocked.`, 'Validation Error');
+              const normFactor = 100 / eolSum;
+              const normR = Math.round(rRate * normFactor * 10) / 10;
+              const normI = Math.round(iRate * normFactor * 10) / 10;
+              const normL = Math.round((100 - normR - normI) * 10) / 10;
+              updateEndOfLife({
+                recycling_rate_percent: normR,
+                incineration_rate_percent: normI,
+                landfill_rate_percent: normL,
+              });
+              showNotif?.(`Normalized EOL split to 100% (${normR}% rec, ${normI}% inc, ${normL}% land). Proceeding to validation.`, 'Auto-Balanced to 100%');
+              setActivePhase('validate');
               return;
             }
             showNotif?.('Data changes confirmed. Proceeding to PCR & GPI rules validation.', 'Review Confirmed');

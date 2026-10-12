@@ -92,7 +92,7 @@ export default function InfoPage() {
           </aside>
 
           {/* Main Topic Details Panel */}
-          <article className="info-content-card">
+          <article key={activeTopic.id} className="info-content-card">
             <div className="info-panel-section-title">Key Frameworks & Technical Specifications</div>
 
             {/* Points Grid */}

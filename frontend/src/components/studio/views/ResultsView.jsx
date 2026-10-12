@@ -469,7 +469,7 @@ export default function ResultsView() {
             disabled={isLoading}
             style={{ display: 'flex', alignItems: 'center', gap: 6 }}
           >
-            <span>Generate EPD Report</span>
+            <span>Skip to Export Suite</span>
             <ChevronRightIcon size={14} />
           </button>
 
@@ -477,11 +477,11 @@ export default function ResultsView() {
             type="button"
             className="btn-apple-action-blue"
             onClick={() => {
-              showNotif('Proceeding to EPD Declaration Certificate', 'Results Confirmed');
-              setActivePhase('export');
+              showNotif('Proceeding to Pre-Audit Quality Gate', 'Results Confirmed');
+              setActivePhase('audit');
             }}
           >
-            <span>Proceed to Export Suite</span>
+            <span>Pre-Audit Quality Gate (Gate 7)</span>
             <ChevronRightIcon size={14} />
           </button>
         </div>

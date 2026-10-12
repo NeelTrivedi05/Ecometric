@@ -22,7 +22,8 @@ const PHASES = [
   { id: 'validate', step: '4', label: 'PCR Rules Audit', sub: 'UL 10010-4 & GPI Check', icon: ValidateIcon },
   { id: 'methodology', step: '5', label: 'LCIA Methodology', sub: 'EF v3.1, TRACI, CML-IA', icon: MethodologyIcon },
   { id: 'results', step: '6', label: 'LCIA Results', sub: '25 Indicators × 16 Stages', icon: ResultsIcon },
-  { id: 'export', step: '7', label: 'Export EPD', sub: 'Publication PDF & openEPD', icon: ExportIcon },
+  { id: 'audit', step: '7', label: 'Pre-Audit Verification', sub: '5-Gate ISO 14025 Check', icon: ShieldCheckIcon },
+  { id: 'export', step: '8', label: 'Export EPD', sub: 'Publication PDF & openEPD', icon: ExportIcon },
 ];
 
 export default function StudioSidebar() {
@@ -67,6 +68,8 @@ export default function StudioSidebar() {
         return selectedMethodology ? 'done' : '';
       case 'results':
         return lca?.isCalculated || results ? 'done' : '';
+      case 'audit':
+        return lca?.auditRules?.length > 0 ? 'done' : '';
       case 'export':
         return '';
       default:

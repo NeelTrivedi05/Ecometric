@@ -10,7 +10,7 @@ export default function Faq() {
   };
 
   return (
-    <section className="product-tile-parchment" id="faq">
+    <section className="product-tile-parchment reveal-on-scroll" id="faq">
       <div className="lp-container">
         <div className="apple-section-header">
           <div className="apple-section-eyebrow">
@@ -37,7 +37,7 @@ export default function Faq() {
                   <span>{faq.q}</span>
                   <span style={{
                     transform: isOpen ? 'rotate(90deg)' : 'none',
-                    transition: 'transform 0.2s ease',
+                    transition: 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
                     color: 'var(--apple-primary)',
                     display: 'flex',
                     alignItems: 'center'
@@ -45,11 +45,13 @@ export default function Faq() {
                     <ChevronRightIcon size={16} />
                   </span>
                 </button>
-                {isOpen && (
-                  <div className="apple-disclosure-content">
-                    {faq.a}
+                <div className={`apple-disclosure-wrapper ${isOpen ? 'is-open' : ''}`}>
+                  <div className="apple-disclosure-inner">
+                    <div className="apple-disclosure-content">
+                      {faq.a}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}

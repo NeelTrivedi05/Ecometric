@@ -12,7 +12,7 @@ export default function TrustProof() {
   ];
 
   return (
-    <section className="product-tile-parchment" style={{ padding: '40px 0', borderTop: '1px solid var(--apple-hairline)', borderBottom: '1px solid var(--apple-hairline)' }}>
+    <section className="product-tile-parchment reveal-on-scroll" style={{ padding: '40px 0', borderTop: '1px solid var(--apple-hairline)', borderBottom: '1px solid var(--apple-hairline)' }}>
       <div className="lp-container">
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--apple-ink)', letterSpacing: '-0.224px' }}>
