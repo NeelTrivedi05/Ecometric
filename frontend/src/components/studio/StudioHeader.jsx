@@ -11,7 +11,8 @@ import {
   SnowflakeIcon,
   ThermalIcon,
   AlertTriangleIcon,
-  CheckIcon
+  CheckIcon,
+  LeafIcon
 } from './Icons';
 
 export default function StudioHeader() {
@@ -49,10 +50,10 @@ export default function StudioHeader() {
   };
 
   const renderPresetIcon = (id, size = 15) => {
-    if (id === 'screw_chiller_300rt') return <SnowflakeIcon size={size} style={{ color: '#0066cc' }} />;
-    if (id === 'heat_pump_150rt') return <ThermalIcon size={size} style={{ color: '#ff9f0a' }} />;
-    if (id === 'incomplete_gap_analysis') return <AlertTriangleIcon size={size} style={{ color: '#ff3b30' }} />;
-    return <DropletIcon size={size} style={{ color: '#0066cc' }} />;
+    if (id === 'screw_chiller_300rt') return <SnowflakeIcon size={size} style={{ color: 'var(--accent, #1f7a4c)' }} />;
+    if (id === 'heat_pump_150rt') return <ThermalIcon size={size} style={{ color: '#d97706' }} />;
+    if (id === 'incomplete_gap_analysis') return <AlertTriangleIcon size={size} style={{ color: '#dc2626' }} />;
+    return <DropletIcon size={size} style={{ color: 'var(--accent, #1f7a4c)' }} />;
   };
 
   return (
@@ -69,10 +70,27 @@ export default function StudioHeader() {
           <MenuIcon size={16} />
         </button>
 
-        {/* Brand Name Home Breadcrumb */}
+        {/* Brand Name Home Breadcrumb with Leaf Logo */}
         <div className="brand-group">
-          <div className="brand-logo" onClick={() => setActivePhase('upload')} style={{ cursor: 'pointer' }}>
-            <span className="brand-name">EcoMetric</span>
+          <div
+            className="brand-logo"
+            onClick={() => setActivePhase('upload')}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+            title="EcoMetric EPD Studio Home"
+          >
+            <span style={{
+              width: '26px',
+              height: '26px',
+              borderRadius: '7px',
+              backgroundColor: 'rgba(31, 122, 76, 0.12)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--accent, #1f7a4c)'
+            }}>
+              <LeafIcon size={16} />
+            </span>
+            <span className="brand-name">EcoMetric Studio</span>
           </div>
 
           <Link

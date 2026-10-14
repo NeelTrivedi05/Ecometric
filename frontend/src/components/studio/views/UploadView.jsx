@@ -37,6 +37,7 @@ export default function UploadView() {
 
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [loadingPresetKey, setLoadingPresetKey] = useState(null);
 
   const handleDrop = useCallback((e) => {
     e.preventDefault();
@@ -73,6 +74,24 @@ export default function UploadView() {
     setActivePhase('extract');
   };
 
+  const handleSelectPreset = async (key) => {
+    setLoadingPresetKey(key);
+    try {
+      await loadPreset(key);
+    } finally {
+      setLoadingPresetKey(null);
+    }
+  };
+
+  const formatRefrigerant = (refrig) => {
+    if (!refrig) return 'None';
+    const clean = refrig.trim();
+    if (clean.toLowerCase().startsWith('not') || clean.toLowerCase().startsWith('none') || clean.includes('0 kg')) {
+      return 'None';
+    }
+    return clean.split(' ')[0];
+  };
+
   return (
     <div className="view-container">
       {/* Header & Quick Action Row */}
@@ -82,7 +101,7 @@ export default function UploadView() {
           <h1 className="view-title">Upload & Ingest Chiller Engineering Documents</h1>
           <p className="view-subtitle">
             Upload raw engineering files (BOM spreadsheets, freight manifests, plant utility submetering, and equipment cut sheets).
-            The engine parses component masses, links them to verified ecoinvent v3.12 activities, and audits UL 10010-4 completeness.
+            The automated engine parses component masses, links them to verified ecoinvent v3.12 activities, and audits UL 10010-4 Part B v2.0 &amp; EN 15804+A2 completeness.
           </p>
         </div>
 
@@ -107,7 +126,7 @@ export default function UploadView() {
         <div className="gallery-header-row">
           <div className="gallery-title-group">
             <span className="gallery-title">Verified Equipment Benchmarks</span>
-            <span className="gallery-desc">Instant 1-click loading of UL 10010-4 / EN 15804+A2 test fixtures from test/ suite</span>
+            <span className="gallery-desc">Pre-configured engineering models compliant with UL 10010-4 Part B v2.0, EN 15804+A2, and ecoinvent v3.12</span>
           </div>
           <span className="gallery-pill-tag">4 Models Available</span>
         </div>
@@ -115,21 +134,31 @@ export default function UploadView() {
         <div className="benchmark-card-grid">
           {Object.entries(PRESET_DATASETS || {}).map(([key, item]) => {
             const isSelected = currentPresetId === key;
+            const isCurrentLoading = loadingPresetKey === key;
+
             return (
               <div
                 key={key}
                 className={`benchmark-card ${isSelected ? 'active-benchmark' : ''}`}
-                onClick={() => loadPreset(key)}
+                onClick={() => handleSelectPreset(key)}
                 role="button"
                 tabIndex={0}
+                aria-pressed={isSelected}
               >
                 <div className="card-top-row">
-                  <span className="card-equipment-glyph">
-                    {key === 'screw_chiller_300rt' ? <SnowflakeIcon size={18} style={{ color: '#0066cc' }} /> :
-                     key === 'heat_pump_150rt' ? <ThermalIcon size={18} style={{ color: '#ff9f0a' }} /> :
-                     key === 'incomplete_gap_analysis' ? <AlertTriangleIcon size={18} style={{ color: '#ff3b30' }} /> :
-                     <DropletIcon size={18} style={{ color: '#0066cc' }} />}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="card-equipment-glyph">
+                      {key === 'screw_chiller_300rt' ? <SnowflakeIcon size={18} style={{ color: 'var(--accent, #1f7a4c)' }} /> :
+                       key === 'heat_pump_150rt' ? <ThermalIcon size={18} style={{ color: '#d97706' }} /> :
+                       key === 'incomplete_gap_analysis' ? <AlertTriangleIcon size={18} style={{ color: '#dc2626' }} /> :
+                       <DropletIcon size={18} style={{ color: 'var(--accent, #1f7a4c)' }} />}
+                    </span>
+                    {isSelected && (
+                      <span className="card-active-pill">
+                        <span className="card-active-dot" /> Active
+                      </span>
+                    )}
+                  </div>
                   <span
                     className="card-badge"
                     style={{ color: item.badgeColor, backgroundColor: `${item.badgeColor}15` }}
@@ -150,9 +179,9 @@ export default function UploadView() {
                     <span className="spec-label">Mass</span>
                     <span className="spec-value">{item.totalMassKg} kg</span>
                   </div>
-                  <div className="card-spec-item">
+                  <div className="card-spec-item" title={`Refrigerant: ${item.refrigerant}`}>
                     <span className="spec-label">Refrigerant</span>
-                    <span className="spec-value">{item.refrigerant.split(' ')[0]}</span>
+                    <span className="spec-value">{formatRefrigerant(item.refrigerant)}</span>
                   </div>
                 </div>
 
@@ -162,15 +191,21 @@ export default function UploadView() {
                     className={`btn-card-load ${isSelected ? 'is-selected' : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      loadPreset(key);
+                      handleSelectPreset(key);
                     }}
-                    disabled={isLoading}
+                    disabled={isLoading || isCurrentLoading}
                   >
-                    {isSelected ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    {isCurrentLoading ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <RefreshCwIcon size={12} className="spin" /> Loading Model...
+                      </span>
+                    ) : isSelected ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                         <CheckIcon size={12} /> Loaded in Workspace
                       </span>
-                    ) : 'Load Benchmark →'}
+                    ) : (
+                      <span>Load Benchmark →</span>
+                    )}
                   </button>
                 </div>
               </div>
@@ -189,7 +224,7 @@ export default function UploadView() {
         style={{ cursor: 'pointer' }}
       >
         <div className="upload-icon-circle">
-          <UploadIcon size={26} style={{ color: '#0066cc' }} />
+          <UploadIcon size={26} style={{ color: 'var(--accent, #1f7a4c)' }} />
         </div>
 
         <div className="upload-zone-title">
@@ -197,22 +232,37 @@ export default function UploadView() {
         </div>
 
         <div className="upload-zone-desc">
-          Supports BOM spreadsheets (Excel .xlsx, CSV), technical cutsheets (vector PDF), multimodal manifests, or complete ZIP packages
+          Supports BOM spreadsheets (Excel .xlsx/.xls, CSV/TSV), technical cutsheets (vector PDF), LCA data payloads (JSON), and multi-document ZIP archives
         </div>
 
         <div className="upload-zone-formats">
-          <span className="apple-chip-format">.XLSX</span>
-          <span className="apple-chip-format">.CSV</span>
-          <span className="apple-chip-format">.PDF</span>
-          <span className="apple-chip-format">.JSON</span>
-          <span className="apple-chip-format">.ZIP</span>
+          <span className="apple-chip-format" title="Multi-tab Excel workbooks (BOM, Transport, Utilities, EOL)">
+            <span className="chip-ext">.XLSX / .XLS</span>
+            <span className="chip-desc">Workbooks</span>
+          </span>
+          <span className="apple-chip-format" title="Comma / tab separated parts lists, freight manifests, and utility logs">
+            <span className="chip-ext">.CSV / .TSV</span>
+            <span className="chip-desc">Manifests</span>
+          </span>
+          <span className="apple-chip-format" title="Vector technical cutsheets, nameplate ratings, and equipment specs">
+            <span className="chip-ext">.PDF</span>
+            <span className="chip-desc">Cutsheets</span>
+          </span>
+          <span className="apple-chip-format" title="Standard and flexible customer LCA JSON schemas">
+            <span className="chip-ext">.JSON</span>
+            <span className="chip-desc">LCA Payloads</span>
+          </span>
+          <span className="apple-chip-format" title="Nested archives automatically unzipped and batch ingested">
+            <span className="chip-ext">.ZIP</span>
+            <span className="chip-desc">Archives</span>
+          </span>
         </div>
 
         <input
           ref={fileInputRef}
           type="file"
           multiple
-          accept=".xlsx,.xls,.csv,.pdf,.json,.zip"
+          accept=".xlsx,.xls,.csv,.tsv,.txt,.pdf,.json,.zip"
           style={{ display: 'none' }}
           onChange={handleFileSelect}
         />

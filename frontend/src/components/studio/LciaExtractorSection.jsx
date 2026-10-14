@@ -182,13 +182,13 @@ export default function LciaExtractorSection() {
                     style={{
                       padding:'10px 14px', borderRadius:'var(--radius-sm, 8px)', marginBottom:4, cursor:'pointer',
                       background: sel ? '#FFFFFF' : 'transparent',
-                      border: sel ? '1.5px solid var(--accent, #0066cc)' : '1px solid transparent',
+                      border: sel ? '1.5px solid var(--accent, #1f7a4c)' : '1px solid transparent',
                       display:'flex', alignItems:'center', justifyContent:'space-between',
                       transition:'all 0.12s ease',
                     }}
                   >
                     <div style={{ flex:1, paddingRight:8 }}>
-                      <div style={{ fontSize:14, fontWeight: sel ? 600 : 400, color: sel ? 'var(--accent, #0066cc)' : 'var(--text-primary, #1d1d1f)' }}>
+                      <div style={{ fontSize:14, fontWeight: sel ? 600 : 400, color: sel ? 'var(--accent, #1f7a4c)' : 'var(--text-primary, #1d1d1f)' }}>
                         [{item.option_number}]&nbsp;{item.reference_product_name}
                       </div>
                       <div style={{ fontSize:12, color:'var(--text-muted, #7a7a7a)', marginTop:2 }}>
@@ -196,10 +196,10 @@ export default function LciaExtractorSection() {
                       </div>
                     </div>
                     <div style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
-                      <span style={{ fontSize:11, fontFamily:'var(--mono)', padding:'2px 8px', borderRadius:'var(--radius-pill, 9999px)', background: sel?'var(--accent, #0066cc)':'#e0e0e0', color: sel?'#FFF':'#333', fontWeight:600 }}>
+                      <span style={{ fontSize:11, fontFamily:'var(--mono)', padding:'2px 8px', borderRadius:'var(--radius-pill, 9999px)', background: sel?'var(--accent, #1f7a4c)':'#e0e0e0', color: sel?'#FFF':'#333', fontWeight:600 }}>
                         #{item.row_index}
                       </span>
-                      {sel && <CheckIcon size={15} style={{ color:'var(--accent, #0066cc)' }} />}
+                      {sel && <CheckIcon size={15} style={{ color:'var(--accent, #1f7a4c)' }} />}
                     </div>
                   </div>
                 );
@@ -237,7 +237,7 @@ export default function LciaExtractorSection() {
               <label style={{ display:'block', fontSize:11, fontWeight:600, color:'var(--text-muted, #7a7a7a)', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.04em' }}>
                 Reference Unit (from ecoinvent)
               </label>
-              <div style={{ height:42, display:'flex', alignItems:'center', padding:'0 14px', borderRadius:'var(--radius-sm, 8px)', background:'#FFFFFF', border:'1px solid var(--border, #e0e0e0)', fontSize:14, fontWeight:600, color:'var(--accent, #0066cc)', fontFamily:'var(--mono)' }}>
+              <div style={{ height:42, display:'flex', alignItems:'center', padding:'0 14px', borderRadius:'var(--radius-sm, 8px)', background:'#FFFFFF', border:'1px solid var(--border, #e0e0e0)', fontSize:14, fontWeight:600, color:'var(--accent, #1f7a4c)', fontFamily:'var(--mono)' }}>
                 {lciaResult
                   ? `${refAmount} ${refUnit}`
                   : selectedProvider
@@ -249,14 +249,14 @@ export default function LciaExtractorSection() {
 
           {lciaResult && (
             <div style={{ marginTop:8, fontSize:13, color:'var(--text-muted, #7a7a7a)', display:'flex', alignItems:'center', gap:6 }}>
-              <span style={{ width:7, height:7, borderRadius:'50%', background:'var(--accent, #0066cc)', display:'inline-block', flexShrink:0 }} />
+              <span style={{ width:7, height:7, borderRadius:'50%', background:'var(--accent, #1f7a4c)', display:'inline-block', flexShrink:0 }} />
               Values below are scaled by&nbsp;
-              <strong style={{ color:'var(--accent, #0066cc)' }}>{userAmt.toLocaleString()} {refUnit}</strong>
+              <strong style={{ color:'var(--accent, #1f7a4c)' }}>{userAmt.toLocaleString()} {refUnit}</strong>
               &nbsp;÷&nbsp;
               <strong>{refAmount} {refUnit}</strong>
               &nbsp;=&nbsp;
               <strong style={{ color:'var(--text-primary, #1d1d1f)' }}>×{scaleFactor.toPrecision(4)}</strong>
-              {isScaled && <span style={{ marginLeft:4, padding:'1px 8px', background:'var(--accent-dim)', color:'var(--accent, #0066cc)', borderRadius:'var(--radius-pill)', fontSize:11, fontWeight:600 }}>SCALED</span>}
+              {isScaled && <span style={{ marginLeft:4, padding:'1px 8px', background:'var(--accent-dim)', color:'var(--accent, #1f7a4c)', borderRadius:'var(--radius-pill)', fontSize:11, fontWeight:600 }}>SCALED</span>}
             </div>
           )}
         </div>
@@ -314,7 +314,7 @@ export default function LciaExtractorSection() {
             {/* Result header */}
             <div style={{ background:'var(--bg-card2, #fafafc)', padding:'16px 22px', borderBottom:'1px solid var(--border, #e0e0e0)', display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:10 }}>
               <div>
-                <div style={{ fontSize:11, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.04em', color:'var(--accent, #0066cc)', marginBottom:4 }}>
+                <div style={{ fontSize:11, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.04em', color:'var(--accent, #1f7a4c)', marginBottom:4 }}>
                   EPD Result · {lciaResult.method_filter || 'All Methodologies'}
                 </div>
                 <div style={{ fontSize:16, fontWeight:600, color:'var(--text-primary, #1d1d1f)', marginBottom:2 }}>
@@ -345,8 +345,8 @@ export default function LciaExtractorSection() {
                       <Th right>Per {refAmount} {refUnit}<br/><span style={{fontSize:10,fontWeight:400,color:'var(--text-muted)'}}>(ecoinvent reference)</span></Th>
                       {isScaled && (
                         <Th right>
-                          <span style={{ color:'var(--accent, #0066cc)' }}>For {userAmt} {refUnit}</span>
-                          <br/><span style={{ fontSize:10, fontWeight:400, color:'var(--accent, #0066cc)' }}>× {scaleFactor.toPrecision(3)}</span>
+                          <span style={{ color:'var(--accent, #1f7a4c)' }}>For {userAmt} {refUnit}</span>
+                          <br/><span style={{ fontSize:10, fontWeight:400, color:'var(--accent, #1f7a4c)' }}>× {scaleFactor.toPrecision(3)}</span>
                         </Th>
                       )}
                     </tr>
@@ -354,7 +354,7 @@ export default function LciaExtractorSection() {
                   <tbody>
                     {lciaResult.indicators.map((ind, i) => (
                       <tr key={i} style={{ borderBottom:'1px solid var(--border, #e0e0e0)', background: '#FFFFFF' }}>
-                        <td style={{ padding:'10px 14px', fontWeight:600, color:'var(--accent, #0066cc)', fontSize:12 }}>{ind.method}</td>
+                        <td style={{ padding:'10px 14px', fontWeight:600, color:'var(--accent, #1f7a4c)', fontSize:12 }}>{ind.method}</td>
                         <td style={{ padding:'10px 14px', color:'var(--text-secondary, #333333)' }}>{ind.category}</td>
                         <td style={{ padding:'10px 14px', fontWeight:400, color:'var(--text-primary, #1d1d1f)' }}>{ind.indicator}</td>
                         <td style={{ padding:'10px 14px', textAlign:'center' }}>
@@ -366,7 +366,7 @@ export default function LciaExtractorSection() {
                           {fmtRaw(ind.value)}
                         </td>
                         {isScaled && (
-                          <td style={{ padding:'10px 14px', textAlign:'right', fontFamily:'var(--mono)', fontWeight:600, fontSize:13, color:'var(--accent, #0066cc)' }}>
+                          <td style={{ padding:'10px 14px', textAlign:'right', fontFamily:'var(--mono)', fontWeight:600, fontSize:13, color:'var(--accent, #1f7a4c)' }}>
                             {fmt(ind.value)}
                           </td>
                         )}
@@ -405,7 +405,7 @@ function Chip({ label, accent }) {
     <span style={{
       padding:'4px 12px', borderRadius:'var(--radius-pill, 9999px)', fontSize:12, fontWeight: accent ? 600 : 400,
       background: accent ? 'var(--accent-dim)' : 'var(--bg-base, #f5f5f7)',
-      color: accent ? 'var(--accent, #0066cc)' : 'var(--text-secondary, #333)',
+      color: accent ? 'var(--accent, #1f7a4c)' : 'var(--text-secondary, #333)',
       border: `1px solid ${accent ? 'rgba(0, 102, 204, 0.25)' : 'var(--border, #e0e0e0)'}`,
     }}>
       {label}

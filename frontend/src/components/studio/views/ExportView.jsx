@@ -63,7 +63,7 @@ export default function ExportView() {
         <div className="section-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#0071E3', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent, #1f7a4c)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Phase 7 • Publication &amp; Delivery
               </span>
             </div>
@@ -163,11 +163,11 @@ export default function ExportView() {
                 width: 28,
                 height: 28,
                 borderRadius: '50%',
-                backgroundColor: '#E8F2FE',
+                backgroundColor: 'rgba(31, 122, 76, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#0071E3'
+                color: 'var(--accent, #1f7a4c)'
               }}>
                 <ShieldCheckIcon className="w-4 h-4" />
               </div>
@@ -207,7 +207,7 @@ export default function ExportView() {
                 alignItems: 'center',
                 gap: 8,
                 cursor: isGeneratingPdf ? 'not-allowed' : 'pointer',
-                boxShadow: isGeneratingPdf ? 'none' : '0 4px 16px rgba(0, 113, 227, 0.3)',
+                boxShadow: isGeneratingPdf ? 'none' : '0 4px 16px rgba(31, 122, 76, 0.28)',
                 transition: 'all 0.15s ease-in-out'
               }}
             >
@@ -231,7 +231,7 @@ export default function ExportView() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#0071E3',
+                  color: 'var(--accent, #1f7a4c)',
                   fontSize: 12,
                   fontWeight: 600,
                   cursor: 'pointer',

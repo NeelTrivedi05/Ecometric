@@ -1,5 +1,5 @@
 EPD CALCULATION REPORT
-Generated: 2026-10-12T08:48:21
+Generated: 2026-10-14T02:02:13
 EF data: payload.extracted_ef_values
 Methodology: EF v3.1 (payload value 'ef31', read from metadata.methodology)
 
