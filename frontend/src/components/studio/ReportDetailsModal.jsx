@@ -197,7 +197,7 @@ export default function ReportDetailsModal() {
   ];
 
   return (
-    <div style={{
+    <div className="modal-overlay" style={{
       position: 'fixed',
       inset: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.38)',
@@ -207,10 +207,9 @@ export default function ReportDetailsModal() {
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 10000,
-      padding: '24px 16px',
-      animation: 'fadeIn 0.2s ease-out'
+      padding: '24px 16px'
     }}>
-      <div style={{
+      <div className="modal-container" style={{
         backgroundColor: '#FFFFFF',
         color: '#1D1D1F',
         width: '100%',
@@ -260,8 +259,8 @@ export default function ReportDetailsModal() {
                 <span style={{
                   fontSize: 11,
                   fontWeight: 600,
-                  backgroundColor: '#E8F2FE',
-                  color: '#0066CC',
+                  backgroundColor: 'rgba(31, 122, 76, 0.12)',
+                  color: 'var(--accent, #1f7a4c)',
                   padding: '2px 9px',
                   borderRadius: 9999,
                   letterSpacing: '-0.1px'
@@ -503,7 +502,7 @@ export default function ReportDetailsModal() {
                       type="checkbox"
                       checked={Boolean(reportDetails.save_as_company_defaults)}
                       onChange={(e) => updateField('save_as_company_defaults', e.target.checked)}
-                      style={{ width: 16, height: 16, accentColor: '#0071E3' }}
+                      style={{ width: 16, height: 16, accentColor: '#1f7a4c' }}
                     />
                     <span>Save as company defaults (pre-fill organization metadata across future declarations)</span>
                   </label>
@@ -631,7 +630,7 @@ export default function ReportDetailsModal() {
                       onClick={addTechBullet}
                       style={{
                         padding: '8px 18px',
-                        backgroundColor: '#0071E3',
+                        backgroundColor: '#1f7a4c',
                         color: '#FFFFFF',
                         border: 'none',
                         borderRadius: 9999,
@@ -814,7 +813,7 @@ export default function ReportDetailsModal() {
                       onClick={addPcrReviewer}
                       style={{
                         padding: '8px 18px',
-                        backgroundColor: '#0071E3',
+                        backgroundColor: '#1f7a4c',
                         color: '#FFFFFF',
                         border: 'none',
                         borderRadius: 9999,
@@ -931,7 +930,7 @@ export default function ReportDetailsModal() {
                     type="checkbox"
                     checked={Boolean(reportDetails.is_verified)}
                     onChange={(e) => updateField('is_verified', e.target.checked)}
-                    style={{ width: 16, height: 16, accentColor: '#0071E3' }}
+                    style={{ width: 16, height: 16, accentColor: '#1f7a4c' }}
                   />
                   <span>Mark as Verified</span>
                 </label>
@@ -985,7 +984,7 @@ export default function ReportDetailsModal() {
                     flexDirection: 'column',
                     gap: 14
                   }}>
-                    <h4 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#0071E3' }}>
+                    <h4 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--accent, #1f7a4c)' }}>
                       Independent Third-Party Verifier Credentials
                     </h4>
 
@@ -1090,7 +1089,7 @@ export default function ReportDetailsModal() {
                       onClick={addReference}
                       style={{
                         padding: '8px 18px',
-                        backgroundColor: '#0071E3',
+                        backgroundColor: '#1f7a4c',
                         color: '#FFFFFF',
                         border: 'none',
                         borderRadius: 9999,
@@ -1359,7 +1358,7 @@ export default function ReportDetailsModal() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
-                boxShadow: validationResult && !validationResult.valid ? 'none' : '0 2px 8px rgba(0, 113, 227, 0.3)',
+                boxShadow: validationResult && !validationResult.valid ? 'none' : '0 2px 8px rgba(31, 122, 76, 0.28)',
                 transition: 'all 0.15s ease-in-out'
               }}
             >

@@ -1153,8 +1153,8 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                   padding: '6px 14px',
                   borderRadius: '9999px',
                   border: '1px solid',
-                  borderColor: selectedStage === 'all' ? 'var(--accent, #0066cc)' : '#d2d2d7',
-                  backgroundColor: selectedStage === 'all' ? 'var(--accent, #0066cc)' : '#FFFFFF',
+                  borderColor: selectedStage === 'all' ? 'var(--accent, #1f7a4c)' : '#d2d2d7',
+                  backgroundColor: selectedStage === 'all' ? 'var(--accent, #1f7a4c)' : '#FFFFFF',
                   color: selectedStage === 'all' ? '#FFFFFF' : 'var(--text-primary)',
                   fontSize: '12px',
                   fontWeight: 600,
@@ -1173,8 +1173,8 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                     padding: '6px 14px',
                     borderRadius: '9999px',
                     border: '1px solid',
-                    borderColor: selectedStage === stg.id ? 'var(--accent, #0066cc)' : '#d2d2d7',
-                    backgroundColor: selectedStage === stg.id ? 'var(--accent, #0066cc)' : '#FFFFFF',
+                    borderColor: selectedStage === stg.id ? 'var(--accent, #1f7a4c)' : '#d2d2d7',
+                    backgroundColor: selectedStage === stg.id ? 'var(--accent, #1f7a4c)' : '#FFFFFF',
                     color: selectedStage === stg.id ? '#FFFFFF' : 'var(--text-primary)',
                     fontSize: '12px',
                     fontWeight: 600,
@@ -1217,8 +1217,8 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                           width: '28px',
                           height: '28px',
                           borderRadius: '8px',
-                          backgroundColor: 'rgba(0, 102, 204, 0.08)',
-                          color: 'var(--accent, #0066cc)',
+                          backgroundColor: 'rgba(31, 122, 76, 0.08)',
+                          color: 'var(--accent, #1f7a4c)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center'
@@ -1269,7 +1269,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                         <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                           {param.label}
                         </div>
-                        <div style={{ fontSize: '11px', color: 'var(--accent, #0066cc)', marginTop: '2px', fontWeight: 500 }}>
+                        <div style={{ fontSize: '11px', color: 'var(--accent, #1f7a4c)', marginTop: '2px', fontWeight: 500 }}>
                           Assigned to {param.module}
                         </div>
                       </div>
@@ -1291,7 +1291,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                       backgroundColor: selectedStage === stg.id || selectedStage === 'all' ? '#FFFFFF' : '#f5f5f7',
                       borderRadius: '11px',
                       border: '1px solid',
-                      borderColor: selectedStage === stg.id ? 'var(--accent, #0066cc)' : '#e5e5ea'
+                      borderColor: selectedStage === stg.id ? 'var(--accent, #1f7a4c)' : '#e5e5ea'
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
@@ -1301,8 +1301,8 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
                           fontSize: '11px',
                           padding: '2px 8px',
                           borderRadius: '9999px',
-                          backgroundColor: 'rgba(0, 102, 204, 0.08)',
-                          color: 'var(--accent, #0066cc)',
+                          backgroundColor: 'rgba(31, 122, 76, 0.08)',
+                          color: 'var(--accent, #1f7a4c)',
                           fontWeight: 600
                         }}>
                           {stg.count} parameters

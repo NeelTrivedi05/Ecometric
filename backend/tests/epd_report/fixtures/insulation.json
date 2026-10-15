@@ -1,0 +1,898 @@
+{
+  "selection": {
+    "standard": "EN 15804+A2",
+    "methods": [
+      "EN15804+A2/PEF"
+    ],
+    "indicatorFilter": "all",
+    "productCategoryId": "mineral-wool-insulation"
+  },
+  "dataCategoryId": "mineral-wool-insulation",
+  "meta": {
+    "declarationNumber": "EPD-EX-0002",
+    "issueDate": "2026-05-15",
+    "validUntil": "2031-05-15",
+    "validityPeriodText": "5 years",
+    "validityYears": 5,
+    "epdType": "Manufacturer average",
+    "scope": "Cradle-to-gate with options",
+    "marketsOfApplicability": [
+      "Europe"
+    ],
+    "referenceYearOfPrimaryData": 2025,
+    "branding": {
+      "primaryColor": "#2f6f4f"
+    }
+  },
+  "programOperator": {
+    "name": "Example Program Operator",
+    "address": "100 Declaration Way\nSpringfield, ST 00000",
+    "website": "https://program-operator.example",
+    "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNDAiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAzNDAgNjQiPjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjEyIiBmaWxsPSIjM2E2ZWE1Ii8+PHRleHQgeD0iNzYiIHk9IjQwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiMyMjIiPkV4YW1wbGUgUE88L3RleHQ+PC9zdmc+",
+    "generalProgramInstructions": "General Program Instructions, version 2.1 (2023)"
+  },
+  "manufacturer": {
+    "name": "Example Insulation GmbH",
+    "address": "Industriestraße 5\n00000 Musterstadt",
+    "website": "https://insulation.example",
+    "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNDAiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAzNDAgNjQiPjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjEyIiBmaWxsPSIjMmY2ZjRmIi8+PHRleHQgeD0iNzYiIHk9IjQwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiMyMjIiPkV4YW1wbGUgSW5zdWxhdGlvbjwvdGV4dD48L3N2Zz4=",
+    "description": "Example Insulation GmbH produces stone and glass mineral wool for building envelopes."
+  },
+  "verification": {
+    "type": "external",
+    "verified": true,
+    "epdVerifier": {
+      "name": "A. Verifier",
+      "organization": "Independent Verification Ltd.",
+      "email": "verifier@verification.example"
+    },
+    "lcaVerifier": {
+      "name": "B. Reviewer",
+      "organization": "Independent Verification Ltd."
+    },
+    "lcaPractitioner": {
+      "name": "C. Analyst",
+      "organization": "Example LCA Consulting"
+    }
+  },
+  "pcr": {
+    "parts": [
+      {
+        "name": "EN 15804:2012+A2:2019 — Core rules for the product category of construction products",
+        "publisher": "CEN",
+        "year": 2019
+      },
+      {
+        "name": "EN 16783:2017 — Thermal insulation products — Product category rules",
+        "publisher": "CEN",
+        "year": 2017
+      }
+    ]
+  },
+  "lcaSetup": {
+    "software": {
+      "name": "EcoMetric",
+      "version": "1.0"
+    },
+    "lciDatabases": [
+      {
+        "name": "ecoinvent",
+        "version": "3.12 cut-off"
+      }
+    ]
+  },
+  "product": {
+    "name": "EX-Rock 035 Stone Wool Slab",
+    "classificationCodes": [
+      {
+        "system": "CPC",
+        "code": "37990"
+      }
+    ],
+    "description": "Non-combustible stone wool slab for thermal and acoustic insulation of walls and roofs.",
+    "intendedApplication": "Thermal insulation of external walls, pitched roofs and partitions.",
+    "technicalData": [
+      {
+        "name": "Declared thermal conductivity λD",
+        "value": 0.035,
+        "unit": "W/(m·K)"
+      },
+      {
+        "name": "Density",
+        "value": 40,
+        "unit": "kg/m³"
+      },
+      {
+        "name": "Thickness for RSI = 1",
+        "value": 35,
+        "unit": "mm"
+      },
+      {
+        "name": "Reaction to fire (EN 13501-1)",
+        "value": "A1"
+      }
+    ],
+    "referenceServiceLife": {
+      "value": 50,
+      "unit": "years"
+    }
+  },
+  "functionalUnit": {
+    "type": "declared",
+    "description": "1 m² of stone wool insulation with a thermal resistance of RSI = 1 m²·K/W",
+    "unitLabel": "per 1 m² at RSI = 1 m²·K/W",
+    "massPerUnit": {
+      "value": 1.4,
+      "unit": "kg/m²"
+    }
+  },
+  "materialComposition": {
+    "basis": "per declared unit",
+    "items": [
+      {
+        "material": "Stone (basalt, dolomite)",
+        "mass": 1.19,
+        "unit": "kg",
+        "percentage": 85.0
+      },
+      {
+        "material": "Recycled briquettes",
+        "mass": 0.14,
+        "unit": "kg",
+        "percentage": 10.0,
+        "recycledContentPct": 100
+      },
+      {
+        "material": "Binder",
+        "mass": 0.063,
+        "unit": "kg",
+        "percentage": 4.5
+      },
+      {
+        "material": "Mineral oil",
+        "mass": 0.007,
+        "unit": "kg",
+        "percentage": 0.5
+      }
+    ]
+  },
+  "packaging": [
+    {
+      "material": "PE film",
+      "mass": 0.012,
+      "unit": "kg",
+      "disposalRoute": "Incineration"
+    }
+  ],
+  "manufacturing": {
+    "sites": [
+      {
+        "name": "Musterstadt plant",
+        "country": "Germany"
+      }
+    ],
+    "processDescription": "Raw stone is melted in a cupola furnace, fiberised, bound and cured.",
+    "energyInputs": [
+      {
+        "carrier": "Coke",
+        "amount": 1.9,
+        "unit": "MJ"
+      },
+      {
+        "carrier": "Electricity",
+        "amount": 0.42,
+        "unit": "kWh"
+      }
+    ]
+  },
+  "scenarios": {
+    "A4": {
+      "legs": [
+        {
+          "mode": "Truck",
+          "vehicleType": "Lorry 16–32 t, EURO 6",
+          "fuelType": "Diesel",
+          "distanceKm": 450,
+          "capacityUtilizationPct": 60,
+          "grossDensity": "40 kg/m³",
+          "volumeCapacityFactor": 1
+        }
+      ]
+    },
+    "A5": {
+      "productLossPct": 2,
+      "packagingWaste": [
+        {
+          "route": "Incineration",
+          "amount": 0.012,
+          "unit": "kg"
+        }
+      ]
+    },
+    "C1_C4": {
+      "collectedMixed": {
+        "amount": 1.4,
+        "unit": "kg"
+      },
+      "landfill": {
+        "amount": 1.4,
+        "unit": "kg"
+      },
+      "distances": {
+        "to landfill": {
+          "amount": 50,
+          "unit": "km"
+        }
+      }
+    },
+    "D": {
+      "description": "Module D covers energy recovered from incineration of packaging waste in A5."
+    }
+  },
+  "modules": [
+    {
+      "code": "A1",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "A2",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "A3",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "A4",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "A5",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "C1",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "C2",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "C3",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "C4",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "D",
+      "status": "declared",
+      "geography": "EU"
+    },
+    {
+      "code": "B1",
+      "status": "MND"
+    },
+    {
+      "code": "B2",
+      "status": "MND"
+    },
+    {
+      "code": "B3",
+      "status": "MND"
+    },
+    {
+      "code": "B4",
+      "status": "MND"
+    },
+    {
+      "code": "B5",
+      "status": "MND"
+    },
+    {
+      "code": "B6",
+      "status": "MND"
+    },
+    {
+      "code": "B7",
+      "status": "MND"
+    }
+  ],
+  "results": [
+    {
+      "variantId": "default",
+      "variantLabel": "EX-Rock 035",
+      "method": "EN15804+A2/PEF",
+      "rows": [
+        {
+          "indicatorCode": "GWP-total",
+          "values": {
+            "A1": 1.04248,
+            "A2": 0.0835224,
+            "A3": 0.48671,
+            "A4": 0.060508,
+            "A5": 0.0604457,
+            "C1": 0.00225079,
+            "C2": 0.0102111,
+            "C3": 0.0,
+            "C4": 0.0074728,
+            "D": -0.0164009
+          }
+        },
+        {
+          "indicatorCode": "GWP-fossil",
+          "values": {
+            "A1": 1.3326,
+            "A2": 0.121167,
+            "A3": 0.396414,
+            "A4": 0.0941966,
+            "A5": 0.0485997,
+            "C1": 0.00200189,
+            "C2": 0.010376,
+            "C3": 0.0,
+            "C4": 0.00589619,
+            "D": -0.0197601
+          }
+        },
+        {
+          "indicatorCode": "GWP-biogenic",
+          "values": {
+            "A1": -0.032,
+            "A2": 0.0,
+            "A3": 0.004,
+            "A4": 0.0,
+            "A5": 0.029,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.001,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "GWP-luluc",
+          "values": {
+            "A1": 0.0118149,
+            "A2": 0.001157,
+            "A3": 0.00516083,
+            "A4": 0.000816984,
+            "A5": 0.000480393,
+            "C1": 2.73275e-05,
+            "C2": 0.000125039,
+            "C3": 0.0,
+            "C4": 5.11914e-05,
+            "D": -0.000227219
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "A1": 2.16924e-07,
+            "A2": 1.83903e-08,
+            "A3": 1.00607e-07,
+            "A4": 1.59664e-08,
+            "A5": 8.68588e-09,
+            "C1": 4.67339e-10,
+            "C2": 2.3257e-09,
+            "C3": 0.0,
+            "C4": 1.4083e-09,
+            "D": -4.74343e-09
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "A1": 0.00566052,
+            "A2": 0.000689956,
+            "A3": 0.00255838,
+            "A4": 0.000356166,
+            "A5": 0.000242153,
+            "C1": 8.26873e-06,
+            "C2": 5.81737e-05,
+            "C3": 0.0,
+            "C4": 2.44333e-05,
+            "D": -0.000133674
+          }
+        },
+        {
+          "indicatorCode": "EP-freshwater",
+          "values": {
+            "A1": 0.000266207,
+            "A2": 2.24386e-05,
+            "A3": 0.000100527,
+            "A4": 1.60615e-05,
+            "A5": 1.12395e-05,
+            "C1": 5.5638e-07,
+            "C2": 3.53141e-06,
+            "C3": 0.0,
+            "C4": 1.42353e-06,
+            "D": -5.0477e-06
+          }
+        },
+        {
+          "indicatorCode": "EP-marine",
+          "values": {
+            "A1": 0.00122438,
+            "A2": 0.000131414,
+            "A3": 0.000392878,
+            "A4": 8.17209e-05,
+            "A5": 5.7194e-05,
+            "C1": 1.96202e-06,
+            "C2": 1.40268e-05,
+            "C3": 0.0,
+            "C4": 5.82787e-06,
+            "D": -2.062e-05
+          }
+        },
+        {
+          "indicatorCode": "EP-terrestrial",
+          "values": {
+            "A1": 0.0124915,
+            "A2": 0.00108787,
+            "A3": 0.00369846,
+            "A4": 0.000958175,
+            "A5": 0.000378583,
+            "C1": 1.52717e-05,
+            "C2": 9.64747e-05,
+            "C3": 0.0,
+            "C4": 6.14909e-05,
+            "D": -0.000223656
+          }
+        },
+        {
+          "indicatorCode": "POCP",
+          "values": {
+            "A1": 0.00292366,
+            "A2": 0.000244392,
+            "A3": 0.0012339,
+            "A4": 0.000213448,
+            "A5": 0.000146041,
+            "C1": 6.30515e-06,
+            "C2": 2.90871e-05,
+            "C3": 0.0,
+            "C4": 1.88086e-05,
+            "D": -5.72657e-05
+          }
+        },
+        {
+          "indicatorCode": "ADP-minerals&metals",
+          "values": {
+            "A1": 1.52735e-05,
+            "A2": 1.32614e-06,
+            "A3": 6.99275e-06,
+            "A4": 1.25083e-06,
+            "A5": 7.15953e-07,
+            "C1": 2.48884e-08,
+            "C2": 1.48063e-07,
+            "C3": 0.0,
+            "C4": 8.52618e-08,
+            "D": -3.14772e-07
+          }
+        },
+        {
+          "indicatorCode": "ADP-fossil",
+          "values": {
+            "A1": 15.3899,
+            "A2": 1.6739,
+            "A3": 6.39678,
+            "A4": 1.13988,
+            "A5": 0.744924,
+            "C1": 0.0276025,
+            "C2": 0.162678,
+            "C3": 0.0,
+            "C4": 0.0734716,
+            "D": -0.286697
+          }
+        },
+        {
+          "indicatorCode": "WDP",
+          "values": {
+            "A1": 0.439685,
+            "A2": 0.026222,
+            "A3": 0.157753,
+            "A4": 0.0271715,
+            "A5": 0.0184652,
+            "C1": 0.000683296,
+            "C2": 0.00409498,
+            "C3": 0.0,
+            "C4": 0.00229778,
+            "D": -0.00642408
+          }
+        },
+        {
+          "indicatorCode": "PM",
+          "values": {
+            "A1": 4.48876e-08,
+            "A2": 3.71702e-09,
+            "A3": 2.47918e-08,
+            "A4": 3.74603e-09,
+            "A5": 2.30358e-09,
+            "C1": 8.30524e-11,
+            "C2": 5.85483e-10,
+            "C3": 0.0,
+            "C4": 3.01926e-10,
+            "D": -8.12944e-10
+          }
+        },
+        {
+          "indicatorCode": "IRP",
+          "values": {
+            "A1": 0.765535,
+            "A2": 0.0473985,
+            "A3": 0.254178,
+            "A4": 0.0294308,
+            "A5": 0.0235506,
+            "C1": 0.000947928,
+            "C2": 0.00624307,
+            "C3": 0.0,
+            "C4": 0.00279708,
+            "D": -0.00842188
+          }
+        },
+        {
+          "indicatorCode": "ETP-fw",
+          "values": {
+            "A1": 19.588,
+            "A2": 2.12355,
+            "A3": 8.25836,
+            "A4": 1.57233,
+            "A5": 0.898083,
+            "C1": 0.0444624,
+            "C2": 0.255029,
+            "C3": 0.0,
+            "C4": 0.111518,
+            "D": -0.292771
+          }
+        },
+        {
+          "indicatorCode": "HTP-c",
+          "values": {
+            "A1": 1.94409e-09,
+            "A2": 1.5773e-10,
+            "A3": 4.70609e-10,
+            "A4": 1.0767e-10,
+            "A5": 6.16945e-11,
+            "C1": 1.98129e-12,
+            "C2": 1.28169e-11,
+            "C3": 0.0,
+            "C4": 7.27214e-12,
+            "D": -3.01082e-11
+          }
+        },
+        {
+          "indicatorCode": "HTP-nc",
+          "values": {
+            "A1": 3.54972e-08,
+            "A2": 2.50172e-09,
+            "A3": 1.32334e-08,
+            "A4": 2.58468e-09,
+            "A5": 1.19715e-09,
+            "C1": 4.80698e-11,
+            "C2": 3.00498e-10,
+            "C3": 0.0,
+            "C4": 1.78323e-10,
+            "D": -6.78771e-10
+          }
+        },
+        {
+          "indicatorCode": "SQP",
+          "values": {
+            "A1": 8.26087,
+            "A2": 0.653986,
+            "A3": 3.86323,
+            "A4": 0.543242,
+            "A5": 0.292394,
+            "C1": 0.0154837,
+            "C2": 0.0718422,
+            "C3": 0.0,
+            "C4": 0.0346955,
+            "D": -0.127079
+          }
+        },
+        {
+          "indicatorCode": "PERE",
+          "values": {
+            "A1": 2.8206,
+            "A2": 0.24429,
+            "A3": 0.84688,
+            "A4": 0.137159,
+            "A5": 0.0866009,
+            "C1": 0.00372037,
+            "C2": 0.0212341,
+            "C3": 0.0,
+            "C4": 0.0105286,
+            "D": -0.0374308
+          }
+        },
+        {
+          "indicatorCode": "PERM",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "PERT",
+          "values": {
+            "A1": 2.18275,
+            "A2": 0.230148,
+            "A3": 1.12098,
+            "A4": 0.130298,
+            "A5": 0.118097,
+            "C1": 0.00319404,
+            "C2": 0.0199511,
+            "C3": 0.0,
+            "C4": 0.0112256,
+            "D": -0.0477717
+          }
+        },
+        {
+          "indicatorCode": "PENRE",
+          "values": {
+            "A1": 13.5082,
+            "A2": 1.45993,
+            "A3": 5.26917,
+            "A4": 1.08162,
+            "A5": 0.568397,
+            "C1": 0.0312946,
+            "C2": 0.173617,
+            "C3": 0.0,
+            "C4": 0.0792552,
+            "D": -0.248825
+          }
+        },
+        {
+          "indicatorCode": "PENRM",
+          "values": {
+            "A1": 0.320398,
+            "A2": 0.0241742,
+            "A3": 0.0997877,
+            "A4": 0.0158889,
+            "A5": 0.0109155,
+            "C1": 0.000332353,
+            "C2": 0.00259192,
+            "C3": 0.0,
+            "C4": 0.00122625,
+            "D": -0.00419625
+          }
+        },
+        {
+          "indicatorCode": "PENRT",
+          "values": {
+            "A1": 16.1805,
+            "A2": 1.32666,
+            "A3": 6.32653,
+            "A4": 1.05479,
+            "A5": 0.741804,
+            "C1": 0.0249964,
+            "C2": 0.168846,
+            "C3": 0.0,
+            "C4": 0.0750607,
+            "D": -0.260867
+          }
+        },
+        {
+          "indicatorCode": "SM",
+          "values": {
+            "A1": 0.21,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "RSF",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "NRSF",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "FW",
+          "values": {
+            "A1": 0.00990585,
+            "A2": 0.00062362,
+            "A3": 0.00406187,
+            "A4": 0.000506146,
+            "A5": 0.000349796,
+            "C1": 1.44942e-05,
+            "C2": 9.39497e-05,
+            "C3": 0.0,
+            "C4": 3.44222e-05,
+            "D": -0.000123029
+          }
+        },
+        {
+          "indicatorCode": "HWD",
+          "values": {
+            "A1": 0.00022292,
+            "A2": 2.55139e-05,
+            "A3": 0.000118177,
+            "A4": 1.32115e-05,
+            "A5": 7.5798e-06,
+            "C1": 4.4252e-07,
+            "C2": 2.69961e-06,
+            "C3": 0.0,
+            "C4": 1.14164e-06,
+            "D": -4.69083e-06
+          }
+        },
+        {
+          "indicatorCode": "NHWD",
+          "values": {
+            "A1": 0.420983,
+            "A2": 0.0356474,
+            "A3": 0.129683,
+            "A4": 0.0276645,
+            "A5": 0.0170831,
+            "C1": 0.000589384,
+            "C2": 0.00302495,
+            "C3": 0.0,
+            "C4": 0.00133122,
+            "D": -0.00455198
+          }
+        },
+        {
+          "indicatorCode": "RWD",
+          "values": {
+            "A1": 7.78994e-05,
+            "A2": 7.59543e-06,
+            "A3": 2.45854e-05,
+            "A4": 5.25782e-06,
+            "A5": 3.24658e-06,
+            "C1": 1.38409e-07,
+            "C2": 6.09332e-07,
+            "C3": 0.0,
+            "C4": 3.79039e-07,
+            "D": -1.09092e-06
+          }
+        },
+        {
+          "indicatorCode": "CRU",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "MFR",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.02,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "MER",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "EEE",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        },
+        {
+          "indicatorCode": "EET",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "D": 0.0
+          }
+        }
+      ]
+    }
+  ],
+  "materialContribution": [
+    {
+      "material": "Stone melting (coke)",
+      "sharePct": 54.0,
+      "indicatorCode": "GWP-total"
+    },
+    {
+      "material": "Binder",
+      "sharePct": 23.5,
+      "indicatorCode": "GWP-total"
+    },
+    {
+      "material": "Electricity",
+      "sharePct": 15.0,
+      "indicatorCode": "GWP-total"
+    },
+    {
+      "material": "Other",
+      "sharePct": 7.5,
+      "indicatorCode": "GWP-total"
+    }
+  ]
+}

@@ -1,0 +1,1433 @@
+{
+ "document": {
+  "draft": true,
+  "filename": "EPD_Minimal_Product_TRACI_2_1_2026_01_01.pdf",
+  "footer": {
+   "declarationNumber": null,
+   "logo": null,
+   "manufacturer": null
+  },
+  "headerText": "EPD: Minimal Product",
+  "meta": {
+   "buildDate": "2026-01-01",
+   "declarationNumber": null,
+   "productName": "Minimal Product",
+   "selection": {
+    "indicatorFilter": "all",
+    "methods": [
+     "TRACI 2.1"
+    ],
+    "primaryMethod": "TRACI 2.1",
+    "productCategoryId": "generic",
+    "standard": null,
+    "variantIds": [
+     "default"
+    ]
+   }
+  },
+  "paper": "Letter",
+  "sections": [
+   {
+    "blocks": [
+     {
+      "declaration_number": null,
+      "issue_date": null,
+      "kind": "cover",
+      "manufacturer_logo": null,
+      "manufacturer_name": null,
+      "product_image": null,
+      "product_name": "Minimal Product",
+      "program_operator_logo": null,
+      "program_operator_name": null,
+      "standards": [],
+      "subtitle": null,
+      "title": "Environmental Product Declaration",
+      "valid_until": null
+     }
+    ],
+    "custom": false,
+    "id": "cover",
+    "number": null,
+    "numbered": false,
+    "orientation": "portrait",
+    "title": null
+   },
+   {
+    "blocks": [
+     {
+      "caption": null,
+      "id": "tbl-summary",
+      "kind": "kv_table",
+      "number": null,
+      "rows": [
+       {
+        "label": "Program operator",
+        "options": {},
+        "type": "lines",
+        "value": "Not declared"
+       },
+       {
+        "label": "Manufacturer name and address",
+        "options": {},
+        "type": "lines",
+        "value": "Not declared"
+       },
+       {
+        "label": "Declaration number",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "Declared product & functional unit",
+        "options": {},
+        "type": "text",
+        "value": "Minimal Product. Declared unit: 1 kg of product"
+       },
+       {
+        "label": "Reference PCR",
+        "options": {},
+        "type": "lines",
+        "value": "Not declared"
+       },
+       {
+        "label": "Markets of applicability",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "Date of issue",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "Period of validity",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "EPD type",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "EPD scope",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "Year(s) of reported primary data",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "LCA software & version",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "LCI database(s) & version",
+        "options": {},
+        "type": "lines",
+        "value": "Not declared"
+       },
+       {
+        "label": "LCIA methodology & version",
+        "options": {},
+        "type": "text",
+        "value": "TRACI 2.1"
+       },
+       {
+        "label": "Independent verification of the declaration and data, according to ISO 14025:2006",
+        "options": {
+         "choices": [
+          "internal",
+          "external"
+         ]
+        },
+        "type": "checkbox",
+        "value": "Not declared"
+       },
+       {
+        "label": "EPD verifier",
+        "options": {
+         "image": null
+        },
+        "type": "signature",
+        "value": "Not declared"
+       },
+       {
+        "label": "LCA conducted by",
+        "options": {},
+        "type": "text",
+        "value": "Not declared"
+       },
+       {
+        "label": "Limitations",
+        "options": {},
+        "type": "text",
+        "value": "Environmental declarations from different programs (ISO 14025) may not be comparable. Results are only comparable when the same functional or declared unit, PCR, system boundary and calculation rules apply."
+       }
+      ],
+      "variant": "summary"
+     }
+    ],
+    "custom": false,
+    "id": "summary",
+    "number": null,
+    "numbered": false,
+    "orientation": "portrait",
+    "title": "Declaration summary"
+   },
+   {
+    "blocks": [
+     {
+      "entries": [
+       {
+        "anchor": "sec-summary",
+        "level": 1,
+        "number": null,
+        "title": "Declaration summary"
+       },
+       {
+        "anchor": "sec-general",
+        "level": 1,
+        "number": "1",
+        "title": "General information"
+       },
+       {
+        "anchor": "sub-fu",
+        "level": 2,
+        "number": "1.1",
+        "title": "Declared unit"
+       },
+       {
+        "anchor": "sec-methodology",
+        "level": 1,
+        "number": "2",
+        "title": "LCA methodology"
+       },
+       {
+        "anchor": "sub-boundary",
+        "level": 2,
+        "number": "2.1",
+        "title": "System boundary"
+       },
+       {
+        "anchor": "sub-modules",
+        "level": 2,
+        "number": "2.2",
+        "title": "Declared life cycle modules"
+       },
+       {
+        "anchor": "sub-cutoff",
+        "level": 2,
+        "number": "2.3",
+        "title": "Cut-off criteria"
+       },
+       {
+        "anchor": "sub-allocation",
+        "level": 2,
+        "number": "2.4",
+        "title": "Allocation"
+       },
+       {
+        "anchor": "sub-dq",
+        "level": 2,
+        "number": "2.5",
+        "title": "Data sources and data quality"
+       },
+       {
+        "anchor": "sec-results",
+        "level": 1,
+        "number": "3",
+        "title": "LCA results"
+       },
+       {
+        "anchor": "sub-definitions",
+        "level": 2,
+        "number": "3.1",
+        "title": "Indicator definitions"
+       },
+       {
+        "anchor": "sub-results-default",
+        "level": 2,
+        "number": "3.2",
+        "title": "Results"
+       },
+       {
+        "anchor": "sub-biogenic",
+        "level": 2,
+        "number": "3.3",
+        "title": "Biogenic carbon"
+       },
+       {
+        "anchor": "sec-interpretation",
+        "level": 1,
+        "number": "4",
+        "title": "Interpretation"
+       },
+       {
+        "anchor": "sub-contribution",
+        "level": 2,
+        "number": "4.1",
+        "title": "Contribution analysis"
+       },
+       {
+        "anchor": "sub-charts",
+        "level": 2,
+        "number": "4.2",
+        "title": "Results by life cycle module"
+       },
+       {
+        "anchor": "sub-excl",
+        "level": 2,
+        "number": "4.3",
+        "title": "Contribution of modules excluding A1–A3"
+       },
+       {
+        "anchor": "sec-assumptions",
+        "level": 1,
+        "number": "5",
+        "title": "Assumptions and limitations"
+       },
+       {
+        "anchor": "sub-assumptions",
+        "level": 2,
+        "number": "5.1",
+        "title": "Assumptions"
+       },
+       {
+        "anchor": "sub-limitations",
+        "level": 2,
+        "number": "5.2",
+        "title": "Limitations"
+       },
+       {
+        "anchor": "sec-references",
+        "level": 1,
+        "number": "6",
+        "title": "References"
+       }
+      ],
+      "kind": "toc"
+     }
+    ],
+    "custom": false,
+    "id": "toc",
+    "number": null,
+    "numbered": false,
+    "orientation": "portrait",
+    "title": "Contents"
+   },
+   {
+    "blocks": [
+     {
+      "anchor": "sub-fu",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.1",
+      "text": "Declared unit",
+      "toc": true
+     },
+     {
+      "caption": "Declared unit details",
+      "id": "tbl-fu",
+      "kind": "kv_table",
+      "number": 1,
+      "rows": [
+       {
+        "label": "Declared unit",
+        "options": {},
+        "type": "text",
+        "value": "1 kg of product"
+       }
+      ],
+      "variant": "plain"
+     }
+    ],
+    "custom": false,
+    "id": "general",
+    "number": "1",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "General information"
+   },
+   {
+    "blocks": [
+     {
+      "anchor": "sub-boundary",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.1",
+      "text": "System boundary",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Declared modules are shown in Figure 1 and Table 2."
+     },
+     {
+      "alt": null,
+      "caption": "System boundary of the declared product system",
+      "id": "fig-boundary",
+      "image": null,
+      "kind": "figure",
+      "number": 1,
+      "svg": "sha256:86411b27a5fee5bd",
+      "width": "full"
+     },
+     {
+      "anchor": "sub-modules",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.2",
+      "text": "Declared life cycle modules",
+      "toc": true
+     },
+     {
+      "caption": "Life cycle modules included in the declaration",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "label",
+        "label": "",
+        "role": "label"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A1",
+        "label": "A1",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A2",
+        "label": "A2",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A3",
+        "label": "A3",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A4",
+        "label": "A4",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A5",
+        "label": "A5",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B1",
+        "label": "B1",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B2",
+        "label": "B2",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B3",
+        "label": "B3",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B4",
+        "label": "B4",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B5",
+        "label": "B5",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B6",
+        "label": "B6",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B7",
+        "label": "B7",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "C1",
+        "label": "C1",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "C2",
+        "label": "C2",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "C3",
+        "label": "C3",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "C4",
+        "label": "C4",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "D",
+        "label": "D",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [
+       {
+        "label": "",
+        "span": 1
+       },
+       {
+        "label": "Product stage",
+        "span": 3
+       },
+       {
+        "label": "Construction process stage",
+        "span": 2
+       },
+       {
+        "label": "Use stage",
+        "span": 7
+       },
+       {
+        "label": "End-of-life stage",
+        "span": 4
+       },
+       {
+        "label": "Benefits beyond the system boundary",
+        "span": 1
+       }
+      ],
+      "id": "tbl-modules",
+      "kind": "data_table",
+      "notes": [
+       "X = module declared; MND = module not declared; ND = not declared."
+      ],
+      "number": 2,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "Module"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Raw material supply"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Transport"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Manufacturing"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Transport to site"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Assembly / installation"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Use"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Maintenance"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Repair"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Replacement"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Refurbishment"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Operational energy use"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Operational water use"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "De-construction / demolition"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Transport"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Waste processing"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Disposal"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Reuse, recovery, recycling potential"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "Modules declared"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ]
+      ],
+      "style": "modules"
+     },
+     {
+      "anchor": "sub-cutoff",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.3",
+      "text": "Cut-off criteria",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Processes whose total contribution is less than 1% of the total mass and primary energy of the declared or functional unit may be excluded, provided that the total of excluded flows does not exceed 5% of mass and energy per module. No known flows were deliberately excluded."
+     },
+     {
+      "anchor": "sub-allocation",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.4",
+      "text": "Allocation",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Where a manufacturing site produces several products, energy, materials and wastes were allocated on a mass basis. Recycled content enters the system burden-free (cut-off approach); burdens of material recycling at end of life are attributed to the system that uses the secondary material."
+     },
+     {
+      "anchor": "sub-dq",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.5",
+      "text": "Data sources and data quality",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Primary data was collected from the manufacturer for the reference year. Background data was taken from the LCI database listed in the declaration summary, selected for technological, geographical and temporal representativeness."
+     }
+    ],
+    "custom": false,
+    "id": "methodology",
+    "number": "2",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "LCA methodology"
+   },
+   {
+    "blocks": [
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "lead",
+      "text": "All results are given per 1 kg of product."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "note",
+      "text": "X = module declared; MND = module not declared; ND = not declared. Results for modules A1–A3, A4, A5, B, C and D should not be summed."
+     },
+     {
+      "anchor": "sub-definitions",
+      "kind": "heading",
+      "level": 2,
+      "number": "3.1",
+      "text": "Indicator definitions",
+      "toc": true
+     },
+     {
+      "caption": "Parameters describing environmental impacts — TRACI 2.1",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "cat",
+        "label": "Impact category / parameter",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "abbr",
+        "label": "Abbreviation",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "name",
+        "label": "Indicator",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-def-traci-2.1",
+      "kind": "data_table",
+      "notes": [],
+      "number": 3,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Climate change"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Global warming potential"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg CO₂e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Ozone depletion"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "ODP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Ozone depletion potential"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg CFC-11e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Acidification"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "AP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Acidification potential"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg SO₂e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Eutrophication"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Eutrophication potential"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg Ne"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Photochemical ozone formation"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "SFP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Smog formation potential"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg O₃e"
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-results-default",
+      "kind": "heading",
+      "level": 2,
+      "number": "3.2",
+      "text": "Results",
+      "toc": true
+     },
+     {
+      "caption": "Core impact indicators — TRACI 2.1 (per 1 kg of product)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A1",
+        "label": "A1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A2",
+        "label": "A2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A3",
+        "label": "A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "A1-A3",
+        "label": "A1–A3",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-res-default-traci-2.1-core_impact",
+      "kind": "data_table",
+      "notes": [],
+      "number": 4,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.10E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.10E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.20E-01"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.73E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "ODP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CFC-11e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.20E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.20E-08"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.40E-08"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.56E-07"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "AP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg SO₂e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.00E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.00E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.60E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.04E-02"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg Ne"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.10E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.10E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.20E-04"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "5.33E-03"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "SFP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg O₃e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.10E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.10E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.20E-02"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.43E-01"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "anchor": "sub-biogenic",
+      "kind": "heading",
+      "level": 2,
+      "number": "3.3",
+      "text": "Biogenic carbon",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Biogenic carbon uptake and release are accounted for in accordance with the referenced standard and PCR."
+     }
+    ],
+    "custom": false,
+    "id": "results",
+    "number": "3",
+    "numbered": true,
+    "orientation": "landscape",
+    "title": "LCA results"
+   },
+   {
+    "blocks": [
+     {
+      "anchor": "sub-contribution",
+      "kind": "heading",
+      "level": 2,
+      "number": "4.1",
+      "text": "Contribution analysis",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "The interpretation is based on TRACI 2.1 results."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "The product stage (A1–A3) accounts for 100.0% of global warming potential across the declared modules, excluding module D. Module A1–A3 — Product stage contributes 100.0% of total global warming potential. Module A1–A3 — Product stage contributes 100.0% of total ozone depletion potential. Module A1–A3 — Product stage contributes 100.0% of total acidification potential. Module A1–A3 — Product stage contributes 100.0% of total eutrophication potential. Module A1–A3 — Product stage contributes 100.0% of total smog formation potential."
+     },
+     {
+      "anchor": "sub-charts",
+      "kind": "heading",
+      "level": 2,
+      "number": "4.2",
+      "text": "Results by life cycle module",
+      "toc": true
+     },
+     {
+      "alt": null,
+      "caption": "Relative contribution of life cycle modules to each TRACI 2.1 indicator (absolute values); module D excluded",
+      "id": "fig-shares",
+      "image": null,
+      "kind": "figure",
+      "number": 2,
+      "svg": "sha256:124867801b4edaa2",
+      "width": "full"
+     },
+     {
+      "anchor": "sub-excl",
+      "kind": "heading",
+      "level": 2,
+      "number": "4.3",
+      "text": "Contribution of modules excluding A1–A3",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Because module A1–A3 dominates the results (more than 80% of global warming potential), Figure 3 shows the relative contribution of the remaining modules with A1–A3 excluded."
+     },
+     {
+      "alt": null,
+      "caption": "Relative contribution of life cycle modules excluding A1–A3 (default)",
+      "id": "fig-excl",
+      "image": null,
+      "kind": "figure",
+      "number": 3,
+      "svg": "sha256:b0d88c5de196c015",
+      "width": "full"
+     }
+    ],
+    "custom": false,
+    "id": "interpretation",
+    "number": "4",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "Interpretation"
+   },
+   {
+    "blocks": [
+     {
+      "anchor": "sub-assumptions",
+      "kind": "heading",
+      "level": 2,
+      "number": "5.1",
+      "text": "Assumptions",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "The selection of secondary datasets to represent the supply chain is a significant value choice; no generic dataset is a perfect fit. Supply-chain-specific data would improve the accuracy of the results."
+     },
+     {
+      "anchor": "sub-limitations",
+      "kind": "heading",
+      "level": 2,
+      "number": "5.2",
+      "text": "Limitations",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Results represent potential environmental impacts and do not predict impacts on specific endpoints, the exceedance of thresholds, safety margins or risks."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Environmental declarations from different programs (ISO 14025) may not be comparable. Results are only comparable when the same functional or declared unit, PCR, system boundary and calculation rules apply."
+     }
+    ],
+    "custom": false,
+    "id": "assumptions",
+    "number": "5",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "Assumptions and limitations"
+   },
+   {
+    "blocks": [
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "ISO 14025:2006 — Environmental labels and declarations — Type III environmental declarations — Principles and procedures. ISO, Geneva."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "ISO 14040:2006 — Environmental management — Life cycle assessment — Principles and framework. ISO, Geneva."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "ISO 14044:2006 — Environmental management — Life cycle assessment — Requirements and guidelines. ISO, Geneva."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "Bare, J. (2012). Tool for the Reduction and Assessment of Chemical and Other Environmental Impacts (TRACI), Version 2.1 — User's Manual. U.S. Environmental Protection Agency, EPA/600/R-12/554. https://www.epa.gov/chemical-research/tool-reduction-and-assessment-chemicals-and-other-environmental-impacts-traci"
+     }
+    ],
+    "custom": false,
+    "id": "references",
+    "number": "6",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "References"
+   }
+  ],
+  "title": "Environmental Product Declaration — Minimal Product"
+ },
+ "warnings": [
+  {
+   "code": "modules.inferred",
+   "level": "info",
+   "message": "No module declaration given; declared modules were inferred from the results.",
+   "path": "modules"
+  },
+  {
+   "code": "meta.declaration_number",
+   "level": "error",
+   "message": "Declaration number is missing.",
+   "path": "meta.declarationNumber"
+  },
+  {
+   "code": "meta.pcr",
+   "level": "error",
+   "message": "No reference PCR is declared.",
+   "path": "pcr.parts"
+  },
+  {
+   "code": "meta.verification",
+   "level": "error",
+   "message": "EPD verification (type and verifier) is not declared.",
+   "path": "verification"
+  },
+  {
+   "code": "meta.manufacturer",
+   "level": "warning",
+   "message": "Manufacturer name is missing.",
+   "path": "manufacturer.name"
+  },
+  {
+   "code": "meta.program_operator",
+   "level": "warning",
+   "message": "Program operator is missing.",
+   "path": "programOperator.name"
+  },
+  {
+   "code": "meta.issue_date",
+   "level": "warning",
+   "message": "Date of issue is missing.",
+   "path": "meta.issueDate"
+  },
+  {
+   "code": "scope.missing",
+   "level": "warning",
+   "message": "Scope of the declaration is not stated.",
+   "path": "meta.scope"
+  },
+  {
+   "code": "meta.validity_missing",
+   "level": "warning",
+   "message": "Validity period / valid-until date is not declared.",
+   "path": "meta.validUntil"
+  }
+ ]
+}

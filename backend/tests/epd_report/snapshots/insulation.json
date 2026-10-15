@@ -1,0 +1,8456 @@
+{
+ "document": {
+  "draft": false,
+  "filename": "EPD_EX_Rock_035_Stone_Wool_Slab_EN_15804_A2_EF_3_1_2026_01_01.pdf",
+  "footer": {
+   "declarationNumber": "EPD-EX-0002",
+   "logo": "sha256:103ef5066a370f51",
+   "manufacturer": "Example Insulation GmbH"
+  },
+  "headerText": "EPD: EX-Rock 035 Stone Wool Slab",
+  "meta": {
+   "buildDate": "2026-01-01",
+   "declarationNumber": "EPD-EX-0002",
+   "productName": "EX-Rock 035 Stone Wool Slab",
+   "selection": {
+    "indicatorFilter": "all",
+    "methods": [
+     "EN 15804+A2 (EF 3.1)"
+    ],
+    "primaryMethod": "EN 15804+A2 (EF 3.1)",
+    "productCategoryId": "mineral-wool-insulation",
+    "standard": "EN 15804+A2",
+    "variantIds": [
+     "default"
+    ]
+   }
+  },
+  "paper": "Letter",
+  "sections": [
+   {
+    "blocks": [
+     {
+      "declaration_number": "EPD-EX-0002",
+      "issue_date": "2026-05-15",
+      "kind": "cover",
+      "manufacturer_logo": "sha256:103ef5066a370f51",
+      "manufacturer_name": "Example Insulation GmbH",
+      "product_image": null,
+      "product_name": "EX-Rock 035 Stone Wool Slab",
+      "program_operator_logo": "sha256:779d882cdfac8b21",
+      "program_operator_name": "Example Program Operator",
+      "standards": [
+       "ISO 14025",
+       "ISO 14040",
+       "ISO 14044",
+       "EN 15804:2012+A2:2019"
+      ],
+      "subtitle": "ISO 14025, ISO 14040, ISO 14044, EN 15804:2012+A2:2019",
+      "title": "Environmental Product Declaration",
+      "valid_until": "2031-05-15"
+     }
+    ],
+    "custom": false,
+    "id": "cover",
+    "number": null,
+    "numbered": false,
+    "orientation": "portrait",
+    "title": null
+   },
+   {
+    "blocks": [
+     {
+      "caption": null,
+      "id": "tbl-summary",
+      "kind": "kv_table",
+      "number": null,
+      "rows": [
+       {
+        "label": "Program operator",
+        "options": {},
+        "type": "lines",
+        "value": [
+         "Example Program Operator",
+         "100 Declaration Way",
+         "Springfield, ST 00000",
+         "https://program-operator.example"
+        ]
+       },
+       {
+        "label": "General program instructions",
+        "options": {},
+        "type": "text",
+        "value": "General Program Instructions, version 2.1 (2023)"
+       },
+       {
+        "label": "Manufacturer name and address",
+        "options": {},
+        "type": "lines",
+        "value": [
+         "Example Insulation GmbH",
+         "Industriestraße 5",
+         "00000 Musterstadt",
+         "https://insulation.example"
+        ]
+       },
+       {
+        "label": "Declaration number",
+        "options": {},
+        "type": "text",
+        "value": "EPD-EX-0002"
+       },
+       {
+        "label": "Declared product & functional unit",
+        "options": {},
+        "type": "text",
+        "value": "EX-Rock 035 Stone Wool Slab. Declared unit: 1 m² of stone wool insulation with a thermal resistance of RSI = 1 m²·K/W"
+       },
+       {
+        "label": "Reference PCR",
+        "options": {},
+        "type": "lines",
+        "value": [
+         "EN 15804:2012+A2:2019 — Core rules for the product category of construction products (CEN, 2019)",
+         "EN 16783:2017 — Thermal insulation products — Product category rules (CEN, 2017)"
+        ]
+       },
+       {
+        "label": "Description of product use",
+        "options": {},
+        "type": "text",
+        "value": "Thermal insulation of external walls, pitched roofs and partitions."
+       },
+       {
+        "label": "Product reference service life (RSL)",
+        "options": {},
+        "type": "text",
+        "value": "50 years"
+       },
+       {
+        "label": "Markets of applicability",
+        "options": {},
+        "type": "text",
+        "value": "Europe"
+       },
+       {
+        "label": "Date of issue",
+        "options": {},
+        "type": "text",
+        "value": "2026-05-15"
+       },
+       {
+        "label": "Period of validity",
+        "options": {},
+        "type": "text",
+        "value": "5 years — valid until 2031-05-15"
+       },
+       {
+        "label": "EPD type",
+        "options": {},
+        "type": "text",
+        "value": "Manufacturer average"
+       },
+       {
+        "label": "EPD scope",
+        "options": {},
+        "type": "text",
+        "value": "Cradle-to-gate with options"
+       },
+       {
+        "label": "Year(s) of reported primary data",
+        "options": {},
+        "type": "text",
+        "value": "2025"
+       },
+       {
+        "label": "LCA software & version",
+        "options": {},
+        "type": "text",
+        "value": "EcoMetric 1.0"
+       },
+       {
+        "label": "LCI database(s) & version",
+        "options": {},
+        "type": "lines",
+        "value": [
+         "ecoinvent 3.12 cut-off"
+        ]
+       },
+       {
+        "label": "LCIA methodology & version",
+        "options": {},
+        "type": "text",
+        "value": "EN 15804+A2 (EF 3.1)"
+       },
+       {
+        "label": "Standards",
+        "options": {},
+        "type": "text",
+        "value": "ISO 14025, ISO 14040, ISO 14044, EN 15804:2012+A2:2019"
+       },
+       {
+        "label": "Independent verification of the declaration and data, according to ISO 14025:2006",
+        "options": {
+         "choices": [
+          "internal",
+          "external"
+         ]
+        },
+        "type": "checkbox",
+        "value": "external"
+       },
+       {
+        "label": "EPD verifier",
+        "options": {
+         "image": null
+        },
+        "type": "signature",
+        "value": "A. Verifier, Independent Verification Ltd."
+       },
+       {
+        "label": "LCA conducted by",
+        "options": {},
+        "type": "text",
+        "value": "C. Analyst, Example LCA Consulting"
+       },
+       {
+        "label": "LCA verified by",
+        "options": {
+         "image": null
+        },
+        "type": "signature",
+        "value": "B. Reviewer, Independent Verification Ltd."
+       },
+       {
+        "label": "Limitations",
+        "options": {},
+        "type": "text",
+        "value": "EPDs of construction products may not be comparable if they do not comply with EN 15804 and if they are not compared in a building context. Environmental declarations from different programs (ISO 14025) may not be comparable. Comparison of the environmental performance of products using EPD information shall be based on the product's use and impacts at the building level."
+       }
+      ],
+      "variant": "summary"
+     }
+    ],
+    "custom": false,
+    "id": "summary",
+    "number": null,
+    "numbered": false,
+    "orientation": "portrait",
+    "title": "Declaration summary"
+   },
+   {
+    "blocks": [
+     {
+      "entries": [
+       {
+        "anchor": "sec-summary",
+        "level": 1,
+        "number": null,
+        "title": "Declaration summary"
+       },
+       {
+        "anchor": "sec-general",
+        "level": 1,
+        "number": "1",
+        "title": "General information"
+       },
+       {
+        "anchor": "sub-company",
+        "level": 2,
+        "number": "1.1",
+        "title": "Company description"
+       },
+       {
+        "anchor": "sub-product",
+        "level": 2,
+        "number": "1.2",
+        "title": "Product description"
+       },
+       {
+        "anchor": "sub-technical",
+        "level": 2,
+        "number": "1.3",
+        "title": "Technical data"
+       },
+       {
+        "anchor": "sub-application",
+        "level": 2,
+        "number": "1.4",
+        "title": "Application"
+       },
+       {
+        "anchor": "sub-composition",
+        "level": 2,
+        "number": "1.5",
+        "title": "Material composition"
+       },
+       {
+        "anchor": "sub-manufacturing",
+        "level": 2,
+        "number": "1.6",
+        "title": "Manufacturing"
+       },
+       {
+        "anchor": "sub-fu",
+        "level": 2,
+        "number": "1.7",
+        "title": "Declared unit"
+       },
+       {
+        "anchor": "sub-rsl",
+        "level": 2,
+        "number": "1.8",
+        "title": "Reference service life"
+       },
+       {
+        "anchor": "sub-scenarios",
+        "level": 2,
+        "number": "1.9",
+        "title": "Scenarios and additional technical information"
+       },
+       {
+        "anchor": "sec-methodology",
+        "level": 1,
+        "number": "2",
+        "title": "LCA methodology"
+       },
+       {
+        "anchor": "sub-boundary",
+        "level": 2,
+        "number": "2.1",
+        "title": "System boundary"
+       },
+       {
+        "anchor": "sub-modules",
+        "level": 2,
+        "number": "2.2",
+        "title": "Declared life cycle modules"
+       },
+       {
+        "anchor": "sub-cutoff",
+        "level": 2,
+        "number": "2.3",
+        "title": "Cut-off criteria"
+       },
+       {
+        "anchor": "sub-allocation",
+        "level": 2,
+        "number": "2.4",
+        "title": "Allocation"
+       },
+       {
+        "anchor": "sub-dq",
+        "level": 2,
+        "number": "2.5",
+        "title": "Data sources and data quality"
+       },
+       {
+        "anchor": "sec-results",
+        "level": 1,
+        "number": "3",
+        "title": "LCA results"
+       },
+       {
+        "anchor": "sub-definitions",
+        "level": 2,
+        "number": "3.1",
+        "title": "Indicator definitions"
+       },
+       {
+        "anchor": "sub-results-default",
+        "level": 2,
+        "number": "3.2",
+        "title": "Results"
+       },
+       {
+        "anchor": "sub-biogenic",
+        "level": 2,
+        "number": "3.3",
+        "title": "Biogenic carbon"
+       },
+       {
+        "anchor": "sec-interpretation",
+        "level": 1,
+        "number": "4",
+        "title": "Interpretation"
+       },
+       {
+        "anchor": "sub-contribution",
+        "level": 2,
+        "number": "4.1",
+        "title": "Contribution analysis"
+       },
+       {
+        "anchor": "sub-charts",
+        "level": 2,
+        "number": "4.2",
+        "title": "Results by life cycle module"
+       },
+       {
+        "anchor": "sub-materials",
+        "level": 2,
+        "number": "4.3",
+        "title": "Material contribution"
+       },
+       {
+        "anchor": "sec-assumptions",
+        "level": 1,
+        "number": "5",
+        "title": "Assumptions and limitations"
+       },
+       {
+        "anchor": "sub-assumptions",
+        "level": 2,
+        "number": "5.1",
+        "title": "Assumptions"
+       },
+       {
+        "anchor": "sub-limitations",
+        "level": 2,
+        "number": "5.2",
+        "title": "Limitations"
+       },
+       {
+        "anchor": "sec-references",
+        "level": 1,
+        "number": "6",
+        "title": "References"
+       }
+      ],
+      "kind": "toc"
+     }
+    ],
+    "custom": false,
+    "id": "toc",
+    "number": null,
+    "numbered": false,
+    "orientation": "portrait",
+    "title": "Contents"
+   },
+   {
+    "blocks": [
+     {
+      "anchor": "sub-company",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.1",
+      "text": "Company description",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Example Insulation GmbH produces stone and glass mineral wool for building envelopes."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "note",
+      "text": "Further information: https://insulation.example"
+     },
+     {
+      "anchor": "sub-product",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.2",
+      "text": "Product description",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Non-combustible stone wool slab for thermal and acoustic insulation of walls and roofs."
+     },
+     {
+      "caption": "Product classification",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Classification system",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c1",
+        "label": "Code",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-classification",
+      "kind": "data_table",
+      "notes": [],
+      "number": 1,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "CPC"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "37990"
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-technical",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.3",
+      "text": "Technical data",
+      "toc": true
+     },
+     {
+      "caption": "Technical data",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Parameter",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c1",
+        "label": "Value",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c2",
+        "label": "Unit",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-technical",
+      "kind": "data_table",
+      "notes": [],
+      "number": 2,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Declared thermal conductivity λD"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "0.04"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "W/(m·K)"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Density"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "40"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg/m³"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Thickness for RSI = 1"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "35"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "mm"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Reaction to fire (EN 13501-1)"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "A1"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": ""
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-application",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.4",
+      "text": "Application",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Thermal insulation of external walls, pitched roofs and partitions."
+     },
+     {
+      "anchor": "sub-composition",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.5",
+      "text": "Material composition",
+      "toc": true
+     },
+     {
+      "caption": "Material composition (per declared unit)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Material",
+        "role": "label"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "c1",
+        "label": "Mass",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "c2",
+        "label": "Share (%)",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "c3",
+        "label": "Recycled content (%)",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-composition",
+      "kind": "data_table",
+      "notes": [],
+      "number": 3,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Stone (basalt, dolomite)"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.19 kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "85.00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": ""
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Recycled briquettes"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.14 kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "10.00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "100.0"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Binder"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.06 kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.50"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": ""
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Mineral oil"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.00E-03 kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.50"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": ""
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "caption": "Packaging",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Packaging material",
+        "role": "label"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "c1",
+        "label": "Mass",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c2",
+        "label": "Disposal route",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-packaging",
+      "kind": "data_table",
+      "notes": [],
+      "number": 4,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "PE film"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.01 kg"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Incineration"
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-manufacturing",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.6",
+      "text": "Manufacturing",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Raw stone is melted in a cupola furnace, fiberised, bound and cured."
+     },
+     {
+      "caption": "Manufacturing sites",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Site",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c2",
+        "label": "Country",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-sites",
+      "kind": "data_table",
+      "notes": [],
+      "number": 5,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Musterstadt plant"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Germany"
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "caption": "Manufacturing energy inputs",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Energy carrier",
+        "role": "label"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "c1",
+        "label": "Amount",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c2",
+        "label": "Unit",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-mfg-energy",
+      "kind": "data_table",
+      "notes": [],
+      "number": 6,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Coke"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.9"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Electricity"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.42"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kWh"
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-fu",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.7",
+      "text": "Declared unit",
+      "toc": true
+     },
+     {
+      "caption": "Declared unit details",
+      "id": "tbl-fu",
+      "kind": "kv_table",
+      "number": 7,
+      "rows": [
+       {
+        "label": "Declared unit",
+        "options": {},
+        "type": "text",
+        "value": "1 m² of stone wool insulation with a thermal resistance of RSI = 1 m²·K/W"
+       },
+       {
+        "label": "Mass per unit (conversion factor)",
+        "options": {},
+        "type": "text",
+        "value": "1.4 kg/m²"
+       }
+      ],
+      "variant": "plain"
+     },
+     {
+      "anchor": "sub-rsl",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.8",
+      "text": "Reference service life",
+      "toc": true
+     },
+     {
+      "caption": "Reference service life",
+      "id": "tbl-rsl",
+      "kind": "kv_table",
+      "number": 8,
+      "rows": [
+       {
+        "label": "Reference service life (RSL)",
+        "options": {},
+        "type": "text",
+        "value": "50 years"
+       }
+      ],
+      "variant": "plain"
+     },
+     {
+      "anchor": "sub-scenarios",
+      "kind": "heading",
+      "level": 2,
+      "number": "1.9",
+      "text": "Scenarios and additional technical information",
+      "toc": true
+     },
+     {
+      "anchor": "sub-scenario-A4",
+      "kind": "heading",
+      "level": 3,
+      "number": null,
+      "text": "A4 — Transport to site",
+      "toc": false
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Transport to site (Truck) covers 450 km by Lorry 16–32 t, EURO 6."
+     },
+     {
+      "caption": "Transport to the building site (A4)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Parameter",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c1",
+        "label": "Value",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c2",
+        "label": "Unit",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-A4",
+      "kind": "data_table",
+      "notes": [],
+      "number": 9,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Transport mode"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Truck"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": ""
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Vehicle type"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Lorry 16–32 t, EURO 6"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": ""
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Fuel type"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Diesel"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": ""
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Distance"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "450"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "km"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Capacity utilisation (incl. empty returns)"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "60"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "%"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Gross density of products transported"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "40 kg/m³"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": ""
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Capacity utilisation volume factor"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "1"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": ""
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-scenario-A5",
+      "kind": "heading",
+      "level": 3,
+      "number": null,
+      "text": "A5 — Assembly / installation",
+      "toc": false
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Installation losses of 2% of the product are assumed."
+     },
+     {
+      "caption": "Installation into the building (A5)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Parameter",
+        "role": "label"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "c1",
+        "label": "Value",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c2",
+        "label": "Unit",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-A5",
+      "kind": "data_table",
+      "notes": [],
+      "number": 10,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Product loss"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "%"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Packaging waste: Incineration"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.01"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-scenario-C1_C4",
+      "kind": "heading",
+      "level": 3,
+      "number": null,
+      "text": "C1–C4 — End of life",
+      "toc": false
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "At end of life, the product is assumed to be 1.4 kg landfilled."
+     },
+     {
+      "caption": "End-of-life scenario (C1–C4)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c0",
+        "label": "Parameter",
+        "role": "label"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "c1",
+        "label": "Value",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "c2",
+        "label": "Unit",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-C1_C4",
+      "kind": "data_table",
+      "notes": [],
+      "number": 11,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Collected with mixed waste"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.4"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Landfill"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.4"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Transport distance — to landfill"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "50"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "km"
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-scenario-D",
+      "kind": "heading",
+      "level": 3,
+      "number": null,
+      "text": "D — Reuse, recovery, recycling potential",
+      "toc": false
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Module D covers energy recovered from incineration of packaging waste in A5."
+     }
+    ],
+    "custom": false,
+    "id": "general",
+    "number": "1",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "General information"
+   },
+   {
+    "blocks": [
+     {
+      "anchor": "sub-boundary",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.1",
+      "text": "System boundary",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "The scope of this EPD is cradle-to-gate with options. Declared modules are shown in Figure 1 and Table 12."
+     },
+     {
+      "alt": null,
+      "caption": "System boundary of the declared product system",
+      "id": "fig-boundary",
+      "image": null,
+      "kind": "figure",
+      "number": 1,
+      "svg": "sha256:a78386e914874229",
+      "width": "full"
+     },
+     {
+      "anchor": "sub-modules",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.2",
+      "text": "Declared life cycle modules",
+      "toc": true
+     },
+     {
+      "caption": "Life cycle modules included in the declaration",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "label",
+        "label": "",
+        "role": "label"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A1",
+        "label": "A1",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A2",
+        "label": "A2",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A3",
+        "label": "A3",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A4",
+        "label": "A4",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "A5",
+        "label": "A5",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B1",
+        "label": "B1",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B2",
+        "label": "B2",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B3",
+        "label": "B3",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B4",
+        "label": "B4",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B5",
+        "label": "B5",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B6",
+        "label": "B6",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "B7",
+        "label": "B7",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "C1",
+        "label": "C1",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "C2",
+        "label": "C2",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "C3",
+        "label": "C3",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "C4",
+        "label": "C4",
+        "role": "data"
+       },
+       {
+        "align": "center",
+        "highlight": false,
+        "key": "D",
+        "label": "D",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [
+       {
+        "label": "",
+        "span": 1
+       },
+       {
+        "label": "Product stage",
+        "span": 3
+       },
+       {
+        "label": "Construction process stage",
+        "span": 2
+       },
+       {
+        "label": "Use stage",
+        "span": 7
+       },
+       {
+        "label": "End-of-life stage",
+        "span": 4
+       },
+       {
+        "label": "Benefits beyond the system boundary",
+        "span": 1
+       }
+      ],
+      "id": "tbl-modules",
+      "kind": "data_table",
+      "notes": [
+       "X = module declared; MND = module not declared; ND = not declared."
+      ],
+      "number": 12,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "Module"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Raw material supply"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Transport"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Manufacturing"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Transport to site"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Assembly / installation"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Use"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Maintenance"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Repair"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Replacement"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Refurbishment"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Operational energy use"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Operational water use"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "De-construction / demolition"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Transport"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Waste processing"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Disposal"
+        },
+        {
+         "cls": "vertical",
+         "marks": [],
+         "text": "Reuse, recovery, recycling potential"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "Modules declared"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        },
+        {
+         "cls": "declared",
+         "marks": [],
+         "text": "X"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "Geography"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": ""
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": ""
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": ""
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": ""
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": ""
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": ""
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": ""
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        },
+        {
+         "cls": "small",
+         "marks": [],
+         "text": "EU"
+        }
+       ]
+      ],
+      "style": "modules"
+     },
+     {
+      "anchor": "sub-cutoff",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.3",
+      "text": "Cut-off criteria",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Processes whose total contribution is less than 1% of the total mass and primary energy of the declared or functional unit may be excluded, provided that the total of excluded flows does not exceed 5% of mass and energy per module. No known flows were deliberately excluded."
+     },
+     {
+      "anchor": "sub-allocation",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.4",
+      "text": "Allocation",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Where a manufacturing site produces several products, energy, materials and wastes were allocated on a mass basis. Recycled content enters the system burden-free (cut-off approach); burdens of material recycling at end of life are attributed to the system that uses the secondary material."
+     },
+     {
+      "anchor": "sub-dq",
+      "kind": "heading",
+      "level": 2,
+      "number": "2.5",
+      "text": "Data sources and data quality",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Primary data was collected from the manufacturer for the reference year. Background data was taken from the LCI database listed in the declaration summary, selected for technological, geographical and temporal representativeness."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "The LCA was modelled in EcoMetric 1.0 using ecoinvent 3.12 cut-off."
+     }
+    ],
+    "custom": false,
+    "id": "methodology",
+    "number": "2",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "LCA methodology"
+   },
+   {
+    "blocks": [
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "lead",
+      "text": "All results are given per 1 m² of stone wool insulation with a thermal resistance of RSI = 1 m²·K/W."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "note",
+      "text": "X = module declared; MND = module not declared; ND = not declared. Results for modules A1–A3, A4, A5, B, C and D should not be summed."
+     },
+     {
+      "anchor": "sub-definitions",
+      "kind": "heading",
+      "level": 2,
+      "number": "3.1",
+      "text": "Indicator definitions",
+      "toc": true
+     },
+     {
+      "caption": "Parameters describing environmental impacts — EN 15804+A2 (EF 3.1)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "cat",
+        "label": "Impact category / parameter",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "abbr",
+        "label": "Abbreviation",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "name",
+        "label": "Indicator",
+        "role": "data"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-def-en15804-a2",
+      "kind": "data_table",
+      "notes": [],
+      "number": 13,
+      "numbered": true,
+      "part": null,
+      "rows": [
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Climate change"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-total"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Global warming potential — total"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg CO₂e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Climate change — fossil"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-fossil"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Global warming potential — fossil fuels"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg CO₂e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Climate change — biogenic"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-biogenic"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Global warming potential — biogenic"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg CO₂e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Climate change — land use"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-luluc"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Global warming potential — land use and land use change"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg CO₂e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Ozone depletion"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "ODP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Depletion potential of the stratospheric ozone layer"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg CFC-11e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Acidification"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "AP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Acidification potential, accumulated exceedance"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "mol H⁺e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Eutrophication, aquatic freshwater"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP-freshwater"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Eutrophication potential — freshwater"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg Pe"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Eutrophication, aquatic marine"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP-marine"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Eutrophication potential — marine"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg Ne"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Eutrophication, terrestrial"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP-terrestrial"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Eutrophication potential — terrestrial"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "mol Ne"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Photochemical ozone formation"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "POCP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Formation potential of tropospheric ozone"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg NMVOCe"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Depletion of abiotic resources — minerals and metals"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "ADP-m&m"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Abiotic depletion potential — minerals and metals"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg Sbe"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Depletion of abiotic resources — fossil fuels"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "ADP-fossil"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Abiotic depletion potential — fossil resources"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ, net calorific value"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Water use"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "WDP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Water (user) deprivation potential"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "m³ world eq. deprived"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Particulate matter emissions"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PM"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Potential incidence of disease due to PM emissions"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "disease incidence"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Ionising radiation, human health"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "IRP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Potential human exposure efficiency relative to U235"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kBq U235e"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Ecotoxicity (freshwater)"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "ETP-fw"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Potential comparative toxic unit for ecosystems"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "CTUe"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Human toxicity, cancer effects"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "HTP-c"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Potential comparative toxic unit for humans — cancer"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "CTUh"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Human toxicity, non-cancer effects"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "HTP-nc"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Potential comparative toxic unit for humans — non-cancer"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "CTUh"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Land use related impacts / soil quality"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "SQP"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Potential soil quality index"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "dimensionless"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of renewable primary energy excluding resources used as raw materials"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERE"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of renewable primary energy excluding resources used as raw materials"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of renewable primary energy resources used as raw materials"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERM"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of renewable primary energy resources used as raw materials"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Total use of renewable primary energy resources"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERT"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Total use of renewable primary energy resources"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of non-renewable primary energy excluding resources used as raw materials"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRE"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of non-renewable primary energy excluding resources used as raw materials"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of non-renewable primary energy resources used as raw materials"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRM"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of non-renewable primary energy resources used as raw materials"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Total use of non-renewable primary energy resources"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRT"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Total use of non-renewable primary energy resources"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of secondary material"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "SM"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of secondary material"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of renewable secondary fuels"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "RSF"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of renewable secondary fuels"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of non-renewable secondary fuels"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "NRSF"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Use of non-renewable secondary fuels"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Net use of fresh water"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "FW"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Net use of fresh water"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "m³"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Hazardous waste disposed"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "HWD"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Hazardous waste disposed"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Non-hazardous waste disposed"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "NHWD"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Non-hazardous waste disposed"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Radioactive waste disposed"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "RWD"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Radioactive waste disposed"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Components for re-use"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "CRU"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Components for re-use"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Materials for recycling"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "MFR"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Materials for recycling"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Materials for energy recovery"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "MER"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Materials for energy recovery"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "kg"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Exported energy, electricity"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EEE"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Exported energy, electricity"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ],
+       [
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Exported energy, thermal"
+        },
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EET"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "Exported energy, thermal"
+        },
+        {
+         "cls": null,
+         "marks": [],
+         "text": "MJ"
+        }
+       ]
+      ],
+      "style": "data"
+     },
+     {
+      "anchor": "sub-results-default",
+      "kind": "heading",
+      "level": 2,
+      "number": "3.2",
+      "text": "Results",
+      "toc": true
+     },
+     {
+      "caption": "Core environmental impact indicators — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A1",
+        "label": "A1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A2",
+        "label": "A2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A3",
+        "label": "A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "A1-A3",
+        "label": "A1–A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A4",
+        "label": "A4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A5",
+        "label": "A5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B1",
+        "label": "B1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B2",
+        "label": "B2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B3",
+        "label": "B3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B4",
+        "label": "B4",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-res-default-en15804-a2-core_impact",
+      "kind": "data_table",
+      "notes": [],
+      "number": 14,
+      "numbered": true,
+      "part": "Part 1 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-total"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.04E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.35E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.87E-01"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.61E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.05E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.04E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-fossil"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.33E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.21E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.96E-01"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.85E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "9.42E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.86E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-biogenic"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-3.20E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.00E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "-2.80E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.90E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-luluc"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.18E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.16E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.16E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.81E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.17E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.80E-04"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "ODP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CFC-11e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.17E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.84E-08"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.01E-07"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "3.36E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.60E-08"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.69E-09"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "AP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "mol H⁺e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.66E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.90E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.56E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "8.91E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.56E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.42E-04"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "¹"
+         ],
+         "text": "EP-freshwater"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg Pe"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.66E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.24E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.01E-04"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "3.89E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.61E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.12E-05"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP-marine"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg Ne"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.22E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.31E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.93E-04"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.75E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.17E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.72E-05"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP-terrestrial"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "mol Ne"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.25E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.09E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.70E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.73E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "9.58E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.79E-04"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "POCP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg NMVOCe"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.92E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.44E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.23E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "4.40E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.13E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.46E-04"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "ADP-m&m"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg Sbe"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.53E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.33E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.99E-06"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.36E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.25E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.16E-07"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "ADP-fossil"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ, net calorific value"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.54E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.67E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.40E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.35E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.14E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.45E-01"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "WDP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "m³ world eq. deprived"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.40E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.62E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.58E-01"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "6.24E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.72E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.85E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Core environmental impact indicators — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B5",
+        "label": "B5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B6",
+        "label": "B6",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B7",
+        "label": "B7",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C1",
+        "label": "C1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C2",
+        "label": "C2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C3",
+        "label": "C3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C4",
+        "label": "C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "C1-C4",
+        "label": "C1–C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "D",
+        "label": "D",
+        "role": "data"
+       }
+      ],
+      "footnotes": [
+       {
+        "mark": "¹",
+        "text": "EP-freshwater is expressed in kg P eq. To express the result in kg PO₄³⁻ eq, multiply by 3.07."
+       },
+       {
+        "mark": "²",
+        "text": "Disclaimer 2 — The results of this environmental impact indicator shall be used with care as the uncertainties on these results are high or as there is limited experience with the indicator."
+       },
+       {
+        "mark": "³",
+        "text": "GWP-total = GWP-fossil + GWP-biogenic + GWP-luluc."
+       }
+      ],
+      "header_groups": [],
+      "id": null,
+      "kind": "data_table",
+      "notes": [],
+      "number": 14,
+      "numbered": true,
+      "part": "Part 2 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-total"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.25E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.02E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.47E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.99E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-1.64E-02"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-fossil"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.00E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.04E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.90E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.83E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-1.98E-02"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-biogenic"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.00E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.00E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "GWP-luluc"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CO₂e"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.73E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.25E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.12E-05"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.04E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-2.27E-04"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "ODP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg CFC-11e"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.67E-10"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.33E-09"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.41E-09"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "4.20E-09"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-4.74E-09"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "AP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "mol H⁺e"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.27E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.82E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.44E-05"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "9.09E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-1.34E-04"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "¹"
+         ],
+         "text": "EP-freshwater"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg Pe"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.56E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.53E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.42E-06"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "5.51E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-5.05E-06"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP-marine"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg Ne"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.96E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.40E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.83E-06"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.18E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-2.06E-05"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EP-terrestrial"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "mol Ne"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.53E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "9.65E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.15E-05"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.73E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-2.24E-04"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "POCP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg NMVOCe"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.31E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.91E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.88E-05"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "5.42E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-5.73E-05"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "ADP-m&m"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg Sbe"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.49E-08"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.48E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.53E-08"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.58E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-3.15E-07"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "ADP-fossil"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ, net calorific value"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.76E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.63E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.35E-02"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.64E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-2.87E-01"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "WDP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "m³ world eq. deprived"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.83E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.09E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.30E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "7.08E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-6.42E-03"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Additional environmental impact indicators — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A1",
+        "label": "A1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A2",
+        "label": "A2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A3",
+        "label": "A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "A1-A3",
+        "label": "A1–A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A4",
+        "label": "A4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A5",
+        "label": "A5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B1",
+        "label": "B1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B2",
+        "label": "B2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B3",
+        "label": "B3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B4",
+        "label": "B4",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-res-default-en15804-a2-additional_impact",
+      "kind": "data_table",
+      "notes": [],
+      "number": 15,
+      "numbered": true,
+      "part": "Part 1 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PM"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "disease incidence"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.49E-08"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.72E-09"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.48E-08"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "7.34E-08"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.75E-09"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.30E-09"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "¹"
+         ],
+         "text": "IRP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kBq U235e"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.66E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.74E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.54E-01"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.07E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.94E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.36E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "ETP-fw"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "CTUe"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.96E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.12E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.26E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "3.00E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.57E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.98E-01"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "HTP-c"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "CTUh"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.94E-09"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.58E-10"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.71E-10"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.57E-09"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.08E-10"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.17E-11"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "HTP-nc"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "CTUh"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.55E-08"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.50E-09"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.32E-08"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "5.12E-08"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.58E-09"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.20E-09"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "SQP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "dimensionless"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.26E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.54E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.86E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.28E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.43E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.92E-01"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Additional environmental impact indicators — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B5",
+        "label": "B5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B6",
+        "label": "B6",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B7",
+        "label": "B7",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C1",
+        "label": "C1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C2",
+        "label": "C2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C3",
+        "label": "C3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C4",
+        "label": "C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "C1-C4",
+        "label": "C1–C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "D",
+        "label": "D",
+        "role": "data"
+       }
+      ],
+      "footnotes": [
+       {
+        "mark": "¹",
+        "text": "Disclaimer 1 — This impact category deals mainly with the eventual impact of low dose ionizing radiation on human health of the nuclear fuel cycle. It does not consider effects due to possible nuclear accidents, occupational exposure nor due to radioactive waste disposal in underground facilities. Potential ionizing radiation from the soil, from radon and from some construction materials is also not measured by this indicator."
+       },
+       {
+        "mark": "²",
+        "text": "Disclaimer 2 — The results of this environmental impact indicator shall be used with care as the uncertainties on these results are high or as there is limited experience with the indicator."
+       }
+      ],
+      "header_groups": [],
+      "id": null,
+      "kind": "data_table",
+      "notes": [],
+      "number": 15,
+      "numbered": true,
+      "part": "Part 2 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PM"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "disease incidence"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.31E-11"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.85E-10"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.02E-10"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "9.70E-10"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-8.13E-10"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "¹"
+         ],
+         "text": "IRP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kBq U235e"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "9.48E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.24E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.80E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "9.99E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-8.42E-03"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "ETP-fw"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "CTUe"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.45E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.55E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.12E-01"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "4.11E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-2.93E-01"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "HTP-c"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "CTUh"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.98E-12"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.28E-11"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.27E-12"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.21E-11"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-3.01E-11"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "HTP-nc"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "CTUh"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.81E-11"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.00E-10"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.78E-10"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "5.27E-10"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-6.79E-10"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [
+          "²"
+         ],
+         "text": "SQP"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "dimensionless"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.55E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.18E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.47E-02"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.22E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-1.27E-01"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Parameters describing resource use — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A1",
+        "label": "A1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A2",
+        "label": "A2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A3",
+        "label": "A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "A1-A3",
+        "label": "A1–A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A4",
+        "label": "A4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A5",
+        "label": "A5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B1",
+        "label": "B1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B2",
+        "label": "B2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B3",
+        "label": "B3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B4",
+        "label": "B4",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-res-default-en15804-a2-resource_use",
+      "kind": "data_table",
+      "notes": [],
+      "number": 16,
+      "numbered": true,
+      "part": "Part 1 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERE"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.82E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.44E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.47E-01"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "3.91E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.37E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "8.66E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERM"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERT"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.18E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.30E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.12E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "3.53E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.30E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.18E-01"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRE"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.35E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.46E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.27E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.02E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.08E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.68E-01"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRM"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.20E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.42E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "9.98E-02"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "4.44E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.59E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.09E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRT"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.62E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.33E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.33E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.38E+01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.05E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.42E-01"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "SM"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.10E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.10E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "RSF"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "NRSF"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "FW"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "m³"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "9.91E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.24E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.06E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.46E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.06E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.50E-04"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Parameters describing resource use — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B5",
+        "label": "B5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B6",
+        "label": "B6",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B7",
+        "label": "B7",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C1",
+        "label": "C1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C2",
+        "label": "C2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C3",
+        "label": "C3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C4",
+        "label": "C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "C1-C4",
+        "label": "C1–C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "D",
+        "label": "D",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": null,
+      "kind": "data_table",
+      "notes": [],
+      "number": 16,
+      "numbered": true,
+      "part": "Part 2 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERE"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.72E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.12E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.05E-02"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "3.55E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-3.74E-02"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERM"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PERT"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.19E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.00E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.12E-02"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "3.44E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-4.78E-02"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRE"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.13E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.74E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.93E-02"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.84E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-2.49E-01"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRM"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.32E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.59E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.23E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "4.15E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-4.20E-03"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "PENRT"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.50E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.69E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.51E-02"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "2.69E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-2.61E-01"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "SM"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "RSF"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "NRSF"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "FW"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "m³"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.45E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "9.39E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.44E-05"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.43E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-1.23E-04"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Waste categories — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A1",
+        "label": "A1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A2",
+        "label": "A2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A3",
+        "label": "A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "A1-A3",
+        "label": "A1–A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A4",
+        "label": "A4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A5",
+        "label": "A5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B1",
+        "label": "B1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B2",
+        "label": "B2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B3",
+        "label": "B3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B4",
+        "label": "B4",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-res-default-en15804-a2-waste",
+      "kind": "data_table",
+      "notes": [],
+      "number": 17,
+      "numbered": true,
+      "part": "Part 1 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "HWD"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.23E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.55E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.18E-04"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "3.67E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.32E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.58E-06"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "NHWD"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.21E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.56E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.30E-01"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "5.86E-01"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.77E-02"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.71E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "RWD"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.79E-05"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "7.60E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.46E-05"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.10E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.26E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.25E-06"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Waste categories — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B5",
+        "label": "B5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B6",
+        "label": "B6",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B7",
+        "label": "B7",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C1",
+        "label": "C1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C2",
+        "label": "C2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C3",
+        "label": "C3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C4",
+        "label": "C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "C1-C4",
+        "label": "C1–C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "D",
+        "label": "D",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": null,
+      "kind": "data_table",
+      "notes": [],
+      "number": 17,
+      "numbered": true,
+      "part": "Part 2 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "HWD"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "4.43E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.70E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.14E-06"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "4.28E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-4.69E-06"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "NHWD"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "5.89E-04"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.02E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.33E-03"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "4.95E-03"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-4.55E-03"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "RWD"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "1.38E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "6.09E-07"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "3.79E-07"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "1.13E-06"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "-1.09E-06"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Output flows — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A1",
+        "label": "A1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A2",
+        "label": "A2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A3",
+        "label": "A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "A1-A3",
+        "label": "A1–A3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A4",
+        "label": "A4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "A5",
+        "label": "A5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B1",
+        "label": "B1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B2",
+        "label": "B2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B3",
+        "label": "B3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B4",
+        "label": "B4",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": "tbl-res-default-en15804-a2-output_flows",
+      "kind": "data_table",
+      "notes": [],
+      "number": 18,
+      "numbered": true,
+      "part": "Part 1 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "CRU"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "MFR"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "2.00E-02"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "MER"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EEE"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EET"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "caption": "Output flows — EN 15804+A2 (EF 3.1) (per 1 m² at RSI = 1 m²·K/W)",
+      "columns": [
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "ind",
+        "label": "Indicator",
+        "role": "label"
+       },
+       {
+        "align": "left",
+        "highlight": false,
+        "key": "unit",
+        "label": "Unit",
+        "role": "unit"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B5",
+        "label": "B5",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B6",
+        "label": "B6",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "B7",
+        "label": "B7",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C1",
+        "label": "C1",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C2",
+        "label": "C2",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C3",
+        "label": "C3",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "C4",
+        "label": "C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": true,
+        "key": "C1-C4",
+        "label": "C1–C4",
+        "role": "data"
+       },
+       {
+        "align": "right",
+        "highlight": false,
+        "key": "D",
+        "label": "D",
+        "role": "data"
+       }
+      ],
+      "footnotes": [],
+      "header_groups": [],
+      "id": null,
+      "kind": "data_table",
+      "notes": [],
+      "number": 18,
+      "numbered": true,
+      "part": "Part 2 of 2",
+      "rows": [
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "CRU"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "MFR"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "MER"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "kg"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EEE"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ],
+       [
+        {
+         "cls": "strong",
+         "marks": [],
+         "text": "EET"
+        },
+        {
+         "cls": "unit",
+         "marks": [],
+         "text": "MJ"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "mnd",
+         "marks": [],
+         "text": "MND"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num aggregate",
+         "marks": [],
+         "text": "0.00E+00"
+        },
+        {
+         "cls": "num",
+         "marks": [],
+         "text": "0.00E+00"
+        }
+       ]
+      ],
+      "style": "results"
+     },
+     {
+      "anchor": "sub-biogenic",
+      "kind": "heading",
+      "level": 2,
+      "number": "3.3",
+      "text": "Biogenic carbon",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Biogenic carbon is reported separately as GWP-biogenic in accordance with EN 15804+A2. Biogenic carbon content of the product and its packaging is declared where it exceeds 5% of the product mass."
+     }
+    ],
+    "custom": false,
+    "id": "results",
+    "number": "3",
+    "numbered": true,
+    "orientation": "landscape",
+    "title": "LCA results"
+   },
+   {
+    "blocks": [
+     {
+      "anchor": "sub-contribution",
+      "kind": "heading",
+      "level": 2,
+      "number": "4.1",
+      "text": "Contribution analysis",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "The interpretation is based on EN 15804+A2 (EF 3.1) results."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "The product stage (A1–A3) accounts for 92.0% of global warming potential — total across the declared modules, excluding module D. Module A1–A3 — Product stage contributes 92.0% of total global warming potential — total. Module A1–A3 — Product stage contributes 92.0% of total global warming potential — fossil fuels. Module A5 — Assembly / installation contributes 50.0% of total global warming potential — biogenic. Module A1–A3 — Product stage contributes 92.4% of total global warming potential — land use and land use change. Module A1–A3 — Product stage contributes 92.1% of total depletion potential of the stratospheric ozone layer. Module A1–A3 — Product stage contributes 92.8% of total acidification potential, accumulated exceedance. Module A1–A3 — Product stage contributes 92.2% of total eutrophication potential — freshwater. Module A1–A3 — Product stage contributes 91.6% of total eutrophication potential — marine. Module A1–A3 — Product stage contributes 92.0% of total eutrophication potential — terrestrial. Module A1–A3 — Product stage contributes 91.4% of total formation potential of tropospheric ozone. Module A1–A3 — Product stage contributes 91.4% of total abiotic depletion potential — minerals and metals. Module A1–A3 — Product stage contributes 91.6% of total abiotic depletion potential — fossil resources. Module A1–A3 — Product stage contributes 92.2% of total water (user) deprivation potential."
+     },
+     {
+      "anchor": "sub-charts",
+      "kind": "heading",
+      "level": 2,
+      "number": "4.2",
+      "text": "Results by life cycle module",
+      "toc": true
+     },
+     {
+      "alt": null,
+      "caption": "Relative contribution of life cycle modules to each EN 15804+A2 (EF 3.1) indicator (absolute values); module D excluded",
+      "id": "fig-shares",
+      "image": null,
+      "kind": "figure",
+      "number": 2,
+      "svg": "sha256:bf60cd8289e65321",
+      "width": "full"
+     },
+     {
+      "anchor": "sub-materials",
+      "kind": "heading",
+      "level": 2,
+      "number": "4.3",
+      "text": "Material contribution",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Stone melting (coke) is the largest contributor to global warming potential — total in modules A1–A3 (54.0%), followed by Binder (23.5%)."
+     },
+     {
+      "alt": null,
+      "caption": "Material contribution to GWP-total in modules A1–A3",
+      "id": "fig-materials",
+      "image": null,
+      "kind": "figure",
+      "number": 3,
+      "svg": "sha256:0c73b5ce6fb143b4",
+      "width": "full"
+     }
+    ],
+    "custom": false,
+    "id": "interpretation",
+    "number": "4",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "Interpretation"
+   },
+   {
+    "blocks": [
+     {
+      "anchor": "sub-assumptions",
+      "kind": "heading",
+      "level": 2,
+      "number": "5.1",
+      "text": "Assumptions",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "The selection of secondary datasets to represent the supply chain is a significant value choice; no generic dataset is a perfect fit. Supply-chain-specific data would improve the accuracy of the results."
+     },
+     {
+      "anchor": "sub-limitations",
+      "kind": "heading",
+      "level": 2,
+      "number": "5.2",
+      "text": "Limitations",
+      "toc": true
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "Results represent potential environmental impacts and do not predict impacts on specific endpoints, the exceedance of thresholds, safety margins or risks."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "body",
+      "text": "EPDs of construction products may not be comparable if they do not comply with EN 15804 and if they are not compared in a building context. Environmental declarations from different programs (ISO 14025) may not be comparable. Comparison of the environmental performance of products using EPD information shall be based on the product's use and impacts at the building level."
+     }
+    ],
+    "custom": false,
+    "id": "assumptions",
+    "number": "5",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "Assumptions and limitations"
+   },
+   {
+    "blocks": [
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "ISO 14025:2006 — Environmental labels and declarations — Type III environmental declarations — Principles and procedures. ISO, Geneva."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "ISO 14040:2006 — Environmental management — Life cycle assessment — Principles and framework. ISO, Geneva."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "ISO 14044:2006 — Environmental management — Life cycle assessment — Requirements and guidelines. ISO, Geneva."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "EN 15804:2012+A2:2019 — Sustainability of construction works — Environmental product declarations — Core rules for the product category of construction products. CEN, Brussels."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "EN 15804:2012+A2:2019 — Core rules for the product category of construction products. CEN, 2019."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "EN 16783:2017 — Thermal insulation products — Product category rules. CEN, 2017."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "Andreasi Bassi, S., Biganzoli, F., Ferrara, N., Amadei, A., Valente, A., Sala, S., Ardente, F. (2023). Updated characterisation and normalisation factors for the Environmental Footprint 3.1 method. Publications Office of the European Union, JRC130796."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "ecoinvent 3.12 cut-off life cycle inventory database."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "EN 16783:2017 — Thermal insulation products — Product category rules (PCR) for factory made and in-situ formed products for preparing environmental product declarations. CEN."
+     },
+     {
+      "html": false,
+      "kind": "paragraph",
+      "style": "reference",
+      "text": "EN 13162:2012+A1:2015 — Thermal insulation products for buildings — Factory made mineral wool (MW) products — Specification. CEN."
+     }
+    ],
+    "custom": false,
+    "id": "references",
+    "number": "6",
+    "numbered": true,
+    "orientation": "portrait",
+    "title": "References"
+   }
+  ],
+  "title": "Environmental Product Declaration — EX-Rock 035 Stone Wool Slab"
+ },
+ "warnings": []
+}

@@ -1,0 +1,123 @@
+{% macro render(block, doc) %}
+{% set k = block.kind %}
+{% if k == 'heading' %}
+  <h{{ block.level }} class="h{{ block.level }}"{% if block.anchor %} id="{{ block.anchor }}"{% endif %}>{% if block.number %}<span class="num">{{ block.number }}</span> {% endif %}{{ block.text }}</h{{ block.level }}>
+{% elif k == 'paragraph' %}
+  {% if block.html %}<div class="md">{{ block.text | safe }}</div>{% else %}<p class="p-{{ block.style }}">{{ block.text }}</p>{% endif %}
+{% elif k == 'bullets' %}
+  <ul class="bullets">{% for i in block.items %}<li>{{ i }}</li>{% endfor %}</ul>
+{% elif k == 'kv_table' %}{{ kv_table(block) }}
+{% elif k == 'data_table' %}{{ data_table(block) }}
+{% elif k == 'figure' %}{{ figure(block) }}
+{% elif k == 'figure_grid' %}
+  <div class="figure-grid">{% for f in block.figures %}{{ figure(f) }}{% endfor %}</div>
+{% elif k == 'image' %}
+  {% if block.data | img_src %}<img class="img" src="{{ block.data | img_src }}" alt="{{ block.caption or '' }}">{% endif %}
+{% elif k == 'page_break' %}<div class="page-break"></div>
+{% elif k == 'toc' %}{{ toc(block) }}
+{% elif k == 'cover' %}{{ cover(block, doc) }}
+{% endif %}
+{% endmacro %}
+
+{% macro caption(prefix, number, text, part=None) %}
+  {% if text %}<div class="caption"><span class="cap-label">{{ prefix }}{% if number %} {{ number }}{% endif %}:</span> {{ text }}{% if part %} <span class="part">({{ part }})</span>{% endif %}</div>{% endif %}
+{% endmacro %}
+
+{% macro kv_table(t) %}
+<div class="table-wrap kv-wrap">
+  {% if t.caption %}{{ caption('Table', t.number, t.caption) }}{% endif %}
+  <table class="kv kv-{{ t.variant }}"{% if t.id %} id="{{ t.id }}"{% endif %}>
+    <tbody>
+    {% for r in t.rows %}
+      <tr>
+        <th scope="row">{{ r.label }}</th>
+        <td>
+        {% if r.type == 'lines' %}
+          {% if r.value is string %}{{ r.value }}{% else %}{% for l in r.value %}<div>{{ l }}</div>{% endfor %}{% endif %}
+        {% elif r.type == 'checkbox' %}
+          {% for c in r.options.get('choices', []) %}
+            <span class="checkbox{% if c == r.value %} checked{% endif %}" role="img" aria-label="{{ c }}{{ ' (selected)' if c == r.value else '' }}">{{ '☒' if c == r.value else '☐' }}</span> {{ c | capitalize }}&nbsp;&nbsp;
+          {% endfor %}
+          {% if r.value not in r.options.get('choices', []) %}<span class="muted">{{ r.value }}</span>{% endif %}
+        {% elif r.type == 'signature' %}
+          {% if r.options.get('image') | img_src %}<img class="signature" src="{{ r.options.get('image') | img_src }}" alt="Signature"><br>{% endif %}
+          {{ r.value }}
+        {% else %}
+          {% if r.value is string %}{% for para in r.value.split('\n\n') %}<p>{{ para }}</p>{% endfor %}{% else %}{{ r.value | join(', ') }}{% endif %}
+        {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+
+{% macro data_table(t) %}
+<div class="table-wrap table-{{ t.style }}">
+  {{ caption('Table', t.number, t.caption, t.part) }}
+  <table class="data data-{{ t.style }}"{% if t.id %} id="{{ t.id }}"{% endif %}>
+    <thead>
+      {% if t.header_groups %}
+      <tr class="group-row">{% for g in t.header_groups %}<th colspan="{{ g.span }}" scope="colgroup">{{ g.label }}</th>{% endfor %}</tr>
+      {% endif %}
+      <tr>{% for c in t.columns %}<th scope="col" class="al-{{ c.align }} role-{{ c.role }}{% if c.highlight %} hl{% endif %}">{{ c.label }}</th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+    {% for row in t.rows %}
+      <tr>{% for cell in row %}{% set col = t.columns[loop.index0] %}<td class="al-{{ col.align }} role-{{ col.role }}{% if col.highlight %} hl{% endif %}{% if cell.cls %} {{ cell.cls }}{% endif %}">{% if cell.cls and 'vertical' in cell.cls %}<span class="vt">{{ cell.text }}</span>{% else %}{{ cell.text }}{% endif %}{% for m in cell.marks %}<sup class="fn-mark">{{ m }}</sup>{% endfor %}</td>{% endfor %}</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if t.footnotes %}
+  <ol class="footnotes">{% for f in t.footnotes %}<li><sup>{{ f.mark }}</sup> {{ f.text }}</li>{% endfor %}</ol>
+  {% endif %}
+  {% for n in t.notes %}<p class="p-note table-note">{{ n }}</p>{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro figure(f) %}
+<figure class="fig fig-{{ f.width }}"{% if f.id %} id="{{ f.id }}"{% endif %}>
+  <div class="fig-body">
+  {% if f.svg %}{{ f.svg | safe }}{% elif f.image | img_src %}<img src="{{ f.image | img_src }}" alt="{{ f.alt or f.caption or '' }}">{% endif %}
+  </div>
+  {% if f.caption %}<figcaption><span class="cap-label">Figure{% if f.number %} {{ f.number }}{% endif %}:</span> {{ f.caption }}</figcaption>{% endif %}
+</figure>
+{% endmacro %}
+
+{% macro toc(t) %}
+<nav class="toc" aria-label="Table of contents">
+  <ol>
+  {% for e in t.entries %}
+    <li class="toc-l{{ e.level }}"><a href="#{{ e.anchor }}">{% if e.number %}<span class="num">{{ e.number }}</span>{% endif %}<span class="t">{{ e.title }}</span></a></li>
+  {% endfor %}
+  </ol>
+</nav>
+{% endmacro %}
+
+{% macro cover(c, doc) %}
+<div class="cover">
+  <div class="cover-top">
+    {% if c.manufacturer_logo | img_src %}<img class="cover-logo" src="{{ c.manufacturer_logo | img_src }}" alt="{{ c.manufacturer_name or 'Manufacturer' }} logo">
+    {% elif c.manufacturer_name %}<div class="cover-org">{{ c.manufacturer_name }}</div>{% endif %}
+  </div>
+  <div class="cover-band">
+    <div class="cover-kicker">{{ c.title }}</div>
+    <div class="cover-product">{{ c.product_name }}</div>
+    {% if c.standards %}<div class="cover-standards">In accordance with {{ c.standards | join(', ') }}</div>{% endif %}
+  </div>
+  {% if c.product_image | img_src %}<div class="cover-image"><img src="{{ c.product_image | img_src }}" alt="{{ c.product_name }}"></div>{% endif %}
+  <div class="cover-bottom">
+    <dl class="cover-meta">
+      {% if c.declaration_number %}<div><dt>Declaration number</dt><dd>{{ c.declaration_number }}</dd></div>{% endif %}
+      {% if c.issue_date %}<div><dt>Date of issue</dt><dd>{{ c.issue_date }}</dd></div>{% endif %}
+      {% if c.valid_until %}<div><dt>Valid until</dt><dd>{{ c.valid_until }}</dd></div>{% endif %}
+      {% if c.manufacturer_name %}<div><dt>Manufacturer</dt><dd>{{ c.manufacturer_name }}</dd></div>{% endif %}
+    </dl>
+    <div class="cover-po">
+      {% if c.program_operator_logo | img_src %}<img src="{{ c.program_operator_logo | img_src }}" alt="{{ c.program_operator_name or 'Program operator' }} mark">{% endif %}
+      {% if c.program_operator_name %}<div class="po-name">Program operator: {{ c.program_operator_name }}</div>{% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}

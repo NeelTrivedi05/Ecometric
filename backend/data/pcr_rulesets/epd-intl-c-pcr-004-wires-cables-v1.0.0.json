@@ -1,0 +1,480 @@
+{
+  "ruleset_id": "epd-intl-c-pcr-004-wires-cables-v1.0.0",
+  "title": "c-PCR-004 Wires, cables and accessories, except construction products (to PCR 2024:06)",
+  "program_operator": "EPD International AB (The International EPD System)",
+  "document": {
+    "code": "2024:06-c-PCR-004",
+    "version": "1.0.0",
+    "published": "2025-08-27",
+    "valid_until": "2027-11-16",
+    "status_note": "Validity taken from the document; current status on environdec.com not checked. Adopted from PEP Ecopassport PSR-0001-ed4-EN-2022 11 16.",
+    "source_file": "Cable_c-PCR_Wires-Cables-Accessories_PCR2024-06_EPD-International.pdf"
+  },
+  "parent_rulesets": [
+    "epd-intl-pcr-2024-06-v1.0.1"
+  ],
+  "depends_on_unavailable": [
+    "PEP Ecopassport PSR-0001-ed4-EN-2022 11 16 (Specific rules for wires, cables and accessories) - functional unit (§3.1), use-stage/energy-loss modelling, RSL, default scenarios (§3.4), extrapolation (§3.5), joint declarations (§3.6)",
+    "PEP Ecopassport PEP-PCR ed4-EN 2021 09 06 - specific rules for EPDs intended for the French market",
+    "EN 50693:2019"
+  ],
+  "product_category": "wires_cables",
+  "defaults": {},
+  "rules": [
+    {
+      "id": "CPCR004.SCOPE.01",
+      "title": "Construction-sector cables excluded",
+      "requirement": "This c-PCR shall not be used for wires, cables and accessories for the construction sector (covered by 2019:14-c-PCR-019, adopted from EPD Norway).",
+      "source": {
+        "section": "2.2.1",
+        "page": 6
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "product.is_construction_product",
+        "value": false
+      }
+    },
+    {
+      "id": "CPCR004.SCOPE.02",
+      "title": "Product is a wire, cable or accessory",
+      "requirement": "The c-PCR covers wires, cables and accessories (as defined in PEP Ecopassport PSR-0001-ed4) that are not construction products.",
+      "source": {
+        "section": "2.2.1",
+        "page": 6
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "one_of",
+        "path": "product.sub_category",
+        "values": [
+          "wire",
+          "cable",
+          "cable_accessory"
+        ]
+      }
+    },
+    {
+      "id": "CPCR004.SCOPE.03",
+      "title": "Used together with PCR 2024:06",
+      "requirement": "The c-PCR cannot be used alone; the EPD shall reference both PCR 2024:06 (any valid version) and this c-PCR.",
+      "source": {
+        "section": "1.2",
+        "page": 3
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "list_min_length",
+        "path": "epd.reference_pcr[]",
+        "min": 2
+      }
+    },
+    {
+      "id": "CPCR004.VAL.01",
+      "title": "Issued within c-PCR validity",
+      "requirement": "The c-PCR (v1.0.0, published 2025-08-27) is valid until 2027-11-16; the EPD should be issued within that window.",
+      "source": {
+        "section": "2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "epd.date_of_issue >= '2025-08-27' and epd.date_of_issue <= '2027-11-16'"
+      }
+    },
+    {
+      "id": "CPCR004.REF.01",
+      "title": "c-PCR registration number cited",
+      "requirement": "References to this c-PCR shall include its registration number (2024:06-c-PCR-004), name and version.",
+      "source": {
+        "section": "1.1 / 2.1",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "2024:06-c-PCR-004",
+          "c-PCR-004"
+        ]
+      }
+    },
+    {
+      "id": "CPCR004.REF.02",
+      "title": "c-PCR name cited",
+      "requirement": "References to this c-PCR shall include its name 'Wires, cables and accessories, except construction products'.",
+      "source": {
+        "section": "1.1 / 2.1",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "Wires, cables and accessories"
+        ]
+      }
+    },
+    {
+      "id": "CPCR004.REF.03",
+      "title": "Original adopted PSR named",
+      "requirement": "As the c-PCR is adopted from PEP Ecopassport, the PCR information shall name the original document and version (PSR-0001-ed4-EN-2022 11 16).",
+      "source": {
+        "section": "2.2.1 / 3 (with PCR 2024:06 Table 4)",
+        "page": 7
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "PSR-0001-ed4",
+          "PSR-0001"
+        ]
+      }
+    },
+    {
+      "id": "CPCR004.REF.04",
+      "title": "c-PCR review information",
+      "requirement": "The PCR information shall include the c-PCR review details (Technical Committee of EPD International as review panel, chair Rui Wang).",
+      "source": {
+        "section": "3 (with PCR 2024:06 Table 4)",
+        "page": 7
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_present",
+        "doc_section": "programme_information",
+        "any_of": [
+          "Rui Wang"
+        ]
+      }
+    },
+    {
+      "id": "CPCR004.REF.05",
+      "title": "c-PCR listed in references section",
+      "requirement": "The references section shall list the c-PCR used (registration number, name, version).",
+      "source": {
+        "section": "1.1 (with PCR 2024:06 §5.4.10)",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_present",
+        "doc_section": "references",
+        "any_of": [
+          "c-PCR-004"
+        ]
+      }
+    },
+    {
+      "id": "CPCR004.FU.01",
+      "title": "Results declared per functional unit only",
+      "requirement": "Unlike PSR-0001 §3.1, results shall be declared only per functional unit; declaring per declared unit (alone or in addition) is not allowed.",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "functional_unit.unit"
+      }
+    },
+    {
+      "id": "CPCR004.FU.02",
+      "title": "No per-declared-unit results",
+      "requirement": "The EPD shall not present environmental performance results per declared unit.",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_forbidden",
+        "patterns": [
+          "per declared unit"
+        ]
+      }
+    },
+    {
+      "id": "CPCR004.CPC.01",
+      "title": "UN CPC code in product description section",
+      "requirement": "If an applicable UN CPC code exists, it shall be stated in the product description section of the EPD.",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "doc_section": "product_information",
+        "any_of": [
+          "UN CPC",
+          "CPC"
+        ]
+      },
+      "applies_when": "product.un_cpc_code"
+    },
+    {
+      "id": "CPCR004.SCN.01",
+      "title": "PSR-0001 default end-of-life scenario used",
+      "requirement": "Where PCR 2024:06 requires scenarios (e.g. end-of-life), the scenarios and default values of PSR-0001-ed4 should be used.",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": false,
+      "check": {
+        "type": "equals",
+        "path": "scenarios.end_of_life.scenario_source",
+        "value": "PSR-0001-ed4"
+      }
+    },
+    {
+      "id": "CPCR004.SCN.02",
+      "title": "Non-default end-of-life scenario justified",
+      "requirement": "If an end-of-life scenario other than PSR-0001-ed4 defaults is used, it shall be justified in the LCA report and the EPD.",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.end_of_life.deviation_justification"
+      },
+      "applies_when": "scenarios.end_of_life.scenario_source != 'PSR-0001-ed4'"
+    },
+    {
+      "id": "CPCR004.SCN.03",
+      "title": "PSR-0001 default use scenario used",
+      "requirement": "Where a use-stage scenario is required, PSR-0001-ed4 scenarios and default values should be used.",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": true,
+      "check": {
+        "type": "equals",
+        "path": "scenarios.use.scenario_source",
+        "value": "PSR-0001-ed4"
+      }
+    },
+    {
+      "id": "CPCR004.SCN.04",
+      "title": "Non-default use scenario justified",
+      "requirement": "If a use-stage scenario other than PSR-0001-ed4 defaults is used, it shall be justified in the LCA report and the EPD.",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "required_field",
+        "path": "scenarios.use.deviation_justification"
+      },
+      "applies_when": "scenarios.use.scenario_source != 'PSR-0001-ed4'"
+    },
+    {
+      "id": "CPCR004.DOC.01",
+      "title": "Content declaration mandatory",
+      "requirement": "The EPD shall include all mandatory declarations of PCR 2024:06, including the content declaration.",
+      "source": {
+        "section": "6",
+        "page": 10
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "required_field",
+        "path": "document.sections.content_declaration"
+      }
+    },
+    {
+      "id": "CPCR004.DOC.02",
+      "title": "Share of specific data mandatory",
+      "requirement": "The EPD shall include the share-of-specific-data declaration required by PCR 2024:06.",
+      "source": {
+        "section": "6",
+        "page": 10
+      },
+      "phase": "results",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "numeric_range",
+        "path": "lca.data_quality.share_specific_data_gwp_ghg_pct",
+        "min": 0,
+        "max": 100,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "CPCR004.TERM.01",
+      "title": "Declaration called EPD, not PEP",
+      "requirement": "References to 'Product Environmental Profiles' (PEP) in PSR-0001 are replaced by 'Environmental Product Declaration'; the document should not call itself a PEP.",
+      "source": {
+        "section": "2.2.1 / 4",
+        "page": 6
+      },
+      "phase": "document",
+      "severity": "minor",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_forbidden",
+        "patterns": [
+          "Product Environmental Profile"
+        ]
+      }
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "CPCR004.MAN.01",
+      "title": "Functional unit, RSL and use scenario per PSR-0001-ed4",
+      "source": {
+        "section": "2.2.1 / 4",
+        "page": 6
+      },
+      "reason": "The cable functional unit, reference service life, use-stage modelling (e.g. energy losses) and default scenarios are defined in PSR-0001-ed4-EN-2022 11 16, which was not provided; verify the project against that document."
+    },
+    {
+      "id": "CPCR004.MAN.02",
+      "title": "French market rules (PEP-PCR ed4)",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "reason": "EPDs intended for the French market shall follow specific rules of PEP-PCR ed4-EN 2021 09 06; the rules are not in this document and the target-market decision needs review."
+    },
+    {
+      "id": "CPCR004.MAN.03",
+      "title": "Zero only for calculated-zero values",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "reason": "Indicators may be declared '0' only when calculated to be zero (all indicators); requires inspection of the model, not just the result table."
+    },
+    {
+      "id": "CPCR004.MAN.04",
+      "title": "Homogeneous families follow PCR 2024:06, not PSR-0001 §3.5",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "reason": "PSR-0001 extrapolation rules for homogeneous environmental families shall not be used; PCR 2024:06 'Multiple products from the same company' (§4.9.1) applies instead. Requires checking the method used."
+    },
+    {
+      "id": "CPCR004.MAN.05",
+      "title": "Joint declarations follow sector-EPD rules, not PSR-0001 §3.6",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "reason": "Joint environmental declarations shall follow the PCR 2024:06 'Sector EPDs' rules (§4.9.2) instead of PSR-0001 §3.6."
+    },
+    {
+      "id": "CPCR004.MAN.06",
+      "title": "Choice among several applicable c-PCRs",
+      "source": {
+        "section": "1.2",
+        "page": 4
+      },
+      "reason": "If more than one c-PCR applies, the most function-specific is recommended, or several may be used if non-conflicting; needs judgement."
+    },
+    {
+      "id": "CPCR004.MAN.07",
+      "title": "Product in PSR-0001 scope",
+      "source": {
+        "section": "2.2.1",
+        "page": 6
+      },
+      "reason": "Whether the product is a wire, cable or accessory as defined in PSR-0001-ed4 (not provided) requires review."
+    },
+    {
+      "id": "CPCR004.MAN.08",
+      "title": "LCA report content",
+      "source": {
+        "section": "5",
+        "page": 9
+      },
+      "reason": "LCA report content shall follow PCR 2024:06 and PSR-0001-ed4; report review is manual."
+    }
+  ],
+  "notes": [
+    "This c-PCR is short and adopts PSR-0001-ed4 by reference. The cable functional unit (e.g. per length of cable), RSL, use-phase assumptions (current, load rate, operating hours) and energy-loss calculation formula are NOT stated in either supplied PDF - they live in PSR-0001-ed4, which was not provided. No FU value, use-phase formula or default scenario values were invented; `defaults` is empty and must be filled from PSR-0001 before use.",
+    "The parent's TEC formula (PCR2024-06.USE.01) covers mains-connected equipment operating modes and the parent says it is not applicable to electronic components; it is not a cable energy-loss formula.",
+    "Overrides PCR2024-06.FU.01 (functional OR declared unit): only a functional unit is allowed (CPCR004.FU.01/FU.02); PCR2024-06.FU.05, FU.06 and FU.07 (declared-unit rules) therefore never apply under this c-PCR.",
+    "Overrides PCR2024-06.FMT.S04 'if relevant' condition: the content declaration is mandatory (CPCR004.DOC.01). Restates PCR2024-06.DQ.08 (share of specific data) as mandatory (CPCR004.DOC.02).",
+    "Extends PCR2024-06.DOC.28: the UN CPC code, if applicable, must appear in the product description section (CPCR004.CPC.01).",
+    "PSR-0001 §3.4 default scenarios are subordinated to PCR 2024:06 §4.7.5 data-quality/modelling rules; PSR defaults are recommended where PCR 2024:06 requires scenarios (CPCR004.SCN.*). SCN.03/SCN.04 extend this to the use stage by inference (the c-PCR names end-of-life only as an example).",
+    "PSR-0001 §3.5 (homogeneous-family extrapolation) is replaced by PCR2024-06.MP.* (§4.9.1); PSR-0001 §3.6 (joint declarations) is replaced by PCR2024-06.SEC.* (§4.9.2).",
+    "Data quality (PCR2024-06.DQ.*), electricity modelling (PCR2024-06.EL.*), EPD validity (PCR2024-06.VAL.01, 5 years) and EPD format (PCR2024-06.FMT.*, DOC.*) are inherited unchanged from the parent per c-PCR §2.2.3, §4 and §6.",
+    "Precedence: where the main PCR and c-PCR conflict, the c-PCR prevails (§1.2 p4). The c-PCR may be used with any valid version of PCR 2024:06 (§1.2 p3).",
+    "Applicability timing: use of an applicable c-PCR becomes mandatory 90 days after publication (2025-08-27 + 90 days = 2025-11-25, derived) and is optional before that (§1.2 p3). The app's PCR selector should require this c-PCR for in-scope cable EPDs issued on/after 2025-11-25.",
+    "Parent requirements on c-PCRs not visibly met in the c-PCR text itself (presumably delegated to PSR-0001): define FU and RSL (PCR 2024:06 §4.1, §4.2), product-lifespan guidance (§4.2), a use-stage reference scenario (§4.7.5.2 p29), and which EN 50693 Annex G rule (G.2/G.4) applies (§4.6.2 p22 'should'). The G.2/G.4 choice therefore remains open per parent PCR2024-06.AL.04/AL.05.",
+    "Scope ambiguity: the parent defines EEE with voltage rating <=1000 V AC / <=1500 V DC (PCR 2024:06 footnote 4 p7); whether higher-voltage power cables in PSR-0001 scope are covered is not addressed. The parent lists construction-sector cables under UN CPC 463/41513/41533 (c-PCR-019 of PCR 2019:14); CPC 463 alone does not distinguish non-construction cables, so scope is decided by construction-product status (CPCR004.SCOPE.01).",
+    "Document inconsistencies: the c-PCR names the main PCR 'Electronic and electric components (non-construction)' (§1.2 p3, §2.2.1 p6) instead of 'Electronic and electric equipment, and electronic components (non-construction)'; contact e-mail is misprinted 'support@environdec.coms' (p5); the references list PSR-0018 (EV charging infrastructure), which appears unrelated, and do not list PSR-0001 itself (p12).",
+    "GPI footnote 2 (p6): the latest GPI verification rules shall be followed within 90 days of their publication regardless of the GPI version referenced by the main PCR.",
+    "Stage naming follows the parent ruleset (manufacturing, distribution, installation, use, de_installation, end_of_life, total). The rule-level `applies_when` extension and expression conventions are the same as in the parent ruleset notes.",
+    "New field paths introduced here (in addition to the parent's list): product.sub_category values 'wire'|'cable'|'cable_accessory', scenarios.end_of_life.{scenario_source,deviation_justification}, scenarios.use.{scenario_source,deviation_justification}."
+  ]
+}

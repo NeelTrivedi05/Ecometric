@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{{ doc.meta.get('language', 'en') }}">
+<head>
+<meta charset="utf-8">
+<title>{{ doc.title }}</title>
+<meta name="epd-selection" content="{{ doc.meta.selection | tojson | forceescape }}">
+<style>
+{{ fonts }}
+:root {
+  --brand: {{ brand }};
+  --cover-h: {{ '296mm' if doc.paper == 'A4' else '278.4mm' }};
+}
+{{ styles }}
+@page {
+  size: {{ 'A4' if doc.paper == 'A4' else 'letter' }} portrait;
+  @top-left { content: {{ doc.header_text | css_string }}; }
+  @top-right { content: {{ (("Declaration " ~ doc.footer.declarationNumber) if doc.footer.declarationNumber else "") | css_string }}; }
+  {% if footer_logo %}@bottom-left { content: ""; background: url({{ footer_logo | css_string }}) no-repeat left center / contain; width: 30mm; height: 8mm; }
+  {% else %}@bottom-left { content: {{ (doc.footer.manufacturer or "") | css_string }}; }{% endif %}
+  @bottom-center { content: {{ (doc.footer.declarationNumber or "") | css_string }}; }
+  @bottom-right { content: "Page " counter(page) " of " counter(pages); }
+}
+@page landscape {
+  size: {{ 'A4' if doc.paper == 'A4' else 'letter' }} landscape;
+}
+@page cover {
+  margin: 0;
+  @top-left { content: none; } @top-right { content: none; } @bottom-left { content: none; }
+  @bottom-center { content: none; } @bottom-right { content: none; }
+}
+</style>
+</head>
+<body class="mode-{{ mode }}{% if doc.draft %} is-draft{% endif %}">
+{% import "blocks.html.j2" as b %}
+{% if doc.draft %}<div class="watermark" aria-hidden="true">DRAFT</div>{% endif %}
+{% for s in doc.sections %}
+<section class="sec sec-{{ s.id }} orient-{{ s.orientation }}{% if s.custom %} sec-custom{% endif %}" id="sec-{{ s.id }}">
+  {% if s.title and s.id != 'cover' %}
+  <h1 class="sec-title">{% if s.number %}<span class="num">{{ s.number }}</span> {% endif %}{{ s.title }}</h1>
+  {% endif %}
+  {% for block in s.blocks %}{{ b.render(block, doc) }}{% endfor %}
+</section>
+{% endfor %}
+</body>
+</html>

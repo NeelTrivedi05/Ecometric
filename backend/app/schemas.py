@@ -57,8 +57,3 @@ class LcaSummaryResponse(BaseModel):
     directional_badge: str = "Directional / Comparative EPD"
     by_module: Dict[str, ModuleResult]
 
-class ReportResponse(BaseModel):
-    success: bool
-    pdf_url: str
-    download_file_name: str
-    disclaimer: str

@@ -134,7 +134,7 @@ export default function ValidateView() {
               <span style={{ fontSize: '15px', fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.01em' }}>
                 Product Category Rules (PCR) Compliance
               </span>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#0066cc', backgroundColor: 'rgba(0, 102, 204, 0.08)', padding: '2px 8px', borderRadius: '9999px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', backgroundColor: 'rgba(31, 122, 76, 0.08)', padding: '2px 8px', borderRadius: '9999px' }}>
                 UL 10010-4 Part B v2.0
               </span>
             </div>
@@ -151,7 +151,7 @@ export default function ValidateView() {
               <span style={{ fontSize: '15px', fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.01em' }}>
                 General Programme Instructions (GPI v4.0)
               </span>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#0066cc', backgroundColor: 'rgba(0, 102, 204, 0.08)', padding: '2px 8px', borderRadius: '9999px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', backgroundColor: 'rgba(31, 122, 76, 0.08)', padding: '2px 8px', borderRadius: '9999px' }}>
                 International EPD System
               </span>
             </div>
@@ -169,7 +169,7 @@ export default function ValidateView() {
                 <span style={{ fontSize: '15px', fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.01em' }}>
                   ISO 14025:2006 Type III Standard
                 </span>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#0066cc', backgroundColor: 'rgba(0, 102, 204, 0.08)', padding: '2px 8px', borderRadius: '9999px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', backgroundColor: 'rgba(31, 122, 76, 0.08)', padding: '2px 8px', borderRadius: '9999px' }}>
                   Third-Party Verification Ready
                 </span>
               </div>

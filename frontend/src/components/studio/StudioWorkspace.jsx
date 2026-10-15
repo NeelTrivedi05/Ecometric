@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { useStudio } from '../../context/StudioContext';
 import StudioHeader from './StudioHeader';
 import StudioSidebar from './StudioSidebar';
@@ -10,6 +10,7 @@ import ValidateView from './views/ValidateView';
 import MethodologyView from './views/MethodologyView';
 import ResultsView from './views/ResultsView';
 import ExportView from './views/ExportView';
+import AuditView from './views/AuditView';
 
 
 class StudioErrorBoundary extends Component {
@@ -82,6 +83,14 @@ export default function StudioWorkspace() {
     setIsSidebarOpen,
   } = useStudio();
 
+  // Smooth scroll back to top when phase switches
+  useEffect(() => {
+    const mainEl = document.getElementById('studio-main-scroll');
+    if (mainEl) {
+      mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activePhase]);
+
   const renderActiveView = () => {
     switch (activePhase) {
       case 'upload':
@@ -93,6 +102,8 @@ export default function StudioWorkspace() {
         return <UserReviewView />;
       case 'validate':
         return <ValidateView />;
+      case 'audit':
+        return <AuditView />;
       case 'methodology':
         return <MethodologyView />;
       case 'results':
@@ -114,7 +125,9 @@ export default function StudioWorkspace() {
 
         <main className="studio-main-workspace" id="studio-main-scroll">
           <StudioErrorBoundary onReset={() => setActivePhase('upload')}>
-            {renderActiveView()}
+            <div key={activePhase} className="studio-view-transition">
+              {renderActiveView()}
+            </div>
           </StudioErrorBoundary>
         </main>
 

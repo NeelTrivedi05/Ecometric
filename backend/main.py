@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routers import auth_routes, epd, submissions, documents, processes
+from app.routers import auth_routes, epd, epd_reports, submissions, documents, processes
 
 # Initialize DB tables
 Base.metadata.create_all(bind=engine)
@@ -31,11 +31,13 @@ app.add_middleware(
 # Include Routers
 app.include_router(auth_routes.router)
 app.include_router(epd.router)
+app.include_router(epd_reports.router)
 app.include_router(submissions.router)
 app.include_router(documents.router)
 app.include_router(processes.router)
 
 @app.get("/health")
+@app.get("/api/health")
 def healthcheck():
     return {
         "status": "healthy",

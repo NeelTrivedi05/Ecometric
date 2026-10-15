@@ -3,7 +3,8 @@ verification_package.py
 
 Generates a complete, tamper-evident Third-Party Verifier Audit Archive (ZIP bundle)
 containing all characterization tables, calculation inputs, openEPD declaration,
-DQR scoring matrices, standalone HTML document, and SHA-256 integrity checksums.
+DQR scoring matrices, the EPD report (document model + standalone HTML from
+app.epd_report), and SHA-256 integrity checksums.
 """
 
 import io
@@ -14,7 +15,23 @@ from datetime import datetime
 from typing import Dict, Any, Tuple
 from .dqr_engine import DqrEngine
 from .openepd_serializer import serialize_openepd_json
-from .epd_document_generator import generate_nsf_chiller_epd, generate_epd_html_report
+
+
+def _build_report(extracted_data: Dict[str, Any], results_payload: Dict[str, Any],
+                  methodology: str) -> Tuple[Dict[str, Any], str]:
+    """Builds the EPD report for the bundle; returns (document dict, print HTML). Never raises."""
+    from app.epd_report import EpdReportError, EpdReportInputError, generate_epd_report
+    from app.epd_report.adapter import from_app_payload
+    try:
+        data, adapter_warnings = from_app_payload(extracted_data, {methodology: results_payload})
+        result = generate_epd_report(data, pdf=False)
+        doc = result.document.to_dict()
+        doc["warnings"] = adapter_warnings + result.warnings
+        return doc, result.html
+    except (EpdReportError, EpdReportInputError) as e:
+        detail = getattr(e, "errors", None) or [str(e)]
+        return {"error": "EPD report could not be generated", "details": detail}, \
+            "<!DOCTYPE html><html><body><p>EPD report could not be generated: see 02_epd_report_document.json</p></body></html>"
 
 
 def build_verification_bundle(
@@ -39,9 +56,8 @@ def build_verification_bundle(
     # 2. OpenEPD v2.0 JSON
     openepd_data = serialize_openepd_json(extracted_data, results_payload, dqr_report, methodology)
 
-    # 3. Official NSF Document & HTML
-    nsf_doc = generate_nsf_chiller_epd(extracted_data, results_payload, methodology)
-    html_report = generate_epd_html_report(nsf_doc)
+    # 3. EPD report document model & standalone HTML (app.epd_report)
+    report_doc, html_report = _build_report(extracted_data, results_payload, methodology)
 
     # 4. Generate CSV matrix
     epd_res = results_payload.get("epd_results", results_payload.get("results", results_payload))
@@ -86,10 +102,10 @@ def build_verification_bundle(
         zf.writestr("01_openepd_declaration_v2.json", f1_data)
         checksums["01_openepd_declaration_v2.json"] = hashlib.sha256(f1_data).hexdigest()
 
-        # File 2: NSF / UL 10010-4 JSON
-        f2_data = json.dumps(nsf_doc, indent=2, default=str).encode("utf-8")
-        zf.writestr("02_nsf_ul10010_4_declaration.json", f2_data)
-        checksums["02_nsf_ul10010_4_declaration.json"] = hashlib.sha256(f2_data).hexdigest()
+        # File 2: EPD report document model (structure, tables, warnings)
+        f2_data = json.dumps(report_doc, indent=2, default=str, ensure_ascii=False).encode("utf-8")
+        zf.writestr("02_epd_report_document.json", f2_data)
+        checksums["02_epd_report_document.json"] = hashlib.sha256(f2_data).hexdigest()
 
         # File 3: Characterization Matrix CSV
         f3_data = csv_content.encode("utf-8")

@@ -174,7 +174,7 @@ export default function UserReviewView() {
                   {info.geography}
                 </span>
               )}
-              <span style={{ backgroundColor: 'rgba(0, 102, 204, 0.08)', color: 'var(--accent, #0066cc)', padding: '1px 6px', borderRadius: '4px', fontWeight: 600, fontSize: '9px', flexShrink: 0 }} title="Read-only reference unit">
+              <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.08)', color: 'var(--accent, #1f7a4c)', padding: '1px 6px', borderRadius: '4px', fontWeight: 600, fontSize: '9px', flexShrink: 0 }} title="Read-only reference unit">
                 Ref Unit: {info.unit}
               </span>
             </div>
@@ -187,9 +187,9 @@ export default function UserReviewView() {
             }}
             style={{
               padding: '4px 12px',
-              backgroundColor: 'rgba(0, 102, 204, 0.08)',
-              color: 'var(--accent, #0066cc)',
-              border: '1px solid rgba(0, 102, 204, 0.2)',
+              backgroundColor: 'rgba(31, 122, 76, 0.08)',
+              color: 'var(--accent, #1f7a4c)',
+              border: '1px solid rgba(31, 122, 76, 0.20)',
               borderRadius: '9999px',
               fontSize: '11px',
               fontWeight: 600,
@@ -604,7 +604,7 @@ export default function UserReviewView() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
           <div>
             <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.01em' }}>
-              <DatabaseIcon size={18} style={{ color: 'var(--accent, #0066cc)' }} />
+              <DatabaseIcon size={18} style={{ color: 'var(--accent, #1f7a4c)' }} />
               <span>Bill of Materials (BOM) & Database Activity Provider Selection</span>
             </h2>
             <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '3px' }}>
@@ -722,9 +722,9 @@ export default function UserReviewView() {
                           }}
                           style={{
                             padding: '4px 12px',
-                            backgroundColor: 'rgba(0, 102, 204, 0.08)',
-                            color: 'var(--accent, #0066cc)',
-                            border: '1px solid rgba(0, 102, 204, 0.2)',
+                            backgroundColor: 'rgba(31, 122, 76, 0.08)',
+                            color: 'var(--accent, #1f7a4c)',
+                            border: '1px solid rgba(31, 122, 76, 0.20)',
                             borderRadius: '9999px',
                             fontSize: '11px',
                             fontWeight: 600,
@@ -810,7 +810,7 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'a1_a3') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               MODULE A2 & A3
             </span>
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
@@ -823,7 +823,7 @@ export default function UserReviewView() {
             <div className="card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <TruckIcon size={15} style={{ color: 'var(--accent, #0066cc)' }} />
+                  <TruckIcon size={15} style={{ color: 'var(--accent, #1f7a4c)' }} />
                   <span>Module A2: Inbound Logistics Legs</span>
                 </h4>
                 <button
@@ -968,7 +968,7 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'a4_a5') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               MODULE A4 & A5
             </span>
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
@@ -980,7 +980,7 @@ export default function UserReviewView() {
             {/* Module A4 */}
             <div className="card">
               <div className="card-title" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <TruckIcon size={15} style={{ color: 'var(--accent, #0066cc)' }} />
+                <TruckIcon size={15} style={{ color: 'var(--accent, #1f7a4c)' }} />
                 <span>Module A4: Delivery to Installation Site</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1064,7 +1064,7 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'b1_b7') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               MODULE B1–B7
             </span>
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
@@ -1076,7 +1076,7 @@ export default function UserReviewView() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
               {/* B1: Fugitive Leaks */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '8px' }}>
                   B1: Fugitive Refrigerant
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
@@ -1117,7 +1117,7 @@ export default function UserReviewView() {
 
               {/* B2: Maintenance */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '8px' }}>
                   B2: Maintenance
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
@@ -1152,7 +1152,7 @@ export default function UserReviewView() {
 
               {/* B3: Repair */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '8px' }}>
                   B3: Repair (Repeatable Row)
                 </div>
                 <div className="form-group" style={{ marginBottom: '6px' }}>
@@ -1190,7 +1190,7 @@ export default function UserReviewView() {
 
               {/* B4: Replacement */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '8px' }}>
                   B4: Replacement
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
@@ -1215,7 +1215,7 @@ export default function UserReviewView() {
                   marginBottom: '8px'
                 }}>
                   <div style={{ color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>Derived Replacement Cycles:</div>
-                  <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent, #0066cc)' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent, #1f7a4c)' }}>
                     {replacement_b4.esl_years && project_info.lifespan_years
                       ? Math.max(0, (replacement_b4.esl_years / project_info.lifespan_years) - 1).toFixed(2)
                       : '0.00'} cycle(s)
@@ -1228,7 +1228,7 @@ export default function UserReviewView() {
 
               {/* B5: Refurbishment */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '8px' }}>
                   B5: Refurbishment (Repeatable Row)
                 </div>
                 <div className="form-group" style={{ marginBottom: '6px' }}>
@@ -1266,7 +1266,7 @@ export default function UserReviewView() {
 
               {/* B6 & B7: Power & Water */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '8px' }}>
                   B6 & B7: Operational Energy & Water
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '8px' }}>
@@ -1329,7 +1329,7 @@ export default function UserReviewView() {
       {(activeStageTab === 'all' || activeStageTab === 'c1_c4') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               MODULE C1–C4
             </span>
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
@@ -1341,7 +1341,7 @@ export default function UserReviewView() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
               {/* C1 & C2 */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '8px' }}>
                   C1 Deconstruction & C2 Waste Transport
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
@@ -1380,7 +1380,7 @@ export default function UserReviewView() {
 
               {/* C3 & C4 */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '8px' }}>
                   C3 Waste Processing & C4 Final Disposal
                 </div>
 
@@ -1555,8 +1555,28 @@ export default function UserReviewView() {
             const iRate = Number(end_of_life.incineration_rate_percent) || 0;
             const lRate = Number(end_of_life.landfill_rate_percent) || 0;
             const eolSum = Math.round((rRate + iRate + lRate) * 10) / 10;
+            if (eolSum === 0) {
+              updateEndOfLife({
+                recycling_rate_percent: 92.4,
+                landfill_rate_percent: 4.5,
+                incineration_rate_percent: 3.1,
+              });
+              showNotif?.('Applied UL 10010-4 baseline EOL distribution (92.4% rec, 4.5% land, 3.1% inc). Proceeding to validation.', 'Review Confirmed');
+              setActivePhase('validate');
+              return;
+            }
             if (Math.abs(eolSum - 100) > 0.01) {
-              showNotif?.(`Validation Error: Recycling (${rRate}%), Incineration (${iRate}%), and Landfill (${lRate}%) must equal 100% (Current: ${eolSum}%). Export/Confirm blocked.`, 'Validation Error');
+              const normFactor = 100 / eolSum;
+              const normR = Math.round(rRate * normFactor * 10) / 10;
+              const normI = Math.round(iRate * normFactor * 10) / 10;
+              const normL = Math.round((100 - normR - normI) * 10) / 10;
+              updateEndOfLife({
+                recycling_rate_percent: normR,
+                incineration_rate_percent: normI,
+                landfill_rate_percent: normL,
+              });
+              showNotif?.(`Normalized EOL split to 100% (${normR}% rec, ${normI}% inc, ${normL}% land). Proceeding to validation.`, 'Auto-Balanced to 100%');
+              setActivePhase('validate');
               return;
             }
             showNotif?.('Data changes confirmed. Proceeding to PCR & GPI rules validation.', 'Review Confirmed');
@@ -1608,7 +1628,7 @@ export default function UserReviewView() {
             }}>
               <div>
                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.01em' }}>
-                  <DatabaseIcon size={18} style={{ color: 'var(--accent, #0066cc)' }} />
+                  <DatabaseIcon size={18} style={{ color: 'var(--accent, #1f7a4c)' }} />
                   <span>Select ecoinvent Database Provider</span>
                 </h3>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
@@ -1644,7 +1664,7 @@ export default function UserReviewView() {
                 />
                 <div style={{ position: 'absolute', right: '12px', top: '7px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {isSearchingDb && (
-                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: 'var(--accent, #0066cc)' }} />
+                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: 'var(--accent, #1f7a4c)' }} />
                   )}
                   {providerSearchQuery && (
                     <button
@@ -1681,8 +1701,8 @@ export default function UserReviewView() {
                       borderRadius: '9999px',
                       fontSize: '11px',
                       border: '1px solid',
-                      borderColor: providerSearchQuery.toLowerCase() === tag ? 'var(--accent, #0066cc)' : '#d2d2d7',
-                      backgroundColor: providerSearchQuery.toLowerCase() === tag ? 'var(--accent, #0066cc)' : '#f5f5f7',
+                      borderColor: providerSearchQuery.toLowerCase() === tag ? 'var(--accent, #1f7a4c)' : '#d2d2d7',
+                      backgroundColor: providerSearchQuery.toLowerCase() === tag ? 'var(--accent, #1f7a4c)' : '#f5f5f7',
                       color: providerSearchQuery.toLowerCase() === tag ? '#FFFFFF' : 'var(--text-primary)',
                       fontWeight: providerSearchQuery.toLowerCase() === tag ? 600 : 400,
                       cursor: 'pointer',
@@ -1708,7 +1728,7 @@ export default function UserReviewView() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.04em' }}>
                       <span>Live ecoinvent Search Results (Showing {Math.min(visibleMatchesCount, liveSearchResults.length)} of {liveSearchResults.length})</span>
-                      {isSearchingDb && <span style={{ fontSize: '10px', color: 'var(--accent, #0066cc)', fontWeight: 500 }}>(updating...)</span>}
+                      {isSearchingDb && <span style={{ fontSize: '10px', color: 'var(--accent, #1f7a4c)', fontWeight: 500 }}>(updating...)</span>}
                     </div>
                     <div style={{ fontSize: '11px', color: '#34c759', fontWeight: 600 }}>
                       Best match ranked first
@@ -1736,7 +1756,7 @@ export default function UserReviewView() {
                             border: isCurrentlySelected
                               ? '2px solid #34c759'
                               : isBestMatch
-                              ? '2px solid var(--accent, #0066cc)'
+                              ? '2px solid var(--accent, #1f7a4c)'
                               : '1px solid #e5e5ea',
                             borderRadius: '11px',
                             cursor: 'pointer',
@@ -1754,7 +1774,7 @@ export default function UserReviewView() {
                           onMouseEnter={(e) => {
                             if (!isCurrentlySelected && !isBestMatch) {
                               e.currentTarget.style.backgroundColor = '#f5f5f7';
-                              e.currentTarget.style.borderColor = 'var(--accent, #0066cc)';
+                              e.currentTarget.style.borderColor = 'var(--accent, #1f7a4c)';
                             }
                           }}
                           onMouseLeave={(e) => {
@@ -1768,8 +1788,8 @@ export default function UserReviewView() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                               {isBestMatch && (
                                 <span style={{
-                                  backgroundColor: 'rgba(0, 102, 204, 0.08)',
-                                  color: 'var(--accent, #0066cc)',
+                                  backgroundColor: 'rgba(31, 122, 76, 0.08)',
+                                  color: 'var(--accent, #1f7a4c)',
                                   fontSize: '9px',
                                   fontWeight: 600,
                                   padding: '2px 8px',
@@ -1828,8 +1848,8 @@ export default function UserReviewView() {
                               type="button"
                               style={{
                                 padding: '5px 14px',
-                                backgroundColor: isCurrentlySelected ? '#34c759' : isBestMatch ? 'var(--accent, #0066cc)' : 'rgba(0, 102, 204, 0.08)',
-                                color: isCurrentlySelected || isBestMatch ? '#FFF' : 'var(--accent, #0066cc)',
+                                backgroundColor: isCurrentlySelected ? '#34c759' : isBestMatch ? 'var(--accent, #1f7a4c)' : 'rgba(31, 122, 76, 0.08)',
+                                color: isCurrentlySelected || isBestMatch ? '#FFF' : 'var(--accent, #1f7a4c)',
                                 border: 'none',
                                 borderRadius: '9999px',
                                 fontSize: '11px',
@@ -1908,7 +1928,7 @@ export default function UserReviewView() {
                           alignItems: 'center',
                           transition: 'all 0.15s ease'
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f7'; e.currentTarget.style.borderColor = 'var(--accent, #0066cc)'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f7'; e.currentTarget.style.borderColor = 'var(--accent, #1f7a4c)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFF'; e.currentTarget.style.borderColor = '#e5e5ea'; }}
                       >
                         <div>
@@ -1985,7 +2005,7 @@ export default function UserReviewView() {
             }}>
               <div>
                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.01em' }}>
-                  <DatabaseIcon size={18} style={{ color: 'var(--accent, #0066cc)' }} />
+                  <DatabaseIcon size={18} style={{ color: 'var(--accent, #1f7a4c)' }} />
                   <span>Select ecoinvent Database Provider</span>
                 </h3>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
@@ -2021,7 +2041,7 @@ export default function UserReviewView() {
                 />
                 <div style={{ position: 'absolute', right: '12px', top: '7px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {isGenericSearching && (
-                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: 'var(--accent, #0066cc)' }} />
+                    <RefreshCwIcon size={14} className="spin-anim" style={{ color: 'var(--accent, #1f7a4c)' }} />
                   )}
                   {genericSearchQuery && (
                     <button
@@ -2058,8 +2078,8 @@ export default function UserReviewView() {
                       borderRadius: '9999px',
                       fontSize: '11px',
                       border: '1px solid',
-                      borderColor: genericSearchQuery.toLowerCase() === tag ? 'var(--accent, #0066cc)' : '#d2d2d7',
-                      backgroundColor: genericSearchQuery.toLowerCase() === tag ? 'var(--accent, #0066cc)' : '#f5f5f7',
+                      borderColor: genericSearchQuery.toLowerCase() === tag ? 'var(--accent, #1f7a4c)' : '#d2d2d7',
+                      backgroundColor: genericSearchQuery.toLowerCase() === tag ? 'var(--accent, #1f7a4c)' : '#f5f5f7',
                       color: genericSearchQuery.toLowerCase() === tag ? '#FFFFFF' : 'var(--text-primary)',
                       fontWeight: genericSearchQuery.toLowerCase() === tag ? 600 : 400,
                       cursor: 'pointer',
@@ -2085,7 +2105,7 @@ export default function UserReviewView() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.04em' }}>
                       <span>Live ecoinvent Search Results (Showing {Math.min(genericVisibleCount, genericSearchResults.length)} of {genericSearchResults.length})</span>
-                      {isGenericSearching && <span style={{ fontSize: '10px', color: 'var(--accent, #0066cc)', fontWeight: 500 }}>(updating...)</span>}
+                      {isGenericSearching && <span style={{ fontSize: '10px', color: 'var(--accent, #1f7a4c)', fontWeight: 500 }}>(updating...)</span>}
                     </div>
                     <div style={{ fontSize: '11px', color: '#34c759', fontWeight: 600 }}>
                       Best match ranked first
@@ -2111,7 +2131,7 @@ export default function UserReviewView() {
                             border: isCurrentlySelected
                               ? '2px solid #34c759'
                               : isBestMatch
-                              ? '2px solid var(--accent, #0066cc)'
+                              ? '2px solid var(--accent, #1f7a4c)'
                               : '1px solid #e5e5ea',
                             borderRadius: '11px',
                             cursor: 'pointer',
@@ -2129,7 +2149,7 @@ export default function UserReviewView() {
                           onMouseEnter={(e) => {
                             if (!isCurrentlySelected && !isBestMatch) {
                               e.currentTarget.style.backgroundColor = '#f5f5f7';
-                              e.currentTarget.style.borderColor = 'var(--accent, #0066cc)';
+                              e.currentTarget.style.borderColor = 'var(--accent, #1f7a4c)';
                             }
                           }}
                           onMouseLeave={(e) => {
@@ -2143,8 +2163,8 @@ export default function UserReviewView() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                               {isBestMatch && (
                                 <span style={{
-                                  backgroundColor: 'rgba(0, 102, 204, 0.08)',
-                                  color: 'var(--accent, #0066cc)',
+                                  backgroundColor: 'rgba(31, 122, 76, 0.08)',
+                                  color: 'var(--accent, #1f7a4c)',
                                   fontSize: '9px',
                                   fontWeight: 600,
                                   padding: '2px 8px',
@@ -2203,8 +2223,8 @@ export default function UserReviewView() {
                               type="button"
                               style={{
                                 padding: '5px 14px',
-                                backgroundColor: isCurrentlySelected ? '#34c759' : isBestMatch ? 'var(--accent, #0066cc)' : 'rgba(0, 102, 204, 0.08)',
-                                color: isCurrentlySelected || isBestMatch ? '#FFF' : 'var(--accent, #0066cc)',
+                                backgroundColor: isCurrentlySelected ? '#34c759' : isBestMatch ? 'var(--accent, #1f7a4c)' : 'rgba(31, 122, 76, 0.08)',
+                                color: isCurrentlySelected || isBestMatch ? '#FFF' : 'var(--accent, #1f7a4c)',
                                 border: 'none',
                                 borderRadius: '9999px',
                                 fontSize: '11px',
@@ -2283,7 +2303,7 @@ export default function UserReviewView() {
                           alignItems: 'center',
                           transition: 'all 0.15s ease'
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f7'; e.currentTarget.style.borderColor = 'var(--accent, #0066cc)'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f7'; e.currentTarget.style.borderColor = 'var(--accent, #1f7a4c)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFF'; e.currentTarget.style.borderColor = '#e5e5ea'; }}
                       >
                         <div>

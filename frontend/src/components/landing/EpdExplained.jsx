@@ -17,7 +17,7 @@ export default function EpdExplained() {
   ];
 
   return (
-    <section className="product-tile-dark" id="epds">
+    <section className="product-tile-dark reveal-on-scroll" id="epds">
       <div className="lp-container">
         <div className="apple-section-header">
           <div className="apple-section-eyebrow on-dark">
@@ -35,7 +35,7 @@ export default function EpdExplained() {
           {sections.map((item, idx) => (
             <div
               key={idx}
-              className="store-utility-card dark-surface"
+              className="store-utility-card dark-surface stagger-card"
               style={{ padding: '32px' }}
             >
               <div style={{

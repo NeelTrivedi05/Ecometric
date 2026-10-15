@@ -33,7 +33,7 @@ export default function TheSolution() {
   ];
 
   return (
-    <section className="product-tile-light" id="solution">
+    <section className="product-tile-light reveal-on-scroll" id="solution">
       <div className="lp-container">
         <div className="apple-section-header">
           <div className="apple-section-eyebrow">
@@ -77,62 +77,64 @@ export default function TheSolution() {
 
         {/* Detail Container Card (Store Utility Card style: 18px radius, 1px hairline, no shadow) */}
         <div className="store-utility-card" style={{ maxWidth: '860px', margin: '0 auto', padding: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-            <span style={{
-              fontSize: '12px',
+          <div key={activeStep} className="step-card-animate">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              <span style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                color: 'var(--apple-primary)'
+              }}>
+                Step 0{activeStep + 1} • {workflowSteps[activeStep].subtitle}
+              </span>
+              <span style={{
+                fontSize: '12px',
+                color: '#2e9e5b',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <CheckCircleIcon size={14} /> Automated Verification
+              </span>
+            </div>
+
+            <h3 style={{
+              fontFamily: 'var(--apple-font-display)',
+              fontSize: '24px',
               fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              color: 'var(--apple-primary)'
+              color: 'var(--apple-ink)',
+              marginBottom: '12px',
+              letterSpacing: '-0.02em'
             }}>
-              Step 0{activeStep + 1} • {workflowSteps[activeStep].subtitle}
-            </span>
-            <span style={{
-              fontSize: '12px',
-              color: '#28cd41',
-              fontWeight: 600,
+              {workflowSteps[activeStep].title}
+            </h3>
+
+            <p style={{
+              fontSize: '17px',
+              color: '#5b6f62',
+              lineHeight: '1.47',
+              letterSpacing: '-0.374px',
+              marginBottom: '24px'
+            }}>
+              {workflowSteps[activeStep].desc}
+            </p>
+
+            <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '4px'
+              justifyContent: 'space-between',
+              paddingTop: '20px',
+              borderTop: '1px solid var(--apple-hairline)',
+              fontSize: '13px',
+              color: '#7a8f81'
             }}>
-              <CheckCircleIcon size={14} /> Automated Verification
-            </span>
-          </div>
-
-          <h3 style={{
-            fontFamily: 'var(--apple-font-display)',
-            fontSize: '24px',
-            fontWeight: 600,
-            color: 'var(--apple-ink)',
-            marginBottom: '12px',
-            letterSpacing: '-0.02em'
-          }}>
-            {workflowSteps[activeStep].title}
-          </h3>
-
-          <p style={{
-            fontSize: '17px',
-            color: '#6e6e73',
-            lineHeight: '1.47',
-            letterSpacing: '-0.374px',
-            marginBottom: '24px'
-          }}>
-            {workflowSteps[activeStep].desc}
-          </p>
-
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: '20px',
-            borderTop: '1px solid var(--apple-hairline)',
-            fontSize: '13px',
-            color: '#86868b'
-          }}>
-            <span>EN 15804+A2 & ISO 14025 Aligned</span>
-            <span style={{ color: 'var(--apple-primary)', fontWeight: 600, cursor: 'pointer' }} onClick={() => setActiveStep((activeStep + 1) % workflowSteps.length)}>
-              Next Step →
-            </span>
+              <span>EN 15804+A2 & ISO 14025 Aligned</span>
+              <span style={{ color: 'var(--apple-primary)', fontWeight: 600, cursor: 'pointer' }} onClick={() => setActiveStep((activeStep + 1) % workflowSteps.length)}>
+                Next Step →
+              </span>
+            </div>
           </div>
         </div>
       </div>

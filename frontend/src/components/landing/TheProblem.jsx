@@ -29,7 +29,7 @@ export default function TheProblem() {
   ];
 
   return (
-    <section className="product-tile-dark" id="challenge">
+    <section className="product-tile-dark reveal-on-scroll" id="challenge">
       <div className="lp-container">
         <div className="apple-section-header">
           <div className="apple-section-eyebrow on-dark">
@@ -47,14 +47,14 @@ export default function TheProblem() {
           {problems.map((prob, idx) => (
             <div
               key={idx}
-              className="store-utility-card dark-surface"
+              className="store-utility-card dark-surface stagger-card"
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
                 <span style={{
                   fontSize: '14px',
                   fontWeight: 600,
-                  backgroundColor: 'rgba(255, 69, 58, 0.15)',
-                  color: '#ff453a',
+                  backgroundColor: 'rgba(31, 122, 76, 0.10)',
+                  color: 'var(--apple-primary-on-dark)',
                   width: '28px',
                   height: '28px',
                   borderRadius: 'var(--apple-radius-sm)',

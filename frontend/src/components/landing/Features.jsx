@@ -30,7 +30,7 @@ export default function Features() {
   ];
 
   return (
-    <section className="product-tile-light" id="features">
+    <section className="product-tile-light reveal-on-scroll" id="features">
       <div className="lp-container">
         <div className="apple-section-header">
           <div className="apple-section-eyebrow">
@@ -46,7 +46,7 @@ export default function Features() {
 
         <div className="store-utility-grid">
           {features.map((feat, idx) => (
-            <div key={idx} className="store-utility-card">
+            <div key={idx} className="store-utility-card stagger-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                 <CheckCircleIcon size={18} style={{ color: 'var(--apple-primary)' }} />
                 <h3 style={{
@@ -61,7 +61,7 @@ export default function Features() {
               </div>
               <p style={{
                 fontSize: '15px',
-                color: '#6e6e73',
+                color: '#5b6f62',
                 lineHeight: '1.47',
                 margin: 0
               }}>

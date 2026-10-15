@@ -1,0 +1,283 @@
+{
+  "ruleset_id": "epd-intl-c-pcr-036-plastic-piping-v1.0.0",
+  "title": "c-PCR-036 Plastic piping systems inside the building structure (EN 16904:2025)",
+  "program_operator": "EPD International AB (The International EPD System)",
+  "document": {
+    "code": "c-PCR-036 (to PCR 2019:14)",
+    "version": "1.0.0",
+    "published": "2026-02-04",
+    "valid_until": "2030-04-07",
+    "status_note": "PDF p5 confirms version 1.0.0, published 2026-02-04 (original version), valid until 2030-04-07; update initiated if a new EN 16904 is released.",
+    "source_file": "Pipes_c-PCR-036_EN16904_Plastic-Piping-Inside-Buildings_EPD-International.pdf"
+  },
+  "parent_rulesets": [
+    "epd-intl-pcr-2019-14-v2.0.1"
+  ],
+  "depends_on_unavailable": [
+    "EN 16904:2025 (entire normative content: declared/functional unit, modules, technical data, scenarios, RSL, cut-off/allocation specifics)",
+    "EN 806, EN 1264, EN 12056, EN 12828 (listed under standards conformance, undated)"
+  ],
+  "product_category": "plastic_piping",
+  "defaults": {},
+  "rules": [
+    {
+      "id": "CPCR036.SCOPE.01",
+      "title": "Piping system installed inside the building structure",
+      "requirement": "The c-PCR covers plastics piping systems inside the building structure and their main structural components; systems outside the building structure are out of scope.",
+      "source": {
+        "section": "2.2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "equals",
+        "path": "product.technical_data.installation_location",
+        "value": "inside_building"
+      }
+    },
+    {
+      "id": "CPCR036.SCOPE.02",
+      "title": "Pressure or non-pressure application stated",
+      "requirement": "EN 16904:2025 addresses both pressure and non-pressure applications; the application type should be recorded.",
+      "source": {
+        "section": "2.2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": true,
+      "check": {
+        "type": "one_of",
+        "path": "product.technical_data.application_type",
+        "values": [
+          "pressure",
+          "non_pressure"
+        ]
+      }
+    },
+    {
+      "id": "CPCR036.SCOPE.03",
+      "title": "Application system standard identified",
+      "requirement": "The c-PCR lists EN 806, EN 1264, EN 12056 and EN 12828 under standards conformance; the system standard applicable to the piping system should be identified.",
+      "source": {
+        "section": "2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": true,
+      "check": {
+        "type": "one_of",
+        "path": "product.technical_data.application_standard",
+        "values": [
+          "EN 806",
+          "EN 1264",
+          "EN 12056",
+          "EN 12828"
+        ]
+      }
+    },
+    {
+      "id": "CPCR036.REF.01",
+      "title": "EPD cites c-PCR-036 by registration number",
+      "requirement": "Any reference to this c-PCR shall include its registration number (c-PCR-036).",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "c-PCR-036",
+          "2019:14-c-PCR-036"
+        ]
+      }
+    },
+    {
+      "id": "CPCR036.REF.02",
+      "title": "EPD cites c-PCR-036 by name",
+      "requirement": "Any reference to this c-PCR shall include the c-PCR name.",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "Plastic piping systems inside the building structure",
+          "Plastics piping systems inside the building structure"
+        ]
+      }
+    },
+    {
+      "id": "CPCR036.REF.03",
+      "title": "EPD cites c-PCR-036 version",
+      "requirement": "Any reference to this c-PCR shall include its version number (1.0.0 for this ruleset).",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "1.0.0"
+        ]
+      }
+    },
+    {
+      "id": "CPCR036.REF.04",
+      "title": "Used together with PCR 2019:14",
+      "requirement": "The c-PCR cannot be used on its own; it shall be applied together with PCR 2019:14 Construction products, so the EPD must also reference PCR 2019:14 (any valid version).",
+      "source": {
+        "section": "1.2",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "PCR 2019:14",
+          "2019:14"
+        ]
+      }
+    },
+    {
+      "id": "CPCR036.REF.05",
+      "title": "Used together with EN 15804",
+      "requirement": "The c-PCR shall be applied together with EN 15804; the EPD must state conformance with EN 15804.",
+      "source": {
+        "section": "1.2",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "EN 15804"
+        ]
+      }
+    },
+    {
+      "id": "CPCR036.STD.01",
+      "title": "EPD states conformance with EN 16904:2025",
+      "requirement": "Standards conformance for this c-PCR is EN 16904:2025; modules, LCA rules and EPD content follow PCR 2019:14 and EN 16904:2025, so the EPD should name EN 16904 as applied.",
+      "source": {
+        "section": "2.1; 2.2.2; 4; 5",
+        "page": 5
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "EN 16904"
+        ]
+      }
+    },
+    {
+      "id": "CPCR036.VAL.01",
+      "title": "c-PCR-036 v1.0.0 is valid at date of issue",
+      "requirement": "Version 1.0.0 was published 2026-02-04 and is valid until 2030-04-07; an EPD citing it should be issued within that window.",
+      "source": {
+        "section": "2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "epd.date_of_issue >= \"2026-02-04\" and epd.date_of_issue <= \"2030-04-07\""
+      }
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "CPCR036.MC.01",
+      "title": "Product is within EN 16904:2025 scope",
+      "source": {
+        "section": "2.2.1",
+        "page": 5
+      },
+      "reason": "Scope covers plastics piping systems inside buildings and their main structural components, including metal fittings and manifolds used in a plastic piping system. Which components form the declared 'system' is defined in the unavailable standard."
+    },
+    {
+      "id": "CPCR036.MC.02",
+      "title": "Type of EPD and information modules per EN 16904:2025",
+      "source": {
+        "section": "2.2.2",
+        "page": 6
+      },
+      "reason": "The c-PCR only says 'as in PCR 2019:14 and EN 16904:2025'. Any module restrictions, mandatory modules or allowed EPD types beyond the parent PCR are defined in EN 16904:2025, which is not available; a reviewer must check them."
+    },
+    {
+      "id": "CPCR036.MC.03",
+      "title": "LCA methodology per EN 16904:2025",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "reason": "Declared/functional unit, system boundary, cut-off, allocation, default scenarios, RSL and any product-specific calculation rules are delegated to EN 16904:2025, including how the declared unit relates to pipe length, nominal diameter and fittings. Not encoded because the standard is not available."
+    },
+    {
+      "id": "CPCR036.MC.04",
+      "title": "EPD content and format per EN 16904:2025",
+      "source": {
+        "section": "5",
+        "page": 9
+      },
+      "reason": "Technical data to declare, additional information and any extra reporting/statements are delegated to EN 16904:2025; verify manually against the standard."
+    },
+    {
+      "id": "CPCR036.MC.05",
+      "title": "Deviations from 'should' recommendations justified",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "reason": "Any deviation from a recommendation shall be justified in the EPD development process; whether a justification is adequate needs human judgement."
+    }
+  ],
+  "notes": [
+    "Apart from scope and administrative data, every substantive section of this c-PCR (2.2.2 type of EPD/modules, 2.2.3 geography, 2.2.4 EPD validity, 4 LCA rules, 5 EPD content, 6 glossary) only says 'as in PCR 2019:14' and/or the EN standard. Rules from PCR 2019:14 are covered by parent ruleset epd-intl-pcr-2019-14-v2.0.1 and are not repeated here.",
+    "No defaults are given in the c-PCR itself; all default scenarios/values live in the unavailable EN standard or in the parent PCR, hence 'defaults' is empty.",
+    "Section 1.2 allows use with any valid version of PCR 2019:14 regardless of the version cited in the c-PCR, so pairing with parent ruleset epd-intl-pcr-2019-14-v2.0.1 is acceptable. No override of parent PCR rules is stated in this c-PCR.",
+    "The PCR was developed within CEN and adopted without extra open consultation or review (section 3); PCR moderator and committee are 'not applicable'.",
+    "REF.01-REF.04 and STD.01 search the full rendered EPD text (document.text); no doc_section is set to avoid depending on section naming.",
+    "VAL.01 compares ISO-8601 date strings lexicographically (expression string literals are an extension of the README syntax); it is derived from the c-PCR publication/validity dates and the GPI principle that a valid PCR must be used.",
+    "Obligation semantics (section 1.1): 'shall' = requirement, 'should' = recommendation whose deviation must be justified, 'may'/'can' = permitted option.",
+    "Publication date 2026-02-04 is from the PDF (p1 header, p5, p12); the requester did not state it.",
+    "No UN CPC code is identified for this product category (p6), so no classification rule is encoded.",
+    "Declared/functional unit (e.g. 1 m of pipe system of stated nominal diameter) is not given in the c-PCR; it is defined in EN 16904:2025 - not available. No unit or mass-per-metre formula check is encoded.",
+    "Source errors in section 7 (p11): EN 16904:2025 is titled 'Curtain walling - Plastics piping systems ...' and EN 13830 (curtain walling product standard) is listed - apparent copy-paste from the curtain-walling c-PCR. References also cite PCR 2019:14 v1.1 and GPI v4.0, which are outdated; section 1.2 allows any valid PCR 2019:14 version.",
+    "Naming inconsistency: cover/header use 'Plastics piping systems', administrative name (p5) uses 'Plastic piping systems'; REF.02 accepts both. Copyright footer says 2025 although the document is dated 2026-02-04.",
+    "Scope note: metal fittings (including manifolds) used in a plastic piping system are within the guidance of EN 16904:2025.",
+    "New field paths introduced: product.technical_data.installation_location ('inside_building' | 'outside_building'), product.technical_data.application_type ('pressure' | 'non_pressure'), product.technical_data.application_standard ('EN 806' | 'EN 1264' | 'EN 12056' | 'EN 12828')."
+  ]
+}

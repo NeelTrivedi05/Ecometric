@@ -1,0 +1,297 @@
+{
+  "ruleset_id": "epd-intl-c-pcr-003-concrete-v1.0.0",
+  "title": "c-PCR-003 Concrete and concrete elements (EN 16757:2022)",
+  "program_operator": "EPD International AB (The International EPD System)",
+  "document": {
+    "code": "c-PCR-003 (to PCR 2019:14)",
+    "version": "1.0.0",
+    "published": "2025-04-08",
+    "valid_until": "2030-04-07",
+    "status_note": "PDF p5 confirms version 1.0.0, published 2025-04-08, valid until 2030-04-07; revised when EN 16757 is revised by CEN/TC 229. environdec.com lists it as 'Registered' with registration number 2019:14-c-PCR-003.",
+    "source_file": "Concrete_c-PCR-003_EN16757_EPD-International.pdf"
+  },
+  "parent_rulesets": [
+    "epd-intl-pcr-2019-14-v2.0.1"
+  ],
+  "depends_on_unavailable": [
+    "EN 16757:2022 (entire normative content: declared/functional unit, modules, technical data, scenarios, RSL, cut-off/allocation specifics)",
+    "EN 16757:2022 CO2 uptake by carbonation method (c-PCR gives no clause reference)"
+  ],
+  "product_category": "concrete",
+  "defaults": {},
+  "rules": [
+    {
+      "id": "CPCR003.SCOPE.01",
+      "title": "Product sub-category recorded",
+      "requirement": "The product type must be recorded so scope eligibility (concrete or concrete element, not autoclaved aerated concrete) can be checked.",
+      "source": {
+        "section": "2.2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "required_field",
+        "path": "product.sub_category"
+      }
+    },
+    {
+      "id": "CPCR003.SCOPE.02",
+      "title": "Autoclaved aerated concrete excluded",
+      "requirement": "The c-PCR covers concrete and concrete elements for building and civil engineering but excludes autoclaved aerated concrete (AAC); AAC products cannot use this c-PCR.",
+      "source": {
+        "section": "2.2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "not_one_of",
+        "path": "product.sub_category",
+        "values": [
+          "autoclaved_aerated_concrete",
+          "aac",
+          "autoclaved aerated concrete"
+        ]
+      }
+    },
+    {
+      "id": "CPCR003.SCOPE.03",
+      "title": "UN CPC group 375",
+      "requirement": "The product category corresponds to UN CPC group 375 'Articles of concrete, cement and plaster' (when used in construction).",
+      "source": {
+        "section": "2.2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "minor",
+      "obligation": "should",
+      "derived": true,
+      "check": {
+        "type": "one_of",
+        "path": "product.un_cpc_group",
+        "values": [
+          "375"
+        ]
+      }
+    },
+    {
+      "id": "CPCR003.REF.01",
+      "title": "EPD cites c-PCR-003 by registration number",
+      "requirement": "Any reference to this c-PCR shall include its registration number (c-PCR-003).",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "c-PCR-003",
+          "2019:14-c-PCR-003"
+        ]
+      }
+    },
+    {
+      "id": "CPCR003.REF.02",
+      "title": "EPD cites c-PCR-003 by name",
+      "requirement": "Any reference to this c-PCR shall include the c-PCR name.",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "Concrete and concrete elements"
+        ]
+      }
+    },
+    {
+      "id": "CPCR003.REF.03",
+      "title": "EPD cites c-PCR-003 version",
+      "requirement": "Any reference to this c-PCR shall include its version number (1.0.0 for this ruleset).",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "1.0.0"
+        ]
+      }
+    },
+    {
+      "id": "CPCR003.REF.04",
+      "title": "Used together with PCR 2019:14",
+      "requirement": "The c-PCR cannot be used on its own; it shall be applied together with PCR 2019:14 Construction products, so the EPD must also reference PCR 2019:14 (any valid version).",
+      "source": {
+        "section": "1.2",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "PCR 2019:14",
+          "2019:14"
+        ]
+      }
+    },
+    {
+      "id": "CPCR003.REF.05",
+      "title": "Used together with EN 15804",
+      "requirement": "The c-PCR shall be applied together with EN 15804; the EPD must state conformance with EN 15804.",
+      "source": {
+        "section": "1.2",
+        "page": 3
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": false,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "EN 15804"
+        ]
+      }
+    },
+    {
+      "id": "CPCR003.STD.01",
+      "title": "EPD states conformance with EN 16757:2022",
+      "requirement": "Standards conformance for this c-PCR is EN 16757:2022; modules, LCA rules and EPD content follow PCR 2019:14 and EN 16757:2022, so the EPD should name EN 16757 as applied.",
+      "source": {
+        "section": "2.1; 2.2.2; 4; 5",
+        "page": 5
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_present",
+        "any_of": [
+          "EN 16757"
+        ]
+      }
+    },
+    {
+      "id": "CPCR003.VAL.01",
+      "title": "c-PCR-003 v1.0.0 is valid at date of issue",
+      "requirement": "Version 1.0.0 was published 2025-04-08 and is valid until 2030-04-07; an EPD citing it should be issued within that window.",
+      "source": {
+        "section": "2.1",
+        "page": 5
+      },
+      "phase": "input",
+      "severity": "critical",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "relation",
+        "expression": "epd.date_of_issue >= \"2025-04-08\" and epd.date_of_issue <= \"2030-04-07\""
+      }
+    },
+    {
+      "id": "CPCR003.STD.02",
+      "title": "Current edition EN 16757:2022 applied",
+      "requirement": "The c-PCR was updated for EN 16757:2022 and standard references mean the edition listed in section 7, so the superseded 2017 edition should not be cited as the basis.",
+      "source": {
+        "section": "2.1; 7; 8 (fn 2 p3)",
+        "page": 5
+      },
+      "phase": "document",
+      "severity": "major",
+      "obligation": "shall",
+      "derived": true,
+      "check": {
+        "type": "text_forbidden",
+        "patterns": [
+          "EN 16757:2017"
+        ]
+      }
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "CPCR003.MC.01",
+      "title": "Product is within scope of EN 16757:2022",
+      "source": {
+        "section": "2.2.1",
+        "page": 5
+      },
+      "reason": "Scope is 'concrete and concrete elements for building and civil engineering as defined in EN 16757:2022' (excluding AAC). The definitions are in the unavailable standard; a reviewer must confirm the product fits."
+    },
+    {
+      "id": "CPCR003.MC.02",
+      "title": "Type of EPD and information modules per EN 16757:2022",
+      "source": {
+        "section": "2.2.2",
+        "page": 6
+      },
+      "reason": "The c-PCR only says 'as in PCR 2019:14 and EN 16757:2022'. Any module restrictions, mandatory modules or allowed EPD types beyond the parent PCR are defined in EN 16757:2022, which is not available; a reviewer must check them."
+    },
+    {
+      "id": "CPCR003.MC.03",
+      "title": "LCA methodology per EN 16757:2022",
+      "source": {
+        "section": "4",
+        "page": 8
+      },
+      "reason": "Declared/functional unit, system boundary, cut-off, allocation, default scenarios, RSL and any product-specific calculation rules are delegated to EN 16757:2022, including CO2 uptake by carbonation (use stage and end of life) and concrete-specific default scenarios. Not encoded because the standard is not available."
+    },
+    {
+      "id": "CPCR003.MC.04",
+      "title": "EPD content and format per EN 16757:2022",
+      "source": {
+        "section": "5",
+        "page": 9
+      },
+      "reason": "Technical data to declare, additional information and any extra reporting/statements are delegated to EN 16757:2022; verify manually against the standard."
+    },
+    {
+      "id": "CPCR003.MC.05",
+      "title": "Deviations from 'should' recommendations justified",
+      "source": {
+        "section": "1.1",
+        "page": 3
+      },
+      "reason": "Any deviation from a recommendation shall be justified in the EPD development process; whether a justification is adequate needs human judgement."
+    }
+  ],
+  "notes": [
+    "Apart from scope and administrative data, every substantive section of this c-PCR (2.2.2 type of EPD/modules, 2.2.3 geography, 2.2.4 EPD validity, 4 LCA rules, 5 EPD content, 6 glossary) only says 'as in PCR 2019:14' and/or the EN standard. Rules from PCR 2019:14 are covered by parent ruleset epd-intl-pcr-2019-14-v2.0.1 and are not repeated here.",
+    "No defaults are given in the c-PCR itself; all default scenarios/values live in the unavailable EN standard or in the parent PCR, hence 'defaults' is empty.",
+    "Section 1.2 allows use with any valid version of PCR 2019:14 regardless of the version cited in the c-PCR, so pairing with parent ruleset epd-intl-pcr-2019-14-v2.0.1 is acceptable. No override of parent PCR rules is stated in this c-PCR.",
+    "The PCR was developed within CEN and adopted without extra open consultation or review (section 3); PCR moderator and committee are 'not applicable'.",
+    "REF.01-REF.04 and STD.01 search the full rendered EPD text (document.text); no doc_section is set to avoid depending on section naming.",
+    "VAL.01 compares ISO-8601 date strings lexicographically (expression string literals are an extension of the README syntax); it is derived from the c-PCR publication/validity dates and the GPI principle that a valid PCR must be used.",
+    "Obligation semantics (section 1.1): 'shall' = requirement, 'should' = recommendation whose deviation must be justified, 'may'/'can' = permitted option.",
+    "Declared/functional unit is not stated in the c-PCR (delegated to EN 16757:2022); no unit rule is encoded. Do not assume 1 m3 without the standard.",
+    "Carbonation (CO2 uptake) calculation is defined in EN 16757:2022 - not available; no formula check encoded.",
+    "Source error: section 7 cites 'PCR 2019:04 Construction products, version 2.0.0' - evidently a typo for PCR 2019:14.",
+    "Version history (section 8): 2019-12-20 original (from sub-PCR to PCR 2012:01), 2023-01-02 update for EN 16757:2022, 2024-04-30 validity alignment, 1.0.0 (2025-04-08) prolonged validity and switch to version numbers.",
+    "New field paths introduced: product.un_cpc_group (3-digit UN CPC group derived from product.classification_codes[]). Allowed values for product.sub_category used by SCOPE.02 ('autoclaved_aerated_concrete', 'aac') must be mapped by the adapter.",
+    "EN 16757:2022 itself is a CEN PCR built on EN 15804+A2; precedence rules between it and PCR 2019:14 are not stated in this c-PCR."
+  ]
+}

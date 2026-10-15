@@ -22,7 +22,7 @@ export default function WhoItsFor() {
   ];
 
   return (
-    <section className="product-tile-light" id="who-its-for">
+    <section className="product-tile-light reveal-on-scroll" id="who-its-for">
       <div className="lp-container">
         <div className="apple-section-header">
           <div className="apple-section-eyebrow">
@@ -38,7 +38,7 @@ export default function WhoItsFor() {
 
         <div className="store-utility-grid">
           {groups.map((grp, idx) => (
-            <div key={idx} className="store-utility-card">
+            <div key={idx} className="store-utility-card stagger-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                 <CheckCircleIcon size={18} style={{ color: 'var(--apple-primary)' }} />
                 <h3 style={{
@@ -53,7 +53,7 @@ export default function WhoItsFor() {
               </div>
               <p style={{
                 fontSize: '15px',
-                color: '#6e6e73',
+                color: '#5b6f62',
                 lineHeight: '1.47',
                 margin: 0
               }}>

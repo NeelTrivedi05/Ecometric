@@ -35,6 +35,7 @@ class Project(Base):
     technical_data = relationship("TechnicalData", back_populates="project", uselist=False)
     results = relationship("Result", back_populates="project", cascade="all, delete-orphan")
     reports = relationship("Report", back_populates="project", cascade="all, delete-orphan")
+    report_details = relationship("ReportDetails", back_populates="project", uselist=False, cascade="all, delete-orphan")
 
 class TechnicalData(Base):
     __tablename__ = "technical_data"
@@ -75,7 +76,6 @@ class Report(Base):
     generated_at = Column(DateTime, default=datetime.utcnow)
 
     project = relationship("Project", back_populates="reports")
-    report_details = relationship("ReportDetails", back_populates="project", uselist=False, cascade="all, delete-orphan")
 
 class ReportDetails(Base):
     __tablename__ = "report_details"

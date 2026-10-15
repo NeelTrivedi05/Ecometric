@@ -1,0 +1,3333 @@
+{
+  "selection": {
+    "standard": "ISO 21930",
+    "methods": [
+      "TRACI 2.1",
+      "CML-IA",
+      "EN15804+A2/PEF"
+    ],
+    "indicatorFilter": "all",
+    "productCategoryId": "water-cooled-chiller"
+  },
+  "dataCategoryId": "water-cooled-chiller",
+  "meta": {
+    "declarationNumber": "EPD-EX-0001",
+    "issueDate": "2026-03-01",
+    "validUntil": "2031-03-01",
+    "validityPeriodText": "5 years from the date of issue",
+    "validityYears": 5,
+    "epdType": "Product specific",
+    "scope": "Cradle-to-grave",
+    "marketsOfApplicability": [
+      "North America",
+      "Global"
+    ],
+    "referenceYearOfPrimaryData": 2025,
+    "rangeOfDatasetVariability": "Not applicable (product specific)",
+    "branding": {
+      "primaryColor": "#1f4e79"
+    }
+  },
+  "programOperator": {
+    "name": "Example Program Operator",
+    "address": "100 Declaration Way\nSpringfield, ST 00000",
+    "website": "https://program-operator.example",
+    "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNDAiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAzNDAgNjQiPjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjEyIiBmaWxsPSIjM2E2ZWE1Ii8+PHRleHQgeD0iNzYiIHk9IjQwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiMyMjIiPkV4YW1wbGUgUE88L3RleHQ+PC9zdmc+",
+    "generalProgramInstructions": "General Program Instructions, version 2.1 (2023)"
+  },
+  "manufacturer": {
+    "name": "Example Climate Systems Inc.",
+    "address": "1 Industrial Park Road\nRiverton, ST 00001",
+    "website": "https://climate-systems.example",
+    "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNDAiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAzNDAgNjQiPjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjEyIiBmaWxsPSIjMWY0ZTc5Ii8+PHRleHQgeD0iNzYiIHk9IjQwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiMyMjIiPkV4YW1wbGUgQ2xpbWF0ZTwvdGV4dD48L3N2Zz4=",
+    "description": "Example Climate Systems Inc. designs and manufactures heating, ventilation and air conditioning equipment for commercial buildings."
+  },
+  "verification": {
+    "type": "external",
+    "verified": true,
+    "epdVerifier": {
+      "name": "A. Verifier",
+      "organization": "Independent Verification Ltd.",
+      "email": "verifier@verification.example"
+    },
+    "lcaVerifier": {
+      "name": "B. Reviewer",
+      "organization": "Independent Verification Ltd."
+    },
+    "lcaPractitioner": {
+      "name": "C. Analyst",
+      "organization": "Example LCA Consulting"
+    }
+  },
+  "pcr": {
+    "parts": [
+      {
+        "name": "Part A: Life Cycle Assessment Calculation Rules and Report Requirements",
+        "publisher": "UL Environment",
+        "version": "4.0",
+        "year": 2022
+      },
+      {
+        "name": "Part B: Water-Cooled Chiller EPD Requirements",
+        "publisher": "UL Environment",
+        "version": "2.0",
+        "year": 2018
+      }
+    ],
+    "reviewPanel": [
+      {
+        "name": "Panel Chair",
+        "organization": "Example Review Group"
+      },
+      {
+        "name": "Panel Member",
+        "organization": "Example University"
+      }
+    ],
+    "standards": []
+  },
+  "lcaSetup": {
+    "software": {
+      "name": "EcoMetric",
+      "version": "1.0"
+    },
+    "lciDatabases": [
+      {
+        "name": "ecoinvent",
+        "version": "3.12 cut-off"
+      }
+    ],
+    "lciaMethods": [
+      {
+        "name": "TRACI",
+        "version": "2.1"
+      }
+    ],
+    "excludedFlows": [
+      "Capital goods and infrastructure",
+      "Personnel-related impacts"
+    ]
+  },
+  "product": {
+    "name": "EX-650 Water-Cooled Centrifugal Chiller",
+    "tradeNames": [
+      "EX-650"
+    ],
+    "variantsText": "The product range covers 350 to 1,150 tons; the 650-ton configuration is assessed.",
+    "classificationCodes": [
+      {
+        "system": "CSI",
+        "code": "23 64 16.16"
+      },
+      {
+        "system": "UNSPSC",
+        "code": "40101701"
+      }
+    ],
+    "description": "The EX-650 is a water-cooled centrifugal chiller with a two-stage compressor and oil-free bearings, using the low-GWP refrigerant R-1233zd(E).",
+    "intendedApplication": "Providing chilled water for cooling the interior of commercial buildings.",
+    "images": [
+      {
+        "caption": "EX-650 water-cooled centrifugal chiller (illustration)",
+        "data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0ODAiIGhlaWdodD0iMzAwIiB2aWV3Qm94PSIwIDAgNDgwIDMwMCI+PHJlY3Qgd2lkdGg9IjQ4MCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNmMmY0ZjciLz48cmVjdCB4PSI2MCIgeT0iNzAiIHdpZHRoPSIzNjAiIGhlaWdodD0iMTYwIiByeD0iMTAiIGZpbGw9IiMxZjRlNzkiIG9wYWNpdHk9IjAuODUiLz48dGV4dCB4PSIyNDAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIyIiBmaWxsPSIjZmZmIj5FWC02NTAgY2hpbGxlcjwvdGV4dD48L3N2Zz4="
+      }
+    ],
+    "technicalData": [
+      {
+        "name": "Chilling capacity",
+        "value": 650,
+        "unit": "tons of refrigeration"
+      },
+      {
+        "name": "Full-load efficiency",
+        "value": 0.548,
+        "unit": "kW/ton"
+      },
+      {
+        "name": "Integrated part-load value (IPLV)",
+        "value": 0.312,
+        "unit": "kW/ton"
+      },
+      {
+        "name": "Refrigerant",
+        "value": "R-1233zd(E)"
+      },
+      {
+        "name": "Refrigerant charge",
+        "value": 596,
+        "unit": "kg"
+      },
+      {
+        "name": "Operating weight",
+        "value": 14200,
+        "unit": "kg"
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "Length",
+        "value": 5.1,
+        "unit": "m"
+      },
+      {
+        "name": "Width",
+        "value": 2.2,
+        "unit": "m"
+      },
+      {
+        "name": "Height",
+        "value": 2.6,
+        "unit": "m"
+      }
+    ],
+    "referenceServiceLife": {
+      "value": 25,
+      "unit": "years"
+    },
+    "buildingEstimatedServiceLife": {
+      "value": 75,
+      "unit": "years"
+    },
+    "hazardousSubstancesStatement": "No substances required to be reported as hazardous are associated with the production of this product.",
+    "standardsAndCertifications": [
+      "AHRI Standard 550/590 certified",
+      "ASME Section VIII Div. 1"
+    ]
+  },
+  "functionalUnit": {
+    "type": "functional",
+    "description": "1 ton of chilling capacity",
+    "unitLabel": "per ton of chilling capacity",
+    "massPerUnit": {
+      "value": 21.8,
+      "unit": "kg/ton"
+    },
+    "referenceProductMass": {
+      "value": 14200,
+      "unit": "kg"
+    },
+    "referenceProductDescription": "650-ton water-cooled centrifugal chiller incl. refrigerant charge"
+  },
+  "materialComposition": {
+    "basis": "per functional unit",
+    "items": [
+      {
+        "material": "Steel",
+        "mass": 13.6,
+        "unit": "kg",
+        "percentage": 62.39,
+        "recycledContentPct": 35
+      },
+      {
+        "material": "Copper",
+        "mass": 3.9,
+        "unit": "kg",
+        "percentage": 17.89
+      },
+      {
+        "material": "Aluminium",
+        "mass": 1.2,
+        "unit": "kg",
+        "percentage": 5.5
+      },
+      {
+        "material": "Electronics",
+        "mass": 0.9,
+        "unit": "kg",
+        "percentage": 4.13
+      },
+      {
+        "material": "Refrigerant R-1233zd(E)",
+        "mass": 0.92,
+        "unit": "kg",
+        "percentage": 4.22
+      },
+      {
+        "material": "Insulation and other",
+        "mass": 1.28,
+        "unit": "kg",
+        "percentage": 5.87
+      }
+    ]
+  },
+  "packaging": [
+    {
+      "material": "Wood skids",
+      "mass": 0.35,
+      "unit": "kg",
+      "disposalRoute": "Recycling"
+    },
+    {
+      "material": "Plastic film",
+      "mass": 0.04,
+      "unit": "kg",
+      "disposalRoute": "Landfill"
+    }
+  ],
+  "manufacturing": {
+    "sites": [
+      {
+        "id": "us",
+        "name": "Riverton plant",
+        "location": "Riverton, ST",
+        "country": "USA"
+      },
+      {
+        "id": "cn",
+        "name": "Coastal plant",
+        "location": "Coastal City",
+        "country": "China"
+      }
+    ],
+    "processDescription": "Shells and tubes are fabricated, brazed and assembled with the compressor, motor and controls; units are pressure tested and charged with refrigerant.",
+    "energyInputs": [
+      {
+        "carrier": "Electricity",
+        "amount": 44554,
+        "unit": "kWh/year",
+        "datasetName": "market for electricity, medium voltage [US]"
+      },
+      {
+        "carrier": "Natural gas",
+        "amount": 455,
+        "unit": "MJ/year"
+      }
+    ],
+    "wastes": [
+      {
+        "type": "Steel scrap",
+        "amount": 0.8,
+        "unit": "kg",
+        "route": "recycling"
+      },
+      {
+        "type": "General waste",
+        "amount": 0.1,
+        "unit": "kg",
+        "route": "landfill"
+      }
+    ]
+  },
+  "scenarios": {
+    "A4": {
+      "legs": [
+        {
+          "mode": "Truck",
+          "vehicleType": "Flatbed truck >32 t",
+          "fuelType": "Diesel",
+          "fuelEfficiency": "0.35 l/km",
+          "distanceKm": 1600,
+          "capacityUtilizationPct": 85
+        }
+      ]
+    },
+    "A5": {
+      "energyCarriers": [
+        {
+          "type": "Diesel (crane)",
+          "amount": 4.2,
+          "unit": "MJ"
+        }
+      ],
+      "productLossPct": 0,
+      "packagingWaste": [
+        {
+          "route": "Recycling",
+          "amount": 0.35,
+          "unit": "kg"
+        },
+        {
+          "route": "Landfill",
+          "amount": 0.04,
+          "unit": "kg"
+        }
+      ]
+    },
+    "B1": {
+      "description": "Direct refrigerant emissions during use are reported in B1.",
+      "directEmissions": [
+        {
+          "name": "R-1233zd(E) to air",
+          "amount": 0.46,
+          "unit": "kg"
+        }
+      ]
+    },
+    "B2": {
+      "description": "A 2% annual refrigerant leakage and replacement rate is assumed.",
+      "cycles": 25,
+      "items": [
+        {
+          "name": "Refrigerant replacement, R-1233zd(E)",
+          "amount": 0.46,
+          "unit": "kg"
+        }
+      ],
+      "directEmissions": [
+        {
+          "name": "Refrigerant to air",
+          "amount": 0.46,
+          "unit": "kg"
+        }
+      ]
+    },
+    "B3": {
+      "description": "Repairs are limited to minor component replacement.",
+      "items": [
+        {
+          "name": "Steel parts",
+          "amount": 0.05,
+          "unit": "kg"
+        }
+      ]
+    },
+    "B4": {
+      "description": "The chiller is replaced at the end of its reference service life."
+    },
+    "B5": {
+      "description": "No refurbishment is expected within the reference service life."
+    },
+    "B6": {
+      "annualEnergy": [
+        {
+          "carrier": "Electricity",
+          "amount": 1170,
+          "unit": "kWh/ton/year"
+        }
+      ],
+      "lifetimeEnergy": {
+        "amount": 87750,
+        "unit": "kWh/ton"
+      },
+      "perFunctionalUnit": {
+        "amount": 87750,
+        "unit": "kWh"
+      },
+      "gridMix": [
+        {
+          "region": "US average grid",
+          "sharePct": 100,
+          "emissionFactor": 0.41,
+          "emissionFactorUnit": "kg CO₂e/kWh"
+        }
+      ],
+      "calculationMethodText": "Operational energy is calculated from the IPLV and the PCR default load profile over the 75-year building service life."
+    },
+    "B7": {
+      "annualWater": 0.02,
+      "unit": "m³/ton/year"
+    },
+    "C1_C4": {
+      "recycling": {
+        "amount": 19.6,
+        "unit": "kg"
+      },
+      "landfill": {
+        "amount": 1.3,
+        "unit": "kg"
+      },
+      "distances": {
+        "to recycling facility": {
+          "amount": 160,
+          "unit": "km"
+        }
+      }
+    }
+  },
+  "modules": [
+    {
+      "code": "A1",
+      "status": "declared",
+      "geography": "Global"
+    },
+    {
+      "code": "A2",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "A3",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "A4",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "A5",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "B1",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "B2",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "B3",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "B4",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "B5",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "B6",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "B7",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "C1",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "C2",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "C3",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "C4",
+      "status": "declared",
+      "geography": "US"
+    },
+    {
+      "code": "D",
+      "status": "MND"
+    }
+  ],
+  "results": [
+    {
+      "variantId": "us",
+      "variantLabel": "Manufactured in US",
+      "method": "TRACI 2.1",
+      "rows": [
+        {
+          "indicatorCode": "GWP",
+          "values": {
+            "A1": 155.05,
+            "A2": 9.66633,
+            "A3": 4.06938,
+            "A4": 1.53995,
+            "A5": 1.01366,
+            "B1": 1.49344,
+            "B2": 3.08698,
+            "B3": 0.327916,
+            "B4": 297.271,
+            "B5": 0.0,
+            "B6": 34410.1,
+            "B7": 0.0473238,
+            "C1": 0.0,
+            "C2": 0.44017,
+            "C3": 1.572,
+            "C4": 0.0851951,
+            "A1-A3": 168.786,
+            "C1-C4": 2.09737
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "A1": 3.24871e-05,
+            "A2": 1.83873e-06,
+            "A3": 1.15788e-06,
+            "A4": 2.05467e-07,
+            "A5": 1.63928e-07,
+            "B1": 0.0,
+            "B2": 6.55908e-07,
+            "B3": 7.21245e-08,
+            "B4": 6.91952e-05,
+            "B5": 0.0,
+            "B6": 0.00843155,
+            "B7": 1.20735e-08,
+            "C1": 0.0,
+            "C2": 7.04498e-08,
+            "C3": 5.00967e-07,
+            "C4": 2.53793e-08,
+            "A1-A3": 3.54837e-05,
+            "C1-C4": 5.96796e-07
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "A1": 0.520454,
+            "A2": 0.0358109,
+            "A3": 0.0184758,
+            "A4": 0.00451279,
+            "A5": 0.00340534,
+            "B1": 0.0,
+            "B2": 0.0152811,
+            "B3": 0.00209487,
+            "B4": 1.78111,
+            "B5": 0.0,
+            "B6": 193.576,
+            "B7": 0.000269031,
+            "C1": 0.0,
+            "C2": 0.00177085,
+            "C3": 0.00839347,
+            "C4": 0.000454071,
+            "A1-A3": 0.574741,
+            "C1-C4": 0.0106184
+          }
+        },
+        {
+          "indicatorCode": "EP",
+          "values": {
+            "A1": 0.570008,
+            "A2": 0.0348645,
+            "A3": 0.0233491,
+            "A4": 0.00506783,
+            "A5": 0.00305966,
+            "B1": 0.0,
+            "B2": 0.0157588,
+            "B3": 0.00161844,
+            "B4": 1.08868,
+            "B5": 0.0,
+            "B6": 162.036,
+            "B7": 0.000190219,
+            "C1": 0.0,
+            "C2": 0.00133542,
+            "C3": 0.00922992,
+            "C4": 0.000369437,
+            "A1-A3": 0.628222,
+            "C1-C4": 0.0109348
+          }
+        },
+        {
+          "indicatorCode": "SFP",
+          "values": {
+            "A1": 8.09506,
+            "A2": 0.718264,
+            "A3": 0.423908,
+            "A4": 0.0664686,
+            "A5": 0.0617147,
+            "B1": 0.0,
+            "B2": 0.209507,
+            "B3": 0.027061,
+            "B4": 21.7583,
+            "B5": 0.0,
+            "B6": 2478.26,
+            "B7": 0.00352423,
+            "C1": 0.0,
+            "C2": 0.0318004,
+            "C3": 0.17266,
+            "C4": 0.00522571,
+            "A1-A3": 9.23723,
+            "C1-C4": 0.209686
+          }
+        },
+        {
+          "indicatorCode": "FFD",
+          "values": {
+            "A1": 35.0418,
+            "A2": 2.29826,
+            "A3": 1.21267,
+            "A4": 0.24418,
+            "A5": 0.174672,
+            "B1": 0.0,
+            "B2": 0.847792,
+            "B3": 0.100286,
+            "B4": 70.6001,
+            "B5": 0.0,
+            "B6": 7656.19,
+            "B7": 0.0117575,
+            "C1": 0.0,
+            "C2": 0.0747347,
+            "C3": 0.348415,
+            "C4": 0.025336,
+            "A1-A3": 38.5527,
+            "C1-C4": 0.448486
+          }
+        },
+        {
+          "indicatorCode": "PMFP",
+          "values": {
+            "A1": 0.0586442,
+            "A2": 0.00314958,
+            "A3": 0.00210267,
+            "A4": 0.000486447,
+            "A5": 0.000320855,
+            "B1": 0.0,
+            "B2": 0.00110135,
+            "B3": 0.000166062,
+            "B4": 0.136124,
+            "B5": 0.0,
+            "B6": 17.8167,
+            "B7": 2.46401e-05,
+            "C1": 0.0,
+            "C2": 0.000153644,
+            "C3": 0.00077639,
+            "C4": 3.08199e-05,
+            "A1-A3": 0.0638964,
+            "C1-C4": 0.000960854
+          }
+        },
+        {
+          "indicatorCode": "HTc",
+          "values": {
+            "A1": 2.02785e-06,
+            "A2": 1.00604e-07,
+            "A3": 4.4153e-08,
+            "A4": 1.44644e-08,
+            "A5": 1.09677e-08,
+            "B1": 0.0,
+            "B2": 3.37273e-08,
+            "B3": 5.08689e-09,
+            "B4": 4.15201e-06,
+            "B5": 0.0,
+            "B6": 0.000429817,
+            "B7": 4.57142e-10,
+            "C1": 0.0,
+            "C2": 4.7533e-09,
+            "C3": 2.78666e-08,
+            "C4": 1.33822e-09,
+            "A1-A3": 2.17261e-06,
+            "C1-C4": 3.39581e-08
+          }
+        },
+        {
+          "indicatorCode": "HTnc",
+          "values": {
+            "A1": 1.67587e-05,
+            "A2": 7.15311e-07,
+            "A3": 4.34484e-07,
+            "A4": 1.0691e-07,
+            "A5": 7.88534e-08,
+            "B1": 0.0,
+            "B2": 2.63303e-07,
+            "B3": 4.23457e-08,
+            "B4": 3.06921e-05,
+            "B5": 0.0,
+            "B6": 0.00328843,
+            "B7": 3.80923e-09,
+            "C1": 0.0,
+            "C2": 4.4619e-08,
+            "C3": 1.66955e-07,
+            "C4": 7.46939e-09,
+            "A1-A3": 1.79085e-05,
+            "C1-C4": 2.19043e-07
+          }
+        },
+        {
+          "indicatorCode": "ETf",
+          "values": {
+            "A1": 269.475,
+            "A2": 28.1871,
+            "A3": 10.9244,
+            "A4": 2.951,
+            "A5": 2.16025,
+            "B1": 0.0,
+            "B2": 9.51324,
+            "B3": 1.02824,
+            "B4": 951.025,
+            "B5": 0.0,
+            "B6": 92288.7,
+            "B7": 0.0986249,
+            "C1": 0.0,
+            "C2": 1.06198,
+            "C3": 5.16984,
+            "C4": 0.196398,
+            "A1-A3": 308.587,
+            "C1-C4": 6.42822
+          }
+        }
+      ]
+    },
+    {
+      "variantId": "us",
+      "variantLabel": "Manufactured in US",
+      "method": "CML-IA",
+      "rows": [
+        {
+          "indicatorCode": "GWP",
+          "values": {
+            "A1": 139.454,
+            "A2": 9.3728,
+            "A3": 5.91311,
+            "A4": 1.45967,
+            "A5": 1.01526,
+            "B1": 1.4785,
+            "B2": 4.26367,
+            "B3": 0.414054,
+            "B4": 408.427,
+            "B5": 0.0,
+            "B6": 38376.0,
+            "B7": 0.0564111,
+            "C1": 0.0,
+            "C2": 0.507778,
+            "C3": 1.63595,
+            "C4": 0.0965624,
+            "A1-A3": 154.74,
+            "C1-C4": 2.24029
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "A1": 2.58043e-05,
+            "A2": 1.45238e-06,
+            "A3": 1.10569e-06,
+            "A4": 2.31435e-07,
+            "A5": 1.7463e-07,
+            "B1": 0.0,
+            "B2": 5.08796e-07,
+            "B3": 9.34631e-08,
+            "B4": 5.06226e-05,
+            "B5": 0.0,
+            "B6": 0.00539338,
+            "B7": 1.1661e-08,
+            "C1": 0.0,
+            "C2": 8.02981e-08,
+            "C3": 4.04269e-07,
+            "C4": 1.70139e-08,
+            "A1-A3": 2.83624e-05,
+            "C1-C4": 5.01581e-07
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "A1": 0.589372,
+            "A2": 0.0467466,
+            "A3": 0.0183818,
+            "A4": 0.00564402,
+            "A5": 0.00307944,
+            "B1": 0.0,
+            "B2": 0.01685,
+            "B3": 0.00146268,
+            "B4": 1.23947,
+            "B5": 0.0,
+            "B6": 144.232,
+            "B7": 0.000203828,
+            "C1": 0.0,
+            "C2": 0.00131793,
+            "C3": 0.00956137,
+            "C4": 0.000335043,
+            "A1-A3": 0.6545,
+            "C1-C4": 0.0112143
+          }
+        },
+        {
+          "indicatorCode": "EP",
+          "values": {
+            "A1": 0.249732,
+            "A2": 0.0134655,
+            "A3": 0.00748828,
+            "A4": 0.00161846,
+            "A5": 0.00110666,
+            "B1": 0.0,
+            "B2": 0.00479481,
+            "B3": 0.00083849,
+            "B4": 0.549968,
+            "B5": 0.0,
+            "B6": 50.8125,
+            "B7": 8.38563e-05,
+            "C1": 0.0,
+            "C2": 0.000760581,
+            "C3": 0.00393856,
+            "C4": 0.000193763,
+            "A1-A3": 0.270686,
+            "C1-C4": 0.0048929
+          }
+        },
+        {
+          "indicatorCode": "POCP",
+          "values": {
+            "A1": 0.0278154,
+            "A2": 0.00183353,
+            "A3": 0.00137422,
+            "A4": 0.000252108,
+            "A5": 0.000179885,
+            "B1": 0.0,
+            "B2": 0.000908957,
+            "B3": 8.9056e-05,
+            "B4": 0.0912531,
+            "B5": 0.0,
+            "B6": 6.7048,
+            "B7": 1.31883e-05,
+            "C1": 0.0,
+            "C2": 0.000108975,
+            "C3": 0.000454772,
+            "C4": 1.96024e-05,
+            "A1-A3": 0.0310231,
+            "C1-C4": 0.000583349
+          }
+        },
+        {
+          "indicatorCode": "ADPE",
+          "values": {
+            "A1": 0.00237777,
+            "A2": 0.000163646,
+            "A3": 5.75991e-05,
+            "A4": 2.07734e-05,
+            "A5": 1.43033e-05,
+            "B1": 0.0,
+            "B2": 5.42547e-05,
+            "B3": 7.24484e-06,
+            "B4": 0.00435213,
+            "B5": 0.0,
+            "B6": 0.390118,
+            "B7": 7.12927e-07,
+            "C1": 0.0,
+            "C2": 6.65992e-06,
+            "C3": 2.41683e-05,
+            "C4": 1.08255e-06,
+            "A1-A3": 0.00259902,
+            "C1-C4": 3.19108e-05
+          }
+        },
+        {
+          "indicatorCode": "ADPF",
+          "values": {
+            "A1": 1773.34,
+            "A2": 114.947,
+            "A3": 60.3479,
+            "A4": 17.6177,
+            "A5": 12.3172,
+            "B1": 0.0,
+            "B2": 46.5403,
+            "B3": 4.00263,
+            "B4": 3257.04,
+            "B5": 0.0,
+            "B6": 469876.0,
+            "B7": 0.605962,
+            "C1": 0.0,
+            "C2": 3.87373,
+            "C3": 24.9099,
+            "C4": 1.09532,
+            "A1-A3": 1948.63,
+            "C1-C4": 29.879
+          }
+        },
+        {
+          "indicatorCode": "HTP",
+          "values": {
+            "A1": 94.621,
+            "A2": 6.66061,
+            "A3": 2.98915,
+            "A4": 0.723805,
+            "A5": 0.496847,
+            "B1": 0.0,
+            "B2": 2.53821,
+            "B3": 0.265569,
+            "B4": 216.788,
+            "B5": 0.0,
+            "B6": 25631.4,
+            "B7": 0.0359841,
+            "C1": 0.0,
+            "C2": 0.198202,
+            "C3": 1.41618,
+            "C4": 0.0681443,
+            "A1-A3": 104.271,
+            "C1-C4": 1.68253
+          }
+        },
+        {
+          "indicatorCode": "FAETP",
+          "values": {
+            "A1": 36.5374,
+            "A2": 2.35116,
+            "A3": 1.37138,
+            "A4": 0.31763,
+            "A5": 0.317977,
+            "B1": 0.0,
+            "B2": 1.10332,
+            "B3": 0.158276,
+            "B4": 120.341,
+            "B5": 0.0,
+            "B6": 9065.97,
+            "B7": 0.012373,
+            "C1": 0.0,
+            "C2": 0.144227,
+            "C3": 0.545298,
+            "C4": 0.0329734,
+            "A1-A3": 40.2599,
+            "C1-C4": 0.722498
+          }
+        },
+        {
+          "indicatorCode": "MAETP",
+          "values": {
+            "A1": 72543.5,
+            "A2": 7102.56,
+            "A3": 3644.25,
+            "A4": 891.17,
+            "A5": 427.555,
+            "B1": 0.0,
+            "B2": 1741.78,
+            "B3": 309.578,
+            "B4": 243329.0,
+            "B5": 0.0,
+            "B6": 21744800.0,
+            "B7": 37.4964,
+            "C1": 0.0,
+            "C2": 258.683,
+            "C3": 1312.75,
+            "C4": 72.218,
+            "A1-A3": 83290.3,
+            "C1-C4": 1643.65
+          }
+        },
+        {
+          "indicatorCode": "TETP",
+          "values": {
+            "A1": 0.726685,
+            "A2": 0.0322989,
+            "A3": 0.0233166,
+            "A4": 0.00525055,
+            "A5": 0.00348298,
+            "B1": 0.0,
+            "B2": 0.0165325,
+            "B3": 0.00198044,
+            "B4": 1.54702,
+            "B5": 0.0,
+            "B6": 149.894,
+            "B7": 0.00018815,
+            "C1": 0.0,
+            "C2": 0.00138529,
+            "C3": 0.00828157,
+            "C4": 0.000473488,
+            "A1-A3": 0.782301,
+            "C1-C4": 0.0101403
+          }
+        }
+      ]
+    },
+    {
+      "variantId": "us",
+      "variantLabel": "Manufactured in US",
+      "method": "EN15804+A2/PEF",
+      "rows": [
+        {
+          "indicatorCode": "GWP-total",
+          "values": {
+            "A1": 176.662,
+            "A2": 8.33075,
+            "A3": 6.01016,
+            "A4": 1.46913,
+            "A5": 0.70103,
+            "B1": 1.16396,
+            "B2": 3.09051,
+            "B3": 0.442905,
+            "B4": 336.095,
+            "B5": 0.0,
+            "B6": 30361.7,
+            "B7": 0.0571397,
+            "C1": 0.0,
+            "C2": 0.385887,
+            "C3": 2.29264,
+            "C4": 0.111948,
+            "A1-A3": 191.003,
+            "C1-C4": 2.79047
+          }
+        },
+        {
+          "indicatorCode": "GWP-fossil",
+          "values": {
+            "A1": 142.906,
+            "A2": 11.8938,
+            "A3": 5.74549,
+            "A4": 1.21815,
+            "A5": 1.00948,
+            "B1": 1.62608,
+            "B2": 2.94244,
+            "B3": 0.427547,
+            "B4": 296.815,
+            "B5": 0.0,
+            "B6": 39487.9,
+            "B7": 0.053248,
+            "C1": 0.0,
+            "C2": 0.359893,
+            "C3": 2.08909,
+            "C4": 0.0876241,
+            "A1-A3": 160.545,
+            "C1-C4": 2.53661
+          }
+        },
+        {
+          "indicatorCode": "GWP-biogenic",
+          "values": {
+            "A1": 0.631167,
+            "A2": 0.0445656,
+            "A3": 0.0241653,
+            "A4": 0.00407323,
+            "A5": 0.00364074,
+            "B1": 0.00672775,
+            "B2": 0.0124738,
+            "B3": 0.00170936,
+            "B4": 1.432,
+            "B5": 0.0,
+            "B6": 154.095,
+            "B7": 0.000192289,
+            "C1": 0.0,
+            "C2": 0.0018624,
+            "C3": 0.00685089,
+            "C4": 0.000348933,
+            "A1-A3": 0.699898,
+            "C1-C4": 0.00906222
+          }
+        },
+        {
+          "indicatorCode": "GWP-luluc",
+          "values": {
+            "A1": 1.37857,
+            "A2": 0.121945,
+            "A3": 0.060761,
+            "A4": 0.0104952,
+            "A5": 0.00857473,
+            "B1": 0.0182158,
+            "B2": 0.0442065,
+            "B3": 0.00505773,
+            "B4": 2.75596,
+            "B5": 0.0,
+            "B6": 430.942,
+            "B7": 0.000506718,
+            "C1": 0.0,
+            "C2": 0.00400479,
+            "C3": 0.0276239,
+            "C4": 0.000874762,
+            "A1-A3": 1.56128,
+            "C1-C4": 0.0325035
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "A1": 2.3229e-05,
+            "A2": 1.72593e-06,
+            "A3": 8.35876e-07,
+            "A4": 2.98037e-07,
+            "A5": 2.04196e-07,
+            "B1": 0.0,
+            "B2": 6.21851e-07,
+            "B3": 6.36984e-08,
+            "B4": 5.81063e-05,
+            "B5": 0.0,
+            "B6": 0.00541335,
+            "B7": 1.13047e-08,
+            "C1": 0.0,
+            "C2": 8.85753e-08,
+            "C3": 3.64647e-07,
+            "C4": 1.81679e-08,
+            "A1-A3": 2.57908e-05,
+            "C1-C4": 4.7139e-07
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "A1": 0.576794,
+            "A2": 0.04795,
+            "A3": 0.0266328,
+            "A4": 0.00492287,
+            "A5": 0.00516675,
+            "B1": 0.0,
+            "B2": 0.0151418,
+            "B3": 0.00251648,
+            "B4": 1.35018,
+            "B5": 0.0,
+            "B6": 215.928,
+            "B7": 0.000263237,
+            "C1": 0.0,
+            "C2": 0.0025431,
+            "C3": 0.0105466,
+            "C4": 0.000559494,
+            "A1-A3": 0.651377,
+            "C1-C4": 0.0136492
+          }
+        },
+        {
+          "indicatorCode": "EP-freshwater",
+          "values": {
+            "A1": 0.0402313,
+            "A2": 0.00265255,
+            "A3": 0.00099015,
+            "A4": 0.000304704,
+            "A5": 0.000250719,
+            "B1": 0.0,
+            "B2": 0.00109108,
+            "B3": 0.000106778,
+            "B4": 0.0814935,
+            "B5": 0.0,
+            "B6": 11.5128,
+            "B7": 1.57894e-05,
+            "C1": 0.0,
+            "C2": 0.000120663,
+            "C3": 0.000436939,
+            "C4": 2.02365e-05,
+            "A1-A3": 0.043874,
+            "C1-C4": 0.000577839
+          }
+        },
+        {
+          "indicatorCode": "EP-marine",
+          "values": {
+            "A1": 0.16928,
+            "A2": 0.00746257,
+            "A3": 0.00422924,
+            "A4": 0.00135376,
+            "A5": 0.000670208,
+            "B1": 0.0,
+            "B2": 0.00281906,
+            "B3": 0.000347673,
+            "B4": 0.275116,
+            "B5": 0.0,
+            "B6": 26.5859,
+            "B7": 3.98421e-05,
+            "C1": 0.0,
+            "C2": 0.000348289,
+            "C3": 0.00233104,
+            "C4": 0.000118159,
+            "A1-A3": 0.180972,
+            "C1-C4": 0.00279749
+          }
+        },
+        {
+          "indicatorCode": "EP-terrestrial",
+          "values": {
+            "A1": 1.46752,
+            "A2": 0.0753733,
+            "A3": 0.0380137,
+            "A4": 0.0101929,
+            "A5": 0.00919242,
+            "B1": 0.0,
+            "B2": 0.0396084,
+            "B3": 0.00388619,
+            "B4": 2.94924,
+            "B5": 0.0,
+            "B6": 413.373,
+            "B7": 0.000448752,
+            "C1": 0.0,
+            "C2": 0.00421083,
+            "C3": 0.0170499,
+            "C4": 0.00086168,
+            "A1-A3": 1.58091,
+            "C1-C4": 0.0221224
+          }
+        },
+        {
+          "indicatorCode": "POCP",
+          "values": {
+            "A1": 0.399176,
+            "A2": 0.026269,
+            "A3": 0.0157364,
+            "A4": 0.00336597,
+            "A5": 0.00265857,
+            "B1": 0.0,
+            "B2": 0.00730233,
+            "B3": 0.00116597,
+            "B4": 0.901968,
+            "B5": 0.0,
+            "B6": 109.539,
+            "B7": 0.000154958,
+            "C1": 0.0,
+            "C2": 0.00138678,
+            "C3": 0.00645823,
+            "C4": 0.000267359,
+            "A1-A3": 0.441181,
+            "C1-C4": 0.00811237
+          }
+        },
+        {
+          "indicatorCode": "ADP-minerals&metals",
+          "values": {
+            "A1": 0.00257565,
+            "A2": 0.000144871,
+            "A3": 5.72564e-05,
+            "A4": 2.25592e-05,
+            "A5": 1.54755e-05,
+            "B1": 0.0,
+            "B2": 5.95617e-05,
+            "B3": 5.0667e-06,
+            "B4": 0.00458726,
+            "B5": 0.0,
+            "B6": 0.607908,
+            "B7": 5.7022e-07,
+            "C1": 0.0,
+            "C2": 7.72412e-06,
+            "C3": 2.40397e-05,
+            "C4": 1.72256e-06,
+            "A1-A3": 0.00277778,
+            "C1-C4": 3.34864e-05
+          }
+        },
+        {
+          "indicatorCode": "ADP-fossil",
+          "values": {
+            "A1": 1864.71,
+            "A2": 136.543,
+            "A3": 76.3552,
+            "A4": 15.2584,
+            "A5": 8.01536,
+            "B1": 0.0,
+            "B2": 39.619,
+            "B3": 4.73147,
+            "B4": 3385.84,
+            "B5": 0.0,
+            "B6": 383272.0,
+            "B7": 0.639565,
+            "C1": 0.0,
+            "C2": 4.9545,
+            "C3": 25.2358,
+            "C4": 1.41213,
+            "A1-A3": 2077.61,
+            "C1-C4": 31.6024
+          }
+        },
+        {
+          "indicatorCode": "WDP",
+          "values": {
+            "A1": 48.555,
+            "A2": 3.54679,
+            "A3": 1.35051,
+            "A4": 0.366505,
+            "A5": 0.279369,
+            "B1": 0.0,
+            "B2": 1.21388,
+            "B3": 0.151836,
+            "B4": 122.188,
+            "B5": 0.0,
+            "B6": 10348.5,
+            "B7": 0.0136075,
+            "C1": 0.0,
+            "C2": 0.129741,
+            "C3": 0.674953,
+            "C4": 0.0334463,
+            "A1-A3": 53.4523,
+            "C1-C4": 0.83814
+          }
+        },
+        {
+          "indicatorCode": "PM",
+          "values": {
+            "A1": 6.75828e-06,
+            "A2": 3.945e-07,
+            "A3": 2.21656e-07,
+            "A4": 5.98879e-08,
+            "A5": 3.59318e-08,
+            "B1": 0.0,
+            "B2": 1.82428e-07,
+            "B3": 1.54895e-08,
+            "B4": 1.11481e-05,
+            "B5": 0.0,
+            "B6": 0.0013272,
+            "B7": 1.73252e-09,
+            "C1": 0.0,
+            "C2": 1.68253e-08,
+            "C3": 8.86604e-08,
+            "C4": 4.4317e-09,
+            "A1-A3": 7.37444e-06,
+            "C1-C4": 1.09917e-07
+          }
+        },
+        {
+          "indicatorCode": "IRP",
+          "values": {
+            "A1": 78.7738,
+            "A2": 5.01889,
+            "A3": 2.29983,
+            "A4": 0.564882,
+            "A5": 0.497532,
+            "B1": 0.0,
+            "B2": 1.52759,
+            "B3": 0.168817,
+            "B4": 160.374,
+            "B5": 0.0,
+            "B6": 13488.8,
+            "B7": 0.0207772,
+            "C1": 0.0,
+            "C2": 0.184601,
+            "C3": 0.776638,
+            "C4": 0.0598705,
+            "A1-A3": 86.0925,
+            "C1-C4": 1.02111
+          }
+        },
+        {
+          "indicatorCode": "ETP-fw",
+          "values": {
+            "A1": 3326.09,
+            "A2": 196.089,
+            "A3": 107.211,
+            "A4": 21.5553,
+            "A5": 11.7364,
+            "B1": 0.0,
+            "B2": 76.2639,
+            "B3": 7.97335,
+            "B4": 6765.24,
+            "B5": 0.0,
+            "B6": 542206.0,
+            "B7": 0.973981,
+            "C1": 0.0,
+            "C2": 6.90081,
+            "C3": 30.2307,
+            "C4": 1.82307,
+            "A1-A3": 3629.39,
+            "C1-C4": 38.9546
+          }
+        },
+        {
+          "indicatorCode": "HTP-c",
+          "values": {
+            "A1": 1.63256e-07,
+            "A2": 9.37433e-09,
+            "A3": 5.80151e-09,
+            "A4": 1.64839e-09,
+            "A5": 1.22574e-09,
+            "B1": 0.0,
+            "B2": 3.97265e-09,
+            "B3": 5.47483e-10,
+            "B4": 4.4938e-07,
+            "B5": 0.0,
+            "B6": 4.36622e-05,
+            "B7": 5.75203e-11,
+            "C1": 0.0,
+            "C2": 4.78551e-10,
+            "C3": 1.89915e-09,
+            "C4": 1.11385e-10,
+            "A1-A3": 1.78432e-07,
+            "C1-C4": 2.48909e-09
+          }
+        },
+        {
+          "indicatorCode": "HTP-nc",
+          "values": {
+            "A1": 2.92777e-06,
+            "A2": 2.68548e-07,
+            "A3": 1.38005e-07,
+            "A4": 2.85739e-08,
+            "A5": 1.8931e-08,
+            "B1": 0.0,
+            "B2": 1.06377e-07,
+            "B3": 8.45794e-09,
+            "B4": 9.8316e-06,
+            "B5": 0.0,
+            "B6": 0.000859271,
+            "B7": 1.20423e-09,
+            "C1": 0.0,
+            "C2": 9.62376e-09,
+            "C3": 4.26423e-08,
+            "C4": 3.01871e-09,
+            "A1-A3": 3.33432e-06,
+            "C1-C4": 5.52848e-08
+          }
+        },
+        {
+          "indicatorCode": "SQP",
+          "values": {
+            "A1": 1168.66,
+            "A2": 65.9175,
+            "A3": 39.9609,
+            "A4": 8.94859,
+            "A5": 6.6991,
+            "B1": 0.0,
+            "B2": 17.3129,
+            "B3": 3.03192,
+            "B4": 2178.19,
+            "B5": 0.0,
+            "B6": 262189.0,
+            "B7": 0.333478,
+            "C1": 0.0,
+            "C2": 2.79257,
+            "C3": 15.9599,
+            "C4": 0.601994,
+            "A1-A3": 1274.54,
+            "C1-C4": 19.3545
+          }
+        },
+        {
+          "indicatorCode": "PERE",
+          "values": {
+            "A1": 326.261,
+            "A2": 18.7581,
+            "A3": 10.4774,
+            "A4": 2.53828,
+            "A5": 1.73576,
+            "B1": 0.0,
+            "B2": 6.63689,
+            "B3": 0.926709,
+            "B4": 641.328,
+            "B5": 0.0,
+            "B6": 56072.8,
+            "B7": 0.105491,
+            "C1": 0.0,
+            "C2": 0.650739,
+            "C3": 3.45247,
+            "C4": 0.158287,
+            "A1-A3": 355.497,
+            "C1-C4": 4.2615
+          }
+        },
+        {
+          "indicatorCode": "PERM",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "PERT",
+          "values": {
+            "A1": 247.219,
+            "A2": 22.1939,
+            "A3": 10.8902,
+            "A4": 2.81538,
+            "A5": 1.90138,
+            "B1": 0.0,
+            "B2": 6.95357,
+            "B3": 0.906472,
+            "B4": 545.59,
+            "B5": 0.0,
+            "B6": 67205.1,
+            "B7": 0.117286,
+            "C1": 0.0,
+            "C2": 0.826661,
+            "C3": 2.9918,
+            "C4": 0.208342,
+            "A1-A3": 280.303,
+            "C1-C4": 4.0268
+          }
+        },
+        {
+          "indicatorCode": "PENRE",
+          "values": {
+            "A1": 1503.27,
+            "A2": 155.89,
+            "A3": 79.4214,
+            "A4": 19.3518,
+            "A5": 9.12209,
+            "B1": 0.0,
+            "B2": 44.7022,
+            "B3": 4.5593,
+            "B4": 3714.49,
+            "B5": 0.0,
+            "B6": 472651.0,
+            "B7": 0.539364,
+            "C1": 0.0,
+            "C2": 4.41418,
+            "C3": 22.0523,
+            "C4": 1.51979,
+            "A1-A3": 1738.58,
+            "C1-C4": 27.9863
+          }
+        },
+        {
+          "indicatorCode": "PENRM",
+          "values": {
+            "A1": 25.387,
+            "A2": 1.8276,
+            "A3": 0.82529,
+            "A4": 0.189293,
+            "A5": 0.130627,
+            "B1": 0.0,
+            "B2": 0.563796,
+            "B3": 0.0840071,
+            "B4": 72.605,
+            "B5": 0.0,
+            "B6": 8753.06,
+            "B7": 0.00807232,
+            "C1": 0.0,
+            "C2": 0.0740473,
+            "C3": 0.477709,
+            "C4": 0.0153032,
+            "A1-A3": 28.0399,
+            "C1-C4": 0.567059
+          }
+        },
+        {
+          "indicatorCode": "PENRT",
+          "values": {
+            "A1": 1669.63,
+            "A2": 119.894,
+            "A3": 59.7551,
+            "A4": 19.3684,
+            "A5": 10.8465,
+            "B1": 0.0,
+            "B2": 39.6038,
+            "B3": 6.09969,
+            "B4": 4878.49,
+            "B5": 0.0,
+            "B6": 510357.0,
+            "B7": 0.728158,
+            "C1": 0.0,
+            "C2": 5.14385,
+            "C3": 23.2719,
+            "C4": 1.34132,
+            "A1-A3": 1849.28,
+            "C1-C4": 29.7571
+          }
+        },
+        {
+          "indicatorCode": "SM",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "RSF",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "NRSF",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "FW",
+          "values": {
+            "A1": 0.842485,
+            "A2": 0.0669941,
+            "A3": 0.0400463,
+            "A4": 0.00669034,
+            "A5": 0.00560766,
+            "B1": 0.0,
+            "B2": 0.021468,
+            "B3": 0.00249168,
+            "B4": 2.07099,
+            "B5": 0.0,
+            "B6": 302.617,
+            "B7": 0.000391805,
+            "C1": 0.0,
+            "C2": 0.00296724,
+            "C3": 0.0169216,
+            "C4": 0.000820185,
+            "A1-A3": 0.949525,
+            "C1-C4": 0.020709
+          }
+        },
+        {
+          "indicatorCode": "HWD",
+          "values": {
+            "A1": 0.035697,
+            "A2": 0.00156774,
+            "A3": 0.000936026,
+            "A4": 0.000200999,
+            "A5": 0.000128685,
+            "B1": 0.0,
+            "B2": 0.000855465,
+            "B3": 0.00010018,
+            "B4": 0.0827286,
+            "B5": 0.0,
+            "B6": 6.16639,
+            "B7": 1.07236e-05,
+            "C1": 0.0,
+            "C2": 7.09859e-05,
+            "C3": 0.000469718,
+            "C4": 2.07196e-05,
+            "A1-A3": 0.0382008,
+            "C1-C4": 0.000561423
+          }
+        },
+        {
+          "indicatorCode": "NHWD",
+          "values": {
+            "A1": 35.3498,
+            "A2": 3.41732,
+            "A3": 1.37829,
+            "A4": 0.30643,
+            "A5": 0.245133,
+            "B1": 0.0,
+            "B2": 1.12433,
+            "B3": 0.140841,
+            "B4": 79.4112,
+            "B5": 0.0,
+            "B6": 12249.4,
+            "B7": 0.0133293,
+            "C1": 0.0,
+            "C2": 0.0920519,
+            "C3": 0.528886,
+            "C4": 0.0301447,
+            "A1-A3": 40.1454,
+            "C1-C4": 0.651083
+          }
+        },
+        {
+          "indicatorCode": "RWD",
+          "values": {
+            "A1": 0.00747358,
+            "A2": 0.000544799,
+            "A3": 0.000340389,
+            "A4": 6.83531e-05,
+            "A5": 3.8661e-05,
+            "B1": 0.0,
+            "B2": 0.000256778,
+            "B3": 2.597e-05,
+            "B4": 0.0155367,
+            "B5": 0.0,
+            "B6": 2.19184,
+            "B7": 3.28255e-06,
+            "C1": 0.0,
+            "C2": 3.00173e-05,
+            "C3": 0.00014892,
+            "C4": 5.69057e-06,
+            "A1-A3": 0.00835877,
+            "C1-C4": 0.000184628
+          }
+        },
+        {
+          "indicatorCode": "CRU",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "MFR",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 9.1,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 9.1
+          }
+        },
+        {
+          "indicatorCode": "MER",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "EEE",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "EET",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "variantId": "cn",
+      "variantLabel": "Manufactured in China",
+      "method": "TRACI 2.1",
+      "rows": [
+        {
+          "indicatorCode": "GWP",
+          "values": {
+            "A1": 195.192,
+            "A2": 10.3154,
+            "A3": 8.12932,
+            "A4": 4.45838,
+            "A5": 0.712416,
+            "B1": 1.21782,
+            "B2": 3.91854,
+            "B3": 0.385003,
+            "B4": 285.528,
+            "B5": 0.0,
+            "B6": 34870.3,
+            "B7": 0.0482329,
+            "C1": 0.0,
+            "C2": 0.331673,
+            "C3": 2.56958,
+            "C4": 0.11872,
+            "A1-A3": 213.637,
+            "C1-C4": 3.01997
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "A1": 2.81253e-05,
+            "A2": 2.95208e-06,
+            "A3": 1.83124e-06,
+            "A4": 8.62792e-07,
+            "A5": 1.96098e-07,
+            "B1": 0.0,
+            "B2": 7.67398e-07,
+            "B3": 7.85223e-08,
+            "B4": 8.13069e-05,
+            "B5": 0.0,
+            "B6": 0.0064035,
+            "B7": 1.18122e-08,
+            "C1": 0.0,
+            "C2": 8.99434e-08,
+            "C3": 3.60098e-07,
+            "C4": 1.79562e-08,
+            "A1-A3": 3.29086e-05,
+            "C1-C4": 4.67998e-07
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "A1": 0.559816,
+            "A2": 0.0644423,
+            "A3": 0.0289704,
+            "A4": 0.0199515,
+            "A5": 0.00387475,
+            "B1": 0.0,
+            "B2": 0.0176335,
+            "B3": 0.00151053,
+            "B4": 1.78305,
+            "B5": 0.0,
+            "B6": 142.531,
+            "B7": 0.00022533,
+            "C1": 0.0,
+            "C2": 0.00167096,
+            "C3": 0.00868462,
+            "C4": 0.000393906,
+            "A1-A3": 0.653229,
+            "C1-C4": 0.0107495
+          }
+        },
+        {
+          "indicatorCode": "EP",
+          "values": {
+            "A1": 0.512421,
+            "A2": 0.0450026,
+            "A3": 0.0365511,
+            "A4": 0.0130437,
+            "A5": 0.00265795,
+            "B1": 0.0,
+            "B2": 0.0155699,
+            "B3": 0.00138037,
+            "B4": 1.47672,
+            "B5": 0.0,
+            "B6": 140.933,
+            "B7": 0.000181075,
+            "C1": 0.0,
+            "C2": 0.00163861,
+            "C3": 0.00828708,
+            "C4": 0.00035316,
+            "A1-A3": 0.593975,
+            "C1-C4": 0.0102789
+          }
+        },
+        {
+          "indicatorCode": "SFP",
+          "values": {
+            "A1": 13.2161,
+            "A2": 1.01218,
+            "A3": 0.571167,
+            "A4": 0.279329,
+            "A5": 0.0549042,
+            "B1": 0.0,
+            "B2": 0.294408,
+            "B3": 0.033183,
+            "B4": 19.9701,
+            "B5": 0.0,
+            "B6": 1951.55,
+            "B7": 0.0032383,
+            "C1": 0.0,
+            "C2": 0.0233863,
+            "C3": 0.168667,
+            "C4": 0.00583214,
+            "A1-A3": 14.7994,
+            "C1-C4": 0.197885
+          }
+        },
+        {
+          "indicatorCode": "FFD",
+          "values": {
+            "A1": 33.3678,
+            "A2": 2.81217,
+            "A3": 1.75265,
+            "A4": 1.02865,
+            "A5": 0.134477,
+            "B1": 0.0,
+            "B2": 0.77048,
+            "B3": 0.100649,
+            "B4": 79.9949,
+            "B5": 0.0,
+            "B6": 8447.67,
+            "B7": 0.0100824,
+            "C1": 0.0,
+            "C2": 0.0975457,
+            "C3": 0.508239,
+            "C4": 0.019916,
+            "A1-A3": 37.9326,
+            "C1-C4": 0.625701
+          }
+        },
+        {
+          "indicatorCode": "PMFP",
+          "values": {
+            "A1": 0.0542782,
+            "A2": 0.0059223,
+            "A3": 0.00317405,
+            "A4": 0.00177088,
+            "A5": 0.000260645,
+            "B1": 0.0,
+            "B2": 0.00150083,
+            "B3": 0.000189136,
+            "B4": 0.108059,
+            "B5": 0.0,
+            "B6": 13.7786,
+            "B7": 2.44991e-05,
+            "C1": 0.0,
+            "C2": 0.000194346,
+            "C3": 0.000847177,
+            "C4": 4.6811e-05,
+            "A1-A3": 0.0633746,
+            "C1-C4": 0.00108833
+          }
+        },
+        {
+          "indicatorCode": "HTc",
+          "values": {
+            "A1": 2.09052e-06,
+            "A2": 1.48898e-07,
+            "A3": 1.07896e-07,
+            "A4": 4.96653e-08,
+            "A5": 1.03885e-08,
+            "B1": 0.0,
+            "B2": 3.36213e-08,
+            "B3": 4.1226e-09,
+            "B4": 3.83226e-06,
+            "B5": 0.0,
+            "B6": 0.000351205,
+            "B7": 6.48689e-10,
+            "C1": 0.0,
+            "C2": 3.76116e-09,
+            "C3": 2.49146e-08,
+            "C4": 1.1556e-09,
+            "A1-A3": 2.34731e-06,
+            "C1-C4": 2.98314e-08
+          }
+        },
+        {
+          "indicatorCode": "HTnc",
+          "values": {
+            "A1": 1.29976e-05,
+            "A2": 9.56807e-07,
+            "A3": 5.51533e-07,
+            "A4": 3.52295e-07,
+            "A5": 7.58227e-08,
+            "B1": 0.0,
+            "B2": 3.78723e-07,
+            "B3": 3.91596e-08,
+            "B4": 3.57748e-05,
+            "B5": 0.0,
+            "B6": 0.00372872,
+            "B7": 3.73249e-09,
+            "C1": 0.0,
+            "C2": 3.05451e-08,
+            "C3": 2.06166e-07,
+            "C4": 9.0303e-09,
+            "A1-A3": 1.45059e-05,
+            "C1-C4": 2.45741e-07
+          }
+        },
+        {
+          "indicatorCode": "ETf",
+          "values": {
+            "A1": 301.104,
+            "A2": 36.3312,
+            "A3": 14.969,
+            "A4": 10.0459,
+            "A5": 2.29913,
+            "B1": 0.0,
+            "B2": 8.86621,
+            "B3": 0.879862,
+            "B4": 915.797,
+            "B5": 0.0,
+            "B6": 73653.6,
+            "B7": 0.13372,
+            "C1": 0.0,
+            "C2": 1.09509,
+            "C3": 4.6713,
+            "C4": 0.260911,
+            "A1-A3": 352.404,
+            "C1-C4": 6.0273
+          }
+        }
+      ]
+    },
+    {
+      "variantId": "cn",
+      "variantLabel": "Manufactured in China",
+      "method": "CML-IA",
+      "rows": [
+        {
+          "indicatorCode": "GWP",
+          "values": {
+            "A1": 150.955,
+            "A2": 10.2366,
+            "A3": 6.75316,
+            "A4": 3.40041,
+            "A5": 0.87963,
+            "B1": 1.10594,
+            "B2": 4.01341,
+            "B3": 0.501398,
+            "B4": 362.024,
+            "B5": 0.0,
+            "B6": 27832.3,
+            "B7": 0.0533684,
+            "C1": 0.0,
+            "C2": 0.437431,
+            "C3": 2.07134,
+            "C4": 0.0778721,
+            "A1-A3": 167.945,
+            "C1-C4": 2.58664
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "A1": 3.55022e-05,
+            "A2": 2.17788e-06,
+            "A3": 1.29664e-06,
+            "A4": 9.47422e-07,
+            "A5": 1.79336e-07,
+            "B1": 0.0,
+            "B2": 8.35189e-07,
+            "B3": 6.80165e-08,
+            "B4": 4.93433e-05,
+            "B5": 0.0,
+            "B6": 0.00531403,
+            "B7": 1.11503e-08,
+            "C1": 0.0,
+            "C2": 6.52286e-08,
+            "C3": 3.55406e-07,
+            "C4": 1.97151e-08,
+            "A1-A3": 3.89767e-05,
+            "C1-C4": 4.4035e-07
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "A1": 0.684855,
+            "A2": 0.051869,
+            "A3": 0.0372094,
+            "A4": 0.0139622,
+            "A5": 0.00355849,
+            "B1": 0.0,
+            "B2": 0.0155944,
+            "B3": 0.00192886,
+            "B4": 1.46368,
+            "B5": 0.0,
+            "B6": 125.202,
+            "B7": 0.000208529,
+            "C1": 0.0,
+            "C2": 0.00159928,
+            "C3": 0.00962123,
+            "C4": 0.000357552,
+            "A1-A3": 0.773933,
+            "C1-C4": 0.0115781
+          }
+        },
+        {
+          "indicatorCode": "EP",
+          "values": {
+            "A1": 0.323338,
+            "A2": 0.0222929,
+            "A3": 0.0112651,
+            "A4": 0.00621575,
+            "A5": 0.0016655,
+            "B1": 0.0,
+            "B2": 0.00431129,
+            "B3": 0.000740427,
+            "B4": 0.477861,
+            "B5": 0.0,
+            "B6": 62.3801,
+            "B7": 6.36349e-05,
+            "C1": 0.0,
+            "C2": 0.000533263,
+            "C3": 0.00295593,
+            "C4": 0.000199962,
+            "A1-A3": 0.356896,
+            "C1-C4": 0.00368915
+          }
+        },
+        {
+          "indicatorCode": "POCP",
+          "values": {
+            "A1": 0.0429686,
+            "A2": 0.00338012,
+            "A3": 0.00205706,
+            "A4": 0.000802811,
+            "A5": 0.000161624,
+            "B1": 0.0,
+            "B2": 0.000732539,
+            "B3": 8.79449e-05,
+            "B4": 0.0869217,
+            "B5": 0.0,
+            "B6": 8.98054,
+            "B7": 8.55746e-06,
+            "C1": 0.0,
+            "C2": 8.77829e-05,
+            "C3": 0.000507307,
+            "C4": 2.17208e-05,
+            "A1-A3": 0.0484058,
+            "C1-C4": 0.000616811
+          }
+        },
+        {
+          "indicatorCode": "ADPE",
+          "values": {
+            "A1": 0.00271682,
+            "A2": 0.00017314,
+            "A3": 0.000132755,
+            "A4": 5.75283e-05,
+            "A5": 9.37225e-06,
+            "B1": 0.0,
+            "B2": 4.48105e-05,
+            "B3": 7.05597e-06,
+            "B4": 0.00449001,
+            "B5": 0.0,
+            "B6": 0.604498,
+            "B7": 7.52929e-07,
+            "C1": 0.0,
+            "C2": 5.81298e-06,
+            "C3": 2.30047e-05,
+            "C4": 1.62009e-06,
+            "A1-A3": 0.00302272,
+            "C1-C4": 3.04378e-05
+          }
+        },
+        {
+          "indicatorCode": "ADPF",
+          "values": {
+            "A1": 1741.16,
+            "A2": 128.223,
+            "A3": 109.885,
+            "A4": 62.446,
+            "A5": 10.9981,
+            "B1": 0.0,
+            "B2": 42.8625,
+            "B3": 5.37868,
+            "B4": 4072.12,
+            "B5": 0.0,
+            "B6": 465113.0,
+            "B7": 0.617023,
+            "C1": 0.0,
+            "C2": 4.34132,
+            "C3": 23.5718,
+            "C4": 0.914123,
+            "A1-A3": 1979.27,
+            "C1-C4": 28.8272
+          }
+        },
+        {
+          "indicatorCode": "HTP",
+          "values": {
+            "A1": 111.145,
+            "A2": 6.36129,
+            "A3": 4.3686,
+            "A4": 2.95472,
+            "A5": 0.609551,
+            "B1": 0.0,
+            "B2": 2.41167,
+            "B3": 0.208048,
+            "B4": 161.433,
+            "B5": 0.0,
+            "B6": 24593.9,
+            "B7": 0.032113,
+            "C1": 0.0,
+            "C2": 0.314962,
+            "C3": 1.30833,
+            "C4": 0.0658056,
+            "A1-A3": 121.875,
+            "C1-C4": 1.6891
+          }
+        },
+        {
+          "indicatorCode": "FAETP",
+          "values": {
+            "A1": 64.9052,
+            "A2": 3.60347,
+            "A3": 3.099,
+            "A4": 1.17875,
+            "A5": 0.303169,
+            "B1": 0.0,
+            "B2": 1.31037,
+            "B3": 0.141269,
+            "B4": 94.5695,
+            "B5": 0.0,
+            "B6": 12275.9,
+            "B7": 0.0183798,
+            "C1": 0.0,
+            "C2": 0.137919,
+            "C3": 0.501561,
+            "C4": 0.0353947,
+            "A1-A3": 71.6077,
+            "C1-C4": 0.674875
+          }
+        },
+        {
+          "indicatorCode": "MAETP",
+          "values": {
+            "A1": 83555.3,
+            "A2": 8112.71,
+            "A3": 4650.59,
+            "A4": 2524.45,
+            "A5": 634.152,
+            "B1": 0.0,
+            "B2": 2255.79,
+            "B3": 277.344,
+            "B4": 200951.0,
+            "B5": 0.0,
+            "B6": 27713000.0,
+            "B7": 27.8997,
+            "C1": 0.0,
+            "C2": 205.409,
+            "C3": 1599.63,
+            "C4": 50.2083,
+            "A1-A3": 96318.6,
+            "C1-C4": 1855.25
+          }
+        },
+        {
+          "indicatorCode": "TETP",
+          "values": {
+            "A1": 0.824528,
+            "A2": 0.0538622,
+            "A3": 0.0316093,
+            "A4": 0.0204372,
+            "A5": 0.00280138,
+            "B1": 0.0,
+            "B2": 0.0178369,
+            "B3": 0.00200704,
+            "B4": 1.34195,
+            "B5": 0.0,
+            "B6": 175.423,
+            "B7": 0.000172699,
+            "C1": 0.0,
+            "C2": 0.00164551,
+            "C3": 0.0105803,
+            "C4": 0.000332765,
+            "A1-A3": 0.909999,
+            "C1-C4": 0.0125586
+          }
+        }
+      ]
+    },
+    {
+      "variantId": "cn",
+      "variantLabel": "Manufactured in China",
+      "method": "EN15804+A2/PEF",
+      "rows": [
+        {
+          "indicatorCode": "GWP-total",
+          "values": {
+            "A1": 198.766,
+            "A2": 13.0753,
+            "A3": 9.96861,
+            "A4": 5.26131,
+            "A5": 0.701463,
+            "B1": 1.71776,
+            "B2": 3.54049,
+            "B3": 0.452502,
+            "B4": 288.709,
+            "B5": 0.0,
+            "B6": 34885.7,
+            "B7": 0.0444866,
+            "C1": 0.0,
+            "C2": 0.522912,
+            "C3": 1.88945,
+            "C4": 0.0885893,
+            "A1-A3": 221.81,
+            "C1-C4": 2.50095
+          }
+        },
+        {
+          "indicatorCode": "GWP-fossil",
+          "values": {
+            "A1": 200.276,
+            "A2": 14.1179,
+            "A3": 6.27356,
+            "A4": 4.92855,
+            "A5": 0.954864,
+            "B1": 1.26381,
+            "B2": 3.73617,
+            "B3": 0.485246,
+            "B4": 298.168,
+            "B5": 0.0,
+            "B6": 36227.6,
+            "B7": 0.044704,
+            "C1": 0.0,
+            "C2": 0.376532,
+            "C3": 1.56754,
+            "C4": 0.107957,
+            "A1-A3": 220.667,
+            "C1-C4": 2.05203
+          }
+        },
+        {
+          "indicatorCode": "GWP-biogenic",
+          "values": {
+            "A1": 0.620458,
+            "A2": 0.0453108,
+            "A3": 0.0327575,
+            "A4": 0.0144773,
+            "A5": 0.00337568,
+            "B1": 0.00440219,
+            "B2": 0.0114366,
+            "B3": 0.00150652,
+            "B4": 1.1666,
+            "B5": 0.0,
+            "B6": 146.419,
+            "B7": 0.000180147,
+            "C1": 0.0,
+            "C2": 0.00164708,
+            "C3": 0.00964321,
+            "C4": 0.000370324,
+            "A1-A3": 0.698526,
+            "C1-C4": 0.0116606
+          }
+        },
+        {
+          "indicatorCode": "GWP-luluc",
+          "values": {
+            "A1": 1.53211,
+            "A2": 0.132559,
+            "A3": 0.103901,
+            "A4": 0.0404782,
+            "A5": 0.00956364,
+            "B1": 0.0189644,
+            "B2": 0.0405109,
+            "B3": 0.00349653,
+            "B4": 3.32096,
+            "B5": 0.0,
+            "B6": 434.023,
+            "B7": 0.000604233,
+            "C1": 0.0,
+            "C2": 0.0038499,
+            "C3": 0.018514,
+            "C4": 0.00108357,
+            "A1-A3": 1.76857,
+            "C1-C4": 0.0234475
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "A1": 3.13517e-05,
+            "A2": 3.07318e-06,
+            "A3": 1.38996e-06,
+            "A4": 1.03982e-06,
+            "A5": 1.69404e-07,
+            "B1": 0.0,
+            "B2": 7.83076e-07,
+            "B3": 6.35554e-08,
+            "B4": 7.5254e-05,
+            "B5": 0.0,
+            "B6": 0.00633067,
+            "B7": 1.14084e-08,
+            "C1": 0.0,
+            "C2": 8.30737e-08,
+            "C3": 3.75326e-07,
+            "C4": 1.53125e-08,
+            "A1-A3": 3.58148e-05,
+            "C1-C4": 4.73712e-07
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "A1": 0.879851,
+            "A2": 0.0695147,
+            "A3": 0.0331155,
+            "A4": 0.0266932,
+            "A5": 0.00462916,
+            "B1": 0.0,
+            "B2": 0.0136304,
+            "B3": 0.0022193,
+            "B4": 1.84897,
+            "B5": 0.0,
+            "B6": 215.143,
+            "B7": 0.000313833,
+            "C1": 0.0,
+            "C2": 0.00225485,
+            "C3": 0.0122301,
+            "C4": 0.000538172,
+            "A1-A3": 0.982481,
+            "C1-C4": 0.0150231
+          }
+        },
+        {
+          "indicatorCode": "EP-freshwater",
+          "values": {
+            "A1": 0.0503718,
+            "A2": 0.00327591,
+            "A3": 0.00183954,
+            "A4": 0.00131811,
+            "A5": 0.000271817,
+            "B1": 0.0,
+            "B2": 0.000771025,
+            "B3": 0.000103052,
+            "B4": 0.088032,
+            "B5": 0.0,
+            "B6": 7.19537,
+            "B7": 9.98477e-06,
+            "C1": 0.0,
+            "C2": 0.000110394,
+            "C3": 0.00059063,
+            "C4": 2.84965e-05,
+            "A1-A3": 0.0554873,
+            "C1-C4": 0.00072952
+          }
+        },
+        {
+          "indicatorCode": "EP-marine",
+          "values": {
+            "A1": 0.150198,
+            "A2": 0.0104024,
+            "A3": 0.00713092,
+            "A4": 0.0036748,
+            "A5": 0.000865431,
+            "B1": 0.0,
+            "B2": 0.00420373,
+            "B3": 0.000350764,
+            "B4": 0.304981,
+            "B5": 0.0,
+            "B6": 41.9076,
+            "B7": 4.68599e-05,
+            "C1": 0.0,
+            "C2": 0.000394746,
+            "C3": 0.00189686,
+            "C4": 7.25724e-05,
+            "A1-A3": 0.167731,
+            "C1-C4": 0.00236418
+          }
+        },
+        {
+          "indicatorCode": "EP-terrestrial",
+          "values": {
+            "A1": 1.97541,
+            "A2": 0.133633,
+            "A3": 0.0606791,
+            "A4": 0.0460276,
+            "A5": 0.00641413,
+            "B1": 0.0,
+            "B2": 0.0287533,
+            "B3": 0.00412688,
+            "B4": 2.6565,
+            "B5": 0.0,
+            "B6": 363.075,
+            "B7": 0.000571361,
+            "C1": 0.0,
+            "C2": 0.00323884,
+            "C3": 0.0181885,
+            "C4": 0.000936923,
+            "A1-A3": 2.16972,
+            "C1-C4": 0.0223643
+          }
+        },
+        {
+          "indicatorCode": "POCP",
+          "values": {
+            "A1": 0.473106,
+            "A2": 0.0414519,
+            "A3": 0.0194848,
+            "A4": 0.0118463,
+            "A5": 0.00171267,
+            "B1": 0.0,
+            "B2": 0.00869595,
+            "B3": 0.000951176,
+            "B4": 0.908212,
+            "B5": 0.0,
+            "B6": 92.2933,
+            "B7": 0.000156404,
+            "C1": 0.0,
+            "C2": 0.00117427,
+            "C3": 0.004524,
+            "C4": 0.000207565,
+            "A1-A3": 0.534043,
+            "C1-C4": 0.00590583
+          }
+        },
+        {
+          "indicatorCode": "ADP-minerals&metals",
+          "values": {
+            "A1": 0.00300337,
+            "A2": 0.000222796,
+            "A3": 0.000136506,
+            "A4": 6.38881e-05,
+            "A5": 1.24941e-05,
+            "B1": 0.0,
+            "B2": 6.30057e-05,
+            "B3": 6.69429e-06,
+            "B4": 0.00546353,
+            "B5": 0.0,
+            "B6": 0.511447,
+            "B7": 7.77445e-07,
+            "C1": 0.0,
+            "C2": 7.64971e-06,
+            "C3": 2.5147e-05,
+            "C4": 1.24008e-06,
+            "A1-A3": 0.00336267,
+            "C1-C4": 3.40368e-05
+          }
+        },
+        {
+          "indicatorCode": "ADP-fossil",
+          "values": {
+            "A1": 1854.63,
+            "A2": 158.241,
+            "A3": 102.605,
+            "A4": 55.7116,
+            "A5": 10.5048,
+            "B1": 0.0,
+            "B2": 37.6192,
+            "B3": 4.46622,
+            "B4": 3383.02,
+            "B5": 0.0,
+            "B6": 431363.0,
+            "B7": 0.669603,
+            "C1": 0.0,
+            "C2": 5.49007,
+            "C3": 27.7902,
+            "C4": 1.51957,
+            "A1-A3": 2115.48,
+            "C1-C4": 34.7998
+          }
+        },
+        {
+          "indicatorCode": "WDP",
+          "values": {
+            "A1": 61.8933,
+            "A2": 3.39083,
+            "A3": 2.2405,
+            "A4": 1.376,
+            "A5": 0.319884,
+            "B1": 0.0,
+            "B2": 1.23537,
+            "B3": 0.118654,
+            "B4": 107.743,
+            "B5": 0.0,
+            "B6": 9505.93,
+            "B7": 0.0158139,
+            "C1": 0.0,
+            "C2": 0.105139,
+            "C3": 0.696396,
+            "C4": 0.0332582,
+            "A1-A3": 67.5246,
+            "C1-C4": 0.834793
+          }
+        },
+        {
+          "indicatorCode": "PM",
+          "values": {
+            "A1": 5.83574e-06,
+            "A2": 4.33621e-07,
+            "A3": 2.96261e-07,
+            "A4": 1.73979e-07,
+            "A5": 2.88337e-08,
+            "B1": 0.0,
+            "B2": 1.70484e-07,
+            "B3": 1.63853e-08,
+            "B4": 1.2296e-05,
+            "B5": 0.0,
+            "B6": 0.00142776,
+            "B7": 2.34512e-09,
+            "C1": 0.0,
+            "C2": 1.85556e-08,
+            "C3": 1.043e-07,
+            "C4": 3.18087e-09,
+            "A1-A3": 6.56562e-06,
+            "C1-C4": 1.26036e-07
+          }
+        },
+        {
+          "indicatorCode": "IRP",
+          "values": {
+            "A1": 99.9559,
+            "A2": 4.72772,
+            "A3": 4.42772,
+            "A4": 1.74545,
+            "A5": 0.326841,
+            "B1": 0.0,
+            "B2": 1.9456,
+            "B3": 0.170324,
+            "B4": 172.76,
+            "B5": 0.0,
+            "B6": 13201.6,
+            "B7": 0.0191276,
+            "C1": 0.0,
+            "C2": 0.181084,
+            "C3": 0.797478,
+            "C4": 0.0383388,
+            "A1-A3": 109.111,
+            "C1-C4": 1.0169
+          }
+        },
+        {
+          "indicatorCode": "ETP-fw",
+          "values": {
+            "A1": 3061.1,
+            "A2": 269.19,
+            "A3": 145.75,
+            "A4": 80.2554,
+            "A5": 12.067,
+            "B1": 0.0,
+            "B2": 74.0349,
+            "B3": 8.27713,
+            "B4": 5420.66,
+            "B5": 0.0,
+            "B6": 649797.0,
+            "B7": 1.12383,
+            "C1": 0.0,
+            "C2": 5.99147,
+            "C3": 36.5847,
+            "C4": 1.64182,
+            "A1-A3": 3476.04,
+            "C1-C4": 44.218
+          }
+        },
+        {
+          "indicatorCode": "HTP-c",
+          "values": {
+            "A1": 1.82953e-07,
+            "A2": 1.44133e-08,
+            "A3": 1.15244e-08,
+            "A4": 5.17752e-09,
+            "A5": 1.04334e-09,
+            "B1": 0.0,
+            "B2": 4.00101e-09,
+            "B3": 4.06369e-10,
+            "B4": 4.77715e-07,
+            "B5": 0.0,
+            "B6": 3.31808e-05,
+            "B7": 5.77993e-11,
+            "C1": 0.0,
+            "C2": 3.88782e-10,
+            "C3": 2.57916e-09,
+            "C4": 1.02305e-10,
+            "A1-A3": 2.08891e-07,
+            "C1-C4": 3.07025e-09
+          }
+        },
+        {
+          "indicatorCode": "HTP-nc",
+          "values": {
+            "A1": 5.07558e-06,
+            "A2": 3.79502e-07,
+            "A3": 1.61659e-07,
+            "A4": 8.99529e-08,
+            "A5": 2.25424e-08,
+            "B1": 0.0,
+            "B2": 1.01197e-07,
+            "B3": 8.83813e-09,
+            "B4": 7.3867e-06,
+            "B5": 0.0,
+            "B6": 0.000758318,
+            "B7": 1.46744e-09,
+            "C1": 0.0,
+            "C2": 1.29294e-08,
+            "C3": 6.19162e-08,
+            "C4": 2.81164e-09,
+            "A1-A3": 5.61674e-06,
+            "C1-C4": 7.76572e-08
+          }
+        },
+        {
+          "indicatorCode": "SQP",
+          "values": {
+            "A1": 1111.28,
+            "A2": 76.8919,
+            "A3": 47.9569,
+            "A4": 22.1609,
+            "A5": 4.30948,
+            "B1": 0.0,
+            "B2": 23.8053,
+            "B3": 3.1486,
+            "B4": 2506.24,
+            "B5": 0.0,
+            "B6": 257070.0,
+            "B7": 0.402476,
+            "C1": 0.0,
+            "C2": 2.66302,
+            "C3": 14.8929,
+            "C4": 0.63308,
+            "A1-A3": 1236.13,
+            "C1-C4": 18.189
+          }
+        },
+        {
+          "indicatorCode": "PERE",
+          "values": {
+            "A1": 352.859,
+            "A2": 24.458,
+            "A3": 11.9762,
+            "A4": 8.33699,
+            "A5": 1.82835,
+            "B1": 0.0,
+            "B2": 6.36647,
+            "B3": 0.650435,
+            "B4": 491.383,
+            "B5": 0.0,
+            "B6": 61850.3,
+            "B7": 0.0956221,
+            "C1": 0.0,
+            "C2": 0.877299,
+            "C3": 3.61384,
+            "C4": 0.229665,
+            "A1-A3": 389.293,
+            "C1-C4": 4.7208
+          }
+        },
+        {
+          "indicatorCode": "PERM",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "PERT",
+          "values": {
+            "A1": 334.09,
+            "A2": 29.1592,
+            "A3": 15.5458,
+            "A4": 6.89521,
+            "A5": 1.92838,
+            "B1": 0.0,
+            "B2": 8.27281,
+            "B3": 0.641286,
+            "B4": 669.529,
+            "B5": 0.0,
+            "B6": 83183.2,
+            "B7": 0.103079,
+            "C1": 0.0,
+            "C2": 0.982604,
+            "C3": 4.01596,
+            "C4": 0.215966,
+            "A1-A3": 378.795,
+            "C1-C4": 5.21453
+          }
+        },
+        {
+          "indicatorCode": "PENRE",
+          "values": {
+            "A1": 2097.73,
+            "A2": 190.022,
+            "A3": 114.215,
+            "A4": 54.7379,
+            "A5": 8.72084,
+            "B1": 0.0,
+            "B2": 38.0868,
+            "B3": 5.40834,
+            "B4": 5308.55,
+            "B5": 0.0,
+            "B6": 406648.0,
+            "B7": 0.682864,
+            "C1": 0.0,
+            "C2": 5.83044,
+            "C3": 21.2679,
+            "C4": 1.2993,
+            "A1-A3": 2401.97,
+            "C1-C4": 28.3976
+          }
+        },
+        {
+          "indicatorCode": "PENRM",
+          "values": {
+            "A1": 37.2622,
+            "A2": 3.08979,
+            "A3": 1.21381,
+            "A4": 1.05548,
+            "A5": 0.139769,
+            "B1": 0.0,
+            "B2": 0.726635,
+            "B3": 0.0665466,
+            "B4": 82.5142,
+            "B5": 0.0,
+            "B6": 5958.44,
+            "B7": 0.0114006,
+            "C1": 0.0,
+            "C2": 0.0754076,
+            "C3": 0.515154,
+            "C4": 0.0210562,
+            "A1-A3": 41.5658,
+            "C1-C4": 0.611618
+          }
+        },
+        {
+          "indicatorCode": "PENRT",
+          "values": {
+            "A1": 1656.32,
+            "A2": 172.777,
+            "A3": 89.6685,
+            "A4": 57.8057,
+            "A5": 13.1289,
+            "B1": 0.0,
+            "B2": 36.5163,
+            "B3": 4.61622,
+            "B4": 4061.19,
+            "B5": 0.0,
+            "B6": 380839.0,
+            "B7": 0.756944,
+            "C1": 0.0,
+            "C2": 6.62707,
+            "C3": 24.3605,
+            "C4": 1.42397,
+            "A1-A3": 1918.77,
+            "C1-C4": 32.4115
+          }
+        },
+        {
+          "indicatorCode": "SM",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "RSF",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "NRSF",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "FW",
+          "values": {
+            "A1": 1.02081,
+            "A2": 0.107494,
+            "A3": 0.0644287,
+            "A4": 0.0280547,
+            "A5": 0.00677831,
+            "B1": 0.0,
+            "B2": 0.0250018,
+            "B3": 0.00293414,
+            "B4": 2.56582,
+            "B5": 0.0,
+            "B6": 264.554,
+            "B7": 0.000309736,
+            "C1": 0.0,
+            "C2": 0.00261268,
+            "C3": 0.0137701,
+            "C4": 0.00087431,
+            "A1-A3": 1.19273,
+            "C1-C4": 0.0172571
+          }
+        },
+        {
+          "indicatorCode": "HWD",
+          "values": {
+            "A1": 0.0394344,
+            "A2": 0.00232567,
+            "A3": 0.00122784,
+            "A4": 0.000775681,
+            "A5": 0.000172415,
+            "B1": 0.0,
+            "B2": 0.000529133,
+            "B3": 9.87138e-05,
+            "B4": 0.0645578,
+            "B5": 0.0,
+            "B6": 7.29322,
+            "B7": 7.66035e-06,
+            "C1": 0.0,
+            "C2": 6.99224e-05,
+            "C3": 0.000335205,
+            "C4": 1.78264e-05,
+            "A1-A3": 0.0429879,
+            "C1-C4": 0.000422954
+          }
+        },
+        {
+          "indicatorCode": "NHWD",
+          "values": {
+            "A1": 48.0958,
+            "A2": 3.14479,
+            "A3": 2.24525,
+            "A4": 1.20835,
+            "A5": 0.205178,
+            "B1": 0.0,
+            "B2": 1.04657,
+            "B3": 0.143271,
+            "B4": 93.6318,
+            "B5": 0.0,
+            "B6": 12322.3,
+            "B7": 0.0138575,
+            "C1": 0.0,
+            "C2": 0.101551,
+            "C3": 0.502731,
+            "C4": 0.0294211,
+            "A1-A3": 53.4858,
+            "C1-C4": 0.633703
+          }
+        },
+        {
+          "indicatorCode": "RWD",
+          "values": {
+            "A1": 0.00876709,
+            "A2": 0.000601501,
+            "A3": 0.000459602,
+            "A4": 0.00031948,
+            "A5": 5.35756e-05,
+            "B1": 0.0,
+            "B2": 0.000192688,
+            "B3": 2.74054e-05,
+            "B4": 0.0239337,
+            "B5": 0.0,
+            "B6": 2.25962,
+            "B7": 2.26546e-06,
+            "C1": 0.0,
+            "C2": 2.75704e-05,
+            "C3": 0.000144514,
+            "C4": 4.68526e-06,
+            "A1-A3": 0.00982819,
+            "C1-C4": 0.00017677
+          }
+        },
+        {
+          "indicatorCode": "CRU",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "MFR",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 9.1,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 9.1
+          }
+        },
+        {
+          "indicatorCode": "MER",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "EEE",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        },
+        {
+          "indicatorCode": "EET",
+          "values": {
+            "A1": 0.0,
+            "A2": 0.0,
+            "A3": 0.0,
+            "A4": 0.0,
+            "A5": 0.0,
+            "B1": 0.0,
+            "B2": 0.0,
+            "B3": 0.0,
+            "B4": 0.0,
+            "B5": 0.0,
+            "B6": 0.0,
+            "B7": 0.0,
+            "C1": 0.0,
+            "C2": 0.0,
+            "C3": 0.0,
+            "C4": 0.0,
+            "A1-A3": 0.0,
+            "C1-C4": 0.0
+          }
+        }
+      ]
+    }
+  ],
+  "supplementalResults": [
+    {
+      "title": "B6 operational energy with alternative electricity grids",
+      "description": "B6 results per ton of chilling capacity using alternative grid mixes.",
+      "method": "TRACI 2.1",
+      "columns": [
+        "Global",
+        "Europe",
+        "China"
+      ],
+      "rows": [
+        {
+          "indicatorCode": "GWP",
+          "values": {
+            "Global": 38772.0,
+            "Europe": 25489.0,
+            "China": 55645.0
+          }
+        },
+        {
+          "indicatorCode": "ODP",
+          "values": {
+            "Global": 0.00814212,
+            "Europe": 0.00535269,
+            "China": 0.0116855
+          }
+        },
+        {
+          "indicatorCode": "AP",
+          "values": {
+            "Global": 170.597,
+            "Europe": 112.152,
+            "China": 244.838
+          }
+        },
+        {
+          "indicatorCode": "EP",
+          "values": {
+            "Global": 151.211,
+            "Europe": 99.4071,
+            "China": 217.016
+          }
+        },
+        {
+          "indicatorCode": "SFP",
+          "values": {
+            "Global": 2636.5,
+            "Europe": 1733.25,
+            "China": 3783.86
+          }
+        }
+      ]
+    }
+  ],
+  "materialContribution": [
+    {
+      "material": "Steel",
+      "sharePct": 48.2,
+      "indicatorCode": "GWP"
+    },
+    {
+      "material": "Copper",
+      "sharePct": 21.6,
+      "indicatorCode": "GWP"
+    },
+    {
+      "material": "Electronics",
+      "sharePct": 12.9,
+      "indicatorCode": "GWP"
+    },
+    {
+      "material": "Aluminium",
+      "sharePct": 9.4,
+      "indicatorCode": "GWP"
+    },
+    {
+      "material": "Refrigerant",
+      "sharePct": 4.1,
+      "indicatorCode": "GWP"
+    },
+    {
+      "material": "Other",
+      "sharePct": 3.8,
+      "indicatorCode": "GWP"
+    }
+  ],
+  "references": [
+    {
+      "citation": "Example Climate Systems Inc. (2026). LCA background report for the EX-650 chiller (confidential)."
+    }
+  ],
+  "customSections": [
+    {
+      "afterSection": "interpretation",
+      "title": "Additional environmental information",
+      "markdown": "The EX-650 uses **R-1233zd(E)**, a refrigerant with a 100-year GWP of 1.\n\n- Oil-free bearings remove the need for oil replacement\n- Variable-speed drive improves part-load efficiency"
+    }
+  ]
+}
