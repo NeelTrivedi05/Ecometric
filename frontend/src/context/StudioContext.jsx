@@ -223,9 +223,11 @@ export function StudioProvider({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     try {
-      return localStorage.getItem('ecometric_sidebar_collapsed') === 'true';
+      const saved = localStorage.getItem('ecometric_sidebar_collapsed');
+      if (saved !== null) return saved === 'true';
+      return true; // Default to collapsed slim bar so hover-expand is active
     } catch {
-      return false;
+      return true;
     }
   });
   const [isLoading, setIsLoading] = useState(false);

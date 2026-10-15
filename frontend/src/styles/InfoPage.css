@@ -3,13 +3,13 @@
    ========================================================================== */
 
 .info-page-root {
-  --info-bg: #f5f5f7;
+  --info-bg: #f2f6f0;
   --info-card-bg: #ffffff;
-  --info-border: #e0e0e5;
-  --info-primary: #0066cc;
-  --info-primary-hover: #0071e3;
-  --info-ink: #1d1d1f;
-  --info-muted: #6e6e73;
+  --info-border: #dfe7dd;
+  --info-primary: #1f7a4c;
+  --info-primary-hover: #176640;
+  --info-ink: #16231b;
+  --info-muted: #5b6f62;
 
   background-color: var(--info-bg);
   min-height: 100vh;

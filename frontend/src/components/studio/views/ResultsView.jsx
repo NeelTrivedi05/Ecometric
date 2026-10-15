@@ -140,7 +140,7 @@ export default function ResultsView() {
             type="button"
             className="btn-apple-secondary-pill"
             onClick={() => setIsFlowModalOpen(true)}
-            style={{ fontSize: '12px', color: '#0066cc' }}
+            style={{ fontSize: '12px', color: 'var(--accent, #1f7a4c)' }}
           >
             <span>Entanglement &amp; PCR Audit</span>
           </button>
@@ -157,7 +157,7 @@ export default function ResultsView() {
                 changeMethodology(e.target.value);
                 showNotif(`Characterized using ${getMethodology(e.target.value)?.name || e.target.value}`, 'Methodology Updated');
               }}
-              style={{ padding: '2px 4px', fontSize: '11px', height: 'auto', background: 'transparent', border: 'none', fontWeight: 600, color: '#0066cc', cursor: 'pointer', maxWidth: '320px' }}
+              style={{ padding: '2px 4px', fontSize: '11px', height: 'auto', background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--accent, #1f7a4c)', cursor: 'pointer', maxWidth: '320px' }}
             >
               {['EF / PEF', 'TRACI', 'IPCC', 'ReCiPe', 'CML', 'USEtox', 'Energy & Resources', 'Other'].map((groupName) => {
                 const items = ALL_METHODOLOGIES.filter((m) => m.group === groupName);
@@ -221,7 +221,7 @@ export default function ResultsView() {
           <div style={{ fontSize: '11px', color: '#86868b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             A1 Raw Materials
           </div>
-          <div style={{ fontSize: '22px', fontWeight: 600, color: '#0066cc', fontFamily: 'var(--font-mono, monospace)', fontVariantNumeric: 'tabular-nums', margin: '4px 0', letterSpacing: '-0.02em' }}>
+          <div style={{ fontSize: '22px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', fontFamily: 'var(--font-mono, monospace)', fontVariantNumeric: 'tabular-nums', margin: '4px 0', letterSpacing: '-0.02em' }}>
             {formatValue(lca.a1_gwp)}{' '}
             <span style={{ fontSize: '12px', fontWeight: 400, color: '#86868b' }}>kg CO₂e{normMode === 'fu' ? ' / ton' : ''}</span>
           </div>
@@ -261,8 +261,8 @@ export default function ResultsView() {
           <div style={{ fontSize: '11px', color: '#86868b' }}>Total Upstream Production</div>
         </div>
 
-        <div className="apple-card" style={{ padding: '16px 18px', margin: 0, backgroundColor: '#fbfbfd', border: '1px solid #d2d2d7' }}>
-          <div style={{ fontSize: '11px', color: '#0066cc', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        <div className="apple-card" style={{ padding: '16px 18px', margin: 0, backgroundColor: '#eef7f1', border: '1px solid #c8e2d1' }}>
+          <div style={{ fontSize: '11px', color: 'var(--accent, #1f7a4c)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Cradle-to-Grave (A1–C4)
           </div>
           <div style={{ fontSize: '22px', fontWeight: 600, color: '#1d1d1f', fontFamily: 'var(--font-mono, monospace)', fontVariantNumeric: 'tabular-nums', margin: '4px 0', letterSpacing: '-0.02em' }}>
@@ -360,7 +360,7 @@ export default function ResultsView() {
                 <th style={{ minWidth: '90px', position: 'sticky', left: 0, background: '#fafafc', zIndex: 2 }}>Indicator</th>
                 <th style={{ minWidth: '220px' }}>Impact Category Name</th>
                 <th style={{ minWidth: '90px' }}>Unit</th>
-                <th className="num" style={{ color: '#0066cc', fontWeight: 600 }}>A1</th>
+                <th className="num" style={{ color: 'var(--accent, #1f7a4c)', fontWeight: 600 }}>A1</th>
                 <th className="num" style={{ color: '#1d1d1f', fontWeight: 600 }}>A2</th>
                 <th className="num" style={{ color: '#1d1d1f', fontWeight: 600 }}>A3</th>
                 <th className="num" style={{ fontWeight: 600, background: '#f5f5f7' }}>A1–A3</th>
@@ -381,7 +381,7 @@ export default function ResultsView() {
                 <th className="num" style={{ color: '#28cd41', fontWeight: 600 }} title="Module D is MND (Module Not Declared) baseline under UL 10010-4 and presented separately">
                   Module D (MND)
                 </th>
-                <th className="num" style={{ fontWeight: 700, color: '#0066cc' }}>A1–C4 Total</th>
+                <th className="num" style={{ fontWeight: 700, color: 'var(--accent, #1f7a4c)' }}>A1–C4 Total</th>
               </tr>
             </thead>
             <tbody>

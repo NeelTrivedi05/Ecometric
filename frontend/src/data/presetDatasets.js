@@ -190,7 +190,7 @@ export const PRESET_DATASETS = {
     equipmentType: 'Prototype Equipment',
     capacityRt: 250.0,
     nominalKw: 879,
-    refrigerant: 'Not Specified (0 kg)',
+    refrigerant: 'None Specified (0 kg)',
     efficiency: '0.6500 kW/ton',
     totalMassKg: 1050,
     badge: 'PCR Gaps Test',

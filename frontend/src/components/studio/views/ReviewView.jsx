@@ -160,7 +160,7 @@ export default function ReviewView() {
         {/* Metric 1: Total Mass */}
         <div className="apple-card" style={{ padding: '16px 20px', margin: 0 }}>
           <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted, #86868b)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Declared Product Mass (A1)</div>
-          <div style={{ fontSize: '24px', fontWeight: 600, color: '#0066cc', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginTop: '4px', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
             {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>kg</span>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--text-muted, #86868b)', marginTop: '4px' }}>
@@ -276,7 +276,7 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'a1_a3') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               STAGE A1–A3
             </span>
             <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
@@ -292,7 +292,7 @@ export default function ReviewView() {
                   Module A1: Raw Materials Bill of Materials (BOM) — {bom.length} Components
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
-                  Total Declared Product Mass: <strong style={{ color: 'var(--accent, #0066cc)' }}>{totalMass.toLocaleString()} kg</strong>
+                  Total Declared Product Mass: <strong style={{ color: 'var(--accent, #1f7a4c)' }}>{totalMass.toLocaleString()} kg</strong>
                 </div>
               </div>
             </div>
@@ -324,8 +324,8 @@ export default function ReviewView() {
                         </td>
                         <td style={{ textAlign: 'center', padding: '10px 12px' }}>
                           <span style={{
-                            backgroundColor: '#e8f2ff',
-                            color: 'var(--accent, #0066cc)',
+                            backgroundColor: 'rgba(31, 122, 76, 0.12)',
+                            color: 'var(--accent, #1f7a4c)',
                             padding: '2px 8px',
                             borderRadius: '9999px',
                             fontSize: '11px',
@@ -435,7 +435,7 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'a4_a5') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               STAGE A4–A5
             </span>
             <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
@@ -447,7 +447,7 @@ export default function ReviewView() {
             {/* Module A4: Outbound Transport */}
             <div className="card">
               <div className="card-title" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <TruckIcon size={16} style={{ color: 'var(--accent, #0066cc)' }} />
+                <TruckIcon size={16} style={{ color: 'var(--accent, #1f7a4c)' }} />
                 <span>Module A4: Outbound Transport to Customer Site</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -527,7 +527,7 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'b1_b7') && isChiller && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               STAGE B1–B7
             </span>
             <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
@@ -539,7 +539,7 @@ export default function ReviewView() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
               {/* B1: Fugitive Leaks */}
               <div style={{ padding: '16px', backgroundColor: 'var(--bg-base, #f5f5f7)', borderRadius: 'var(--radius-lg, 18px)', border: '1px solid var(--border, #e0e0e0)' }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '10px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '10px' }}>
                   Module B1: Direct Fugitive Emissions
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
@@ -577,7 +577,7 @@ export default function ReviewView() {
 
               {/* B2 & B3: Maintenance & Repair */}
               <div style={{ padding: '16px', backgroundColor: 'var(--bg-base, #f5f5f7)', borderRadius: 'var(--radius-lg, 18px)', border: '1px solid var(--border, #e0e0e0)' }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '10px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '10px' }}>
                   Module B2 & B3: Servicing & Repair
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
@@ -605,7 +605,7 @@ export default function ReviewView() {
 
               {/* B4 & B5: Replacement & Refurbishment */}
               <div style={{ padding: '16px', backgroundColor: 'var(--bg-base, #f5f5f7)', borderRadius: 'var(--radius-lg, 18px)', border: '1px solid var(--border, #e0e0e0)' }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '10px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '10px' }}>
                   Module B4 & B5: Overhaul & Refurbishment
                 </div>
                 <div className="form-group">
@@ -622,7 +622,7 @@ export default function ReviewView() {
 
               {/* B6 & B7: Operational Energy & Water */}
               <div style={{ padding: '16px', backgroundColor: 'var(--bg-base, #f5f5f7)', borderRadius: 'var(--radius-lg, 18px)', border: '1px solid var(--border, #e0e0e0)' }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '10px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent, #1f7a4c)', marginBottom: '10px' }}>
                   Module B6 & B7: Operational Energy & Water
                 </div>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
@@ -666,7 +666,7 @@ export default function ReviewView() {
       {(activeTab === 'all' || activeTab === 'c1_c4') && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               STAGE C1–C4
             </span>
             <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
