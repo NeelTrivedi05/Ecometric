@@ -24,8 +24,10 @@ export default function ReviewView() {
     updateEndOfLife,
     updateCircularityD,
     results,
-    lca
+    lca,
+    productProfile,
   } = useStudio();
+  const isChiller = productProfile?.isChiller !== false;
 
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'a1_a3' | 'a4_a5' | 'b1_b7' | 'c1_c4' | 'd'
 
@@ -60,6 +62,7 @@ export default function ReviewView() {
             >
               Go to Upload
             </button>
+            {isChiller && (
             <button
               type="button"
               className="btn btn-secondary"
@@ -69,6 +72,7 @@ export default function ReviewView() {
             >
               Load Sample 500RT Chiller
             </button>
+            )}
           </div>
         </div>
       </div>
@@ -92,6 +96,8 @@ export default function ReviewView() {
   const annualFactoryKwh = Number(manufacturing.annual_facility_kwh) || 0;
   const ratedEfficiency = Number(operational.efficiency_kw_per_ton) || 0;
   const capacityRt = Number(operational.capacity_rt) || 0;
+  const fuQuantity = isChiller ? Math.max(1, capacityRt) : (Number(extractedData?.project_info?.fu_quantity) || 1);
+  const fuLabel = isChiller ? 'ton chilling capacity' : (productProfile?.fuUnit || 'unit');
   // Only compute operational kWh when real capacity + efficiency data exists
   const annualOperationalKwh = (capacityRt > 0 && ratedEfficiency > 0)
     ? Math.round(capacityRt * ratedEfficiency * (Number(operational.annual_operating_hours) || 0))
@@ -106,7 +112,7 @@ export default function ReviewView() {
     { id: 'all', label: 'All Modules (A1–D)', badge: 'Full Lifecycle' },
     { id: 'a1_a3', label: 'A1–A3 Production', badge: 'Upstream & Factory' },
     { id: 'a4_a5', label: 'A4–A5 Construction', badge: 'Delivery & Rigging' },
-    { id: 'b1_b7', label: 'B1–B7 Operational Use', badge: 'Refrigerant & Power' },
+    { id: 'b1_b7', label: 'B1–B7 Operational Use', badge: isChiller ? 'Refrigerant & Power' : 'Use Stage' },
     { id: 'c1_c4', label: 'C1–C4 End of Life', badge: 'Decommissioning' },
     { id: 'd', label: 'Module D Circularity', badge: 'Avoided Burdens' },
   ];
@@ -121,7 +127,7 @@ export default function ReviewView() {
             Extracted Lifecycle Inventory (Modules A–D)
           </h1>
           <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
-            Mandatory ISO 14025 & EN 15804+A2 data coverage normalized per 1 ton chilling capacity over 25-yr RSL.
+            {productProfile?.name}: data coverage for {productProfile?.pcrLabel}, normalized per {productProfile?.functionalUnit}.
           </p>
         </div>
 
@@ -158,7 +164,7 @@ export default function ReviewView() {
             {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>kg</span>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--text-muted, #86868b)', marginTop: '4px' }}>
-            {(totalMass / Math.max(1, capacityRt)).toFixed(2)} kg / ton chilling capacity
+            {(totalMass / fuQuantity).toFixed(2)} kg / {fuLabel}
           </div>
         </div>
 
@@ -378,7 +384,7 @@ export default function ReviewView() {
                 </div>
               ) : (
                 <div style={{ padding: '16px', backgroundColor: '#f5f5f7', borderRadius: '8px', fontSize: '12px', color: 'var(--text-secondary, #86868b)' }}>
-                  Defaulting to UL 10010-4 regional standard: <strong>500 km heavy lorry</strong> transport to assembly plant.
+                  No freight manifest uploaded: inbound transport is taken from each BOM line's supplier distance (lorry, regional ecoinvent dataset).
                 </div>
               )}
             </div>
@@ -477,6 +483,7 @@ export default function ReviewView() {
                     placeholder="350"
                   />
                 </div>
+                {isChiller && (
                 <div className="form-group">
                   <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Commissioning Refrigerant Loss (kg)</label>
                   <input
@@ -488,6 +495,7 @@ export default function ReviewView() {
                     placeholder="0.5"
                   />
                 </div>
+                )}
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Rigging Crane Mobile Diesel (liters)</label>
                   <input
@@ -505,7 +513,18 @@ export default function ReviewView() {
       )}
 
       {/* ── TAB: MODULE B1–B7 (Operational Use Stage) ── */}
-      {(activeTab === 'all' || activeTab === 'b1_b7') && (
+      {(activeTab === 'all' || activeTab === 'b1_b7') && !isChiller && (
+        <div className="apple-card" style={{ marginBottom: '24px', padding: '16px 20px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>B1–B7 Use Stage · {productProfile?.name}</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '4px' }}>
+            {productProfile?.useStage?.b6 === 'none'
+              ? 'This product uses no operational energy or water in service; B1–B7 cover only declared maintenance, repair, replacement and refurbishment.'
+              : 'Enter annual operational energy and water (e.g. cleaning), maintenance consumables and the reference service life in Review & Mapping.'}
+          </div>
+        </div>
+      )}
+
+      {(activeTab === 'all' || activeTab === 'b1_b7') && isChiller && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
             <span style={{ backgroundColor: '#e8f2ff', color: 'var(--accent, #0066cc)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>

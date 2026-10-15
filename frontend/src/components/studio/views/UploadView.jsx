@@ -16,6 +16,7 @@ import {
   CheckIcon,
 } from '../Icons';
 import ProcessFlowModal from '../ProcessFlowModal';
+import { PRODUCT_LIST } from '../../../data/products';
 
 export default function UploadView() {
   const {
@@ -33,7 +34,12 @@ export default function UploadView() {
     loadPreset,
     currentPresetId,
     PRESET_DATASETS,
+    productCategory,
+    selectProduct,
+    productProfile,
   } = useStudio();
+  const hasProduct = Boolean(productCategory);
+  const product = hasProduct ? productProfile : null;
 
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -41,10 +47,10 @@ export default function UploadView() {
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     setIsDragOver(false);
-    if (e.dataTransfer.files.length > 0) {
+    if (hasProduct && e.dataTransfer.files.length > 0) {
       addFiles(e.dataTransfer.files);
     }
-  }, [addFiles]);
+  }, [addFiles, hasProduct]);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -79,10 +85,13 @@ export default function UploadView() {
       <div className="apple-view-header">
         <div>
           <span className="apple-eyebrow">Phase 1 • Document Ingestion</span>
-          <h1 className="view-title">Upload & Ingest Chiller Engineering Documents</h1>
+          <h1 className="view-title">
+            {product ? `Upload & Ingest ${product.name} Documents` : 'Select Your Product, Then Upload Documents'}
+          </h1>
           <p className="view-subtitle">
-            Upload raw engineering files (BOM spreadsheets, freight manifests, plant utility submetering, and equipment cut sheets).
-            The engine parses component masses, links them to verified ecoinvent v3.12 activities, and audits UL 10010-4 completeness.
+            Choose the product first so the right PCR, functional unit and life-cycle rules are applied. Then upload raw files
+            (BOM spreadsheets, freight manifests, plant utility data, specification sheets). The engine reads component masses,
+            matches each material to the best ecoinvent v3.12 dataset by name, and audits {product ? product.pcrShort : 'PCR'} completeness.
           </p>
         </div>
 
@@ -102,14 +111,82 @@ export default function UploadView() {
         </div>
       </div>
 
-      {/* Preset Chiller Benchmark Models Gallery (Apple Store Utility Card Grid) */}
+      {/* Step 1: Product selection (required before upload) */}
+      <div className="apple-benchmark-gallery">
+        <div className="gallery-header-row">
+          <div className="gallery-title-group">
+            <span className="gallery-title">Step 1 · Select the product for this EPD</span>
+            <span className="gallery-desc">
+              Each product has its own PCR, functional unit, life-cycle stages and ecoinvent material mapping.
+            </span>
+          </div>
+          <span className="gallery-pill-tag">
+            {product ? `Selected: ${product.name}` : `${PRODUCT_LIST.length} products available`}
+          </span>
+        </div>
+
+        <div className="benchmark-card-grid">
+          {PRODUCT_LIST.map((item) => {
+            const isSelected = productCategory === item.id;
+            return (
+              <div
+                key={item.id}
+                className={`benchmark-card ${isSelected ? 'active-benchmark' : ''}`}
+                onClick={() => selectProduct(item.id)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') selectProduct(item.id); }}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isSelected}
+              >
+                <div className="card-top-row">
+                  <span className="card-equipment-glyph" aria-hidden="true">{item.icon}</span>
+                  <span className="card-badge" style={{ color: '#0066cc', backgroundColor: '#0066cc15' }}>
+                    {item.pcrShort}
+                  </span>
+                </div>
+                <div className="card-title">{item.name}</div>
+                <div className="card-subtitle">{item.examples}</div>
+                <div className="card-specs-row">
+                  <div className="card-spec-item">
+                    <span className="spec-label">Unit</span>
+                    <span className="spec-value">{item.fuShort}</span>
+                  </div>
+                  <div className="card-spec-item">
+                    <span className="spec-label">Use stage</span>
+                    <span className="spec-value">
+                      {item.useStage.refrigerant ? 'Refrigerant + energy' : item.useStage.b6 === 'none' ? 'Not modelled' : 'Declared use'}
+                    </span>
+                  </div>
+                </div>
+                <div className="card-action-row">
+                  <button
+                    type="button"
+                    className={`btn-card-load ${isSelected ? 'is-selected' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); selectProduct(item.id); }}
+                    disabled={isLoading}
+                  >
+                    {isSelected ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <CheckIcon size={12} /> Selected
+                      </span>
+                    ) : 'Select →'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Preset Chiller Benchmark Models Gallery (chiller only) */}
+      {product?.isChiller && (
       <div className="apple-benchmark-gallery">
         <div className="gallery-header-row">
           <div className="gallery-title-group">
             <span className="gallery-title">Verified Equipment Benchmarks</span>
             <span className="gallery-desc">Instant 1-click loading of UL 10010-4 / EN 15804+A2 test fixtures from test/ suite</span>
           </div>
-          <span className="gallery-pill-tag">4 Models Available</span>
+          <span className="gallery-pill-tag">{Object.keys(PRESET_DATASETS || {}).length} Models Available</span>
         </div>
 
         <div className="benchmark-card-grid">
@@ -178,26 +255,30 @@ export default function UploadView() {
           })}
         </div>
       </div>
+      )}
 
-      {/* Upload Dropzone */}
+      {/* Upload Dropzone (enabled once a product is selected) */}
       <div
         className={`apple-upload-zone ${isDragOver ? 'drag-over' : ''}`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => fileInputRef.current?.click()}
-        style={{ cursor: 'pointer' }}
+        onClick={() => hasProduct && fileInputRef.current?.click()}
+        style={{ cursor: hasProduct ? 'pointer' : 'not-allowed', opacity: hasProduct ? 1 : 0.5 }}
+        aria-disabled={!hasProduct}
       >
         <div className="upload-icon-circle">
           <UploadIcon size={26} style={{ color: '#0066cc' }} />
         </div>
 
         <div className="upload-zone-title">
-          Drop engineering files here, or click to browse
+          {hasProduct ? `Step 2 · Drop ${product.name} files here, or click to browse` : 'Select a product above to enable upload'}
         </div>
 
         <div className="upload-zone-desc">
-          Supports BOM spreadsheets (Excel .xlsx, CSV), technical cutsheets (vector PDF), multimodal manifests, or complete ZIP packages
+          {hasProduct
+            ? `Expected: ${product.bomHint} Also accepted: freight manifests, utility data, spec sheets, ZIP packages.`
+            : 'Supports BOM spreadsheets (Excel .xlsx, CSV), specification sheets (PDF), manifests, or complete ZIP packages'}
         </div>
 
         <div className="upload-zone-formats">
@@ -308,7 +389,7 @@ export default function UploadView() {
               type="button"
               className="btn-apple-primary-pill"
               onClick={handleExtractAndProceed}
-              disabled={isLoading}
+              disabled={isLoading || !hasProduct}
             >
               <span>{isLoading ? 'Parsing Engineering Data...' : 'Extract & Analyze Lifecycle Inventory'}</span>
               <ChevronRightIcon size={15} />
@@ -327,7 +408,7 @@ export default function UploadView() {
             <div>
               <div className="gap-title">PCR Gap Warning: {gaps.length} Requirement(s) Detected</div>
               <div className="gap-desc">
-                The engine checked the active inventory against UL 10010-4 Part B v2.0 cut-off & reporting requirements.
+                The engine checked the active inventory against {productProfile.pcrLabel} cut-off & reporting requirements.
               </div>
             </div>
           </div>

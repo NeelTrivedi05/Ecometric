@@ -4,125 +4,24 @@
  * EN 15804+A2, and ISO 14025 / 21930 per SKILL.md.
  */
 
+import { CARRIER_19DV_500RT_EPD11017 } from './carrier19dvBenchmark';
+
 export const PRESET_DATASETS = {
   'aquaedge_500rt': {
     id: 'aquaedge_500rt',
-    filename: '11_water_cooled_centrifugal_multitab_master.xlsx',
+    // Not a backend sample file: load-sample 404s and the preset data below is applied.
+    filename: 'carrier_19dv_500rt_epd11017_calibrated.json',
     title: 'AquaEdge® 19DV 500RT Centrifugal Chiller',
-    subtitle: 'UL 10010-4 Part B Benchmark • Master Multi-Tab A1–D',
+    subtitle: 'EPD11017 Benchmark • calibrated to ecoinvent v3.12',
     equipmentType: 'Water-Cooled Centrifugal Chiller',
     capacityRt: 500.0,
     nominalKw: 1758,
-    refrigerant: 'R134a (45.0 kg)',
-    efficiency: '0.5400 kW/ton',
+    refrigerant: 'R-1233zd(E) (595 kg)',
+    efficiency: '0.4818 kW/ton',
     totalMassKg: 3470,
     badge: 'Master Benchmark',
     badgeColor: '#28cd41',
-    extracted: {
-      project_info: {
-        product_name: 'AquaEdge® 19DV Water-Cooled Centrifugal Chiller',
-        manufacturer_name: 'Carrier Corporation',
-        functional_unit: '1 ton chilling capacity over 25 years reference service life',
-        declared_unit: '1 piece of 500 RT chiller',
-        pcr_ref: 'UL 10010-4 Part B v2.0 & EN 15804+A2',
-        geography: 'North America, Global',
-        lifespan_years: 25,
-        mass_delivered_kg: 3470,
-        conversion_factor_kg_per_fu: 6.94,
-      },
-      bom: [
-        { id: 'bom-1', name: 'Compressor Volute & Rotor Shell', material: 'steel_hot_rolled', mass: 2100, unit: 'kg', ecoinvent_id: 'ecoinvent_steel_hot_rolled_glo', provider_id: 'ecoinvent_steel_hot_rolled_glo', supplier: 'Midwest Steel Casting', transport_km: 420 },
-        { id: 'bom-2', name: 'Condenser & Evaporator Tubes', material: 'copper_tube_wire', mass: 650, unit: 'kg', ecoinvent_id: 'ecoinvent_copper_tube_wire_glo', provider_id: 'ecoinvent_copper_tube_wire_glo', supplier: 'Great Lakes Copper Corp', transport_km: 280 },
-        { id: 'bom-3', name: 'Semi-Hermetic Induction Motor', material: 'electric_motor_industrial', mass: 450, unit: 'kg', ecoinvent_id: 'ecoinvent_electric_motor_industrial_glo', provider_id: 'ecoinvent_electric_motor_industrial_glo', supplier: 'Precision ElectroMotors Ltd', transport_km: 650 },
-        { id: 'bom-4', name: 'Shell Thermal Insulation Jackets', material: 'insulation_polyurethane_rigid', mass: 150, unit: 'kg', ecoinvent_id: 'ecoinvent_insulation_pu_rigid_rer', provider_id: 'ecoinvent_insulation_pu_rigid_rer', supplier: 'PolyFoam Systems', transport_km: 190 },
-        { id: 'bom-5', name: 'Solid-State Inverter VFD Package', material: 'electronics_vfd', mass: 120, unit: 'kg', ecoinvent_id: 'ecoinvent_electronics_vfd_glo', provider_id: 'ecoinvent_electronics_vfd_glo', supplier: 'Advantech Power Systems', transport_km: 890 }
-      ],
-      transport: [
-        { mode: 'Heavy Lorry >32t (EURO 6)', distance: 485, dist: 485, emission_factor: 0.088, ef: 0.088, module: 'A2', provider_id: 'ecoinvent_transport_lorry_32t_rer' },
-        { mode: 'Transoceanic Container Ship', distance: 1200, dist: 1200, emission_factor: 0.0145, ef: 0.0145, module: 'A2', provider_id: 'ecoinvent_transport_container_ship_glo' },
-        { mode: 'Heavy Delivery Lorry >32t to Site', distance: 500, dist: 500, emission_factor: 0.088, ef: 0.088, module: 'A4', provider_id: 'ecoinvent_transport_lorry_32t_rer' }
-      ],
-      manufacturing: {
-        annual_facility_kwh: 34000,
-        natural_gas_mj: 18500,
-        grid_region: 'US_Average',
-        water_m3: 45.0,
-        annual_production_units: 50,
-        electricity_provider_id: 'ecoinvent_elec_mv_us',
-        gas_provider_id: 'ecoinvent_gas_burned_boiler_glo',
-        water_provider_id: 'ecoinvent_water_deionised_glo',
-      },
-      installation: {
-        outbound_transport_km: 500,
-        transport_mode: 'Heavy Lorry >32t (EURO 6)',
-        outbound_provider_id: 'ecoinvent_transport_lorry_32t_rer',
-        installation_energy_kwh: 350,
-        installation_energy_provider_id: 'ecoinvent_elec_mv_us',
-        commissioning_refrigerant_loss_kg: 0.5,
-        rigging_crane_diesel_liters: 25.0,
-        consumable_provider_id: 'ecoinvent_diesel_burned_building_machine_glo',
-      },
-      maintenance_b2: {
-        maintenance_cycles_per_rsl: 5,
-        consumable_name: 'Synthetic Polyol Ester Lubricant',
-        consumable_mass_kg: 25.0,
-        provider_id: 'ecoinvent_lubricating_oil_glo',
-      },
-      repair_b3: {
-        repair_events_per_rsl: 1,
-        replaced_part_name: 'Motor Bearing Assembly',
-        part_mass_kg: 45.0,
-        material_type: 'steel_hot_rolled',
-        provider_id: 'ecoinvent_steel_hot_rolled_glo',
-      },
-      replacement_b4: {
-        esl_years: 75,
-      },
-      refurbishment_b5: {
-        refurbishment_events_per_rsl: 1,
-        material_name: 'Condenser Tube Bundles',
-        mass_kg: 120.0,
-        provider_id: 'ecoinvent_copper_tube_wire_glo',
-      },
-      operational: {
-        refrigerant_type: 'R134a',
-        refrigerant_charge_kg: 45.0,
-        annual_leak_rate_percent: 2.0,
-        fugitive_operational_leak_rate: 0.5,
-        efficiency_kw_per_ton: 0.54,
-        capacity_rt: 500.0,
-        target_cities: ['Chicago', 'Houston', 'Frankfurt', 'Dubai'],
-        annual_operating_hours: 3500,
-        load_basis: 'full_load',
-        cooling_tower_water_m3_yr: 120.0,
-        scheduled_maintenance_kwh_yr: 180.0,
-        major_component_replacement_year: 15,
-        energy_provider_id: 'ecoinvent_elec_mv_us',
-        water_provider_id: 'ecoinvent_water_deionised_glo',
-        mass_delivered_kg: 3470,
-        conversion_factor_kg_per_fu: 6.94,
-      },
-      end_of_life: {
-        recycling_rate_percent: 92.4,
-        landfill_rate_percent: 4.5,
-        incineration_rate_percent: 3.1,
-        decommissioning_energy_kwh: 120,
-        waste_transport_km: 100,
-        deconstruction_provider_id: 'ecoinvent_diesel_dismantling_glo',
-        waste_transport_provider_id: 'ecoinvent_transport_lorry_32t_rer',
-        recycling_process_provider_id: 'ecoinvent_waste_metal_recycling_glo',
-        incineration_process_provider_id: 'ecoinvent_waste_incineration_glo',
-        landfill_process_provider_id: 'ecoinvent_waste_landfill_glo',
-      },
-      circularity_d: {
-        overall_recovery_rate_percent: 92.4,
-        steel_scrap_recovery_rate: 95.0,
-        copper_scrap_recovery_rate: 96.0,
-        aluminium_recovery_rate: 90.0,
-        refrigerant_reclamation_rate: 92.0,
-        net_avoided_burden_gwp_kg: -3210.0,
-      }
-    }
+    extracted: CARRIER_19DV_500RT_EPD11017,
   },
 
   'screw_chiller_300rt': {

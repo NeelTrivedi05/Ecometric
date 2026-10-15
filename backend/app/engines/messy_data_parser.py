@@ -331,7 +331,20 @@ def parse_messy_csv(text_content: str, filename: str, extracted: Dict[str, Any])
             mfg["grid_region"] = "IN"
         return "utilities"
 
-    # 2. Classification: Transport / Supplier Logistics Manifest (A2)
+    # 2. Bill of materials: an item column plus a mass column, and no freight-routing columns.
+    # Checked before the A2 manifest because BOM exports often carry Supplier / Distance columns.
+    has_item_col = any(any(k in h for k in ['component', 'part', 'material', 'item', 'description', 'name'])
+                       for h in headers)
+    has_mass_col = any(any(k in h for k in ['mass', 'weight', 'kg', 'qty', 'quantity']) for h in headers)
+    has_routing_col = any(any(k in h for k in ['mode', 'origin', 'destination', 'route', 'vehicle']) for h in headers)
+    if has_item_col and has_mass_col and not has_routing_col:
+        bom_rows = _parse_bom_rows(reader, extracted)
+        if bom_rows:
+            extracted.setdefault("bom", []).extend(bom_rows)
+            return "bom"
+        return "unknown"
+
+    # 3. Classification: Transport / Supplier Logistics Manifest (A2)
     if any(k in header_str for k in ['supplier', 'dist', 'distance', 'from', 'mode']):
         transport_legs = []
         for idx, row in enumerate(reader):
@@ -523,31 +536,54 @@ def parse_messy_csv(text_content: str, filename: str, extracted: Dict[str, Any])
                     circ["aluminium_recovery_rate"] = round(num_val, 1)
         return "end_of_life"
 
-    # 7. Standard BOM Check
+    # 8. Standard BOM Check
     if any(k in header_str for k in ['component', 'part', 'material', 'mass', 'weight']):
-        custom_bom = []
-        base_idx = len(extracted.get("bom", []))
-        for idx, row in enumerate(reader):
-            row_vals = {k.strip().lower(): str(v).strip() for k, v in row.items() if k}
-            name = row_vals.get('name') or row_vals.get('component') or row_vals.get('part') or f'Part {base_idx+idx+1}'
-            mass = clean_decimal_number(row_vals.get('mass') or row_vals.get('weight') or row_vals.get('mass_kg')) or 10.0
-            mat = row_vals.get('material') or 'steel_hot_rolled'
-            km = parse_distance_km(row_vals.get('transport_km') or row_vals.get('dist') or "")
-            custom_bom.append({
-                "id": f"bom-upload-{base_idx+idx+1}",
-                "name": name,
-                "material": mat,
-                "mass": mass,
-                "unit": "kg",
-                "ecoinvent_id": f"ecoinvent_{mat}_glo",
-                "supplier": row_vals.get('supplier') or 'Declared Supplier',
-                "transport_km": km
-            })
+        custom_bom = _parse_bom_rows(reader, extracted)
         if custom_bom:
             extracted.setdefault("bom", []).extend(custom_bom)
             return "bom"
 
     return "unknown"
+
+
+def _first_col(row_vals: Dict[str, str], keys: List[str], exclude: List[str] = ()) -> str:
+    """Value of the first column whose header contains one of `keys` (in priority order)."""
+    for key in keys:
+        for col, val in row_vals.items():
+            if key in col and not any(x in col for x in exclude) and str(val).strip():
+                return val
+    return ""
+
+
+def _parse_bom_rows(reader, extracted: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Reads BOM rows with flexible headers, e.g. 'Mass (kg)', 'Weight [lb]', 'Distance (km)'."""
+    rows = []
+    base_idx = len(extracted.get("bom", []))
+    for idx, row in enumerate(reader):
+        row_vals = {k.strip().lower(): str(v).strip() for k, v in row.items() if k and v is not None}
+        name = _first_col(row_vals, ['component', 'part', 'item', 'description', 'name'], exclude=['supplier'])
+        mat = _first_col(row_vals, ['material', 'grade', 'composition'])
+        mass_col = next((c for c in row_vals if any(k in c for k in ['mass', 'weight', 'kg', 'qty', 'quantity'])
+                         and 'km' not in c), None)
+        mass = clean_decimal_number(row_vals.get(mass_col, "")) if mass_col else 0.0
+        if mass_col and ('lb' in mass_col or 'pound' in mass_col):
+            mass = round(mass * 0.45359237, 4)
+        if not name and not mat:
+            continue
+        if not mass or mass <= 0:
+            continue
+        km = parse_distance_km(_first_col(row_vals, ['distance', 'dist', 'transport_km', 'km']))
+        rows.append({
+            "id": f"bom-upload-{base_idx + len(rows) + 1}",
+            "name": name or mat,
+            "material": mat or name,
+            "mass": mass,
+            "unit": "kg",
+            "supplier": _first_col(row_vals, ['supplier', 'vendor']) or 'Declared Supplier',
+            "transport_km": km,
+            "module": "A1",
+        })
+    return rows
 
 # ---------------------------------------------------------------------------
 # Intelligent BOM Synthesizer (for Brochures with Declared Weight & Construction)

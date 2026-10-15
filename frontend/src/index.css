@@ -759,9 +759,12 @@ svg {
 }
 
 /* ─── VIEW TRANSITION ─── */
+/* No transform may remain on this wrapper after the animation: a transform (or will-change: transform)
+   turns it into the containing block for position: fixed, so the modals inside views would be
+   positioned against the whole scrolling page instead of the viewport. `backwards` keeps the start
+   frame during the animation and leaves no transform once it ends. */
 .studio-view-transition {
-  animation: studioViewGlide 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity;
+  animation: studioViewGlide 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   width: 100%;
 }
 
@@ -2193,6 +2196,17 @@ textarea.form-input {
 .btn-apple-action-blue:active,
 .btn-apple-primary-pill:active {
   transform: scale(0.97);
+}
+
+/* Gate buttons (steps 4 and 7) must look locked when disabled */
+.btn-apple-action-blue:disabled,
+.btn-apple-primary-pill:disabled,
+.btn-accent:disabled {
+  background: #d2d2d7;
+  color: #86868b;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-apple-secondary-pill {

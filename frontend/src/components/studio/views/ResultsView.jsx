@@ -15,6 +15,7 @@ export default function ResultsView() {
     isLoading,
     runCalculation,
     extractedData,
+    productProfile,
   } = useStudio();
 
   const [showFullBreakdown, setShowFullBreakdown] = useState(false);
@@ -23,7 +24,7 @@ export default function ResultsView() {
 
   const FILTER_OPTIONS = [
     { id: 'all', label: 'All Indicators',  desc: 'Show all 25 computed impact categories' },
-    { id: 'pcr', label: 'PCR Mandatory',   desc: 'EN 15804+A2 + UL 10010-4 required (16 indicators)' },
+    { id: 'pcr', label: 'PCR Mandatory',   desc: `EN 15804+A2 + ${productProfile?.pcrShort || 'PCR'} required indicators` },
     { id: 'gpi', label: 'GPI Core',        desc: 'International EPD System primary page (6 indicators)' },
   ];
 
@@ -31,10 +32,16 @@ export default function ResultsView() {
   const [displayedIndicators, setDisplayedIndicators] = useState([]);
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [isFlowModalOpen, setIsFlowModalOpen] = useState(false);
-  const [normMode, setNormMode] = useState('fu'); // 'fu' = per 1 ton chilling capacity | 'declared' = full machine declared unit
+  const [normMode, setNormMode] = useState('fu'); // 'fu' = per functional / declared unit | 'declared' = whole quantity in the BOM
 
+  // Number of functional units the BOM represents: chiller capacity in RT, otherwise the declared quantity (m², m, t ...)
+  const isChiller = productProfile?.isChiller !== false;
+  const fuUnit = productProfile?.fuUnit || 'unit';
   const capacityRt = Number(extractedData?.operational?.capacity_rt || extractedData?.project_info?.capacity_rt || 500);
-  const normFactor = normMode === 'fu' ? Math.max(1, capacityRt) : 1;
+  const fuQuantity = isChiller ? Math.max(1, capacityRt) : (Number(extractedData?.project_info?.fu_quantity) || 1);
+  const normFactor = normMode === 'fu' ? fuQuantity : 1;
+  const fuLabel = isChiller ? '1 ton chilling capacity' : `1 ${fuUnit}`;
+  const declaredLabel = isChiller ? `${capacityRt} RT` : `${fuQuantity} ${fuUnit}`;
 
   // Auto-run genuine characterization if results not calculated yet but BOM exists
   useEffect(() => {
@@ -102,19 +109,19 @@ export default function ResultsView() {
               type="button"
               className={`apple-segmented-tab ${normMode === 'fu' ? 'active' : ''}`}
               onClick={() => setNormMode('fu')}
-              title="Normalized per 1 ton chilling capacity over 25 yr RSL (UL 10010-4 §3.1)"
+              title={`Normalized per ${fuLabel} (${productProfile?.pcrShort || 'PCR'})`}
               style={{ fontSize: '11px', padding: '5px 12px' }}
             >
-              <span>Per 1 Ton (FU)</span>
+              <span>Per {isChiller ? '1 Ton' : `1 ${fuUnit}`} (FU)</span>
             </button>
             <button
               type="button"
               className={`apple-segmented-tab ${normMode === 'declared' ? 'active' : ''}`}
               onClick={() => setNormMode('declared')}
-              title={`Declared Machine Total (${capacityRt} RT)`}
+              title={`Total for the quantity in the BOM (${declaredLabel})`}
               style={{ fontSize: '11px', padding: '5px 12px' }}
             >
-              <span>Declared ({capacityRt} RT)</span>
+              <span>Declared ({declaredLabel})</span>
             </button>
           </div>
 
@@ -285,7 +292,7 @@ export default function ResultsView() {
               {viewMode === 'pcr' ? 'Standard PCR Environmental Matrix' : 'Full LCIA Environmental Matrix'}
             </span>
             <span style={{ fontSize: '12px', color: '#86868b', marginLeft: 8 }}>
-              ({currentMethod.name} — {activeRows.length} displayed • {normMode === 'fu' ? 'Normalized per 1 ton chilling capacity' : `Machine Total ${capacityRt} RT`})
+              ({currentMethod.name} — {activeRows.length} displayed • {normMode === 'fu' ? `Normalized per ${fuLabel}` : `Total for ${declaredLabel}`})
             </span>
           </div>
           
@@ -394,10 +401,8 @@ export default function ResultsView() {
                 </tr>
               ) : (
                 activeRows.map((ind) => {
-                  const isGwp = ind.code === 'GWP100' || ind.name.toLowerCase().includes('global warming');
-
                   return (
-                    <tr key={ind.rawCategory || ind.code} style={{ background: isGwp ? 'var(--accent-dim)' : undefined }}>
+                    <tr key={ind.rawCategory || ind.code}>
                       <td style={{ sticky: 'left', background: 'var(--bg-card)', zIndex: 1 }}>
                         <span style={{ fontFamily: 'var(--mono)', fontWeight: 700, fontSize: 'var(--text-2xs)', color: 'var(--accent)' }}>
                           {highlightMatch(ind.code, activeSearchTerm)}
@@ -405,7 +410,7 @@ export default function ResultsView() {
                       </td>
                       <td>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ fontWeight: isGwp ? 600 : 400 }}>
+                          <span style={{ fontWeight: 400 }}>
                             {highlightMatch(ind.name, activeSearchTerm)}
                           </span>
                           {ind.category && ind.category !== 'General' && ind.category !== ind.name && (

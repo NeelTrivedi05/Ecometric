@@ -702,19 +702,20 @@ html {
   height: 520px;
 }
 
-/* Subtle continuous rotation for wind turbine rotors */
-.landing-page-root .eco-turbine-rotor {
-  transform-origin: 0 0;
-  animation: eco-turbine-spin 14s linear infinite;
+/* Gentle sway for background trees, pivoting at the base of the trunk */
+.landing-page-root .eco-tree-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: eco-tree-sway 7s ease-in-out infinite alternate;
   will-change: transform;
 }
 
-@keyframes eco-turbine-spin {
+@keyframes eco-tree-sway {
   from {
-    transform: rotate(0deg);
+    transform: rotate(-1.4deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(1.4deg);
   }
 }
 
@@ -722,6 +723,8 @@ html {
 .landing-page-root .eco-hero .eco-hill-mid { fill: #c9e6d3; }
 .landing-page-root .eco-hero .eco-hill-near { fill: var(--apple-canvas-parchment); }
 .landing-page-root .eco-hero .eco-icon { color: #9fcdb0; }
+.landing-page-root .eco-hero .eco-tree-far { color: #a9d6b9; }
+.landing-page-root .eco-hero .eco-tree { color: #8cc3a0; }
 .landing-page-root .eco-hero .eco-path { stroke: #8fc4a3; }
 
 .landing-page-root .eco-backdrop-banner .eco-hills {
@@ -731,6 +734,7 @@ html {
 .landing-page-root .eco-banner .eco-hill-far { fill: #e1f1e6; }
 .landing-page-root .eco-banner .eco-hill-near { fill: var(--apple-canvas-parchment); }
 .landing-page-root .eco-banner .eco-icon { color: #b3d6bf; }
+.landing-page-root .eco-banner .eco-tree-far { color: #b8dcc4; }
 .landing-page-root .eco-banner .eco-path { stroke: #a3cfb3; }
 
 .landing-page-root .eco-banner {
@@ -802,7 +806,7 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .landing-page-root .eco-path,
-  .landing-page-root .eco-turbine-rotor,
+  .landing-page-root .eco-tree-sway,
   .landing-page-root .eco-sun,
   .landing-page-root .eco-leaf-line {
     animation: none !important;

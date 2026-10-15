@@ -187,6 +187,10 @@ export default function ExportView() {
               Builds the EPD from the current calculation results, product data and Report Details, with the LCIA methods,
               standard and product category you selected. Configure verifier and program operator details before publishing.
             </p>
+            <p style={{ margin: '0 0 12px 0', fontSize: 12, color: '#8F5800', lineHeight: 1.45 }}>
+              The rendered EPD is checked against the PCR's document rules, together with the input and results rules on
+              the final data. While a critical rule fails or its data is missing, the PDF is marked DRAFT. See Report Details → Validation.
+            </p>
 
           </div>
 

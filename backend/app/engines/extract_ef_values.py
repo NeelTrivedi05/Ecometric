@@ -252,8 +252,10 @@ def collect_provider_contexts(payload: dict) -> dict[str, set[str]]:
         if isinstance(city_grids, dict):
             for city, cpid in city_grids.items():
                 _add_pid(contexts, cpid, f"grid {city}")
-    if float(op.get("cooling_tower_water_m3_yr", 0) or 0) > 0:
-        _add_pid(contexts, op.get("water_provider_id"), "cooling tower water")
+    if float(op.get("annual_energy_kwh", 0) or 0) > 0:
+        _add_pid(contexts, op.get("energy_provider_id"), "operational energy")
+    if float(op.get("cooling_tower_water_m3_yr", 0) or 0) > 0 or float(op.get("annual_water_m3", 0) or 0) > 0:
+        _add_pid(contexts, op.get("water_provider_id"), "operational water")
 
     b2 = stages.get("B2_Maintenance", {})
     if float(b2.get("maintenance_cycles_per_rsl", 0) or 0) > 0 or float(b2.get("consumable_mass_kg", 0) or 0) > 0:
@@ -282,7 +284,10 @@ def collect_provider_contexts(payload: dict) -> dict[str, set[str]]:
 
     # ── Module D: Circularity ──
     circ_d = stages.get("D_Circularity", {})
-    if float(circ_d.get("overall_recovery_rate_percent", 0) or 0) > 0:
+    d_rate = circ_d.get("overall_recovery_rate_percent")
+    if d_rate is None:
+        d_rate = eol.get("recycling_rate_percent", 0)
+    if float(d_rate or 0) > 0:
         _add_pid(contexts, circ_d.get("virgin_material_provider_id"), "virgin material credit")
         _add_pid(contexts, circ_d.get("recycled_process_provider_id"), "secondary material process")
 

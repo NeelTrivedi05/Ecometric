@@ -13,8 +13,11 @@ from ..engines.messy_data_parser import (
     parse_flexible_json,
     parse_messy_csv,
     synthesize_bom_from_declared_weight,
-    clean_decimal_number
+    clean_decimal_number,
+    _parse_bom_rows,
 )
+from ..engines.material_matcher import assign_bom_providers, database_available, project_region
+from ..products import get_product, is_chiller, normalize_product_id, project_info_defaults
 
 router = APIRouter(prefix="/api/documents", tags=["Document Ingestion & Gap Analysis"])
 
@@ -132,7 +135,7 @@ def get_sample_file(filename: str):
     return FileResponse(file_path, media_type=media_types.get(ext.lower(), "application/octet-stream"), filename=safe_filename)
 
 @router.post("/load-sample/{filename}")
-def load_sample_file(filename: str):
+def load_sample_file(filename: str, product_category: Optional[str] = None):
     """Parses a sample test file and returns live extracted data and PCR gap analysis."""
     safe_filename = os.path.basename(filename)
     file_path = os.path.join(SAMPLES_DIR, safe_filename)
@@ -144,11 +147,13 @@ def load_sample_file(filename: str):
     with open(file_path, "rb") as f:
         contents = f.read()
 
-    extracted = json.loads(json.dumps(EMPTY_EXTRACTION_TEMPLATE))
+    pid = normalize_product_id(product_category)
+    extracted = build_extraction_template(pid)
     processed_files = []
     process_file_content(safe_filename, contents, extracted, processed_files)
+    match_stats = finalize_extraction(extracted, pid)
 
-    gaps = analyze_pcr_gaps(extracted, processed_files)
+    gaps = analyze_pcr_gaps(extracted, processed_files, pid, match_stats)
     flow = build_traceability_flow(extracted, processed_files)
 
     return {
@@ -273,16 +278,88 @@ EMPTY_EXTRACTION_TEMPLATE = {
 }
 
 
-def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str]) -> List[Dict[str, Any]]:
+CHILLER_ONLY_OPERATIONAL_KEYS = (
+    "refrigerant_type", "refrigerant_charge_kg", "annual_leak_rate_percent", "fugitive_operational_leak_rate",
+    "efficiency_kw_per_ton", "iplv_kw_per_ton", "capacity_rt", "target_cities", "cooling_tower_water_m3_yr",
+)
+
+
+def build_extraction_template(product_id: Optional[str]) -> Dict[str, Any]:
+    """Empty extraction document carrying the selected product's PCR defaults."""
+    product = get_product(product_id)
+    template = json.loads(json.dumps(EMPTY_EXTRACTION_TEMPLATE))
+    template["project_info"].update(project_info_defaults(product["id"]))
+    template["project_info"]["product_name"] = f"Uploaded {product['name']}"
+    template["project_info"]["fu_quantity"] = 1
+    if not is_chiller(product["id"]):
+        template["operational"] = {
+            "annual_energy_kwh": 0,
+            "annual_water_m3": 0,
+            "use_phase_description": "",
+        }
+        template["installation"].pop("commissioning_refrigerant_loss_kg", None)
+        template["circularity_d"] = {"overall_recovery_rate_percent": 0}
+        template["technical_data"] = {f["key"]: "" for f in product["technical_fields"]}
+    return template
+
+
+def finalize_extraction(extracted: Dict[str, Any], product_id: Optional[str]) -> Dict[str, Any]:
+    """Product-aware clean-up after all files are parsed; returns provider-matching stats."""
+    pid = normalize_product_id(product_id)
+    info = extracted.setdefault("project_info", {})
+    # Extractors may overwrite PCR/FU text with chiller wording; the selected product decides.
+    for key, val in project_info_defaults(pid).items():
+        if key in ("lifespan_years", "building_esl_years") and info.get(key):
+            continue
+        info[key] = val
+
+    if is_chiller(pid):
+        # Brochure without a BOM table: synthesize a baseline from declared weight (chiller split only)
+        if len(extracted.get("bom", [])) == 0:
+            declared_weight = extracted.get("_shipping_weight_kg", 0.0)
+            if declared_weight <= 0 and extracted.get("operational", {}).get("capacity_rt", 0) > 0:
+                cap = extracted["operational"]["capacity_rt"]
+                declared_weight = round(cap * 20.214, 1)  # ~40,428 kg for 2000 TR water-cooled centrifugal
+            if declared_weight > 0:
+                extracted["bom"] = synthesize_bom_from_declared_weight(declared_weight)
+                extracted["_shipping_weight_kg"] = declared_weight
+                extracted["_bom_synthesized"] = True
+    else:
+        # Chiller-specific values that generic extractors may have filled in (refrigerant, RT, kW/ton)
+        op = extracted.setdefault("operational", {})
+        for key in CHILLER_ONLY_OPERATIONAL_KEYS:
+            op.pop(key, None)
+        extracted.get("installation", {}).pop("commissioning_refrigerant_loss_kg", None)
+
+    seen_ids = set()
+    deduped_bom = []
+    for i, item in enumerate(extracted.get("bom", [])):
+        item_id = item.get("id") or f"bom-item-{i+1}"
+        if item_id in seen_ids:
+            item_id = f"{item_id}-{i+1}"
+        seen_ids.add(item_id)
+        item_copy = dict(item)
+        item_copy["id"] = item_id
+        deduped_bom.append(item_copy)
+    extracted["bom"] = deduped_bom
+
+    return assign_bom_providers(extracted["bom"], pid, project_region(extracted))
+
+
+def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str],
+                     product_id: Optional[str] = None, match_stats: Optional[Dict[str, int]] = None) -> List[Dict[str, Any]]:
     """
-    Audits extracted data against UL 10010-4 and ISO 14025 mandatory declarations.
+    Audits extracted data against the selected product's PCR and ISO 14025 declarations.
     Generates actionable missing data gap reports with guidance.
     """
+    pid = normalize_product_id(product_id or (extracted.get("project_info") or {}).get("product_category"))
+    product = get_product(pid)
+    pcr_label = product["pcr"]["label"]
     gaps = []
     bom = extracted.get("bom", [])
-    total_mass = sum(float(item.get("mass", 0)) for item in bom)
-    
-    # Gap 1: Total BOM Mass check (ISO 14025 Cut-off gate)
+    total_mass = sum(float(item.get("mass", 0) or 0) for item in bom)
+
+    # Gap 1: BOM present (ISO 14025 / PCR cut-off gate)
     if extracted.get("_bom_synthesized"):
         gaps.append({
             "id": "notice-bom-synthesized",
@@ -293,31 +370,64 @@ def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str]) -> List[D
             "message": f"Source document declared equipment shipping weight of {extracted.get('_shipping_weight_kg', 40428):,.0f} kg without component-level breakdown. Baseline bill of materials was synthesized using UL 10010-4 / AHRI standard industrial chiller material distribution.",
             "action": "Upload engineering BOM export (XLSX/CSV) if Tier-1 primary components are available."
         })
-    elif total_mass < 50:
+    elif not bom or total_mass <= 0:
+        gaps.append({
+            "id": "gap-bom-mass",
+            "module": "A1",
+            "category": "Bill of Materials",
+            "severity": "critical",
+            "title": "No Bill of Materials Found",
+            "message": f"No material lines with a mass were extracted for this {product['name']}. The PCR cut-off rules require the full material composition.",
+            "action": "Upload a BOM / recipe table with columns such as Component, Material, Mass (kg)."
+        })
+    elif is_chiller(pid) and total_mass < 50:
         gaps.append({
             "id": "gap-bom-mass",
             "module": "A1",
             "category": "Bill of Materials",
             "severity": "critical",
             "title": "BOM Mass Under-Declared",
-            "message": f"Extracted BOM total mass is only {total_mass} kg. Heavy equipment requires full component declaration to meet the 99% mass cut-off rule.",
+            "message": f"Extracted BOM total mass is only {total_mass} kg. Heavy equipment requires full component declaration to meet the cut-off rule.",
             "action": "Upload comprehensive assembly BOM or engineering parts list."
         })
-    
-    # Gap 2: Inbound Transport Distance (A2 Module)
-    missing_transport = [item["name"] for item in bom if not item.get("transport_km") or float(item.get("transport_km", 0)) <= 0]
-    if missing_transport:
+
+    # Gap 2: Database match for each material
+    unmatched = [item.get("name") or item.get("material") for item in bom if item.get("ecoinvent_matched") is False]
+    if unmatched:
+        gaps.append({
+            "id": "gap-ecoinvent-match",
+            "module": "A1",
+            "category": "Emission Factors",
+            "severity": "high",
+            "title": f"No ecoinvent dataset found for {len(unmatched)} material(s)",
+            "message": f"Could not match: {', '.join(str(u) for u in unmatched[:4])}{'...' if len(unmatched) > 4 else ''}.",
+            "action": "Pick a dataset for these lines in Review & Mapping (search by material name)."
+        })
+    if bom and match_stats is not None and not database_available():
+        gaps.append({
+            "id": "gap-ecoinvent-db",
+            "module": "A1",
+            "category": "Emission Factors",
+            "severity": "high",
+            "title": "ecoinvent LCIA database not found",
+            "message": "The Cut-off Cumulative LCIA workbook cache is not available on this server, so materials could not be matched by name.",
+            "action": "Place 'Cut-off Cumulative LCIA v3.12.xlsx' (and its .cache.pkl) in a configured location or set ECOINVENT_LCIA_XLSX."
+        })
+
+    # Gap 3: Inbound transport distance (A2)
+    missing_transport = [item.get("name") for item in bom if not item.get("transport_km") or float(item.get("transport_km", 0)) <= 0]
+    if missing_transport and not extracted.get("transport"):
         gaps.append({
             "id": "gap-transport-a2",
             "module": "A2",
             "category": "Logistics Manifest",
             "severity": "high",
             "title": f"Missing Inbound Freight Distances ({len(missing_transport)} items)",
-            "message": f"Inbound freight distances are missing for: {', '.join(missing_transport[:3])}{'...' if len(missing_transport) > 3 else ''}.",
-            "action": "Upload Tier-1 supplier freight manifest or use default regional logistics proxy (500 km)."
+            "message": f"Inbound freight distances are missing for: {', '.join(str(m) for m in missing_transport[:3])}{'...' if len(missing_transport) > 3 else ''}.",
+            "action": "Upload supplier freight manifest or enter supplier distances in Review & Mapping."
         })
-        
-    # Gap 3: Manufacturing Facility Energy (A3 Module)
+
+    # Gap 4: Manufacturing energy (A3)
     mfg = extracted.get("manufacturing", {})
     if not mfg.get("annual_facility_kwh") and not mfg.get("electricity_kwh"):
         gaps.append({
@@ -325,37 +435,65 @@ def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str]) -> List[D
             "module": "A3",
             "category": "Factory Utility Bills",
             "severity": "high",
-            "title": "Missing Assembly Facility Electricity (A3)",
+            "title": "Missing Manufacturing Electricity (A3)",
             "message": "Specific kWh consumption allocated to product manufacturing was not detected.",
-            "action": "Upload recent utility electricity bill or sub-metered energy report."
+            "action": "Upload recent utility electricity bill or sub-metered energy report, with annual production volume."
         })
-        
-    # Gap 4: Refrigerant Charge & Leak Rate (B1-B2 Modules for Chiller PCR)
-    op = extracted.get("operational", {})
-    if not op.get("refrigerant_charge_kg") or float(op.get("refrigerant_charge_kg", 0)) <= 0:
+
+    info = extracted.get("project_info", {})
+    if is_chiller(pid):
+        # Gap 5: Refrigerant charge (UL 10010-4 B1-B2)
+        op = extracted.get("operational", {})
+        if not op.get("refrigerant_charge_kg") or float(op.get("refrigerant_charge_kg", 0)) <= 0:
+            gaps.append({
+                "id": "gap-refrigerant-b1",
+                "module": "B1-B2",
+                "category": "Refrigeration Specs",
+                "severity": "critical",
+                "title": "Refrigerant Charge Missing",
+                "message": "UL 10010-4 Part B explicitly requires initial factory refrigerant charge (kg) and annual fugitive leakage rate.",
+                "action": "Specify refrigerant type and factory charge on equipment nameplate."
+            })
+    else:
+        # Gap 5: How many functional / declared units the BOM represents
+        unit = product["fu_unit"]
         gaps.append({
-            "id": "gap-refrigerant-b1",
-            "module": "B1-B2",
-            "category": "Refrigeration Specs",
-            "severity": "critical",
-            "title": "Refrigerant Charge Missing",
-            "message": "UL 10010-4 Part B explicitly requires initial factory refrigerant charge (kg) and annual fugitive leakage rate.",
-            "action": "Specify refrigerant type and factory charge on equipment nameplate."
+            "id": "notice-fu-quantity",
+            "module": "Scope",
+            "category": "Functional / Declared Unit",
+            "severity": "medium",
+            "title": f"Confirm the BOM quantity in {unit}",
+            "message": f"Results are reported per {product['declared_unit'] or product['functional_unit']}. The BOM is assumed to describe {info.get('fu_quantity', 1)} {unit}.",
+            "action": f"Set 'Quantity represented by BOM ({unit})' in Review & Mapping if the BOM covers more or less than 1 {unit}."
         })
-        
-    # Gap 5: Reference Service Life (RSL)
-    proj = extracted.get("project_info", {})
-    if not proj.get("lifespan_years"):
+        # Gap 6: End-of-life split (no PCR default for these products)
+        eol = extracted.get("end_of_life", {})
+        eol_sum = sum(float(eol.get(k, 0) or 0) for k in ("recycling_rate_percent", "landfill_rate_percent", "incineration_rate_percent"))
+        if eol_sum <= 0:
+            gaps.append({
+                "id": "gap-eol-split",
+                "module": "C3-C4",
+                "category": "End of Life",
+                "severity": "high",
+                "title": "End-of-Life Treatment Split Not Declared",
+                "message": f"{pcr_label} requires end-of-life scenarios; no recycling / landfill / incineration shares were found.",
+                "action": "Enter the end-of-life split (must total 100%) in Review & Mapping."
+            })
+
+    # Gap 7: Reference Service Life (RSL)
+    if not info.get("lifespan_years"):
+        default_rsl = product.get("default_rsl_years")
         gaps.append({
             "id": "gap-rsl",
             "module": "Scope",
             "category": "PCR Scoping",
-            "severity": "medium",
+            "severity": "medium" if default_rsl else "high",
             "title": "Reference Service Life (RSL) Unconfirmed",
-            "message": "Defaulting to 25 years per UL 10010-4 benchmark. Please confirm manufacturer warranty lifetime.",
-            "action": "Confirm equipment design lifetime (typically 20-30 years)."
+            "message": (f"Defaulting to {default_rsl} years per {pcr_label}." if default_rsl
+                        else f"{pcr_label} has no default RSL; the manufacturer must declare it."),
+            "action": "Confirm the product's reference service life and its in-use conditions."
         })
-        
+
     return gaps
 
 def build_traceability_flow(extracted: Dict[str, Any], file_names: List[str]) -> Dict[str, Any]:
@@ -509,27 +647,8 @@ def process_file_content(filename: str, contents: bytes, extracted: Dict[str, An
                 
             detected_type = parse_messy_csv(decoded, filename, extracted)
             if detected_type == "unknown":
-                # Fallback: standard BOM CSV
-                reader = csv.DictReader(io.StringIO(decoded))
-                custom_bom = []
-                base_idx = len(extracted.get("bom", []))
-                for idx, row in enumerate(reader):
-                    row_clean = {str(k).strip().lower(): v for k, v in row.items() if k}
-                    name = row_clean.get("name") or row_clean.get("component") or row_clean.get("part") or f"Part {base_idx+idx+1}"
-                    raw_mass = row_clean.get("mass") or row_clean.get("weight") or row_clean.get("mass_kg")
-                    mass = clean_decimal_number(raw_mass) or 10.0
-                    mat = row_clean.get("material") or "steel_hot_rolled"
-                    km = clean_decimal_number(row_clean.get("transport_km") or row_clean.get("distance_km") or 0.0) or 0.0
-                    custom_bom.append({
-                        "id": f"bom-upload-{base_idx+idx+1}",
-                        "name": name,
-                        "material": mat,
-                        "mass": mass,
-                        "unit": "kg",
-                        "ecoinvent_id": f"ecoinvent_{mat}_glo",
-                        "supplier": row_clean.get("supplier") or "Declared Supplier",
-                        "transport_km": km
-                    })
+                # Fallback: generic BOM table (rows without a usable mass are skipped, not invented)
+                custom_bom = _parse_bom_rows(csv.DictReader(io.StringIO(decoded)), extracted)
                 if custom_bom:
                     extracted["bom"].extend(custom_bom)
         except Exception as e:
@@ -565,51 +684,33 @@ def process_file_content(filename: str, contents: bytes, extracted: Dict[str, An
 @router.post("/upload")
 async def upload_and_extract_documents(
     files: List[UploadFile] = File(...),
+    product_category: str = Form("water_cooled_chiller"),
     custom_notes: Optional[str] = Form(None)
 ):
     """
-    Parses uploaded files (ZIP archives, CSV, JSON, Excel, PDF), performs PCR gap analysis,
+    Parses uploaded files (ZIP archives, CSV, JSON, Excel, PDF) for the selected product,
+    matches every BOM line to an ecoinvent dataset by name, performs PCR gap analysis,
     and returns structured LCA input data with the traceability graph.
     """
-    extracted = json.loads(json.dumps(EMPTY_EXTRACTION_TEMPLATE))
+    pid = normalize_product_id(product_category)
+    extracted = build_extraction_template(pid)
     processed_files: List[str] = []
-    
+
     # Process uploaded files (unpacking any ZIP files recursively)
     for file in files:
         contents = await file.read()
         process_file_content(file.filename or "upload", contents, extracted, processed_files)
-    
-    # Intelligent baseline BOM synthesis if brochure/JSON lacked raw BOM table but declared equipment mass
-    if len(extracted.get("bom", [])) == 0:
-        declared_weight = extracted.get("_shipping_weight_kg", 0.0)
-        if declared_weight <= 0 and extracted.get("operational", {}).get("capacity_rt", 0) > 0:
-            cap = extracted["operational"]["capacity_rt"]
-            declared_weight = round(cap * 20.214, 1)  # ~40,428 kg for 2000 TR water-cooled centrifugal
-        if declared_weight > 0:
-            extracted["bom"] = synthesize_bom_from_declared_weight(declared_weight)
-            extracted["_shipping_weight_kg"] = declared_weight
-            extracted["_bom_synthesized"] = True
 
-    # Deduplicate IDs in extracted BOM if needed
-    seen_ids = set()
-    deduped_bom = []
-    for i, item in enumerate(extracted.get("bom", [])):
-        item_id = item.get("id") or f"bom-item-{i+1}"
-        if item_id in seen_ids:
-            item_id = f"{item_id}-{i+1}"
-        seen_ids.add(item_id)
-        item_copy = dict(item)
-        item_copy["id"] = item_id
-        deduped_bom.append(item_copy)
-    extracted["bom"] = deduped_bom
-
-    gaps = analyze_pcr_gaps(extracted, processed_files)
+    match_stats = finalize_extraction(extracted, pid)
+    gaps = analyze_pcr_gaps(extracted, processed_files, pid, match_stats)
     traceability = build_traceability_flow(extracted, processed_files)
-    
+
     return {
         "status": "success",
+        "product_category": pid,
         "files_processed": processed_files,
         "extracted": extracted,
+        "provider_matching": {**match_stats, "database_available": database_available()},
         "gaps": gaps,
         "gap_count": len(gaps),
         "critical_gaps": len([g for g in gaps if g.get("severity") == "critical"]),

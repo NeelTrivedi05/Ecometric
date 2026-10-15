@@ -3,7 +3,8 @@ import { useStudio } from '../../context/StudioContext';
 import { CheckIcon, AlertIcon, CloseIcon } from './Icons';
 
 export default function StudioRightDrawer() {
-  const { lca, isDrawerOpen, setIsDrawerOpen } = useStudio();
+  const { lca, isDrawerOpen, setIsDrawerOpen, resultsAudit, resultsAuditStale } = useStudio();
+  const openAuditItems = (resultsAudit?.checks || []).filter(c => c.status === 'fail' || c.status === 'missing');
 
   // Lifecycle stage contributions
   const a1a3Total = lca.a1_gwp + lca.a2_gwp + lca.a3_gwp;
@@ -140,23 +141,48 @@ export default function StudioRightDrawer() {
           </div>
         </div>
 
-        {/* Quick Pre-Audit Status Chips */}
+        {/* Step 7 PCR results rules */}
         <div className="telemetry-section">
-          <div className="section-title">Pre-Audit Quality Gate</div>
+          <div className="section-title">Pre-Audit · PCR Results Rules</div>
           <div className="audit-chips-list">
-            {lca.auditRules.map(rule => (
-              <div key={rule.id} className={`audit-chip ${rule.passed ? 'passed' : 'failed'}`}>
-                <div className="chip-icon">
-                  {rule.passed ? <CheckIcon className="w-3 h-3" /> : <AlertIcon className="w-3 h-3" />}
-                </div>
+            {!resultsAudit ? (
+              <div className="audit-chip failed">
+                <div className="chip-icon"><AlertIcon className="w-3 h-3" /></div>
                 <div className="chip-info">
-                  <div className="chip-title">{rule.title}</div>
-                  <div className="chip-meta">
-                    {rule.value} (Req: {rule.target})
-                  </div>
+                  <div className="chip-title">Not checked</div>
+                  <div className="chip-meta">Calculate the LCA to evaluate the results rules.</div>
                 </div>
               </div>
-            ))}
+            ) : openAuditItems.length === 0 && !resultsAuditStale ? (
+              <div className="audit-chip passed">
+                <div className="chip-icon"><CheckIcon className="w-3 h-3" /></div>
+                <div className="chip-info">
+                  <div className="chip-title">All results rules met</div>
+                  <div className="chip-meta">{resultsAudit.summary.pass} rule(s) met</div>
+                </div>
+              </div>
+            ) : (
+              <>
+                {resultsAuditStale && (
+                  <div className="audit-chip failed">
+                    <div className="chip-icon"><AlertIcon className="w-3 h-3" /></div>
+                    <div className="chip-info">
+                      <div className="chip-title">Out of date</div>
+                      <div className="chip-meta">Inventory changed after the last calculation.</div>
+                    </div>
+                  </div>
+                )}
+                {openAuditItems.slice(0, 5).map(c => (
+                  <div key={`${c.ruleset_id}-${c.id}`} className="audit-chip failed">
+                    <div className="chip-icon"><AlertIcon className="w-3 h-3" /></div>
+                    <div className="chip-info">
+                      <div className="chip-title">{c.title}</div>
+                      <div className="chip-meta">{c.blocking ? 'Blocks export · ' : ''}{c.message}</div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>

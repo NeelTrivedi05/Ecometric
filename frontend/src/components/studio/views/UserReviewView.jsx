@@ -38,7 +38,14 @@ export default function UserReviewView() {
     showNotif,
     results,
     lca,
+    productProfile,
+    setExtractedData,
   } = useStudio();
+  const isChiller = productProfile?.isChiller !== false;
+  const updateProjectInfo = (fields) => setExtractedData(prev => ({
+    ...prev,
+    project_info: { ...(prev.project_info || {}), ...fields },
+  }));
 
   const bom = extractedData.bom || [];
   const transport = extractedData.transport || [];
@@ -103,7 +110,7 @@ export default function UserReviewView() {
   };
 
   const getProviderInfo = (val) => {
-    if (!val) return { name: 'No provider selected', geography: '', id: '', unit: 'kg' };
+    if (!val) return { name: 'Auto: regional / PCR default dataset (assigned at calculation)', geography: '', id: 'auto', unit: '—' };
     const dbInfo = moduleProviderInfo[val];
     if (dbInfo) {
       return {
@@ -234,7 +241,7 @@ export default function UserReviewView() {
 
   // New component modal state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newComp, setNewComp] = useState({
+  const EMPTY_NEW_COMPONENT = {
     name: '',
     material: 'Steel',
     mass: 100,
@@ -242,7 +249,8 @@ export default function UserReviewView() {
     supplier: '',
     dataset: 'Steel, low-alloyed, hot rolled [GLO]',
     ecoinvent_id: 'ecoinvent_steel_hot_rolled_glo',
-  });
+  };
+  const [newComp, setNewComp] = useState(EMPTY_NEW_COMPONENT);
 
   // Calculate live total mass and cut-off coverage per UL 10010-4 / GPI v4.0
   const totalMass = bom.reduce((sum, item) => sum + (Number(item.mass) || 0), 0);
@@ -253,12 +261,17 @@ export default function UserReviewView() {
   const isCutoffPassed = cutoffPct >= 95.0 || bom.length === 0;
 
   // Auto-match all BOM items to their best ecoinvent database match
-  const autoMatchAllProviders = async () => {
+  const autoMatchAllProviders = async (opts) => {
+    const skipFlagged = Boolean(opts && opts.skipFlagged);
     setIsAutoMatching(true);
     let count = 0;
     try {
       for (let idx = 0; idx < bom.length; idx++) {
         const item = bom[idx];
+        // Keep datasets already chosen by the backend material library or by the user
+        if (item.ecoinvent_matched === true) continue;
+        // On first load, leave lines the backend could not match for the user to pick
+        if (skipFlagged && item.ecoinvent_matched === false) continue;
         const rawKw = item.material || item.name || '';
         const cleanKw = rawKw.replace(/_/g, ' ').trim();
         if (!cleanKw) continue;
@@ -292,7 +305,7 @@ export default function UserReviewView() {
     if (bom.length > 0) {
       const hasUnmatched = bom.some(item => !item.ecoinvent_matched && !item.ecoinvent_row);
       if (hasUnmatched) {
-        autoMatchAllProviders();
+        autoMatchAllProviders({ skipFlagged: true });
       }
     }
   }, []);
@@ -409,7 +422,23 @@ export default function UserReviewView() {
     showNotif?.(`Updated provider to "${providerName}"`, 'Provider Updated');
   };
 
+  // The provider picker edits either an existing BOM line (its index) or the Add Component form ('new').
+  const NEW_COMPONENT_TARGET = 'new';
+  const providerTarget = providerModalItemIndex === NEW_COMPONENT_TARGET ? newComp : bom[providerModalItemIndex];
+
+  const openProviderPickerForNewComponent = () => {
+    setProviderModalItemIndex(NEW_COMPONENT_TARGET);
+    handleImmediateSearch((newComp.material || newComp.name || '').replace(/_/g, ' ').trim());
+  };
+
   const handleSelectProvider = (targetIdx, provider) => {
+    if (targetIdx === NEW_COMPONENT_TARGET) {
+      selectNewComponentDataset(provider);
+      setProviderModalItemIndex(null);
+      setProviderSearchQuery('');
+      setLiveSearchResults([]);
+      return;
+    }
     updateBomItem(targetIdx, {
       ecoinvent_id: provider.id || `ecoinvent_row_${provider.row_index}`,
       dataset: provider.name || `${provider.activity_name} [${provider.geography || 'GLO'}]`,
@@ -428,17 +457,22 @@ export default function UserReviewView() {
     e.preventDefault();
     if (!newComp.name.trim()) return;
     addBomItem(newComp);
-    setNewComp({
-      name: '',
-      material: 'Steel',
-      mass: 0,
-      unit: 'kg',
-      module: 'A1',
-      supplier: '',
-      dataset: '',
-      ecoinvent_id: 'ecoinvent_row_15528',
-    });
+    setNewComp(EMPTY_NEW_COMPONENT);
     setIsAddModalOpen(false);
+  };
+
+  // Same fields as handleSelectProvider sets on an existing BOM line
+  const selectNewComponentDataset = (provider) => {
+    setNewComp(prev => ({
+      ...prev,
+      ecoinvent_id: provider.id || `ecoinvent_row_${provider.row_index}`,
+      dataset: provider.name ? `${provider.name} [${provider.geography || 'GLO'}]` : `${provider.activity_name} [${provider.geography || 'GLO'}]`,
+      material: provider.reference_product_name || provider.name || prev.material,
+      reference_product_name: provider.reference_product_name,
+      ecoinvent_row: provider.row_index,
+      ecoinvent_geography: provider.geography,
+      ecoinvent_matched: true,
+    }));
   };
 
   return (
@@ -566,6 +600,72 @@ export default function UserReviewView() {
           }}>
             {isCutoffPassed ? '≥95% PCR COMPLIANT' : 'CUT-OFF GAP DETECTED'}
           </span>
+        </div>
+      </div>
+
+      {/* Product, functional unit, service life and region (drive PCR defaults and dataset geography) */}
+      <div className="card" style={{ marginBottom: '20px', padding: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--accent, #0066cc)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {productProfile?.icon} {productProfile?.name}
+            </div>
+            <div style={{ fontSize: '13px', color: 'var(--text-primary)', marginTop: '2px' }}>
+              {project_info.functional_unit || productProfile?.functionalUnit}
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
+              PCR: {project_info.pcr_ref || productProfile?.pcrLabel}
+            </div>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+          {!isChiller && (
+            <div className="form-group">
+              <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
+                Quantity represented by this BOM ({productProfile?.fuUnit})
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="any"
+                className="form-input"
+                value={project_info.fu_quantity ?? 1}
+                onChange={(e) => updateProjectInfo({ fu_quantity: Math.max(0, parseFloat(e.target.value) || 0) })}
+              />
+            </div>
+          )}
+          <div className="form-group">
+            <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
+              Reference service life, RSL (years){productProfile?.defaultRsl ? ` · PCR default ${productProfile.defaultRsl}` : ' · required, no PCR default'}
+            </label>
+            <input
+              type="number"
+              min="0"
+              className="form-input"
+              value={project_info.lifespan_years ?? ''}
+              placeholder={productProfile?.defaultRsl ? String(productProfile.defaultRsl) : 'e.g. 50'}
+              onChange={(e) => updateProjectInfo({ lifespan_years: e.target.value === '' ? null : Math.max(0, parseFloat(e.target.value) || 0) })}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
+              Production region (selects ecoinvent geography)
+            </label>
+            <select
+              className="form-input"
+              value={project_info.geography || 'GLO'}
+              onChange={(e) => updateProjectInfo({ geography: e.target.value })}
+            >
+              <option value="GLO">Global (GLO / RoW)</option>
+              <option value="US">United States</option>
+              <option value="CA">Canada</option>
+              <option value="RER">Europe</option>
+              <option value="DE">Germany</option>
+              <option value="IN">India</option>
+              <option value="CN">China</option>
+              <option value="BR">Brazil</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -942,19 +1042,19 @@ export default function UserReviewView() {
               <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #e5e5ea', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', minWidth: 0 }}>
                 {renderProviderSelector(
                   'Grid Electricity Provider',
-                  manufacturing.electricity_provider_id || 'ecoinvent_row_3879',
+                  manufacturing.electricity_provider_id || '',
                   (val) => updateManufacturing({ electricity_provider_id: val }),
                   'Grids'
                 )}
                 {renderProviderSelector(
                   'Fuel / Gas Provider',
-                  manufacturing.gas_provider_id || 'ecoinvent_row_2485',
+                  manufacturing.gas_provider_id || '',
                   (val) => updateManufacturing({ gas_provider_id: val }),
                   'Fuels'
                 )}
                 {renderProviderSelector(
                   'Process Water Provider',
-                  manufacturing.water_provider_id || 'ecoinvent_row_25950',
+                  manufacturing.water_provider_id || '',
                   (val) => updateManufacturing({ water_provider_id: val }),
                   'Water'
                 )}
@@ -996,7 +1096,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'A4 Delivery Transport Provider',
-                  installation.outbound_provider_id || 'ecoinvent_row_24419',
+                  installation.outbound_provider_id || '',
                   (val) => updateInstallation({ outbound_provider_id: val }),
                   'Transport'
                 )}
@@ -1019,6 +1119,7 @@ export default function UserReviewView() {
                     placeholder="350"
                   />
                 </div>
+                {isChiller && (
                 <div className="form-group">
                   <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Commissioning Refrigerant Loss (kg)</label>
                   <input
@@ -1030,6 +1131,7 @@ export default function UserReviewView() {
                     placeholder="0.5"
                   />
                 </div>
+                )}
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Install Consumables (liters)</label>
                   <input
@@ -1044,13 +1146,13 @@ export default function UserReviewView() {
               <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #e5e5ea', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px', minWidth: 0 }}>
                 {renderProviderSelector(
                   'Installation Energy Provider',
-                  installation.installation_energy_provider_id || 'ecoinvent_row_3879',
+                  installation.installation_energy_provider_id || '',
                   (val) => updateInstallation({ installation_energy_provider_id: val }),
                   'Grids'
                 )}
                 {renderProviderSelector(
                   'Consumables / Crane Diesel Provider',
-                  installation.consumable_provider_id || 'ecoinvent_row_2621',
+                  installation.consumable_provider_id || '',
                   (val) => updateInstallation({ consumable_provider_id: val }),
                   'Fuels'
                 )}
@@ -1074,7 +1176,8 @@ export default function UserReviewView() {
 
           <div className="card">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-              {/* B1: Fugitive Leaks */}
+              {/* B1: Fugitive Leaks (chiller only) */}
+              {isChiller && (
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
                 <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   B1: Fugitive Refrigerant
@@ -1114,6 +1217,7 @@ export default function UserReviewView() {
                   />
                 </div>
               </div>
+              )}
 
               {/* B2: Maintenance */}
               <div style={{ padding: '14px', backgroundColor: '#f5f5f7', borderRadius: '11px', border: '1px solid #e5e5ea' }}>
@@ -1144,7 +1248,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'Maintenance Material Provider',
-                  maintenance_b2.provider_id || 'ecoinvent_row_20286',
+                  maintenance_b2.provider_id || '',
                   (val) => updateMaintenanceB2({ provider_id: val }),
                   'Consumables'
                 )}
@@ -1182,7 +1286,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'Replaced Part Material Provider',
-                  repair_b3.provider_id || 'ecoinvent_row_15528',
+                  repair_b3.provider_id || '',
                   (val) => updateRepairB3({ provider_id: val }),
                   'Metals'
                 )}
@@ -1258,7 +1362,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'Refurbishment Material/Energy Provider',
-                  refurbishment_b5.provider_id || 'ecoinvent_row_15830',
+                  refurbishment_b5.provider_id || '',
                   (val) => updateRefurbishmentB5({ provider_id: val }),
                   'Metals'
                 )}
@@ -1269,6 +1373,7 @@ export default function UserReviewView() {
                 <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent, #0066cc)', marginBottom: '8px' }}>
                   B6 & B7: Operational Energy & Water
                 </div>
+                {isChiller ? (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '8px' }}>
                   <div className="form-group">
                     <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Rated Efficiency (kW/ton)</label>
@@ -1294,31 +1399,59 @@ export default function UserReviewView() {
                     />
                   </div>
                 </div>
+                ) : productProfile?.useStage?.b6 === 'none' ? (
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', marginBottom: '8px' }}>
+                    Not modelled for this product: it uses no operational energy or water in service, so B6/B7 are reported as zero.
+                  </div>
+                ) : (
+                  <div className="form-group" style={{ marginBottom: '8px' }}>
+                    <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>
+                      Annual operational energy (kWh/year){productProfile?.id === 'electrical_cable' ? ' · e.g. Joule losses per functional unit' : ''}
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      className="form-input"
+                      value={operational.annual_energy_kwh || ''}
+                      onChange={(e) => updateOperational({ annual_energy_kwh: Math.max(0, parseFloat(e.target.value) || 0) })}
+                      placeholder="0"
+                    />
+                  </div>
+                )}
+
 
                 {renderProviderSelector(
                   'B6 Main Operational Grid Provider',
-                  operational.energy_provider_id || 'ecoinvent_row_3879',
+                  operational.energy_provider_id || '',
                   (val) => updateOperational({ energy_provider_id: val }),
                   'Grids'
                 )}
 
+                {(isChiller || productProfile?.useStage?.b7 !== 'none') && (<>
                 <div className="form-group" style={{ marginTop: '10px', marginBottom: '8px' }}>
-                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Annual Water Use (m³/yr)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>
+                    {isChiller ? 'Cooling Tower Water Use (m³/yr)' : 'Annual Water Use, e.g. cleaning (m³/yr)'}
+                  </label>
                   <input
                     type="number"
                     min="0"
+                    step="any"
                     className="form-input"
-                    value={operational.cooling_tower_water_m3_yr || ''}
-                    onChange={(e) => updateOperational({ cooling_tower_water_m3_yr: Math.max(0, parseFloat(e.target.value) || 0) })}
-                    placeholder="120.0"
+                    value={(isChiller ? operational.cooling_tower_water_m3_yr : operational.annual_water_m3) || ''}
+                    onChange={(e) => updateOperational(isChiller
+                      ? { cooling_tower_water_m3_yr: Math.max(0, parseFloat(e.target.value) || 0) }
+                      : { annual_water_m3: Math.max(0, parseFloat(e.target.value) || 0) })}
+                    placeholder={isChiller ? '120.0' : '0'}
                   />
                 </div>
                 {renderProviderSelector(
                   'B7 Operational Water Provider',
-                  operational.water_provider_id || 'ecoinvent_row_25950',
+                  operational.water_provider_id || '',
                   (val) => updateOperational({ water_provider_id: val }),
                   'Water'
                 )}
+                </>)}
               </div>
             </div>
           </div>
@@ -1356,7 +1489,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C1 Deconstruction Power Provider',
-                  end_of_life.deconstruction_provider_id || 'ecoinvent_row_2621',
+                  end_of_life.deconstruction_provider_id || '',
                   (val) => updateEndOfLife({ deconstruction_provider_id: val }),
                   'Decommissioning'
                 )}
@@ -1372,7 +1505,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C2 Waste Transport Provider',
-                  end_of_life.waste_transport_provider_id || 'ecoinvent_row_24419',
+                  end_of_life.waste_transport_provider_id || '',
                   (val) => updateEndOfLife({ waste_transport_provider_id: val }),
                   'Transport'
                 )}
@@ -1431,7 +1564,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C3 Recycling Process Provider',
-                  end_of_life.recycling_process_provider_id || 'ecoinvent_row_20713',
+                  end_of_life.recycling_process_provider_id || '',
                   (val) => updateEndOfLife({ recycling_process_provider_id: val }),
                   'Waste Processing'
                 )}
@@ -1451,7 +1584,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C3 Incineration Process Provider',
-                  end_of_life.incineration_process_provider_id || 'ecoinvent_row_22918',
+                  end_of_life.incineration_process_provider_id || '',
                   (val) => updateEndOfLife({ incineration_process_provider_id: val }),
                   'Waste Processing'
                 )}
@@ -1471,7 +1604,7 @@ export default function UserReviewView() {
                 </div>
                 {renderProviderSelector(
                   'C4 Landfill Process Provider',
-                  end_of_life.landfill_process_provider_id || 'ecoinvent_row_14191',
+                  end_of_life.landfill_process_provider_id || '',
                   (val) => updateEndOfLife({ landfill_process_provider_id: val }),
                   'Disposal'
                 )}
@@ -1514,13 +1647,13 @@ export default function UserReviewView() {
               <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', paddingTop: '8px', borderTop: '1px solid #e5e5ea' }}>
                 {renderProviderSelector(
                   'Module D Virgin Material Provider (Displaced Primary)',
-                  circularity_d.virgin_material_provider_id || 'ecoinvent_row_15528',
+                  circularity_d.virgin_material_provider_id || '',
                   (val) => updateCircularityD({ virgin_material_provider_id: val }),
                   'Virgin'
                 )}
                 {renderProviderSelector(
                   'Module D Secondary Recycled Process Provider',
-                  circularity_d.recycled_process_provider_id || 'ecoinvent_row_15529',
+                  circularity_d.recycled_process_provider_id || '',
                   (val) => updateCircularityD({ recycled_process_provider_id: val }),
                   'Recycled'
                 )}
@@ -1555,6 +1688,11 @@ export default function UserReviewView() {
             const iRate = Number(end_of_life.incineration_rate_percent) || 0;
             const lRate = Number(end_of_life.landfill_rate_percent) || 0;
             const eolSum = Math.round((rRate + iRate + lRate) * 10) / 10;
+            if (eolSum === 0 && !isChiller) {
+              showNotif?.(`Enter the end-of-life split (recycling / landfill / incineration) for this ${productProfile?.name}. ${productProfile?.pcrShort} has no default.`, 'End of Life Required');
+              setActiveStageTab('c1_c4');
+              return;
+            }
             if (eolSum === 0) {
               updateEndOfLife({
                 recycling_rate_percent: 92.4,
@@ -1602,7 +1740,7 @@ export default function UserReviewView() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 1000,
+          zIndex: 1100,
           padding: '20px'
         }}>
           <div style={{
@@ -1632,7 +1770,7 @@ export default function UserReviewView() {
                   <span>Select ecoinvent Database Provider</span>
                 </h3>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '2px' }}>
-                  Component: <strong>{bom[providerModalItemIndex]?.name || 'Component'}</strong> (Extracted Keyword: "{bom[providerModalItemIndex]?.material}")
+                  Component: <strong>{providerTarget?.name || (providerModalItemIndex === NEW_COMPONENT_TARGET ? 'New component' : 'Component')}</strong> (Extracted Keyword: "{providerTarget?.material}")
                 </div>
               </div>
               <button
@@ -1691,7 +1829,7 @@ export default function UserReviewView() {
               {/* Suggested Quick Keywords */}
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)', fontWeight: 600 }}>Quick search:</span>
-                {['steel', 'copper', 'motor', 'polyurethane', 'inverter', 'stainless steel', 'aluminium', 'refrigerant'].map(tag => (
+                {(productProfile?.searchTags || ['steel', 'copper', 'aluminium']).map(tag => (
                   <button
                     key={tag}
                     type="button"
@@ -1738,8 +1876,8 @@ export default function UserReviewView() {
                     {liveSearchResults.slice(0, visibleMatchesCount).map((res, rIdx) => {
                       const isBestMatch = rIdx === 0;
                       const isCurrentlySelected =
-                        bom[providerModalItemIndex]?.ecoinvent_id === `ecoinvent_row_${res.row_index}` ||
-                        bom[providerModalItemIndex]?.ecoinvent_row === res.row_index;
+                        providerTarget?.ecoinvent_id === `ecoinvent_row_${res.row_index}` ||
+                        providerTarget?.ecoinvent_row === res.row_index;
 
                       return (
                         <div
@@ -2415,26 +2553,25 @@ export default function UserReviewView() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', marginBottom: '4px' }}>Initial Database Provider</label>
-                <select
-                  value={newComp.ecoinvent_id}
-                  onChange={(e) => {
-                    const selected = STANDARD_DATABASE_PROVIDERS.find(p => p.id === e.target.value);
-                    if (selected) {
-                      setNewComp({
-                        ...newComp,
-                        ecoinvent_id: selected.id,
-                        dataset: `${selected.name} [${selected.geography}]`,
-                        material: selected.name,
-                      });
-                    }
-                  }}
-                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #d2d2d7', borderRadius: '8px', fontSize: '12px' }}
-                >
-                  {STANDARD_DATABASE_PROVIDERS.map(p => (
-                    <option key={p.id} value={p.id}>{p.name} [{p.geography}]</option>
-                  ))}
-                </select>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #86868b)', marginBottom: '4px' }}>Database Provider (ecoinvent 3.12)</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', border: '1px solid #d2d2d7', borderRadius: '8px' }}>
+                  <DatabaseIcon size={16} style={{ color: 'var(--accent, #0066cc)', flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0, fontSize: '12px' }}>
+                    <div style={{ fontWeight: 600, color: '#1d1d1f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {newComp.dataset || 'No dataset selected'}
+                    </div>
+                    {newComp.ecoinvent_row != null && (
+                      <div style={{ color: '#86868b' }}>Row #{newComp.ecoinvent_row}{newComp.reference_product_name ? ` · ${newComp.reference_product_name}` : ''}</div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={openProviderPickerForNewComponent}
+                    style={{ padding: '5px 12px', borderRadius: '9999px', border: '1px solid rgba(0, 102, 204, 0.3)', backgroundColor: 'rgba(0, 102, 204, 0.06)', color: '#0066cc', fontSize: '12px', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+                  >
+                    Change
+                  </button>
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>

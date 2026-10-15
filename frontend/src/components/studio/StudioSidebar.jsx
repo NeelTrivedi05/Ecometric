@@ -19,10 +19,10 @@ const PHASES = [
   { id: 'upload', step: '1', label: 'Upload Documents', sub: 'XLSX, CSV, PDF Ingestion', icon: UploadIcon },
   { id: 'extract', step: '2', label: 'Extracted Inventory', sub: 'Modules A1–D Coverage', icon: ReviewIcon },
   { id: 'user_review', step: '3', label: 'Review & Mapping', sub: 'BOM & ecoinvent Providers', icon: EditIcon },
-  { id: 'validate', step: '4', label: 'PCR Rules Audit', sub: 'UL 10010-4 & GPI Check', icon: ValidateIcon },
+  { id: 'validate', step: '4', label: 'PCR Input Rules', sub: 'Checked before calculation', icon: ValidateIcon },
   { id: 'methodology', step: '5', label: 'LCIA Methodology', sub: 'EF v3.1, TRACI, CML-IA', icon: MethodologyIcon },
   { id: 'results', step: '6', label: 'LCIA Results', sub: '25 Indicators × 16 Stages', icon: ResultsIcon },
-  { id: 'audit', step: '7', label: 'Pre-Audit Verification', sub: '5-Gate ISO 14025 Check', icon: ShieldCheckIcon },
+  { id: 'audit', step: '7', label: 'Pre-Audit Verification', sub: 'PCR results rules', icon: ShieldCheckIcon },
   { id: 'export', step: '8', label: 'Export EPD', sub: 'Publication PDF & openEPD', icon: ExportIcon },
 ];
 
@@ -37,9 +37,14 @@ export default function StudioSidebar() {
     uploadedFiles,
     extractedData,
     validationResults,
+    validationStale,
+    resultsAudit,
+    resultsAuditStale,
     selectedMethodology,
     results,
     lca,
+    productProfile,
+    productCategory,
   } = useStudio();
 
   // Keyboard shortcut Ctrl+B or Cmd+B to toggle sidebar collapse
@@ -63,13 +68,13 @@ export default function StudioSidebar() {
       case 'user_review':
         return extractedData?.bom && extractedData.bom.length > 0 ? 'done' : '';
       case 'validate':
-        return validationResults?.run_at ? 'done' : '';
+        return validationResults?.passed && !validationStale ? 'done' : '';
       case 'methodology':
         return selectedMethodology ? 'done' : '';
       case 'results':
         return lca?.isCalculated || results ? 'done' : '';
       case 'audit':
-        return lca?.auditRules?.length > 0 ? 'done' : '';
+        return resultsAudit?.passed && !resultsAuditStale ? 'done' : '';
       case 'export':
         return '';
       default:
@@ -84,9 +89,6 @@ export default function StudioSidebar() {
     }
   };
 
-  const capacityRt = extractedData?.operational?.capacity_rt || 500;
-  const rslYears = extractedData?.project_info?.lifespan_years || 25;
-
   return (
     <aside
       className={`studio-sidebar ${isSidebarOpen ? 'mobile-open' : ''} ${isSidebarCollapsed ? 'collapsed' : ''}`}
@@ -96,7 +98,7 @@ export default function StudioSidebar() {
         {!isSidebarCollapsed && (
           <div className="sidebar-heading-group">
             <span className="sidebar-heading">EPD Workflow</span>
-            <span className="sidebar-heading-badge">UL 10010-4</span>
+            <span className="sidebar-heading-badge">{productCategory ? productProfile.pcrShort : 'Select product'}</span>
           </div>
         )}
 
@@ -165,46 +167,6 @@ export default function StudioSidebar() {
         })}
       </nav>
 
-      {/* Reference Basis Specs Card in Sidebar Footer */}
-      {!isSidebarCollapsed ? (
-        <div className="sidebar-footer">
-          <div className="sidebar-spec-card">
-            <div className="spec-card-header">
-              <span className="spec-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
-                <ShieldCheckIcon size={13} style={{ color: 'var(--accent)' }} />
-              </span>
-              <span className="spec-title">Reference Basis</span>
-            </div>
-
-            <div className="spec-grid">
-              <div className="spec-row">
-                <span className="spec-key">Functional Unit</span>
-                <span className="spec-val">1 ton capacity</span>
-              </div>
-              <div className="spec-row">
-                <span className="spec-key">Capacity</span>
-                <span className="spec-val">{Math.round(capacityRt)} RT</span>
-              </div>
-              <div className="spec-row">
-                <span className="spec-key">RSL</span>
-                <span className="spec-val">{rslYears} Years</span>
-              </div>
-              <div className="spec-row">
-                <span className="spec-key">Database</span>
-                <span className="spec-val">ecoinvent 3.12</span>
-              </div>
-              <div className="spec-row">
-                <span className="spec-key">Lineage</span>
-                <span className="spec-val text-success">SHA-256 Valid</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="sidebar-footer-collapsed hide-mobile" onClick={toggleSidebarCollapsed} title="Click to view reference basis specs" style={{ padding: '12px 0', textAlign: 'center', cursor: 'pointer', borderTop: '1px solid var(--border)' }}>
-          <ShieldCheckIcon size={16} style={{ color: 'var(--accent)' }} />
-        </div>
-      )}
     </aside>
   );
 }
