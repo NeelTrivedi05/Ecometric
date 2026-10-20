@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@untitledui/file-icons": "^0.0.9",
     "@untitledui/icons": "^0.0.23",
     "fuse.js": "^7.5.0",
     "react": "^18.3.1",

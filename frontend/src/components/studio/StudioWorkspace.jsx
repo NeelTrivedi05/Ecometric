@@ -1,7 +1,9 @@
 import React, { Component, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
 import StudioHeader from './StudioHeader';
 import StudioSidebar from './StudioSidebar';
+import ProjectsConsole from './ProjectsConsole';
 
 import UploadView from './views/UploadView';
 import ReviewView from './views/ReviewView';
@@ -75,13 +77,26 @@ class StudioErrorBoundary extends Component {
 }
 
 export default function StudioWorkspace() {
+  const { projectId } = useParams();
+  const navigate = useNavigate();
   const {
+    openProject,
     activePhase,
     setActivePhase,
     notification,
     isSidebarOpen,
     setIsSidebarOpen,
   } = useStudio();
+
+  // If a projectId is in the URL, ensure that project is opened in the calculation workspace
+  useEffect(() => {
+    if (projectId) {
+      const opened = openProject(projectId);
+      if (!opened) {
+        console.warn(`[StudioWorkspace] Project with id "${projectId}" not found.`);
+      }
+    }
+  }, [projectId, openProject]);
 
   // Smooth scroll back to top when phase switches
   useEffect(() => {
@@ -115,7 +130,27 @@ export default function StudioWorkspace() {
     }
   };
 
+  // If no projectId in URL (e.g. /app), render the Projects Console
+  if (!projectId) {
+    return (
+      <div className="studio-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <ProjectsConsole />
 
+        {/* Toast */}
+        {notification && (
+          <div className="studio-toast" role="alert">
+            <div className="toast-dot" />
+            <div className="toast-content">
+              <div className="toast-title">{notification.title}</div>
+              <div className="toast-msg">{notification.msg}</div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // When a projectId is in URL, render the calculation workspace
   return (
     <div className="studio-root">
       <StudioHeader />

@@ -204,6 +204,67 @@ svg {
   height: 32px !important;
 }
 
+/* Flexbox & Spacing Utilities */
+.flex {
+  display: flex !important;
+}
+
+.inline-flex {
+  display: inline-flex !important;
+}
+
+.items-center {
+  align-items: center !important;
+}
+
+.items-start {
+  align-items: flex-start !important;
+}
+
+.items-end {
+  align-items: flex-end !important;
+}
+
+.justify-center {
+  justify-content: center !important;
+}
+
+.justify-between {
+  justify-content: space-between !important;
+}
+
+.justify-end {
+  justify-content: flex-end !important;
+}
+
+.gap-1 {
+  gap: 4px !important;
+}
+
+.gap-1\.5 {
+  gap: 6px !important;
+}
+
+.gap-2 {
+  gap: 8px !important;
+}
+
+.gap-2\.5 {
+  gap: 10px !important;
+}
+
+.gap-3 {
+  gap: 12px !important;
+}
+
+.gap-4 {
+  gap: 16px !important;
+}
+
+.gap-6 {
+  gap: 24px !important;
+}
+
 .num-font {
   font-family: var(--mono);
   font-feature-settings: 'tnum' on, 'zero' on;
@@ -3256,3 +3317,81 @@ textarea.form-input {
   align-items: center;
   gap: 10px;
 }
+
+/* -------------------------------------------------------------
+   UNTITLED UI TABLE & FILE ICONS - NATURE-LED TOKENS (DESIGN.md)
+   ------------------------------------------------------------- */
+.table-card-root {
+  background-color: #ffffff;
+  border: 1px solid #dfe7dd;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(16, 52, 33, 0.04);
+  overflow: hidden;
+}
+
+.table-nature thead.bg-primary,
+.table-header-nature.bg-primary,
+.bg-primary {
+  background-color: #f8faf6 !important;
+}
+
+.table-nature tbody tr.odd\:bg-secondary:nth-child(odd),
+.odd\:bg-secondary:nth-child(odd) {
+  background-color: #fafcfa !important;
+}
+
+.table-nature tbody tr.odd\:bg-secondary:nth-child(even),
+.odd\:bg-secondary:nth-child(even) {
+  background-color: #ffffff !important;
+}
+
+.table-nature tbody tr:hover {
+  background-color: #eef7f1 !important;
+}
+
+.text-primary {
+  color: #16231b !important;
+}
+
+.text-secondary {
+  color: #2f3b33 !important;
+}
+
+.text-tertiary {
+  color: #5b6f62 !important;
+}
+
+.dark\:hidden {
+  display: block;
+}
+
+.not-dark\:hidden {
+  display: none !important;
+}
+
+.size-10 {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+}
+
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 767px) {
+  .md\:hidden {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:table-cell {
+    display: table-cell !important;
+  }
+}

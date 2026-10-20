@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStudio } from '../../../../context/StudioContext';
 import {
   ShieldCheckIcon,
@@ -28,7 +29,15 @@ export function SidebarNavigationSlim({ items = [], footerItems = [], className 
     selectedMethodology,
     results,
     lca,
+    closeToProjectsHub,
   } = useStudio();
+
+  const navigate = useNavigate();
+
+  const handleReturnToProjects = () => {
+    closeToProjectsHub();
+    navigate('/app');
+  };
 
   // Pointer hover state for smooth expand/collapse on mouse move
   const [isHovered, setIsHovered] = useState(false);
@@ -144,6 +153,33 @@ export function SidebarNavigationSlim({ items = [], footerItems = [], className 
           </button>
         </div>
       </div>
+
+      {isExpanded && (
+        <div style={{ padding: '0 12px 10px' }}>
+          <button
+            type="button"
+            onClick={handleReturnToProjects}
+            style={{
+              width: '100%',
+              padding: '6px 10px',
+              borderRadius: '6px',
+              border: '1px solid #dfe7dd',
+              backgroundColor: '#ffffff',
+              color: '#1f7a4c',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'background 0.15s ease',
+            }}
+            title="Return to Projects List"
+          >
+            <span>← All Projects</span>
+          </button>
+        </div>
+      )}
 
       {/* Navigation List of the 8 Tabs (Direct single click, no multi-menu) */}
       <nav className="sidebar-nav">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import InfoPage from './pages/InfoPage';
 import { StudioProvider } from './context/StudioContext';
@@ -16,15 +16,19 @@ export default function App() {
         <Route path="/info" element={<InfoPage />} />
         <Route path="/info/:topicId" element={<InfoPage />} />
 
-        {/* EcoMetric Calculation Studio Workspace */}
+        {/* EcoMetric Calculation Studio Workspace & Projects with dedicated URLs */}
         <Route
-          path="/app"
           element={
             <StudioProvider>
-              <StudioWorkspace />
+              <Outlet />
             </StudioProvider>
           }
-        />
+        >
+          <Route path="/app" element={<StudioWorkspace />} />
+          <Route path="/app/projects/:projectId" element={<StudioWorkspace />} />
+          <Route path="/app/project/:projectId" element={<StudioWorkspace />} />
+          <Route path="/projects/:projectId" element={<StudioWorkspace />} />
+        </Route>
 
         {/* Redirect unknown routes back to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
