@@ -11,7 +11,6 @@ import {
   BuildingIcon,
   LayersIcon,
   CheckIcon,
-  ShieldCheckIcon,
   FileTextIcon,
   ExternalLinkIcon,
   CopyIcon,
@@ -20,7 +19,6 @@ import {
   FilterIcon,
   MoreVerticalIcon,
   HelpCircleIcon,
-  ZapIcon,
 } from './Icons';
 import CreateProjectModal from './CreateProjectModal';
 import EpdCertificateModal from './EpdCertificateModal';
@@ -813,74 +811,6 @@ export default function ProjectsConsole() {
                 {currentAccount?.plan_tier || 'Tier 1 Verified LCI'}
               </span>
             </div>
-          </div>
-
-          {/* Assembled Database Lineage Strip (Varies Respective to Account) */}
-          <div
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '12px',
-              border: '1px solid #dfe7dd',
-              padding: '12px 18px',
-              marginBottom: '18px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '12px',
-              boxShadow: '0 1px 3px rgba(16, 52, 33, 0.04)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <BuildingIcon size={15} style={{ color: '#1f7a4c' }} />
-                <span style={{ fontSize: '12px', color: '#5b6f62' }}>Facility LCI:</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#16231b' }}>
-                  {assembledDatabase?.facility_name || 'Primary Plant'}
-                </span>
-              </div>
-
-              <div style={{ width: '1px', height: '14px', backgroundColor: '#dfe7dd' }} />
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <ZapIcon size={14} style={{ color: '#d97706' }} />
-                <span style={{ fontSize: '12px', color: '#5b6f62' }}>Regional Grid:</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#16231b' }}>
-                  {assembledDatabase?.grid_mix_name || 'Regional Substation'}
-                </span>
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontFamily: 'monospace',
-                    fontWeight: 600,
-                    color: '#1f7a4c',
-                    backgroundColor: '#eef7f1',
-                    padding: '1px 6px',
-                    borderRadius: '4px',
-                  }}
-                >
-                  {assembledDatabase?.grid_emission_factor || 0.165} kg CO₂e/kWh
-                </span>
-              </div>
-
-              <div style={{ width: '1px', height: '14px', backgroundColor: '#dfe7dd' }} />
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <ShieldCheckIcon size={14} style={{ color: '#1f7a4c' }} />
-                <span style={{ fontSize: '12px', color: '#5b6f62' }}>Data Quality:</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#1f7a4c' }}>
-                  DQR {assembledDatabase?.dqr_score || 1.28}
-                </span>
-              </div>
-            </div>
-
-            <Button
-              size="sm"
-              color="secondary"
-              onClick={() => setIsAccountDropdownOpen(true)}
-            >
-              Switch Facility Assembly
-            </Button>
           </div>
 
           {/* Section Mode Toggle: Projects vs EPD PDF Generator */}

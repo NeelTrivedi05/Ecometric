@@ -62,31 +62,31 @@ export function Button({
 
   const colorStyles = {
     primary: {
-      backgroundColor: '#1f7a4c',
-      color: '#ffffff',
-      border: '1px solid #1a6b42',
-      boxShadow: '0 1px 2px rgba(16, 52, 33, 0.14)',
+      backgroundColor: 'var(--accent)',
+      color: 'var(--color-neutral-0)',
+      border: '1px solid var(--accent-hover)',
+      boxShadow: 'var(--shadow-xs)',
     },
     secondary: {
-      backgroundColor: '#ffffff',
-      color: '#2f3b33',
-      border: '1px solid #dfe7dd',
-      boxShadow: '0 1px 2px rgba(16, 52, 33, 0.04)',
+      backgroundColor: 'var(--bg-card)',
+      color: 'var(--text-secondary)',
+      border: '1px solid var(--border)',
+      boxShadow: 'var(--shadow-xs)',
     },
     tertiary: {
       backgroundColor: 'transparent',
-      color: '#5b6f62',
+      color: 'var(--text-muted)',
       border: '1px solid transparent',
     },
     destructive: {
-      backgroundColor: '#fee2e2',
-      color: '#dc2626',
-      border: '1px solid #fecaca',
+      backgroundColor: 'var(--error-soft)',
+      color: 'var(--error)',
+      border: '1px solid var(--error)',
     },
   }[color] || {
-    backgroundColor: '#1f7a4c',
-    color: '#ffffff',
-    border: '1px solid #1a6b42',
+    backgroundColor: 'var(--accent)',
+    color: 'var(--color-neutral-0)',
+    border: '1px solid var(--accent-hover)',
   };
 
   return (
@@ -119,25 +119,25 @@ export function Button({
       onMouseEnter={(e) => {
         if (disabled) return;
         if (color === 'primary') {
-          e.currentTarget.style.backgroundColor = '#176640';
+          e.currentTarget.style.backgroundColor = 'var(--accent-hover)';
         } else if (color === 'secondary') {
-          e.currentTarget.style.backgroundColor = '#f8faf6';
-          e.currentTarget.style.borderColor = '#c8d4c6';
+          e.currentTarget.style.backgroundColor = 'var(--bg-card2)';
+          e.currentTarget.style.borderColor = 'var(--border-bright)';
         } else if (color === 'tertiary') {
-          e.currentTarget.style.backgroundColor = '#eef7f1';
-          e.currentTarget.style.color = '#1f7a4c';
+          e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+          e.currentTarget.style.color = 'var(--accent)';
         }
       }}
       onMouseLeave={(e) => {
         if (disabled) return;
         if (color === 'primary') {
-          e.currentTarget.style.backgroundColor = '#1f7a4c';
+          e.currentTarget.style.backgroundColor = 'var(--accent)';
         } else if (color === 'secondary') {
-          e.currentTarget.style.backgroundColor = '#ffffff';
-          e.currentTarget.style.borderColor = '#dfe7dd';
+          e.currentTarget.style.backgroundColor = 'var(--bg-card)';
+          e.currentTarget.style.borderColor = 'var(--border)';
         } else if (color === 'tertiary') {
           e.currentTarget.style.backgroundColor = 'transparent';
-          e.currentTarget.style.color = '#5b6f62';
+          e.currentTarget.style.color = 'var(--text-muted)';
         }
       }}
       onMouseDown={(e) => {

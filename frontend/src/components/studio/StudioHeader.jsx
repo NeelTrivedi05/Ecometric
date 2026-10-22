@@ -92,6 +92,7 @@ export default function StudioHeader() {
       >
         {projectName}
       </h1>
+
     </header>
   );
 }

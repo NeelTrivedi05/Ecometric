@@ -512,7 +512,8 @@ export function StudioProvider({ children }) {
   }, []);
 
   // ─── CALCULATE ENGINE ───
-  const runCalculation = useCallback(async (methodOverride, dataOverride) => {
+  const runCalculation = useCallback(async (methodOverride, dataOverride, options = {}) => {
+    const isSilent = typeof options === 'boolean' ? options : Boolean(options?.silent);
     setIsLoading(true);
     const targetMethod = methodOverride || selectedMethodology;
     const activeData = dataOverride || extractedData;
@@ -561,12 +562,14 @@ export function StudioProvider({ children }) {
       setResults(generateClientResults(activeData, targetMethod));
     }
     setIsLoading(false);
-    showNotif('LCA calculation complete', 'Calculation');
+    if (!isSilent) {
+      showNotif('LCA calculation complete', 'Calculation');
+    }
   }, [extractedData, selectedMethodology, selectedPcrRule, showNotif]);
 
   // Pre-calculate on initial mount to sync with backend engine
   React.useEffect(() => {
-    runCalculation(selectedMethodology, BENCHMARK_EXTRACTED_DATA);
+    runCalculation(selectedMethodology, BENCHMARK_EXTRACTED_DATA, { silent: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
