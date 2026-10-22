@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LandingNavbar from '../components/landing/LandingNavbar';
-import LandingHero from '../components/landing/LandingHero';
+import Hero9 from '../components/landing/Hero9';
 import TrustProof from '../components/landing/TrustProof';
 import TheProblem from '../components/landing/TheProblem';
 import TheSolution from '../components/landing/TheSolution';
@@ -61,7 +61,7 @@ export default function LandingPage() {
     <div className="landing-page-root">
       <LandingNavbar onLaunchApp={handleLaunchApp} />
       <main>
-        <LandingHero onLaunchApp={handleLaunchApp} />
+        <Hero9 onLaunchApp={handleLaunchApp} />
         <TrustProof />
         <TheProblem />
         <TheSolution />

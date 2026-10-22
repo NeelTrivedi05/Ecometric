@@ -78,6 +78,206 @@ html {
   padding: 0 24px;
 }
 
+/* Hero 9 — full-bleed video with a soft blur-to-sharp text reveal. */
+.landing-page-root .hero-9 {
+  position: relative;
+  min-height: max(720px, 100svh);
+  display: flex;
+  align-items: center;
+  isolation: isolate;
+  overflow: hidden;
+  color: #f4f8f3;
+  background: var(--apple-surface-black);
+}
+
+.landing-page-root .hero-9__video,
+.landing-page-root .hero-9__veil {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.landing-page-root .hero-9__video {
+  z-index: -2;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.76) contrast(1.02);
+}
+
+.landing-page-root .hero-9__veil {
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgb(7 39 25 / 0.84) 0%, rgb(7 39 25 / 0.5) 42%, rgb(7 39 25 / 0.2) 100%),
+    linear-gradient(0deg, rgb(7 39 25 / 0.7) 0%, transparent 38%, rgb(7 39 25 / 0.2) 100%);
+}
+
+.landing-page-root .hero-9__content {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 120px 24px 150px;
+}
+
+.landing-page-root .hero-9__eyebrow {
+  margin-bottom: 24px;
+  color: #b8ddc5;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.landing-page-root .hero-9__title {
+  max-width: 800px;
+  color: #f4f8f3;
+  font-size: clamp(64px, 10vw, 148px);
+  font-weight: 500;
+  line-height: 0.92;
+  letter-spacing: -0.075em;
+}
+
+.landing-page-root .hero-9__title span {
+  display: block;
+}
+
+.landing-page-root .hero-9__title span:last-child {
+  color: #b8ddc5;
+}
+
+.landing-page-root .hero-9__description {
+  max-width: 470px;
+  margin-top: 34px;
+  color: rgb(244 248 243 / 0.78);
+  font-size: clamp(17px, 2vw, 21px);
+  line-height: 1.45;
+}
+
+.landing-page-root .hero-9__actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 38px;
+}
+
+.landing-page-root .hero-9__primary,
+.landing-page-root .hero-9__secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  border-radius: var(--apple-radius-pill);
+  padding: 0 22px;
+  font-family: var(--apple-font-text);
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.landing-page-root .hero-9__primary {
+  border: 1px solid #c6e8d0;
+  color: #12432d;
+  background: #c6e8d0;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.landing-page-root .hero-9__primary:hover {
+  background: #e0f2e5;
+  transform: translateY(-2px);
+}
+
+.landing-page-root .hero-9__secondary {
+  border: 1px solid rgb(244 248 243 / 0.5);
+  color: #f4f8f3;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.landing-page-root .hero-9__secondary:hover {
+  border-color: #f4f8f3;
+  background: rgb(244 248 243 / 0.1);
+}
+
+.landing-page-root .hero-9__footer {
+  position: absolute;
+  right: 24px;
+  bottom: 28px;
+  left: 24px;
+  display: flex;
+  justify-content: space-between;
+  color: rgb(244 248 243 / 0.64);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.landing-page-root .hero-9__scroll-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.landing-page-root .hero-9__scroll-hint span {
+  display: block;
+  width: 42px;
+  height: 1px;
+  background: currentColor;
+}
+
+.landing-page-root .hero-9__reveal {
+  opacity: 0;
+  filter: blur(18px);
+  transform: translateY(18px);
+  animation: hero-9-reveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.landing-page-root .hero-9__reveal--one { animation-delay: 0.15s; }
+.landing-page-root .hero-9__reveal--two { animation-delay: 0.3s; }
+.landing-page-root .hero-9__reveal--three { animation-delay: 0.42s; }
+.landing-page-root .hero-9__reveal--four { animation-delay: 0.58s; }
+.landing-page-root .hero-9__reveal--five { animation-delay: 0.72s; }
+.landing-page-root .hero-9__reveal--six { animation-delay: 0.9s; }
+
+@keyframes hero-9-reveal {
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 700px) {
+  .landing-page-root .hero-9 {
+    min-height: max(680px, 100svh);
+  }
+
+  .landing-page-root .hero-9__content {
+    padding: 108px 24px 140px;
+  }
+
+  .landing-page-root .hero-9__title {
+    font-size: clamp(58px, 17vw, 94px);
+  }
+
+  .landing-page-root .hero-9__actions {
+    align-items: stretch;
+    flex-direction: column;
+    width: fit-content;
+  }
+
+  .landing-page-root .hero-9__footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page-root .hero-9__reveal {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+
 /* Typography Scale */
 .landing-page-root h1,
 .landing-page-root h2,
@@ -621,6 +821,263 @@ html {
   color: var(--apple-ink-muted-48);
 }
 
+/* Footer 8 — centered brand, social icons, and a compact resource nav. */
+.landing-page-root .footer-8 {
+  padding: 88px 24px 34px;
+  background: var(--apple-canvas-parchment);
+  border-top: 1px solid var(--apple-hairline);
+}
+
+.landing-page-root .footer-8__inner {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.landing-page-root .footer-8__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--apple-ink);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.landing-page-root .footer-8__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  color: var(--apple-on-primary);
+  background: var(--apple-primary);
+}
+
+.landing-page-root .footer-8__tagline {
+  max-width: 410px;
+  margin: 18px auto 26px;
+  color: var(--apple-body-muted);
+  font-size: 15px;
+}
+
+.landing-page-root .footer-8__socials {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.landing-page-root .footer-8__socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--apple-hairline);
+  border-radius: 50%;
+  color: var(--apple-body-muted);
+  background: var(--apple-canvas);
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.landing-page-root .footer-8__socials a:hover {
+  border-color: var(--apple-primary);
+  color: var(--apple-primary);
+  transform: translateY(-2px);
+}
+
+.landing-page-root .footer-8__socials svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+.landing-page-root .footer-8__links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin-top: 36px;
+}
+
+.landing-page-root .footer-8__links a,
+.landing-page-root .footer-8__links button {
+  border: 0;
+  padding: 0;
+  color: var(--apple-ink-muted-80);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.landing-page-root .footer-8__links a:hover,
+.landing-page-root .footer-8__links button:hover {
+  color: var(--apple-primary);
+}
+
+.landing-page-root .footer-8__divider {
+  height: 1px;
+  margin: 42px 0 22px;
+  background: var(--apple-hairline);
+}
+
+.landing-page-root .footer-8__bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--apple-ink-muted-48);
+  font-size: 11px;
+}
+
+.landing-page-root .footer-8 {
+  padding: 10px 48px 0;
+  color: #f4f4f0;
+  background: #050505;
+  border-top: 0;
+}
+
+.landing-page-root .footer-8__grid {
+  display: grid;
+  grid-template-columns: 1.45fr repeat(3, 1fr);
+  gap: 48px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 0 112px;
+}
+
+.landing-page-root .footer-8__intro,
+.landing-page-root .footer-8__column {
+  min-height: 185px;
+  padding-top: 22px;
+  border-top: 1px solid #272727;
+}
+
+.landing-page-root .footer-8__intro p {
+  max-width: 310px;
+  color: #e6e6e2;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.landing-page-root .footer-8__column {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.landing-page-root .footer-8__column h2 {
+  margin-bottom: 2px;
+  color: #f4f4f0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.landing-page-root .footer-8__column a,
+.landing-page-root .footer-8__column button {
+  padding: 0;
+  border: 0;
+  color: #a3a39e;
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.landing-page-root .footer-8__column a:hover,
+.landing-page-root .footer-8__column button:hover {
+  color: #f4f4f0;
+}
+
+.landing-page-root .footer-8__socials {
+  display: flex;
+  justify-content: flex-start;
+  gap: 9px;
+  margin-top: 25px;
+}
+
+.landing-page-root .footer-8__socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #3a3a3a;
+  border-radius: 11px;
+  color: #d4d4d0;
+  background: #080808;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.landing-page-root .footer-8__socials a:hover {
+  border-color: #7bb992;
+  color: #b8ddc5;
+  transform: translateY(-2px);
+}
+
+.landing-page-root .footer-8__socials svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+.landing-page-root .footer-8__badge {
+  display: inline-flex;
+  margin-top: 1px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: #0a0a0a;
+  background: #9b9b94;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.landing-page-root .footer-8__wordmark {
+  max-width: 1440px;
+  margin: 0 auto;
+  overflow: hidden;
+  color: transparent;
+  font-size: clamp(100px, 16vw, 245px);
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.09em;
+  white-space: nowrap;
+  -webkit-text-stroke: 1.25px #525852;
+  text-shadow: 0 0 1px rgb(184 221 197 / 0.18);
+}
+
+.landing-page-root .footer-8__bottom {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 26px 0 28px;
+  border-top: 1px solid #252525;
+  color: #8d8d87;
+  font-size: 12px;
+}
+
+.landing-page-root .footer-8__bottom div {
+  display: flex;
+  gap: 24px;
+}
+
+.landing-page-root .footer-8__bottom a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.landing-page-root .footer-8__bottom a:hover {
+  color: #f4f4f0;
+}
+
 /* ─────────────────────────────────────────────────
    NATURE BACKDROPS (hero landscape + CTA horizon)
    ───────────────────────────────────────────────── */
@@ -825,6 +1282,24 @@ html {
    RESPONSIVE BEHAVIOR (From DESIGN-apple.md)
    ───────────────────────────────────────────────── */
 @media (max-width: 834px) {
+  .landing-page-root .footer-8 {
+    padding: 10px 24px 0;
+  }
+
+  .landing-page-root .footer-8__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 20px;
+    padding-bottom: 72px;
+  }
+
+  .landing-page-root .footer-8__intro {
+    grid-column: 1 / -1;
+  }
+
+  .landing-page-root .footer-8__wordmark {
+    font-size: clamp(64px, 17vw, 130px);
+  }
+
   .landing-page-root .apple-subnav-links {
     display: none;
   }
@@ -841,9 +1316,26 @@ html {
     grid-template-columns: 1fr;
     gap: 32px;
   }
+
+  .landing-page-root .footer-8__bottom {
+    align-items: center;
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 640px) {
+  .landing-page-root .footer-8__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-page-root .footer-8__column {
+    min-height: auto;
+  }
+
+  .landing-page-root .footer-8__wordmark {
+    font-size: 18vw;
+  }
+
   .landing-page-root .eco-leaves {
     display: none;
   }
