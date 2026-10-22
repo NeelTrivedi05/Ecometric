@@ -69,6 +69,11 @@ export default function UploadView() {
     return `${(bytes / 1048576).toFixed(1)} MB`;
   };
 
+  const totalSize = uploadedFiles.reduce((total, file) => total + (file.size || 0), 0);
+  const completedSize = uploadedFiles
+    .filter((file) => file.status === 'done')
+    .reduce((total, file) => total + (file.size || 0), 0);
+
   const handleExtractAndProceed = async () => {
     await extractDocuments();
     setActivePhase('extract');
@@ -216,7 +221,7 @@ export default function UploadView() {
 
       {/* Upload Dropzone */}
       <div
-        className={`apple-upload-zone ${isDragOver ? 'drag-over' : ''}`}
+        className={`apple-upload-zone file-manager-dropzone ${isDragOver ? 'drag-over' : ''}`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -227,13 +232,9 @@ export default function UploadView() {
           <UploadIcon size={26} style={{ color: 'var(--accent, #1f7a4c)' }} />
         </div>
 
-        <div className="upload-zone-title">
-          Drop engineering files here, or click to browse
-        </div>
+        <div className="upload-zone-title">Drop files here or click to browse</div>
 
-        <div className="upload-zone-desc">
-          Supports BOM spreadsheets (Excel .xlsx/.xls, CSV/TSV), technical cutsheets (vector PDF), LCA data payloads (JSON), and multi-document ZIP archives
-        </div>
+        <div className="upload-zone-desc">Up to 2 GB per file. Supports spreadsheets, technical PDFs, JSON payloads, and archives.</div>
 
         <div className="upload-zone-formats">
           <span className="apple-chip-format" title="Multi-tab Excel workbooks (BOM, Transport, Utilities, EOL)">
@@ -270,97 +271,71 @@ export default function UploadView() {
 
       {/* Uploaded Documents Queue */}
       {uploadedFiles.length > 0 && (
-        <div className="apple-card" style={{ marginTop: '24px' }}>
-          <div className="card-header-flex">
+        <div className="file-manager-card">
+          <div className="file-manager-header">
             <div>
-              <h3 className="card-heading-title">Ingested Document Queue ({uploadedFiles.length})</h3>
-              <p className="card-heading-sub">Files queued for parsing and ecoinvent v3.12 activity matching</p>
+              <span className="file-manager-eyebrow">Document workspace</span>
+              <h3>Engineering files <span>{uploadedFiles.length}</span></h3>
+              <p>Track ingestion progress before matching data to ecoinvent v3.12 activities.</p>
             </div>
-
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                type="button"
-                className="btn-apple-secondary-pill"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                + Add More Files
-              </button>
-            </div>
+            <button type="button" className="btn-apple-secondary-pill" onClick={() => fileInputRef.current?.click()}>
+              <UploadIcon size={14} />
+              Add files
+            </button>
           </div>
 
-          <div className="apple-files-table-container">
-            <table className="apple-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '40%' }}>Document Name</th>
-                  <th style={{ width: '15%' }}>Size</th>
-                  <th style={{ width: '20%' }}>Lifecycle Scope</th>
-                  <th style={{ width: '15%' }}>Status</th>
-                  <th style={{ width: '10%', textAlign: 'right' }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {uploadedFiles.map((file) => (
-                  <tr key={file.id}>
-                    <td>
-                      <div className="file-name-cell">
-                        <span className="file-type-pill">{file.type?.toUpperCase() || 'DOC'}</span>
-                        <span className="file-name-text" title={file.name}>{file.name}</span>
+          <div className="file-manager-list">
+            {uploadedFiles.map((file) => {
+              const isExtracted = file.status === 'done';
+              const isParsing = file.status === 'extracting';
+              const progress = isExtracted ? 100 : isParsing ? 62 : 0;
+              const scope = file.name.includes('A2') ? 'A2 Inbound Transport' :
+                file.name.includes('A4') ? 'A4/A5 Jobsite Logistics' :
+                file.name.includes('B1') ? 'B1–B7 Operational Use' :
+                file.name.includes('C1') ? 'C1–D End of Life' :
+                'A1 Raw Material BOM';
+
+              return (
+                <div className="file-manager-row" key={file.id}>
+                  <div className="file-manager-icon"><FileIcon size={19} /></div>
+                  <div className="file-manager-main">
+                    <div className="file-manager-name-line">
+                      <strong title={file.name}>{file.name}</strong>
+                      <span>{formatSize(file.size)}</span>
+                    </div>
+                    <div className="file-manager-meta">
+                      <span>{file.type?.toUpperCase() || 'DOCUMENT'}</span>
+                      <span>{scope}</span>
+                    </div>
+                    <div className="file-manager-progress-row">
+                      <div className="file-manager-progress">
+                        <span style={{ width: `${progress}%` }} className={isParsing ? 'is-loading' : ''} />
                       </div>
-                    </td>
-                    <td className="num-font">{formatSize(file.size)}</td>
-                    <td>
-                      <span className="scope-tag">
-                        {file.name.includes('A2') ? 'A2 Inbound Transport' :
-                         file.name.includes('A4') ? 'A4/A5 Jobsite Logistics' :
-                         file.name.includes('B1') ? 'B1–B7 Operational Use' :
-                         file.name.includes('C1') ? 'C1–D End of Life' :
-                         'A1 Raw Material BOM'}
-                      </span>
-                    </td>
-                    <td>
-                      {file.status === 'done' ? (
-                        <span className="status-chip success">
-                          <CheckCircleIcon size={12} />
-                          <span>Extracted</span>
-                        </span>
-                      ) : file.status === 'extracting' ? (
-                        <span className="status-chip pending">
-                          <RefreshCwIcon size={12} className="spin" />
-                          <span>Parsing...</span>
-                        </span>
-                      ) : (
-                        <span className="status-chip neutral">Ready</span>
-                      )}
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button
-                        type="button"
-                        className="btn-icon-trash"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFile(file.id);
-                        }}
-                        title="Remove Document"
-                      >
-                        <TrashIcon size={14} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <small>{isExtracted ? 'Uploaded' : isParsing ? `${progress}%` : 'Waiting'}</small>
+                    </div>
+                  </div>
+                  <div className={`file-manager-status ${isExtracted ? 'is-done' : isParsing ? 'is-parsing' : ''}`}>
+                    {isExtracted ? <CheckCircleIcon size={14} /> : isParsing ? <RefreshCwIcon size={14} className="spin" /> : null}
+                    <span>{isExtracted ? 'Extracted' : isParsing ? 'Parsing' : 'Ready'}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="file-manager-remove"
+                    onClick={() => removeFile(file.id)}
+                    title={`Remove ${file.name}`}
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    <TrashIcon size={15} />
+                  </button>
+                </div>
+              );
+            })}
           </div>
 
-          {/* Action Row */}
-          <div className="card-footer-action-row">
-            <button
-              type="button"
-              className="btn-apple-primary-pill"
-              onClick={handleExtractAndProceed}
-              disabled={isLoading}
-            >
-              <span>{isLoading ? 'Parsing Engineering Data...' : 'Extract & Analyze Lifecycle Inventory'}</span>
+          <div className="file-manager-footer">
+            <span><CheckCircleIcon size={14} /> {formatSize(completedSize)} of {formatSize(totalSize)} transferred</span>
+            <button type="button" className="btn-apple-primary-pill" onClick={handleExtractAndProceed} disabled={isLoading}>
+              <span>{isLoading ? 'Parsing engineering data...' : 'Extract & analyze inventory'}</span>
               <ChevronRightIcon size={15} />
             </button>
           </div>
