@@ -14,6 +14,13 @@ export default function App() {
       <Routes>
         {/* Marketing / Landing Page at Root */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/overview" element={<LandingPage />} />
+        <Route path="/pipeline" element={<LandingPage />} />
+        <Route path="/modules" element={<LandingPage />} />
+        <Route path="/how-it-works" element={<LandingPage />} />
+        <Route path="/capabilities" element={<LandingPage />} />
+        <Route path="/faq" element={<LandingPage />} />
+        <Route path="/pricing" element={<LandingPage />} />
 
         {/* Knowledge Base & Detailed Info Pages */}
         <Route path="/info" element={<InfoPage />} />
@@ -29,9 +36,17 @@ export default function App() {
           }
         >
           <Route path="/app" element={<StudioWorkspace />} />
+          <Route path="/app/projects" element={<StudioWorkspace />} />
+          <Route path="/app/mine" element={<StudioWorkspace />} />
+          <Route path="/app/shared" element={<StudioWorkspace />} />
+          <Route path="/app/archived" element={<StudioWorkspace />} />
+          <Route path="/app/epds" element={<StudioWorkspace />} />
           <Route path="/app/projects/:projectId" element={<StudioWorkspace />} />
+          <Route path="/app/projects/:projectId/:phase" element={<StudioWorkspace />} />
           <Route path="/app/project/:projectId" element={<StudioWorkspace />} />
+          <Route path="/app/project/:projectId/:phase" element={<StudioWorkspace />} />
           <Route path="/projects/:projectId" element={<StudioWorkspace />} />
+          <Route path="/projects/:projectId/:phase" element={<StudioWorkspace />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/verifier/:projectId" element={<VerifierPortal />} />
         </Route>

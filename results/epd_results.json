@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T20:16:00",
+  "generated_at": "2026-10-24T21:23:21",
   "methodology": {
     "label": "EF v3.1",
     "payload_key": "ef31",
@@ -1430,15 +1430,15 @@
       "water use | user deprivation potential (deprivation-weighted water consumption)"
     ],
     "mandatory_row_names": [
-      "acidification | accumulated exceedance (AE)",
-      "eutrophication: freshwater | fraction of nutrients reaching freshwater end compartment (P)",
-      "climate change: land use and land use change | global warming potential (GWP100)",
-      "ozone depletion | ozone depletion potential (ODP)",
-      "eutrophication: marine | fraction of nutrients reaching marine end compartment (N)",
-      "climate change | global warming potential (GWP100)",
-      "climate change: fossil | global warming potential (GWP100)",
       "climate change: biogenic | global warming potential (GWP100)",
-      "eutrophication: terrestrial | accumulated exceedance (AE)"
+      "climate change | global warming potential (GWP100)",
+      "acidification | accumulated exceedance (AE)",
+      "ozone depletion | ozone depletion potential (ODP)",
+      "climate change: fossil | global warming potential (GWP100)",
+      "eutrophication: marine | fraction of nutrients reaching marine end compartment (N)",
+      "climate change: land use and land use change | global warming potential (GWP100)",
+      "eutrophication: terrestrial | accumulated exceedance (AE)",
+      "eutrophication: freshwater | fraction of nutrients reaching freshwater end compartment (P)"
     ],
     "total_indicators_calculated": 25,
     "methodology_label": "EF v3.1",

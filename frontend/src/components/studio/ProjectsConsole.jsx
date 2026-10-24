@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
 import {
   FolderIcon,
@@ -40,6 +40,7 @@ export default function ProjectsConsole() {
   } = useStudio();
 
   const navigate = useNavigate();
+  const { folder } = useParams();
 
   // Navigation sidebar selection
   const [activeFolder, setActiveFolder] = useState('all'); // 'all', 'mine', 'shared', 'archived', 'epds'
@@ -66,6 +67,37 @@ export default function ProjectsConsole() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedEpdForCert, setSelectedEpdForCert] = useState(null);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const folderByRoute = {
+      projects: 'all',
+      mine: 'mine',
+      shared: 'shared',
+      archived: 'archived',
+      epds: 'epds',
+    };
+    if (folder && folderByRoute[folder] && folderByRoute[folder] !== activeFolder) {
+      setActiveFolder(folderByRoute[folder]);
+      setSelectedTag(null);
+      setSearchQuery('');
+      setStatusFilter('all');
+    }
+  }, [folder, activeFolder]);
+
+  const navigateToFolder = (nextFolder) => {
+    const routeByFolder = {
+      all: '/app/projects',
+      mine: '/app/mine',
+      shared: '/app/shared',
+      archived: '/app/archived',
+      epds: '/app/epds',
+    };
+    setActiveFolder(nextFolder);
+    setSelectedTag(null);
+    setSearchQuery('');
+    setStatusFilter('all');
+    navigate(routeByFolder[nextFolder]);
+  };
 
   // Filter projects based on folder, tag, status, search
   const filteredProjects = useMemo(() => {
@@ -213,8 +245,7 @@ export default function ProjectsConsole() {
             {/* Primary 'Projects' Header Tab */}
             <div
               onClick={() => {
-                setActiveFolder('all');
-                setSelectedTag(null);
+                navigateToFolder('all');
               }}
               style={{
                 display: 'flex',
@@ -251,8 +282,7 @@ export default function ProjectsConsole() {
             <div style={{ paddingLeft: '14px', marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
               <div
                 onClick={() => {
-                  setActiveFolder('all');
-                  setSelectedTag(null);
+                  navigateToFolder('all');
                 }}
                 style={{
                   padding: '7px 10px',
@@ -269,8 +299,7 @@ export default function ProjectsConsole() {
 
               <div
                 onClick={() => {
-                  setActiveFolder('mine');
-                  setSelectedTag(null);
+                  navigateToFolder('mine');
                 }}
                 style={{
                   padding: '7px 10px',
@@ -287,8 +316,7 @@ export default function ProjectsConsole() {
 
               <div
                 onClick={() => {
-                  setActiveFolder('shared');
-                  setSelectedTag(null);
+                  navigateToFolder('shared');
                 }}
                 style={{
                   padding: '7px 10px',
@@ -305,8 +333,7 @@ export default function ProjectsConsole() {
 
               <div
                 onClick={() => {
-                  setActiveFolder('archived');
-                  setSelectedTag(null);
+                  navigateToFolder('archived');
                 }}
                 style={{
                   padding: '7px 10px',
@@ -323,8 +350,7 @@ export default function ProjectsConsole() {
 
               <div
                 onClick={() => {
-                  setActiveFolder('epds');
-                  setSelectedTag(null);
+                  navigateToFolder('epds');
                 }}
                 style={{
                   padding: '7px 10px',
@@ -379,7 +405,7 @@ export default function ProjectsConsole() {
                     key={tag}
                     onClick={() => {
                       setSelectedTag(isTagActive ? null : tag);
-                      if (activeFolder === 'epds') setActiveFolder('all');
+                      if (activeFolder === 'epds') navigateToFolder('all');
                     }}
                     style={{
                       display: 'flex',
@@ -497,7 +523,7 @@ export default function ProjectsConsole() {
               gap: '8px',
               cursor: 'pointer',
             }}
-            onClick={() => setActiveFolder('archived')}
+            onClick={() => navigateToFolder('archived')}
           >
             <TrashIcon size={15} style={{ color: '#829589' }} />
             <span>Trash</span>
@@ -827,10 +853,7 @@ export default function ProjectsConsole() {
             <button
               type="button"
               onClick={() => {
-                setActiveFolder('all');
-                setSelectedTag(null);
-                setSearchQuery('');
-                setStatusFilter('all');
+                navigateToFolder('all');
               }}
               style={{
                 padding: '7px 18px',
@@ -850,10 +873,7 @@ export default function ProjectsConsole() {
             <button
               type="button"
               onClick={() => {
-                setActiveFolder('epds');
-                setSelectedTag(null);
-                setSearchQuery('');
-                setStatusFilter('all');
+                navigateToFolder('epds');
               }}
               style={{
                 padding: '7px 18px',
@@ -1055,7 +1075,7 @@ export default function ProjectsConsole() {
                       setSearchQuery('');
                       setStatusFilter('all');
                       setSelectedTag(null);
-                      setActiveFolder('all');
+                      navigateToFolder('all');
                     }}
                     style={{
                       padding: '7px 16px',

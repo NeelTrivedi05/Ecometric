@@ -1,15 +1,20 @@
 import React from 'react';
 import { LayersTwo01, XClose } from '@untitledui/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useStudio } from '../../../../context/StudioContext';
 
 export function SidebarNavigationSlim({ items = [], footerItems = [], className = '' }) {
   const { activePhase, setActivePhase, isSidebarOpen, setIsSidebarOpen } = useStudio();
   const navigate = useNavigate();
+  const { projectId } = useParams();
 
   const activateItem = (item) => {
     if (item.id) setActivePhase(item.id);
-    if (item.href && item.href !== '#') navigate(item.href);
+    if (item.id && projectId) {
+      navigate(`/app/projects/${projectId}/${item.id}`);
+    } else if (item.href && item.href !== '#') {
+      navigate(item.href);
+    }
     if (window.innerWidth < 1024) setIsSidebarOpen(false);
   };
 

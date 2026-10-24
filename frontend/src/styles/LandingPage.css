@@ -78,6 +78,910 @@ html {
   padding: 0 24px;
 }
 
+/* Features 16 adaptation: a shared, tinted signal moving from evidence to EPD. */
+.landing-page-root .features-16 {
+  padding: 112px 0 120px;
+  overflow: hidden;
+  background: var(--apple-canvas);
+}
+
+.landing-page-root .features-16__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.landing-page-root .features-16__heading h2 {
+  margin: 12px 0 0;
+  color: var(--apple-ink);
+  font-family: var(--apple-font-display);
+  font-size: clamp(42px, 6vw, 76px);
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+}
+
+.landing-page-root .features-16__heading h2 span {
+  color: var(--apple-primary);
+}
+
+.landing-page-root .features-16__intro {
+  max-width: 390px;
+  margin: 0 0 4px;
+  color: var(--apple-body-muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.landing-page-root .pricing-angles__free-start {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 585px;
+  min-height: 84px;
+  margin: 0 auto 66px;
+  padding: 16px 16px 16px 26px;
+  border: 1px solid var(--apple-hairline);
+  border-radius: 22px;
+  background: var(--apple-surface-pearl);
+  box-shadow: 0 1px 3px rgb(16 52 33 / 0.04);
+}
+
+.landing-page-root .pricing-angles__free-start h2 {
+  margin: 0 0 4px;
+  color: var(--apple-ink);
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.landing-page-root .pricing-angles__free-start p {
+  margin: 0;
+  color: var(--apple-body-muted);
+  font-size: 12px;
+}
+
+.landing-page-root .pricing-angles__free-start p span {
+  margin-left: 4px;
+  color: var(--apple-primary);
+}
+
+.landing-page-root .pricing-angles__free-start button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--apple-on-primary);
+  background: var(--apple-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.landing-page-root .pricing-angles__billing-toggle {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  max-width: 1120px;
+  margin: -42px auto 14px;
+  color: var(--apple-body-muted);
+  font-size: 12px;
+}
+
+.landing-page-root .pricing-angles__billing-toggle .base-button-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--apple-hairline);
+  border-radius: var(--apple-radius-pill);
+  background: var(--apple-canvas);
+}
+
+.landing-page-root .pricing-angles__billing-toggle .base-button-group-item {
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--apple-radius-pill);
+  color: var(--apple-body-muted);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.landing-page-root .pricing-angles__billing-toggle .base-button-group-item.selected {
+  border-color: var(--apple-hairline);
+  color: var(--apple-ink);
+  background: var(--apple-canvas);
+  font-weight: 600;
+}
+
+.landing-page-root .pricing-angles__billing-toggle .base-button-group-item[id="annual"].selected {
+  border-color: var(--apple-primary);
+  color: var(--apple-on-primary);
+  background: var(--apple-primary);
+  box-shadow: 0 2px 8px rgb(31 122 76 / 0.2);
+}
+
+.landing-page-root .pricing-angles__billing-toggle .base-button-group-item[id="annual"].selected em {
+  color: #c6e8d0;
+}
+
+.landing-page-root .pricing-angles__billing-toggle .base-button-group-item em {
+  margin-left: 3px;
+  color: var(--apple-primary);
+  font-style: normal;
+  font-size: 10px;
+}
+
+.landing-page-root .features-16__cards {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+}
+
+.landing-page-root .features-16__cards::before,
+.landing-page-root .features-16__cards::after {
+  position: absolute;
+  top: 132px;
+  right: 5%;
+  left: 5%;
+  height: 2px;
+  content: '';
+  pointer-events: none;
+}
+
+.landing-page-root .features-16__cards::before {
+  background: linear-gradient(90deg, transparent, rgb(31 122 76 / 0.17), transparent);
+}
+
+.landing-page-root .features-16__cards::after {
+  background: linear-gradient(90deg, transparent 0%, #f0bb62 30%, #52b987 50%, #659cf0 70%, transparent 100%);
+  filter: blur(5px);
+  opacity: 0.65;
+  animation: features-16-current 4.8s ease-in-out infinite;
+}
+
+.landing-page-root .features-16__card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--apple-hairline);
+  border-radius: var(--apple-radius-lg);
+  background: #f8faf6;
+  box-shadow: 0 1px 3px rgb(16 52 33 / 0.04);
+}
+
+.landing-page-root .features-16__card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgb(16 52 33 / 0.08);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.landing-page-root .features-16__signal {
+  position: relative;
+  height: 218px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--apple-hairline);
+  background: #fff;
+}
+
+.landing-page-root .features-16__dot-field {
+  position: absolute;
+  inset: 18px;
+  background-image: radial-gradient(circle, currentColor 1.6px, transparent 1.8px);
+  background-size: 9px 9px;
+  color: rgb(31 122 76 / 0.2);
+  opacity: 0.92;
+}
+
+.landing-page-root .features-16__card--amber .features-16__dot-field {
+  color: rgb(224 157 49 / 0.54);
+}
+
+.landing-page-root .features-16__card--emerald .features-16__dot-field {
+  color: rgb(31 154 99 / 0.54);
+}
+
+.landing-page-root .features-16__card--blue .features-16__dot-field {
+  color: rgb(72 132 226 / 0.54);
+}
+
+.landing-page-root .features-16__signal-line {
+  position: absolute;
+  top: 31%;
+  right: -8%;
+  left: -8%;
+  height: 28%;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  color: rgb(31 122 76 / 0.2);
+  transform: rotate(-4deg);
+  opacity: 0.8;
+}
+
+.landing-page-root .features-16__card--amber .features-16__signal-line {
+  color: rgb(224 157 49 / 0.54);
+}
+
+.landing-page-root .features-16__card--emerald .features-16__signal-line {
+  color: rgb(31 154 99 / 0.54);
+}
+
+.landing-page-root .features-16__card--blue .features-16__signal-line {
+  color: rgb(72 132 226 / 0.54);
+}
+
+.landing-page-root .features-16__signal-glow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -25%;
+  width: 25%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.88), transparent);
+  filter: blur(12px);
+  animation: features-16-sweep 4.8s ease-in-out infinite;
+}
+
+.landing-page-root .features-16__card-copy {
+  position: relative;
+  padding: 24px 26px 28px;
+  background: #f8faf6;
+}
+
+.landing-page-root .features-16__eyebrow {
+  margin: 0 0 18px;
+  color: var(--apple-body-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.landing-page-root .features-16__card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.landing-page-root .features-16__card h3 {
+  margin: 0;
+  color: var(--apple-ink);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.landing-page-root .features-16__card strong {
+  flex-shrink: 0;
+  color: var(--apple-primary);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.landing-page-root .features-16__card--amber strong {
+  color: #b97710;
+}
+
+.landing-page-root .features-16__card--blue strong {
+  color: #2d6bc7;
+}
+
+.landing-page-root .features-16__description {
+  max-width: 320px;
+  margin: 14px 0 0;
+  color: var(--apple-body-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.landing-page-root .pricing-11 {
+  padding: 104px 0 112px;
+  background: var(--apple-canvas);
+}
+
+.landing-page-root .pricing-11__heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 400px);
+  align-items: end;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.landing-page-root .pricing-11__heading .apple-section-eyebrow {
+  grid-column: 1 / -1;
+  margin-bottom: -32px;
+}
+
+.landing-page-root .pricing-11__heading h2 {
+  color: var(--apple-ink);
+  font-family: var(--apple-font-display);
+  font-size: clamp(42px, 6vw, 76px);
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+}
+
+.landing-page-root .pricing-11__heading h2 span {
+  color: var(--apple-primary);
+}
+
+.landing-page-root .pricing-11__heading > p:last-child {
+  margin: 0 0 4px;
+  color: var(--apple-body-muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.landing-page-root .pricing-11__bridge {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  max-width: 1100px;
+  min-height: 490px;
+  margin: 0 auto;
+}
+
+.landing-page-root .pricing-11__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 490px;
+  padding: 48px 52px;
+}
+
+.landing-page-root .pricing-11__card--light {
+  margin-right: 54px;
+  padding-right: 150px;
+  border: 1px solid var(--apple-hairline);
+  border-radius: 20px 0 0 20px;
+  background: var(--apple-surface-pearl);
+}
+
+.landing-page-root .pricing-11__card--dark {
+  margin-left: 54px;
+  padding-left: 150px;
+  border-radius: 0 20px 20px 0;
+  background: var(--apple-surface-black);
+  color: var(--apple-on-dark);
+}
+
+.landing-page-root .pricing-11__eyebrow {
+  margin: 0 0 28px;
+  color: var(--apple-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.landing-page-root .pricing-11__card--dark .pricing-11__eyebrow {
+  color: #b8ddc5;
+}
+
+.landing-page-root .pricing-11__card h3 {
+  max-width: 320px;
+  margin: 0 0 14px;
+  font-family: var(--apple-font-display);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+}
+
+.landing-page-root .pricing-11__detail {
+  max-width: 290px;
+  margin: 0;
+  color: var(--apple-body-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.landing-page-root .pricing-11__steps {
+  display: grid;
+  gap: 10px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-page-root .pricing-11__steps li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgb(223 231 221 / 0.72);
+  border-radius: var(--apple-radius-pill);
+  background: var(--apple-canvas);
+  color: var(--apple-body-muted);
+  font-size: 13px;
+}
+
+.landing-page-root .pricing-11__steps li span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--apple-primary);
+  background: var(--apple-surface-tile-1);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.landing-page-root .pricing-11__steps li strong {
+  color: var(--apple-ink-muted-80);
+  font-weight: 500;
+}
+
+.landing-page-root .pricing-11__card--dark .pricing-11__detail {
+  color: rgb(244 248 243 / 0.68);
+}
+
+.landing-page-root .pricing-11__price {
+  margin: 24px 0 2px;
+  color: #f4f8f3;
+  font-family: var(--apple-font-display);
+  font-size: clamp(48px, 6vw, 78px);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+.landing-page-root .pricing-11__price small {
+  display: block;
+  margin-top: 12px;
+  color: rgb(244 248 243 / 0.62);
+  font-family: var(--apple-font-text);
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+.landing-page-root .pricing-11__card ul {
+  display: grid;
+  gap: 9px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--apple-body-muted);
+  font-size: 13px;
+}
+
+.landing-page-root .pricing-11__card li::before {
+  margin-right: 8px;
+  color: var(--apple-primary);
+  content: '✓';
+  font-weight: 700;
+}
+
+.landing-page-root .pricing-11__card--dark ul {
+  color: rgb(244 248 243 / 0.72);
+}
+
+.landing-page-root .pricing-11__card--dark li::before {
+  color: #b8ddc5;
+}
+
+.landing-page-root .pricing-11__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.landing-page-root .pricing-11__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: var(--apple-radius-pill);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.landing-page-root .pricing-11__button:hover {
+  transform: translateY(-2px);
+}
+
+.landing-page-root .pricing-11__button--light {
+  border: 1px solid var(--apple-primary);
+  color: var(--apple-on-primary);
+  background: var(--apple-primary);
+}
+
+.landing-page-root .pricing-11__button--dark {
+  border: 1px solid #c6e8d0;
+  color: #12432d;
+  background: #c6e8d0;
+}
+
+.landing-page-root .pricing-11__model-link {
+  color: #b8ddc5;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.landing-page-root .pricing-11__phone {
+  position: absolute;
+  z-index: 2;
+  top: -46px;
+  bottom: -46px;
+  left: 50%;
+  width: 274px;
+  transform: translateX(-50%);
+  border: 9px solid #1c1f1d;
+  border-radius: 44px;
+  background: #e4e8e4;
+  box-shadow: 0 24px 60px -12px rgb(16 52 33 / 0.22);
+}
+
+.landing-page-root .pricing-11__phone-screen {
+  position: absolute;
+  inset: 9px;
+  overflow: hidden;
+  border: 1px solid rgb(31 122 76 / 0.12);
+  border-radius: 33px;
+  background:
+    linear-gradient(90deg, transparent 49.5%, rgb(31 122 76 / 0.1) 50%, transparent 50.5%),
+    linear-gradient(0deg, transparent 49.5%, rgb(31 122 76 / 0.1) 50%, transparent 50.5%),
+    radial-gradient(circle at center, #f8faf6 0 24%, transparent 24.5%),
+    #e4e8e4;
+}
+
+.landing-page-root .pricing-11__phone-mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgb(31 122 76 / 0.18);
+  border-radius: 50%;
+  color: var(--apple-primary);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.landing-page-root .pricing-11__phone-line {
+  position: absolute;
+  left: 15%;
+  width: 70%;
+  height: 1px;
+  background: rgb(31 122 76 / 0.2);
+}
+
+.landing-page-root .pricing-11__phone-line--one { top: 30%; transform: rotate(26deg); }
+.landing-page-root .pricing-11__phone-line--two { top: 50%; transform: rotate(-22deg); }
+.landing-page-root .pricing-11__phone-line--three { top: 70%; transform: rotate(26deg); }
+
+.landing-page-root .pricing-11__phone-dot {
+  position: absolute;
+  top: 18%;
+  left: 48%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--apple-primary);
+  box-shadow: 0 0 0 8px rgb(31 122 76 / 0.08), 0 0 26px rgb(31 122 76 / 0.32);
+  animation: pricing-11-pulse 2.4s ease-in-out infinite;
+}
+
+.landing-page-root .pricing-11__footnote {
+  margin: 30px 0 0;
+  color: var(--apple-body-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+@keyframes pricing-11-pulse {
+  0%, 100% { transform: translateY(0); opacity: 0.65; }
+  50% { transform: translateY(130px); opacity: 1; }
+}
+
+.landing-page-root .pricing-angles {
+  min-height: calc(100vh - 60px);
+  padding: 96px 0 120px;
+  background:
+    linear-gradient(135deg, rgb(31 122 76 / 0.05) 0 18%, transparent 18% 82%, rgb(31 122 76 / 0.04) 82%),
+    var(--apple-canvas-parchment);
+}
+
+.landing-page-root .pricing-angles__header {
+  max-width: 670px;
+  margin: 0 auto 34px;
+  text-align: center;
+}
+
+.landing-page-root .pricing-angles__header h1 {
+  margin: 0 0 10px;
+  color: var(--apple-ink);
+  font-family: var(--apple-font-display);
+  font-size: clamp(34px, 4vw, 48px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.landing-page-root .pricing-angles__header h1 span {
+  color: var(--apple-primary);
+}
+
+.landing-page-root .pricing-angles__header > p:not(.apple-section-eyebrow) {
+  max-width: 520px;
+  margin: 0 auto;
+  color: var(--apple-body-muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.landing-page-root .pricing-angles__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 24px;
+  padding: 4px;
+  border: 1px solid var(--apple-hairline);
+  border-radius: var(--apple-radius-pill);
+  background: var(--apple-canvas);
+}
+
+.landing-page-root .pricing-angles__toggle button {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: var(--apple-radius-pill);
+  color: var(--apple-body-muted);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.landing-page-root .pricing-angles__toggle button.active {
+  color: var(--apple-ink);
+  background: var(--apple-surface-tile-1);
+  font-weight: 600;
+}
+
+.landing-page-root .pricing-angles__toggle span {
+  margin-left: 4px;
+  color: var(--apple-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.landing-page-root .pricing-angles__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.landing-page-root .pricing-angles__plan {
+  position: relative;
+  display: flex;
+  min-height: 430px;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 28px 22px 20px;
+  border: 1px solid var(--apple-hairline);
+  border-radius: 18px;
+  background: var(--apple-canvas);
+  box-shadow: 0 1px 3px rgb(16 52 33 / 0.04);
+}
+
+.landing-page-root .pricing-angles__plan::before,
+.landing-page-root .pricing-angles__plan::after {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border: 1px solid rgb(31 122 76 / 0.1);
+  content: '';
+  pointer-events: none;
+  transform: rotate(45deg);
+}
+
+.landing-page-root .pricing-angles__plan::before {
+  top: -110px;
+  right: -80px;
+}
+
+.landing-page-root .pricing-angles__plan::after {
+  right: -80px;
+  bottom: -110px;
+}
+
+.landing-page-root .pricing-angles__plan--featured {
+  border-color: var(--apple-primary);
+  background:
+    radial-gradient(circle at 50% 100%, rgb(117 215 175 / 0.7), transparent 55%),
+    var(--apple-surface-pearl);
+  box-shadow: 0 8px 28px rgb(31 122 76 / 0.12);
+  transform: translateY(-1px);
+}
+
+.landing-page-root .pricing-angles__plan--dark {
+  border-color: var(--apple-surface-black);
+  color: var(--apple-ink);
+  background: var(--apple-canvas);
+}
+
+.landing-page-root .pricing-angles__plan--dark::before,
+.landing-page-root .pricing-angles__plan--dark::after {
+  border-color: rgb(31 122 76 / 0.1);
+}
+
+.landing-page-root .pricing-angles__plan-top,
+.landing-page-root .pricing-angles__plan ul,
+.landing-page-root .pricing-angles__button {
+  position: relative;
+  z-index: 1;
+}
+
+.landing-page-root .pricing-angles__index {
+  display: inline-flex;
+  margin-bottom: 28px;
+  color: var(--apple-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.landing-page-root .pricing-angles__plan--dark .pricing-angles__index {
+  color: #b8ddc5;
+}
+
+.landing-page-root .pricing-angles__plan h2 {
+  margin-bottom: 24px;
+  font-size: 24px;
+  letter-spacing: -0.04em;
+}
+
+.landing-page-root .pricing-angles__plan p {
+  max-width: 250px;
+  min-height: 54px;
+  color: var(--apple-body-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.landing-page-root .pricing-angles__plan--dark p {
+  color: var(--apple-body-muted);
+}
+
+.landing-page-root .pricing-angles__price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 30px;
+  color: var(--apple-ink);
+  font-family: var(--apple-font-display);
+  font-size: 54px;
+  font-weight: 500;
+  letter-spacing: -0.07em;
+}
+
+.landing-page-root .pricing-angles__plan--dark .pricing-angles__price {
+  color: var(--apple-ink);
+}
+
+.landing-page-root .pricing-angles__price small {
+  color: var(--apple-body-muted);
+  font-family: var(--apple-font-text);
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+.landing-page-root .pricing-angles__plan--dark .pricing-angles__price small,
+.landing-page-root .pricing-angles__billing {
+  color: var(--apple-body-muted);
+}
+
+.landing-page-root .pricing-angles__billing {
+  display: block;
+  margin-top: 6px;
+  color: var(--apple-body-muted);
+  font-size: 11px;
+}
+
+.landing-page-root .pricing-angles__plan ul {
+  display: grid;
+  gap: 13px;
+  margin: 28px 0 30px;
+  padding: 0;
+  list-style: none;
+  color: var(--apple-body-muted);
+  font-size: 13px;
+}
+
+.landing-page-root .pricing-angles__plan li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.landing-page-root .pricing-angles__plan li svg {
+  flex-shrink: 0;
+  color: var(--apple-primary);
+}
+
+.landing-page-root .pricing-angles__plan--dark ul {
+  color: var(--apple-body-muted);
+}
+
+.landing-page-root .pricing-angles__plan--dark li svg {
+  color: var(--apple-primary);
+}
+
+.landing-page-root .pricing-angles__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid var(--apple-primary);
+  border-radius: var(--apple-radius-pill);
+  color: var(--apple-primary);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.landing-page-root .pricing-angles__button:hover {
+  color: var(--apple-on-primary);
+  background: var(--apple-primary);
+}
+
+.landing-page-root .pricing-angles__plan--featured .pricing-angles__button,
+.landing-page-root .pricing-angles__plan--dark .pricing-angles__button {
+  color: var(--apple-on-primary);
+  background: var(--apple-primary);
+}
+
+.landing-page-root .pricing-angles__plan--dark .pricing-angles__button {
+  color: var(--apple-on-primary);
+  border-color: var(--apple-primary);
+  background: var(--apple-primary);
+}
+
+@keyframes features-16-sweep {
+  0%, 12% { transform: translateX(0); opacity: 0; }
+  25% { opacity: 0.85; }
+  78% { opacity: 0.85; }
+  100% { transform: translateX(500%); opacity: 0; }
+}
+
+@keyframes features-16-current {
+  0%, 15% { transform: translateX(-12%); opacity: 0; }
+  35% { opacity: 0.8; }
+  78% { opacity: 0.8; }
+  100% { transform: translateX(12%); opacity: 0; }
+}
+
 /* Hero 9 — full-bleed video with a soft blur-to-sharp text reveal. */
 .landing-page-root .hero-9 {
   position: relative;
@@ -326,6 +1230,11 @@ html {
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--apple-ink);
+}
+
+.landing-page-root .apple-subnav-link.active {
+  color: var(--apple-ink);
+  font-weight: 600;
   text-decoration: none;
 }
 
@@ -1261,7 +2170,9 @@ html {
   .landing-page-root .eco-path,
   .landing-page-root .eco-turbine-rotor,
   .landing-page-root .eco-sun,
-  .landing-page-root .eco-leaf-line {
+  .landing-page-root .eco-leaf-line,
+  .landing-page-root .features-16__cards::after,
+  .landing-page-root .features-16__signal-glow {
     animation: none !important;
   }
   .landing-page-root .reveal-on-scroll,
@@ -1282,6 +2193,117 @@ html {
    RESPONSIVE BEHAVIOR (From DESIGN-apple.md)
    ───────────────────────────────────────────────── */
 @media (max-width: 834px) {
+  .landing-page-root .pricing-angles {
+    padding: 72px 0 88px;
+  }
+
+  .landing-page-root .pricing-angles__header {
+    margin-bottom: 38px;
+  }
+
+  .landing-page-root .pricing-angles__free-start {
+    margin-bottom: 34px;
+  }
+
+  .landing-page-root .pricing-angles__billing-toggle {
+    justify-content: center;
+    margin: 0 auto 14px;
+  }
+
+  .landing-page-root .pricing-angles__grid {
+    grid-template-columns: 1fr;
+    max-width: 520px;
+  }
+
+  .landing-page-root .pricing-angles__plan--featured {
+    transform: none;
+  }
+
+  .landing-page-root .features-16 {
+    padding: 80px 0 88px;
+  }
+
+  .landing-page-root .features-16__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .landing-page-root .features-16__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-page-root .features-16__cards::before,
+  .landing-page-root .features-16__cards::after {
+    opacity: 0.55;
+  }
+
+  .landing-page-root .pricing-11 {
+    padding: 80px 0 88px;
+  }
+
+  .landing-page-root .pricing-11__heading {
+    display: block;
+    margin-bottom: 32px;
+  }
+
+  .landing-page-root .pricing-11__heading .apple-section-eyebrow {
+    margin-bottom: 16px;
+  }
+
+  .landing-page-root .pricing-11__heading > p:last-child {
+    max-width: 480px;
+    margin-top: 24px;
+  }
+
+  .landing-page-root .pricing-11__bridge {
+    display: block;
+    min-height: 0;
+  }
+
+  .landing-page-root .pricing-11__card {
+    min-height: 400px;
+    padding: 36px 28px;
+  }
+
+  .landing-page-root .pricing-11__card--light {
+    margin: 0 0 0;
+    padding-right: 28px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .landing-page-root .pricing-11__card--dark {
+    margin: 0;
+    padding-top: 210px;
+    padding-left: 28px;
+    border-radius: 0 0 18px 18px;
+  }
+
+  .landing-page-root .pricing-11__phone {
+    top: 245px;
+    bottom: auto;
+    width: 180px;
+    height: 250px;
+    border-width: 7px;
+    border-radius: 32px;
+  }
+
+  .landing-page-root .pricing-11__phone-screen {
+    inset: 6px;
+    border-radius: 25px;
+  }
+
+  .landing-page-root .pricing-11__phone-mark {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .landing-page-root .pricing-11__phone-line--one { top: 28%; }
+  .landing-page-root .pricing-11__phone-line--two { top: 50%; }
+  .landing-page-root .pricing-11__phone-line--three { top: 72%; }
+
   .landing-page-root .footer-8 {
     padding: 10px 24px 0;
   }
@@ -1358,6 +2380,12 @@ html {
   .landing-page-root .product-tile-dark-2,
   .landing-page-root .product-tile-dark-3 {
     padding: 56px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page-root .pricing-11__phone-dot {
+    animation: none;
   }
 }
 

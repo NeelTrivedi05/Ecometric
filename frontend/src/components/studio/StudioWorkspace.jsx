@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
 import StudioHeader from './StudioHeader';
@@ -14,6 +14,7 @@ import ResultsView from './views/ResultsView';
 import ExportView from './views/ExportView';
 import AuditView from './views/AuditView';
 
+const STUDIO_PHASES = ['upload', 'extract', 'user_review', 'validate', 'audit', 'methodology', 'results', 'export'];
 
 class StudioErrorBoundary extends Component {
   constructor(props) {
@@ -77,8 +78,9 @@ class StudioErrorBoundary extends Component {
 }
 
 export default function StudioWorkspace() {
-  const { projectId } = useParams();
+  const { projectId, phase } = useParams();
   const navigate = useNavigate();
+  const syncingPhaseRef = useRef(false);
   const {
     openProject,
     activePhase,
@@ -97,6 +99,26 @@ export default function StudioWorkspace() {
       }
     }
   }, [projectId, openProject]);
+
+  useEffect(() => {
+    if (!phase) return;
+
+    if (STUDIO_PHASES.includes(phase) && phase !== activePhase) {
+      syncingPhaseRef.current = true;
+      setActivePhase(phase);
+    }
+  }, [phase, setActivePhase]);
+
+  useEffect(() => {
+    if (syncingPhaseRef.current) {
+      syncingPhaseRef.current = false;
+      return;
+    }
+
+    if (!projectId || !activePhase || phase === activePhase) return;
+
+    navigate(`/app/projects/${projectId}/${activePhase}`, { replace: true });
+  }, [projectId, phase, activePhase, navigate]);
 
   // Smooth scroll back to top when phase switches
   useEffect(() => {
