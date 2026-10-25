@@ -10,6 +10,7 @@ import {
   EditIcon, 
   AlertIcon 
 } from '../Icons';
+import { ProviderLine, ProviderList, bomProvider, stageProvider } from '../providerMatch';
 
 export default function ReviewView() {
   const { 
@@ -40,6 +41,7 @@ export default function ReviewView() {
   const operational = extractedData?.operational || {};
   const end_of_life = extractedData?.end_of_life || {};
   const circularity_d = extractedData?.circularity_d || {};
+  const maintenance_b2 = extractedData?.maintenance_b2 || {};
 
   const hasData = (uploadedFiles && uploadedFiles.some(f => f.status === 'done')) || bom.length > 0;
 
@@ -334,8 +336,8 @@ export default function ReviewView() {
                             {item.module || item.mod || 'A1'}
                           </span>
                         </td>
-                        <td style={{ fontSize: '11px', color: '#6A584F', padding: '10px 12px' }}>
-                          {item.ecoinvent_id || item.ei || item.dataset || 'ecoinvent_verified_proxy'}
+                        <td style={{ padding: '10px 12px', maxWidth: '320px' }}>
+                          <ProviderLine provider={bomProvider(item)} />
                         </td>
                         <td style={{ fontSize: '12px', color: '#8A7A72', padding: '10px 12px' }}>
                           {item.supplier || 'Standard Supply Chain'}
@@ -368,6 +370,7 @@ export default function ReviewView() {
                       <tr>
                         <th style={{ textAlign: 'left', padding: '8px' }}>Transport Mode</th>
                         <th style={{ textAlign: 'right', padding: '8px' }}>Distance</th>
+                        <th style={{ textAlign: 'left', padding: '8px' }}>Dataset</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -376,6 +379,9 @@ export default function ReviewView() {
                           <td style={{ padding: '8px', fontWeight: 500 }}>{leg.mode || 'Freight transport'}</td>
                           <td style={{ padding: '8px', textAlign: 'right', fontWeight: 600 }}>
                             {leg.dist || leg.distance ? `${leg.dist || leg.distance} km` : '—'}
+                          </td>
+                          <td style={{ padding: '8px', maxWidth: '220px' }}>
+                            <ProviderLine provider={stageProvider(leg, 'provider_id')} />
                           </td>
                         </tr>
                       ))}
@@ -426,6 +432,11 @@ export default function ReviewView() {
                   />
                 </div>
               </div>
+              <ProviderList rows={[
+                { label: 'Grid electricity', provider: stageProvider(manufacturing, 'electricity_provider_id') },
+                { label: 'Natural gas / heat', provider: stageProvider(manufacturing, 'gas_provider_id') },
+                { label: 'Process water', provider: stageProvider(manufacturing, 'water_provider_id') },
+              ]} />
             </div>
           </div>
         </div>
@@ -461,10 +472,10 @@ export default function ReviewView() {
                     placeholder="500"
                   />
                 </div>
-                <div style={{ padding: '8px 12px', backgroundColor: '#f5f5f7', borderRadius: '8px', fontSize: '12px', color: 'var(--text-secondary, #86868b)' }}>
-                  Standard emission factor: <strong>0.088 kg CO₂e / t·km</strong> (ecoinvent v3.12 market for transport, freight, lorry &gt;32 metric ton, EURO6).
-                </div>
               </div>
+              <ProviderList rows={[
+                { label: 'Delivery transport', provider: stageProvider(installation, 'outbound_provider_id') },
+              ]} />
             </div>
 
             {/* Module A5: Installation & Rigging */}
@@ -507,6 +518,10 @@ export default function ReviewView() {
                   />
                 </div>
               </div>
+              <ProviderList rows={[
+                { label: 'Installation energy', provider: stageProvider(installation, 'installation_energy_provider_id') },
+                { label: 'Crane diesel', provider: stageProvider(installation, 'consumable_provider_id') },
+              ]} />
             </div>
           </div>
         </div>
@@ -521,6 +536,10 @@ export default function ReviewView() {
               ? 'This product uses no operational energy or water in service; B1–B7 cover only declared maintenance, repair, replacement and refurbishment.'
               : 'Enter annual operational energy and water (e.g. cleaning), maintenance consumables and the reference service life in Review & Mapping.'}
           </div>
+          <ProviderList rows={[
+            { label: 'B6 operational energy', provider: stageProvider(operational, 'energy_provider_id') },
+            { label: 'B7 operational water', provider: stageProvider(operational, 'water_provider_id') },
+          ]} />
         </div>
       )}
 
@@ -658,6 +677,11 @@ export default function ReviewView() {
                 </div>
               </div>
             </div>
+            <ProviderList rows={[
+              { label: 'B2 maintenance consumable', provider: stageProvider(maintenance_b2, 'provider_id') },
+              { label: 'B6 operational energy', provider: stageProvider(operational, 'energy_provider_id') },
+              { label: 'B7 cooling tower water', provider: stageProvider(operational, 'water_provider_id') },
+            ]} />
           </div>
         </div>
       )}
@@ -730,6 +754,13 @@ export default function ReviewView() {
                 />
               </div>
             </div>
+            <ProviderList rows={[
+              { label: 'C1 deconstruction', provider: stageProvider(end_of_life, 'deconstruction_provider_id') },
+              { label: 'C2 waste transport', provider: stageProvider(end_of_life, 'waste_transport_provider_id') },
+              { label: 'C3 recycling', provider: stageProvider(end_of_life, 'recycling_process_provider_id') },
+              { label: 'C3 incineration', provider: stageProvider(end_of_life, 'incineration_process_provider_id') },
+              { label: 'C4 landfill', provider: stageProvider(end_of_life, 'landfill_process_provider_id') },
+            ]} />
           </div>
         </div>
       )}
@@ -798,6 +829,12 @@ export default function ReviewView() {
                 </div>
               </div>
             </div>
+            {(circularity_d.virgin_material_provider_id || circularity_d.recycled_process_provider_id) && (
+              <ProviderList rows={[
+                { label: 'Displaced virgin material', provider: stageProvider(circularity_d, 'virgin_material_provider_id') },
+                { label: 'Secondary (recycled) material', provider: stageProvider(circularity_d, 'recycled_process_provider_id') },
+              ]} />
+            )}
           </div>
         </div>
       )}

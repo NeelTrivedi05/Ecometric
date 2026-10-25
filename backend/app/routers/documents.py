@@ -4,7 +4,7 @@ import csv
 import json
 import zipfile
 from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Body, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
 from ..engines.ecoinvent_lookup import search_ecoinvent_activities, get_activity_lcia
 from ..engines.pdf_extractor import extract_pdf_data
@@ -16,7 +16,8 @@ from ..engines.messy_data_parser import (
     clean_decimal_number,
     _parse_bom_rows,
 )
-from ..engines.material_matcher import assign_bom_providers, database_available, project_region
+from ..engines.material_matcher import (assign_bom_providers, assign_stage_providers, database_available,
+                                        normalize_region, project_region, rank_datasets)
 from ..products import get_product, is_chiller, normalize_product_id, project_info_defaults
 
 router = APIRouter(prefix="/api/documents", tags=["Document Ingestion & Gap Analysis"])
@@ -271,9 +272,7 @@ EMPTY_EXTRACTION_TEMPLATE = {
         "waste_transport_km": 0
     },
     "circularity_d": {
-        "overall_recovery_rate_percent": 0,
-        "virgin_material_provider_id": "ecoinvent_row_15528",
-        "recycled_process_provider_id": "ecoinvent_row_15529"
+        "overall_recovery_rate_percent": 0
     }
 }
 
@@ -304,7 +303,8 @@ def build_extraction_template(product_id: Optional[str]) -> Dict[str, Any]:
 
 
 def finalize_extraction(extracted: Dict[str, Any], product_id: Optional[str]) -> Dict[str, Any]:
-    """Product-aware clean-up after all files are parsed; returns provider-matching stats."""
+    """Product-aware clean-up after all files are parsed; matches every BOM line and stage input
+    to its default ecoinvent dataset and returns the BOM matching stats (+ stage stats under "stages")."""
     pid = normalize_product_id(product_id)
     info = extracted.setdefault("project_info", {})
     # Extractors may overwrite PCR/FU text with chiller wording; the selected product decides.
@@ -343,7 +343,10 @@ def finalize_extraction(extracted: Dict[str, Any], product_id: Optional[str]) ->
         deduped_bom.append(item_copy)
     extracted["bom"] = deduped_bom
 
-    return assign_bom_providers(extracted["bom"], pid, project_region(extracted))
+    region = project_region(extracted)
+    stats = assign_bom_providers(extracted["bom"], pid, region)
+    stats["stages"] = assign_stage_providers(extracted, pid, region)
+    return stats
 
 
 def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str],
@@ -565,8 +568,11 @@ def build_traceability_flow(extracted: Dict[str, Any], file_names: List[str]) ->
 
 @router.get("/sample-bom")
 def get_sample_bom():
-    """Returns a realistic, verified sample BOM ready for testing."""
-    return SAMPLE_BOM_DATA
+    """Returns a realistic, verified sample BOM ready for testing, with stage datasets selected."""
+    sample = json.loads(json.dumps(SAMPLE_BOM_DATA))
+    sample["project_info"]["product_category"] = "water_cooled_chiller"
+    finalize_extraction(sample, "water_cooled_chiller")
+    return sample
 
 @router.get("/factors")
 def search_factors(query: str = "", category: Optional[str] = None):
@@ -717,6 +723,40 @@ async def upload_and_extract_documents(
         "traceability_flow": traceability
     }
 
+
+@router.post("/match-providers")
+def match_providers(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Matches every BOM line and stage input of the current inventory to its best ecoinvent dataset,
+    with the same matcher the upload uses. Datasets the user picked are never replaced.
+    `refresh: true` also re-runs earlier automatic picks (e.g. after the project region changed).
+    """
+    extracted = json.loads(json.dumps(payload.get("extracted_data") or {}))
+    pid = normalize_product_id(payload.get("product_category")
+                               or (extracted.get("project_info") or {}).get("product_category"))
+    refresh = bool(payload.get("refresh"))
+    region = project_region(extracted)
+    bom = extracted.setdefault("bom", [])
+
+    if not database_available():
+        # Flag lines still waiting for a match so the studio stops asking
+        for item in bom:
+            if not (item.get("provider_id") or item.get("ecoinvent_id")) and "ecoinvent_matched" not in item:
+                item["ecoinvent_matched"] = False
+        bom_stats = {"matched": 0, "kept": 0, "unmatched": len(bom)}
+        stage_stats = {"matched": 0, "kept": 0, "unmatched": 0}
+    else:
+        bom_stats = assign_bom_providers(bom, pid, region, overwrite=refresh)
+        stage_stats = assign_stage_providers(extracted, pid, region, overwrite=refresh)
+
+    return {
+        "status": "success",
+        "product_category": pid,
+        "extracted": extracted,
+        "provider_matching": {**bom_stats, "stages": stage_stats, "database_available": database_available()},
+    }
+
+
 @router.post("/validate")
 def validate_documents_data(payload: Dict[str, Any] = None):
     """Audits extracted documents data against PCR and GPI criteria."""
@@ -748,39 +788,40 @@ def get_lcia_methodologies():
     return {"status": "success", "count": len(methods), "methodologies": methods}
 
 @router.get("/lcia-search")
-def search_lcia_products(query: str = "", limit: int = 200):
-    """Searches for products / activities in the ecoinvent LCIA Excel file with intelligent ranking."""
+def search_lcia_products(query: str = "", limit: int = 200, unit: Optional[str] = None, region: Optional[str] = None):
+    """
+    Searches ecoinvent activities for the provider pickers, ranked like the automatic matcher:
+    `unit` (the input's expected reference unit) and `region` (project geography) rank matching rows first.
+    """
     if not query.strip():
         return {"status": "success", "query": query, "count": 0, "results": []}
+
+    if database_available():
+        hits = rank_datasets(query.strip(), normalize_region(region), unit or None, limit=limit)
+        results = [{
+            "option_number": n,
+            "row_index": h["ecoinvent_row"],
+            "activity_name": h["activity_name"],
+            "geography": h["geography"],
+            "reference_product_name": h["reference_product_name"],
+            "reference_unit": h["reference_unit"],
+        } for n, h in enumerate(hits)]
+        return {"status": "success", "query": query, "count": len(results), "results": results}
+
     if not lcia_extractor:
         raise HTTPException(status_code=500, detail="lcia_extractor module not available")
-    
     data = lcia_extractor.get_lcia_data()
     matches = lcia_extractor.search_product(data, query.strip())
-    
-    results = []
-    for idx, row in matches.head(limit).iterrows():
-        ref_unit = ""
-        try:
-            if "Reference Product Unit" in row:
-                ref_unit = str(row["Reference Product Unit"])
-        except Exception:
-            ref_unit = "kg"
-        results.append({
-            "option_number": idx,
-            "row_index": int(row["index"]),
-            "activity_name": str(row["Activity Name"]),
-            "geography": str(row["Geography"]),
-            "reference_product_name": str(row["Reference Product Name"]),
-            "reference_unit": ref_unit or "kg",
-        })
-    
-    return {
-        "status": "success",
-        "query": query,
-        "count": len(matches),
-        "results": results
-    }
+    unit_col = ("META", "META", "META", "Reference Product Unit")
+    results = [{
+        "option_number": idx,
+        "row_index": int(row["index"]),
+        "activity_name": str(row["Activity Name"]),
+        "geography": str(row["Geography"]),
+        "reference_product_name": str(row["Reference Product Name"]),
+        "reference_unit": str(data.at[int(row["index"]), unit_col]),
+    } for idx, row in matches.head(limit).iterrows()]
+    return {"status": "success", "query": query, "count": len(matches), "results": results}
 
 @router.post("/lcia-calculate")
 def calculate_lcia_epd(payload: Dict[str, Any]):

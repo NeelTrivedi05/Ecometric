@@ -3,8 +3,30 @@ import { ALL_METHODOLOGIES, METHODOLOGIES, getMethodology } from '../data/lciaMe
 import { PRESET_DATASETS } from '../data/presetDatasets';
 import { DEFAULT_PRODUCT_ID, getProduct } from '../data/products';
 import { CARRIER_19DV_500RT_EPD11017 } from '../data/carrier19dvBenchmark';
+import { USER_SELECTED } from '../components/studio/providerMatch';
 
 const API_BASE = '/api';
+
+// Dataset fields of a BOM line, dropped when a renamed line has to be matched again
+const BOM_DATASET_KEYS = ['provider_id', 'ecoinvent_id', 'ecoinvent_row', 'dataset', 'reference_product_name',
+  'reference_unit', 'ecoinvent_geography', 'ecoinvent_matched', 'match_method', 'match_query'];
+
+// Stage inputs that always get a regional default dataset (see STAGE_DEFAULT_FIELDS in material_matcher.py)
+const STAGE_DEFAULT_FIELDS = {
+  manufacturing: ['electricity_provider_id', 'gas_provider_id', 'water_provider_id'],
+  installation: ['outbound_provider_id', 'installation_energy_provider_id', 'consumable_provider_id'],
+  operational: ['energy_provider_id', 'water_provider_id'],
+  end_of_life: ['deconstruction_provider_id', 'waste_transport_provider_id'],
+};
+
+// True when a loaded inventory has a line or stage input without a dataset (or without its dataset name)
+function needsDatasetMatching(data) {
+  if (!data || !((data.bom || []).length || (data.transport || []).length)) return false;
+  if ((data.bom || []).some(i => !(i.provider_id || i.ecoinvent_id) && i.ecoinvent_matched === undefined)) return true;
+  if ((data.transport || []).some(l => !(l.provider_id || l.ecoinvent_id) || !l.dataset)) return true;
+  return Object.entries(STAGE_DEFAULT_FIELDS).some(([block, fields]) =>
+    fields.some(f => !data[block]?.[f] || !data[block]?.[`${f}_dataset`]));
+}
 
 async function epdReportError(res) {
   const body = await res.json().catch(() => ({}));
@@ -646,7 +668,14 @@ export function StudioProvider({ children }) {
         ? indexOrId
         : newBom.findIndex(item => item.id === indexOrId);
       if (idx !== -1) {
-        newBom[idx] = { ...newBom[idx], ...updatedFields };
+        const current = newBom[idx];
+        const next = { ...current, ...updatedFields };
+        // A renamed line loses its automatic dataset and is matched again; a dataset the user picked stays
+        const renamed = ['name', 'material'].some(k => k in updatedFields && updatedFields[k] !== current[k]);
+        if (renamed && current.match_method !== USER_SELECTED) {
+          BOM_DATASET_KEYS.forEach(k => { delete next[k]; });
+        }
+        newBom[idx] = next;
       }
       return { ...prev, bom: newBom };
     });
@@ -665,8 +694,7 @@ export function StudioProvider({ children }) {
           unit: 'kg',
           module: newItem.module || 'A1',
           supplier: newItem.supplier || 'Tier-1 Supplier',
-          ecoinvent_id: newItem.ecoinvent_id || 'ecoinvent_steel_hot_rolled_glo',
-          dataset: newItem.dataset || 'Steel, low-alloyed, hot rolled [GLO]',
+          // no dataset picked in the form: the matcher assigns one right after the line is added
           ...newItem,
         },
       ],
@@ -812,6 +840,51 @@ export function StudioProvider({ children }) {
     }));
   }, []);
 
+  // ─── DATASET MATCHING (same matcher as upload; datasets the user picked are never replaced) ───
+  const extractedRef = React.useRef(extractedData);
+  extractedRef.current = extractedData;
+  const lastMatchSignature = React.useRef(null);
+  const [isMatchingProviders, setIsMatchingProviders] = useState(false);
+
+  // refresh: also re-run earlier automatic picks (e.g. after changing the project region)
+  const matchProviders = useCallback(async ({ refresh = false } = {}) => {
+    const sent = extractedRef.current;
+    const sentSignature = signatureOf(sent);
+    lastMatchSignature.current = sentSignature;
+    setIsMatchingProviders(true);
+    try {
+      const res = await fetch(`${API_BASE}/documents/match-providers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          extracted_data: sent,
+          product_category: sent?.project_info?.product_category || productCategory || DEFAULT_PRODUCT_ID,
+          refresh,
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      // Edited while matching: drop this answer, the effect below matches the newer inventory
+      if (signatureOf(extractedRef.current) !== sentSignature) return null;
+      setExtractedData(data.extracted);
+      lastMatchSignature.current = signatureOf(data.extracted);
+      return data.provider_matching;
+    } catch (err) {
+      console.warn('[StudioContext] Dataset matching failed:', err);
+      return null;
+    } finally {
+      setIsMatchingProviders(false);
+    }
+  }, [productCategory]);
+
+  // New, renamed or unassigned lines get their dataset shortly after the edit, on any screen
+  React.useEffect(() => {
+    if (!needsDatasetMatching(extractedData)) return undefined;
+    if (lastMatchSignature.current === signatureOf(extractedData)) return undefined;
+    const timer = setTimeout(() => matchProviders(), 600);
+    return () => clearTimeout(timer);
+  }, [extractedData, matchProviders]);
+
   // ─── STEP 4: PCR INPUT RULES (before calculation) ───
   const runValidation = useCallback(async () => {
     setIsLoading(true);
@@ -871,20 +944,16 @@ export function StudioProvider({ children }) {
   const validationStale = Boolean(validationResults.run_at) && validationResults.inputSignature !== inputSignature;
   const resultsAuditStale = Boolean(resultsAudit) && resultsAudit.inputSignature !== inputSignature;
 
-  // ─── METHODOLOGY CHANGE (re-characterize) ───
+  // ─── METHODOLOGY CHANGE ───
+  // Selecting a methodology only selects it: the calculation (which rewrites the backend result
+  // files) runs when the user clicks Calculate / Recalculate.
   const changeMethodology = useCallback((method) => {
     setSelectedMethodology(method);
-    if (extractedData.bom && extractedData.bom.length > 0) {
-      setResults(generateClientResults(extractedData, method));
-      runCalculation(method, extractedData);
-    } else if (results) {
-      setResults(prev => ({
-        ...prev,
-        methodology: method,
-        lcia_method: METHODOLOGIES[method]?.name || method,
-      }));
-    }
-  }, [extractedData, results, runCalculation]);
+  }, []);
+
+  // Methodology the shown results were calculated with, and whether the selection has moved on since
+  const resultsMethodology = results?.epd_metadata?.methodology_key || null;
+  const methodologyStale = Boolean(resultsMethodology) && resultsMethodology !== selectedMethodology;
 
   // Derive comprehensive LCA characterization metrics for real-time display & certificate export
   const lca = useMemo(() => {
@@ -1329,6 +1398,8 @@ export function StudioProvider({ children }) {
         setExtractedData,
         updateBomItem,
         addBomItem,
+        matchProviders,
+        isMatchingProviders,
         deleteBomItem,
         updateTransportLeg,
         addTransportLeg,
@@ -1346,6 +1417,8 @@ export function StudioProvider({ children }) {
         runValidation,
         selectedMethodology,
         changeMethodology,
+        resultsMethodology,
+        methodologyStale,
         results,
         lca,
         projectInfo,

@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import copy
 import json
 from datetime import datetime
 from pathlib import Path
@@ -20,8 +21,8 @@ try:
     from app.engines.pcr_validation import validate_chiller_inputs
     from app.engines.calc_engine import calculate_chiller_lca, calculate_anti_lca
     from app.engines.extract_ef_values import extract_ef_for_payload
-    from app.engines.material_matcher import (assign_bom_providers, default_provider, match_material,
-                                              product_dataset, project_region, row_reference_unit)
+    from app.engines.material_matcher import (assign_bom_providers, assign_stage_providers, default_provider,
+                                              meta_key, project_region, row_reference_unit, transport_kind)
     from app.products import get_product, is_chiller, normalize_product_id
 except ImportError:
     from ..database import get_db
@@ -30,8 +31,8 @@ except ImportError:
     from ..engines.pcr_validation import validate_chiller_inputs
     from ..engines.calc_engine import calculate_chiller_lca, calculate_anti_lca
     from ..engines.extract_ef_values import extract_ef_for_payload
-    from ..engines.material_matcher import (assign_bom_providers, default_provider, match_material,
-                                            product_dataset, project_region, row_reference_unit)
+    from ..engines.material_matcher import (assign_bom_providers, assign_stage_providers, default_provider,
+                                            meta_key, project_region, row_reference_unit, transport_kind)
     from ..products import get_product, is_chiller, normalize_product_id
 
 router = APIRouter(prefix="/api/epd", tags=["EPD"])
@@ -140,29 +141,16 @@ def _num(value, default=0.0) -> float:
         return float(default)
 
 
-def _set_default_provider(block: dict, field: str, kind: str, region: str, fallback_unit: str):
-    """Fills block[field] with the regional default dataset unless the user picked one."""
-    if not block.get(field):
-        hit = default_provider(kind, region)
-        if hit:
-            block[field] = hit["provider_id"]
-            block[f"{field}_reference_unit"] = hit["reference_unit"]
-            block[f"{field}_dataset"] = f"{hit['activity_name']} [{hit['geography']}]"
-            return
-        block[field] = LEGACY_DEFAULT_SLUGS[kind]
-    block[f"{field}_reference_unit"] = block.get(f"{field}_reference_unit") or _provider_unit(block[field], fallback_unit)
-
-
-def _set_product_dataset(block: dict, field: str, pid: str, group: str, key: str, region: str, fallback_unit: str = "kg"):
-    if not block.get(field):
-        hit = product_dataset(pid, group, key, region)
-        if hit:
-            block[field] = hit["provider_id"]
-            block[f"{field}_reference_unit"] = hit["reference_unit"]
-            block[f"{field}_dataset"] = f"{hit['activity_name']} [{hit['geography']}]"
-            return
+def _ensure_provider(block: dict, field: str, fallback_unit: str, legacy_kind: Optional[str] = None):
+    """
+    Datasets are picked by assign_stage_providers; this only covers a missing ecoinvent database
+    (legacy seed slug) and fills in the reference unit the calculation converts to.
+    """
+    if not block.get(field) and legacy_kind:
+        block[field] = LEGACY_DEFAULT_SLUGS[legacy_kind]
     if block.get(field):
-        block[f"{field}_reference_unit"] = block.get(f"{field}_reference_unit") or _provider_unit(block[field], fallback_unit)
+        unit_key = meta_key(field, "reference_unit")
+        block[unit_key] = block.get(unit_key) or _provider_unit(block[field], fallback_unit)
 
 
 def _provider_unit(pid: str, default: str) -> str:
@@ -173,21 +161,6 @@ def _provider_unit(pid: str, default: str) -> str:
         if unit:
             return unit
     return resolve_reference_unit(pid, default)
-
-
-def _match_named_input(block: dict, name_keys, pid: str, region: str):
-    """For B2/B3/B5 consumables: match a dataset from the declared consumable/part name."""
-    if block.get("provider_id"):
-        block["reference_unit"] = block.get("reference_unit") or _provider_unit(block["provider_id"], "kg")
-        return
-    label = " ".join(str(block.get(k) or "") for k in name_keys).strip()
-    if not label:
-        return
-    hit = match_material(label, block.get("material_type", ""), pid, region)
-    if hit:
-        block["provider_id"] = hit["provider_id"]
-        block["reference_unit"] = hit["reference_unit"]
-        block["dataset"] = f"{hit['activity_name']} [{hit['geography']}]"
 
 
 def build_enriched_stages_data(extracted_data: dict, product_id: Optional[str] = None) -> dict:
@@ -203,6 +176,10 @@ def build_enriched_stages_data(extracted_data: dict, product_id: Optional[str] =
     defaults = product["defaults"]
     chiller = is_chiller(pid)
     region = project_region(extracted_data)
+
+    # Same dataset selection as upload: fills only inputs without a dataset, never a user's choice
+    extracted_data = copy.deepcopy(extracted_data)
+    assign_stage_providers(extracted_data, pid, region)
 
     # A1 BOM: match every line to a dataset by name (user-picked rows are kept)
     a1_bom = []
@@ -231,15 +208,8 @@ def build_enriched_stages_data(extracted_data: dict, product_id: Optional[str] =
         leg_copy = dict(leg)
         leg_copy["module"] = leg_copy.get("module") or "A2"
         leg_copy["distance"] = _num(leg_copy.get("distance", leg_copy.get("dist")))
-        mode_str = str(leg_copy.get("mode", "")).lower()
-        if not leg_copy.get("provider_id") and not leg_copy.get("ecoinvent_id"):
-            kind = "ship" if any(w in mode_str for w in ("ship", "sea", "ocean", "vessel")) else \
-                   "train" if any(w in mode_str for w in ("rail", "train")) else "lorry"
-            _set_default_provider(leg_copy, "provider_id", kind, region, "tkm")
-            leg_copy["reference_unit"] = leg_copy.pop("provider_id_reference_unit", "tkm")
-        else:
-            leg_copy["provider_id"] = leg_copy.get("provider_id") or leg_copy.get("ecoinvent_id")
-            leg_copy["reference_unit"] = leg_copy.get("reference_unit") or _provider_unit(leg_copy["provider_id"], "tkm")
+        leg_copy["provider_id"] = leg_copy.get("provider_id") or leg_copy.get("ecoinvent_id")
+        _ensure_provider(leg_copy, "provider_id", "tkm", transport_kind(leg_copy.get("mode")))
 
         linked_ids = leg_copy.get("linked_material_ids", leg_copy.get("linked_materials", []))
         if not isinstance(linked_ids, list):
@@ -259,28 +229,32 @@ def build_enriched_stages_data(extracted_data: dict, product_id: Optional[str] =
                 leg = {"id": f"a2-{item_copy.get('id')}", "name": f"{item_copy.get('supplier') or 'Supplier'} -> plant",
                        "mode": "Lorry", "distance": km, "module": "A2",
                        "linked_material_ids": [item_copy.get("id")], "mass_kg": item_copy["mass"]}
-                _set_default_provider(leg, "provider_id", "lorry", region, "tkm")
-                leg["reference_unit"] = leg.pop("provider_id_reference_unit", "tkm")
+                hit = default_provider("lorry", region)
+                if hit:
+                    leg["provider_id"] = hit["provider_id"]
+                    leg["reference_unit"] = hit["reference_unit"]
+                    leg["dataset"] = f"{hit['activity_name']} [{hit['geography']}]"
+                _ensure_provider(leg, "provider_id", "tkm", "lorry")
                 a2_transport.append(leg)
 
     # A3 Manufacturing
     mfg = dict(extracted_data.get("manufacturing", {}) or {})
-    _set_default_provider(mfg, "electricity_provider_id", "electricity", region, "kWh")
-    _set_default_provider(mfg, "gas_provider_id", "natural_gas", region, "MJ")
-    _set_default_provider(mfg, "water_provider_id", "water", region, "kg")
+    _ensure_provider(mfg, "electricity_provider_id", "kWh", "electricity")
+    _ensure_provider(mfg, "gas_provider_id", "MJ", "natural_gas")
+    _ensure_provider(mfg, "water_provider_id", "kg", "water")
     mfg["annual_production_units"] = _num(mfg.get("annual_production_units"), 1000)
     for k in ("annual_facility_kwh", "natural_gas_mj", "water_m3"):
         mfg[k] = _num(mfg.get(k))
 
     # A4/A5 Transport to site and installation
     inst = dict(extracted_data.get("installation", {}) or {})
-    _set_default_provider(inst, "outbound_provider_id", "lorry", region, "tkm")
+    _ensure_provider(inst, "outbound_provider_id", "tkm", "lorry")
     if not _num(inst.get("outbound_transport_km")) and defaults.get("a4_distance_km"):
         inst["outbound_transport_km"] = float(defaults["a4_distance_km"])   # PCR default scenario
         inst["outbound_transport_km_source"] = f"{product['pcr']['label']} default"
     inst["outbound_transport_km"] = _num(inst.get("outbound_transport_km"))
-    _set_default_provider(inst, "installation_energy_provider_id", "electricity", region, "kWh")
-    _set_default_provider(inst, "consumable_provider_id", "diesel_machine", region, "MJ")
+    _ensure_provider(inst, "installation_energy_provider_id", "kWh", "electricity")
+    _ensure_provider(inst, "consumable_provider_id", "MJ", "diesel_machine")
     if not _num(inst.get("rigging_crane_diesel_liters")) and defaults.get("installation_crane_diesel_l"):
         inst["rigging_crane_diesel_liters"] = float(defaults["installation_crane_diesel_l"])  # UL 10010-4: 3 h x 12.6 L/h
     inst["rigging_crane_diesel_liters"] = _num(inst.get("rigging_crane_diesel_liters"))
@@ -290,8 +264,8 @@ def build_enriched_stages_data(extracted_data: dict, product_id: Optional[str] =
 
     # B1-B7 Use stage
     op = dict(extracted_data.get("operational", {}) or {})
-    _set_default_provider(op, "energy_provider_id", "electricity", region, "kWh")
-    _set_default_provider(op, "water_provider_id", "water", region, "kg")
+    _ensure_provider(op, "energy_provider_id", "kWh", "electricity")
+    _ensure_provider(op, "water_provider_id", "kg", "water")
     rsl = _num(info.get("lifespan_years") or op.get("rsl_years"), product.get("default_rsl_years") or 25.0)
     op["rsl_years"] = rsl
     if chiller:
@@ -331,37 +305,35 @@ def build_enriched_stages_data(extracted_data: dict, product_id: Optional[str] =
 
     b2 = dict(extracted_data.get("maintenance_b2", {}) or {})
     if chiller:
-        if not b2.get("provider_id"):
-            _set_default_provider(b2, "provider_id", "lubricating_oil", region, "kg")
-            b2["reference_unit"] = b2.pop("provider_id_reference_unit", "kg")
+        _ensure_provider(b2, "provider_id", "kg", "lubricating_oil")
         if not b2.get("maintenance_cycles_per_rsl"):
             b2["maintenance_cycles_per_rsl"] = 25.0
         if not b2.get("consumable_mass_kg"):
             # Refrigerant top-up per UL 10010-4 Table 8: 2% annual leak rate
             b2["consumable_mass_kg"] = round(_num(op.get("refrigerant_charge_kg"), 45.0) * 0.02, 3)
     else:
-        _match_named_input(b2, ("consumable_name",), pid, region)
+        _ensure_provider(b2, "provider_id", "kg")
     b2["reference_unit"] = b2.get("reference_unit") or _provider_unit(b2.get("provider_id"), "kg")
 
     b3 = dict(extracted_data.get("repair_b3", {}) or {})
-    if chiller and not b3.get("provider_id") and not b3.get("replaced_part_name"):
-        b3["provider_id"] = "ecoinvent_steel_hot_rolled_glo"
-    _match_named_input(b3, ("replaced_part_name", "material_type"), pid, region)
+    if chiller and not b3.get("provider_id"):
+        b3["provider_id"] = "ecoinvent_steel_hot_rolled_glo"   # only reached without the ecoinvent database
+    _ensure_provider(b3, "provider_id", "kg")
 
     b4 = dict(extracted_data.get("replacement_b4", {}) or {})
     if not b4.get("esl_years"):
         b4["esl_years"] = _num(info.get("building_esl_years"), product.get("esl_years") or rsl)
 
     b5 = dict(extracted_data.get("refurbishment_b5", {}) or {})
-    if chiller and not b5.get("provider_id") and not b5.get("material_name"):
-        b5["provider_id"] = "ecoinvent_copper_tube_wire_glo"
-    _match_named_input(b5, ("material_name",), pid, region)
+    if chiller and not b5.get("provider_id"):
+        b5["provider_id"] = "ecoinvent_copper_tube_wire_glo"   # only reached without the ecoinvent database
+    _ensure_provider(b5, "provider_id", "kg")
 
     # C1-C4 End of life
     eol = dict(extracted_data.get("end_of_life", {}) or {})
-    _set_default_provider(eol, "deconstruction_provider_id", "diesel_machine", region, "MJ")
+    _ensure_provider(eol, "deconstruction_provider_id", "MJ", "diesel_machine")
     waste_kind = "lorry" if product["pcr"]["program_operator"] == "UL Environment" else "lorry_16_32"
-    _set_default_provider(eol, "waste_transport_provider_id", waste_kind, region, "tkm")
+    _ensure_provider(eol, "waste_transport_provider_id", "tkm", waste_kind)
     if not _num(eol.get("waste_transport_km")) and defaults.get("c2_distance_km"):
         eol["waste_transport_km"] = float(defaults["c2_distance_km"])
         eol["waste_transport_km_source"] = f"{product['pcr']['label']} default"
@@ -376,15 +348,15 @@ def build_enriched_stages_data(extracted_data: dict, product_id: Optional[str] =
         if eol.get(k) in (None, ""):
             eol[k] = eol_defaults.get(k, 0.0)
         eol[k] = _num(eol.get(k))
-    _set_product_dataset(eol, "recycling_process_provider_id", pid, "eol_datasets", "recycling", region)
-    _set_product_dataset(eol, "incineration_process_provider_id", pid, "eol_datasets", "incineration", region)
-    _set_product_dataset(eol, "landfill_process_provider_id", pid, "eol_datasets", "landfill", region)
+    _ensure_provider(eol, "recycling_process_provider_id", "kg")
+    _ensure_provider(eol, "incineration_process_provider_id", "kg")
+    _ensure_provider(eol, "landfill_process_provider_id", "kg")
 
     # Module D
     circ_d = dict(extracted_data.get("circularity_d", {}) or {})
     if product.get("d_datasets"):
-        _set_product_dataset(circ_d, "virgin_material_provider_id", pid, "d_datasets", "virgin", region)
-        _set_product_dataset(circ_d, "recycled_process_provider_id", pid, "d_datasets", "recycled", region)
+        _ensure_provider(circ_d, "virgin_material_provider_id", "kg")
+        _ensure_provider(circ_d, "recycled_process_provider_id", "kg")
     else:
         circ_d.pop("virgin_material_provider_id", None)
         circ_d.pop("recycled_process_provider_id", None)

@@ -16,6 +16,8 @@ export default function ResultsView() {
     runCalculation,
     extractedData,
     productProfile,
+    resultsMethodology,
+    methodologyStale,
   } = useStudio();
 
   const [showFullBreakdown, setShowFullBreakdown] = useState(false);
@@ -155,7 +157,7 @@ export default function ResultsView() {
               value={selectedMethodology}
               onChange={(e) => {
                 changeMethodology(e.target.value);
-                showNotif(`Characterized using ${getMethodology(e.target.value)?.name || e.target.value}`, 'Methodology Updated');
+                showNotif(`${getMethodology(e.target.value)?.name || e.target.value} selected - click Recalculate to apply it`, 'Methodology Selected');
               }}
               style={{ padding: '2px 4px', fontSize: '11px', height: 'auto', background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--accent, #1f7a4c)', cursor: 'pointer', maxWidth: '320px' }}
             >
@@ -189,6 +191,19 @@ export default function ResultsView() {
           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', margin: 0 }}>
             Dynamically characterizing all lifecycle modules (A1–A5, B1–B7, C1–C4, Module D) for {currentMethod?.name || selectedMethodology}.
           </p>
+        </div>
+      )}
+
+      {!isLoading && methodologyStale && (
+        <div className="card" style={{ padding: '14px 20px', marginBottom: 20, border: '1px solid rgba(230, 162, 60, 0.5)', background: 'rgba(230, 162, 60, 0.08)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-primary)' }}>
+            These results were calculated with <strong>{getMethodology(resultsMethodology)?.name || resultsMethodology}</strong>.
+            {' '}Click Recalculate to apply <strong>{currentMethod?.name || selectedMethodology}</strong>.
+          </span>
+          <button type="button" className="btn-apple-secondary-pill" onClick={() => runCalculation()} style={{ fontSize: '12px' }}>
+            <RefreshCwIcon size={13} />
+            <span>Recalculate</span>
+          </button>
         </div>
       )}
 
