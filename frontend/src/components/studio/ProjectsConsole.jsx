@@ -20,7 +20,6 @@ import {
   MoreVerticalIcon,
   HelpCircleIcon,
 } from './Icons';
-import CreateProjectModal from './CreateProjectModal';
 import EpdCertificateModal from './EpdCertificateModal';
 import Table04AlternatingFills from './Table04AlternatingFills';
 import { Button } from '@/components/base/buttons/button';
@@ -64,7 +63,6 @@ export default function ProjectsConsole() {
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
 
   // Modals
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedEpdForCert, setSelectedEpdForCert] = useState(null);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
 
@@ -170,6 +168,34 @@ export default function ProjectsConsole() {
   const handleOpenProject = (project) => {
     openProject(project.id);
     navigate(`/app/projects/${project.id}`);
+  };
+
+  // New project handler: create a default project and go straight to the studio
+  const handleNewProject = () => {
+    const capacityRt = 500;
+    const lifespanYears = 25;
+    const newProj = {
+      id: `proj-${Date.now()}`,
+      name: 'Untitled project',
+      product_model: `UNTITLED-${capacityRt}RT`,
+      capacity_rt: capacityRt,
+      refrigerant: assembledDatabase?.default_refrigerant || 'R1233zd',
+      refrigerant_charge_kg: 320,
+      gwp_total: Math.round(capacityRt * 76.8),
+      status: 'In Calculation',
+      standard: assembledDatabase?.pcr_standard || 'UL 10010-4 Part B v2.0 & EN 15804+A2',
+      owner: 'You',
+      last_modified: 'Just now by You',
+      created_at: new Date().toISOString().split('T')[0],
+      tags: ['Chillers', 'Primary Facility LCI'],
+      preset_key: 'carrier_19dv_benchmark',
+      functional_unit: `1 ton chilling capacity over ${lifespanYears} years reference service life`,
+      declared_unit: `1 complete chiller unit (${capacityRt} RT)`,
+      facility: assembledDatabase?.facility_name || currentAccount?.facility_name || 'Primary Facility',
+      epd_number: null,
+    };
+    createProject(newProj);
+    navigate(`/app/projects/${newProj.id}`);
   };
 
   // Batch delete / archive
@@ -1001,7 +1027,7 @@ export default function ProjectsConsole() {
               size="md"
               color="primary"
               iconLeading={PlusIcon}
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={handleNewProject}
             >
               New project
             </Button>
@@ -1388,15 +1414,6 @@ export default function ProjectsConsole() {
       )}
 
       {/* -------------------- MODALS -------------------- */}
-      <CreateProjectModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onProjectCreated={(newProj) => {
-          createProject(newProj);
-          navigate(`/app/projects/${newProj.id}`);
-        }}
-      />
-
       <EpdCertificateModal
         epd={selectedEpdForCert}
         isOpen={Boolean(selectedEpdForCert)}
