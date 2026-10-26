@@ -39,11 +39,15 @@ export default function Pricing11({ onLaunchApp }) {
 
           <div className="pricing-11__phone" aria-hidden="true">
             <div className="pricing-11__phone-screen">
-              <span className="pricing-11__phone-mark">E</span>
-              <span className="pricing-11__phone-line pricing-11__phone-line--one" />
-              <span className="pricing-11__phone-line pricing-11__phone-line--two" />
-              <span className="pricing-11__phone-line pricing-11__phone-line--three" />
-              <span className="pricing-11__phone-dot" />
+              <video
+                className="pricing-11__phone-video"
+                src="/pricing-phone.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+              />
             </div>
           </div>
 
