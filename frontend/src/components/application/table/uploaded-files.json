@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "name": "AquaEdge_19DV_EPD_Declaration.pdf",
+      "size": "2.4 MB",
+      "uploadedAt": "Apr 15, 2026",
+      "updatedAt": "Apr 15, 2031 (5-yr cycle)",
+      "uploadedBy": "Dr. Marcus Vance",
+      "type": "pdf",
+      "status": "Verified & Published",
+      "epd_number": "EPD-CC-2026-001",
+      "sha256": "9a2f7c4b1890de5a6b7312c4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4"
+    },
+    {
+      "name": "Carrier_Syracuse_Plant_LCI_BOM.xlsx",
+      "size": "1.8 MB",
+      "uploadedAt": "Apr 12, 2026",
+      "updatedAt": "Apr 14, 2026",
+      "uploadedBy": "Sarah Jenkins",
+      "type": "xlsx",
+      "status": "Primary Foreground LCI",
+      "epd_number": null,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "EPD_CC_2026_001_openEPD_Package.json",
+      "size": "340 KB",
+      "uploadedAt": "Apr 15, 2026",
+      "updatedAt": "Apr 15, 2026",
+      "uploadedBy": "EcoMetric Core Engine",
+      "type": "json",
+      "status": "Digital Product Passport",
+      "epd_number": "EPD-CC-2026-001",
+      "sha256": "6bc4e6475877e8e90d8a6184b681366154cc5f6ec42c7cec54eb871224b33e02"
+    },
+    {
+      "name": "UL10010_4_Verification_Certificate.pdf",
+      "size": "890 KB",
+      "uploadedAt": "Apr 14, 2026",
+      "updatedAt": "Apr 14, 2026",
+      "uploadedBy": "Jack Geibig (EcoForm)",
+      "type": "pdf",
+      "status": "Third-Party Certified",
+      "epd_number": "EPD-CC-2026-001",
+      "sha256": "a17f4b8932c019d5ef7698a2456b9c81432f801648a73921098e4f16bc479831"
+    },
+    {
+      "name": "ecoinvent_3_12_Cutoff_Lineage_Audit.csv",
+      "size": "512 KB",
+      "uploadedAt": "Apr 10, 2026",
+      "updatedAt": "Apr 11, 2026",
+      "uploadedBy": "Audit Traceability Subsystem",
+      "type": "csv",
+      "status": "Lineage Proof Verified",
+      "epd_number": null,
+      "sha256": "c89b71e403d7912a5b6e410f87234918e98341a0293847561829304857102948"
+    }
+  ]
+}

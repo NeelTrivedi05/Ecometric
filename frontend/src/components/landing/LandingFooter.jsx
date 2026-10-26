@@ -1,163 +1,59 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { LeafIcon, ChevronRightIcon } from '../studio/Icons';
-import { aboutTopics } from '../../data/aboutTopics';
+import { useNavigate } from 'react-router-dom';
+
+function SocialIcon({ kind }) {
+  const paths = {
+    x: 'M5 4h3.7l3.3 4.4L15.8 4H19l-5.5 6.3L19.5 20h-3.7l-3.8-5-4.2 5H4.6l5.8-6.9L5 4Zm2.8 1.7 8.4 12.6h.9L8.7 5.7h-.9Z',
+    linkedin: 'M6.5 8.2H3.2V20h3.3V8.2ZM4.85 3A1.95 1.95 0 1 0 4.85 6.9 1.95 1.95 0 0 0 4.85 3ZM20.8 13.25c0-3.55-1.9-5.2-4.45-5.2-2.05 0-2.95 1.13-3.46 1.93V8.2H9.6V20h3.29v-5.84c0-1.54.3-3.03 2.2-3.03 1.88 0 1.9 1.76 1.9 3.13V20h3.8v-6.75Z',
+    github: 'M12 2.5a9.5 9.5 0 0 0-3 18.51c.48.09.65-.21.65-.46v-1.7c-2.66.58-3.22-1.13-3.22-1.13-.43-1.1-1.06-1.4-1.06-1.4-.87-.6.07-.59.07-.59.96.07 1.47.99 1.47.99.85 1.46 2.23 1.04 2.77.8.09-.62.33-1.04.6-1.28-2.12-.24-4.35-1.06-4.35-4.72 0-1.04.37-1.9.98-2.57-.1-.24-.43-1.22.1-2.54 0 0 .8-.26 2.62.98a9.1 9.1 0 0 1 4.77 0c1.82-1.24 2.62-.98 2.62-.98.53 1.32.2 2.3.1 2.54.61.67.98 1.53.98 2.57 0 3.67-2.23 4.48-4.36 4.72.34.3.64.87.64 1.75v2.6c0 .25.17.55.66.46A9.5 9.5 0 0 0 12 2.5Z',
+    instagram: 'M18.5 3.5h-13A2 2 0 0 0 3.5 5.5v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-13a2 2 0 0 0-2-2Zm-6.5 4.2a4.3 4.3 0 1 1 0 8.6 4.3 4.3 0 0 1 0-8.6Zm5.2-1.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2ZM12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z',
+  };
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={paths[kind]} /></svg>;
+}
 
 export default function LandingFooter() {
   const navigate = useNavigate();
 
-  const handleTopicClick = (topicId) => {
-    navigate(`/info/${topicId}`);
-  };
-
   return (
-    <footer id="footer" className="apple-footer">
-      <div className="lp-container">
-        {/* Knowledge Base / More Info Section inside Footer */}
-        <div className="footer-kb-section" style={{ marginBottom: '56px', paddingBottom: '48px', borderBottom: '1px solid var(--apple-hairline)' }}>
-          <div className="apple-section-header" style={{ marginBottom: '36px', textAlign: 'left', maxWidth: '100%' }}>
-            <div className="apple-section-eyebrow" style={{ color: 'var(--apple-primary)' }}>
-              KNOWLEDGE BASE
-            </div>
-            <h2 className="apple-section-title" style={{ fontSize: '32px', marginBottom: '8px' }}>
-              Everything you need to know about EPDs
-            </h2>
-            <p className="apple-section-subtitle" style={{ fontSize: '15px', color: '#5b6f62' }}>
-              Comprehensive technical standards, life cycle frameworks, and calculation methodologies. Select any topic to view full detailed specifications.
-            </p>
-          </div>
-
-          {/* Interactive Knowledge Base Topics Cards Grid */}
-          <div className="footer-kb-grid">
-            {aboutTopics.map((topic) => (
-              <button
-                key={topic.id}
-                type="button"
-                onClick={() => handleTopicClick(topic.id)}
-                className="footer-kb-card"
-              >
-                <div className="footer-kb-card-header">
-                  <span className="footer-kb-card-label">{topic.tabLabel}</span>
-                  <ChevronRightIcon size={14} className="footer-kb-card-icon" />
-                </div>
-                <span className="footer-kb-card-desc">{topic.title}</span>
-              </button>
-            ))}
+    <footer id="footer" className="apple-footer footer-8">
+      <div className="footer-8__grid">
+        <div className="footer-8__intro">
+          <p>EcoMetric is the modern and intuitive way to model, verify, and publish environmental product data.</p>
+          <div className="footer-8__socials" aria-label="EcoMetric social links">
+            <a href="https://x.com" aria-label="EcoMetric on X"><SocialIcon kind="x" /></a>
+            <a href="https://www.instagram.com" aria-label="EcoMetric on Instagram"><SocialIcon kind="instagram" /></a>
+            <a href="https://github.com" aria-label="EcoMetric on GitHub"><SocialIcon kind="github" /></a>
+            <a href="https://www.linkedin.com" aria-label="EcoMetric on LinkedIn"><SocialIcon kind="linkedin" /></a>
           </div>
         </div>
 
-        {/* Footer Link Columns */}
-        <div className="apple-footer-grid" style={{ gridTemplateColumns: '1.8fr 1.2fr 1.2fr 1.2fr', gap: '32px' }}>
-          {/* Column 1: Brand & Philosophy */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-              <LeafIcon size={18} style={{ color: 'var(--apple-ink)' }} />
-              <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--apple-ink)', letterSpacing: '-0.2px' }}>
-                EcoMetric
-              </span>
-            </div>
-            <p style={{ fontSize: '13px', color: '#5b6f62', lineHeight: '1.5', maxWidth: '320px', margin: 0 }}>
-              Automated Life Cycle Assessment & Environmental Product Declaration software for HVAC, mechanical equipment, and industrial manufacturing.
-            </p>
-          </div>
-
-          {/* Column 2: More Info (Knowledge Topics) */}
-          <div>
-            <div className="apple-footer-col-title">
-              More Info
-            </div>
-            <ul className="apple-footer-links">
-              {aboutTopics.map((topic) => (
-                <li key={topic.id} className="apple-footer-link-item">
-                  <button
-                    type="button"
-                    onClick={() => handleTopicClick(topic.id)}
-                    className="footer-link-btn"
-                  >
-                    {topic.tabLabel}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Standards Compliance */}
-          <div>
-            <div className="apple-footer-col-title">
-              Standards Compliance
-            </div>
-            <ul className="apple-footer-links">
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('epd')} className="footer-link-btn">
-                  ISO 14025:2006 Type III
-                </button>
-              </li>
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('iso-standards')} className="footer-link-btn">
-                  EN 15804+A2:2019 Core PCR
-                </button>
-              </li>
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('pcr')} className="footer-link-btn">
-                  UL 10010-4 Part B PCR
-                </button>
-              </li>
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('data-quality')} className="footer-link-btn">
-                  ecoinvent v3.12 Cutoff LCI
-                </button>
-              </li>
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('gwp-impacts')} className="footer-link-btn">
-                  PEF 3.0 / EF 3.1 Characterization
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Registries & Formats */}
-          <div>
-            <div className="apple-footer-col-title">
-              Registries & Formats
-            </div>
-            <ul className="apple-footer-links">
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('epd')} className="footer-link-btn">
-                  The International EPD® System
-                </button>
-              </li>
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('more-info')} className="footer-link-btn">
-                  ILCD+EPD Schema 1.2 XML
-                </button>
-              </li>
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('more-info')} className="footer-link-btn">
-                  EcoPlatform Verified Format
-                </button>
-              </li>
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('sustainability')} className="footer-link-btn">
-                  USGBC LEED v4.1 MR Credit
-                </button>
-              </li>
-              <li className="apple-footer-link-item">
-                <button type="button" onClick={() => handleTopicClick('sustainability')} className="footer-link-btn">
-                  openEPD Verified API
-                </button>
-              </li>
-            </ul>
-          </div>
+        <div className="footer-8__column">
+          <h2>Product</h2>
+          <a href="#solution">Platform overview</a>
+          <a href="#how-it-works">How it works</a>
+          <button type="button" onClick={() => navigate('/login')}>Launch Studio</button>
         </div>
+        <div className="footer-8__column">
+          <h2>Resources</h2>
+          <button type="button" onClick={() => navigate('/info/epd')}>EPD knowledge base</button>
+          <button type="button" onClick={() => navigate('/info/pcr')}>PCR standards</button>
+          <button type="button" onClick={() => navigate('/info/data-quality')}>Data quality guides</button>
+        </div>
+        <div className="footer-8__column">
+          <h2>Company</h2>
+          <button type="button" onClick={() => navigate('/info/more-info')}>About EcoMetric</button>
+          <a href="mailto:hello@ecometric.com">Contact</a>
+          <span className="footer-8__badge">LCA READY</span>
+        </div>
+      </div>
 
-        {/* Legal & Copyright Row */}
-        <div className="apple-footer-bottom">
-          <div>
-            Copyright © {new Date().getFullYear()} EcoMetric Systems Inc. All rights reserved.
-          </div>
-          <div>
-            Compliant with ISO 14040/44 LCA Principles and PEF 3.0 Data Quality Rating rules.
-          </div>
+      <div className="footer-8__wordmark" aria-hidden="true">ECOMETRIC</div>
+      <div className="footer-8__bottom">
+        <span>© {new Date().getFullYear()} EcoMetric Systems Inc. / Built for transparent LCA.</span>
+        <div>
+          <a href="#footer">Security</a>
+          <a href="#footer">Terms of service</a>
+          <a href="#footer">Privacy policy</a>
         </div>
       </div>
     </footer>

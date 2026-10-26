@@ -4,6 +4,7 @@ import { PRESET_DATASETS } from '../data/presetDatasets';
 import { DEFAULT_PRODUCT_ID, getProduct } from '../data/products';
 import { CARRIER_19DV_500RT_EPD11017 } from '../data/carrier19dvBenchmark';
 import { USER_SELECTED } from '../components/studio/providerMatch';
+import { ACCOUNTS_DATA, DEFAULT_ACCOUNT_ID } from '../data/accountsData';
 
 const API_BASE = '/api';
 
@@ -127,6 +128,36 @@ export function StudioProvider({ children }) {
   const [currentPresetId, setCurrentPresetId] = useState('aquaedge_500rt');
   // Product category chosen in step 1 (null until the user selects one)
   const [productCategory, setProductCategory] = useState(null);
+
+  // ─── Teammate's projects console: accounts and projects (from origin/main) ───
+  const [studioViewMode, setStudioViewMode] = useState('dashboard'); // 'dashboard' | 'workspace'
+
+  // Multi-tenant accounts and assembled database state
+  const [currentAccountId, setCurrentAccountId] = useState(DEFAULT_ACCOUNT_ID);
+  const [accountsList, setAccountsList] = useState(() => Object.values(ACCOUNTS_DATA));
+  const [activeProjectId, setActiveProjectId] = useState('proj-c1');
+  const [projectsList, setProjectsList] = useState(() => ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.projects || []);
+  const [epdsList, setEpdsList] = useState(() => ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.epds || []);
+
+  const currentAccount = useMemo(() => {
+    return accountsList.find((a) => a.id === currentAccountId) || ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID];
+  }, [accountsList, currentAccountId]);
+
+  const assembledDatabase = useMemo(() => {
+    return currentAccount?.database_assembly;
+  }, [currentAccount]);
+
+  // Sync accounts from backend if online
+  React.useEffect(() => {
+    fetch('/api/accounts')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setAccountsList(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Upload state
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -268,6 +299,172 @@ export function StudioProvider({ children }) {
   const showNotif = useCallback((msg, title = 'Done') => {
     setNotification({ msg, title });
     setTimeout(() => setNotification(null), 3500);
+  }, []);
+
+  // Multi-tenant Account & Database Assembly Switching
+  const switchAccount = useCallback((newAccountId) => {
+    const acc = accountsList.find((a) => a.id === newAccountId) || ACCOUNTS_DATA[newAccountId];
+    if (!acc) return;
+    setCurrentAccountId(newAccountId);
+    setProjectsList(acc.projects || []);
+    setEpdsList(acc.epds || []);
+
+    // Dynamically update manufacturing and operational parameters to match this account's assembled facility LCI
+    if (acc.database_assembly) {
+      setExtractedData((prev) => ({
+        ...prev,
+        manufacturing: {
+          ...prev.manufacturing,
+          grid_region: acc.database_assembly.facility_location,
+          electricity_provider_id: acc.database_assembly.grid_provider_id || 'ecoinvent_elec_mv_us',
+        },
+        operational: {
+          ...prev.operational,
+          refrigerant_type: acc.database_assembly.default_refrigerant || prev.operational.refrigerant_type,
+        },
+        project_info: {
+          ...prev.project_info,
+          manufacturer_name: acc.company_name,
+          pcr_ref: acc.database_assembly.pcr_standard || prev.project_info.pcr_ref,
+        },
+      }));
+    }
+
+    showNotif(
+      `Assembled LCI database for ${acc.company_name} (${acc.database_assembly?.facility_name})`,
+      'Facility Assembly Active'
+    );
+  }, [accountsList, showNotif]);
+
+  const addEpd = useCallback((newEpd) => {
+    setEpdsList((prev) => [newEpd, ...prev]);
+  }, []);
+
+  const activeProject = useMemo(() => {
+    const foundInList = projectsList.find((p) => p.id === activeProjectId);
+    if (foundInList) return foundInList;
+    for (const acc of Object.values(ACCOUNTS_DATA)) {
+      const foundInAcc = acc.projects?.find((p) => p.id === activeProjectId);
+      if (foundInAcc) return foundInAcc;
+    }
+    return null;
+  }, [projectsList, activeProjectId]);
+
+  // Open Project into Studio Calculation Workspace
+  const openProject = useCallback((projectId, forceReload = false) => {
+    let proj = projectsList.find((p) => p.id === projectId);
+    if (!proj) {
+      for (const acc of Object.values(ACCOUNTS_DATA)) {
+        const found = acc.projects?.find((p) => p.id === projectId);
+        if (found) {
+          proj = found;
+          setCurrentAccountId(acc.id);
+          setProjectsList(acc.projects || []);
+          setEpdsList(acc.epds || []);
+          break;
+        }
+      }
+    }
+    if (!proj) return null;
+
+    if (activeProjectId === projectId && studioViewMode === 'workspace' && !forceReload) {
+      return proj;
+    }
+
+    setActiveProjectId(projectId);
+
+    // If project has an existing preset key, load it
+    if (proj.preset_key && PRESET_DATASETS[proj.preset_key]) {
+      const preset = PRESET_DATASETS[proj.preset_key];
+      setExtractedData({
+        ...preset.data,
+        project_info: {
+          ...preset.data.project_info,
+          product_name: proj.name,
+          manufacturer_name: currentAccount?.company_name || preset.data.project_info.manufacturer_name,
+          pcr_ref: proj.standard || preset.data.project_info.pcr_ref,
+        },
+      });
+      setResults(generateClientResults(preset.data, selectedMethodology));
+      setCurrentPresetId(proj.preset_key);
+    } else {
+      setExtractedData((prev) => ({
+        ...prev,
+        project_info: {
+          ...prev.project_info,
+          product_name: proj.name,
+          manufacturer_name: currentAccount?.company_name || 'Manufacturer',
+          functional_unit: proj.functional_unit || prev.project_info.functional_unit,
+          pcr_ref: proj.standard || prev.project_info.pcr_ref,
+        },
+        operational: {
+          ...prev.operational,
+          capacity_rt: proj.capacity_rt || 500,
+          refrigerant_type: proj.refrigerant || 'R134a',
+          refrigerant_charge_kg: proj.refrigerant_charge_kg || 250,
+        },
+      }));
+    }
+
+    setStudioViewMode('workspace');
+    setActivePhase('upload');
+    showNotif(`Loaded "${proj.name}" into calculation workspace.`, 'Project Opened');
+    return proj;
+  }, [projectsList, currentAccount, selectedMethodology, activeProjectId, studioViewMode, showNotif]);
+
+  // Create Project and Launch into Studio
+  const createProject = useCallback((newProj) => {
+    setProjectsList((prev) => [newProj, ...prev]);
+    setActiveProjectId(newProj.id);
+
+    setExtractedData((prev) => ({
+      ...prev,
+      project_info: {
+        ...prev.project_info,
+        product_name: newProj.name,
+        manufacturer_name: currentAccount?.company_name || 'Manufacturer',
+        functional_unit: newProj.functional_unit,
+        pcr_ref: newProj.standard,
+      },
+      operational: {
+        ...prev.operational,
+        capacity_rt: newProj.capacity_rt,
+        refrigerant_type: newProj.refrigerant,
+        refrigerant_charge_kg: newProj.refrigerant_charge_kg,
+      },
+    }));
+
+    setStudioViewMode('workspace');
+    setActivePhase('upload');
+    showNotif(`Created "${newProj.name}" with ${currentAccount?.company_name} LCI assembly.`, 'Project Initialized');
+  }, [currentAccount, showNotif]);
+
+  // Duplicate Project
+  const duplicateProject = useCallback((projectId) => {
+    const proj = projectsList.find((p) => p.id === projectId);
+    if (!proj) return;
+    const cloned = {
+      ...proj,
+      id: `proj-${Date.now()}`,
+      name: `Copy of ${proj.name}`,
+      last_modified: 'Just now by You',
+      created_at: new Date().toISOString().split('T')[0],
+      epd_number: null,
+      status: 'In Calculation',
+    };
+    setProjectsList((prev) => [cloned, ...prev]);
+    showNotif(`Created duplicate: "${cloned.name}"`, 'Project Duplicated');
+  }, [projectsList, showNotif]);
+
+  // Delete / Archive Project
+  const deleteProject = useCallback((projectId) => {
+    setProjectsList((prev) => prev.filter((p) => p.id !== projectId));
+    showNotif('Project has been archived / removed.', 'Project Removed');
+  }, [showNotif]);
+
+  // Close back to Projects Console
+  const closeToProjectsHub = useCallback(() => {
+    setStudioViewMode('dashboard');
   }, []);
 
   // ─── CALCULATE ENGINE ───
@@ -1416,6 +1613,22 @@ export function StudioProvider({ children }) {
         validationResults,
         runValidation,
         selectedMethodology,
+        studioViewMode,
+        setStudioViewMode,
+        currentAccount,
+        accountsList,
+        switchAccount,
+        assembledDatabase,
+        activeProjectId,
+        activeProject,
+        projectsList,
+        epdsList,
+        addEpd,
+        openProject,
+        createProject,
+        duplicateProject,
+        deleteProject,
+        closeToProjectsHub,
         changeMethodology,
         resultsMethodology,
         methodologyStale,

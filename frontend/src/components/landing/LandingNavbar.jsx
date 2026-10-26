@@ -1,33 +1,26 @@
 import React from 'react';
 import { LeafIcon, ChevronRightIcon } from '../studio/Icons';
+import { Link, NavLink } from 'react-router-dom';
 
 export default function LandingNavbar({ onLaunchApp }) {
-  const handleScrollTo = (e, targetId) => {
-    e.preventDefault();
-    const el = document.getElementById(targetId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      window.history.pushState(null, '', `#${targetId}`);
-    }
-  };
-
   return (
     <header className="apple-sub-nav" aria-label="Product Navigation">
       <div className="lp-container apple-sub-nav-inner">
-        <a href="#product" className="apple-subnav-title" onClick={(e) => handleScrollTo(e, 'product')}>
+        <Link to="/overview" className="apple-subnav-title">
           <span className="apple-subnav-mark">
             <LeafIcon size={16} />
           </span>
           EcoMetric Studio
-        </a>
+        </Link>
 
         <nav className="apple-subnav-links" aria-label="Sections">
-          <a href="#product" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'product')}>Overview</a>
-          <a href="#solution" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'solution')}>Pipeline</a>
-          <a href="#stages" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'stages')}>Modules</a>
-          <a href="#how-it-works" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'how-it-works')}>How it works</a>
-          <a href="#features" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'features')}>Capabilities</a>
-          <a href="#faq" className="apple-subnav-link" onClick={(e) => handleScrollTo(e, 'faq')}>FAQ</a>
+          <NavLink to="/overview" className="apple-subnav-link">Overview</NavLink>
+          <NavLink to="/pipeline" className="apple-subnav-link">Pipeline</NavLink>
+          <NavLink to="/modules" className="apple-subnav-link">Modules</NavLink>
+          <NavLink to="/how-it-works" className="apple-subnav-link">How it works</NavLink>
+          <NavLink to="/capabilities" className="apple-subnav-link">Capabilities</NavLink>
+          <NavLink to="/pricing" className="apple-subnav-link">Pricing</NavLink>
+          <NavLink to="/faq" className="apple-subnav-link">FAQ</NavLink>
         </nav>
 
         <button

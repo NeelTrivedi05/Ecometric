@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as XLSX from 'xlsx';
 import { useStudio } from '../../../context/StudioContext';
 import { DownloadIcon, LeafIcon, CheckIcon, RefreshCwIcon, ChevronRightIcon, InfoIcon, ShieldCheckIcon } from '../Icons';
 import ReportDetailsModal from '../ReportDetailsModal';
@@ -25,7 +26,6 @@ export default function ExportView() {
   } = useStudio();
 
   const [activeTab, setActiveTab] = useState('report'); // 'report' | 'cert' | 'openepd' | 'dqr' | 'json'
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Pre-fetch DQR and openEPD when tab switches
   useEffect(() => {
@@ -41,17 +41,29 @@ export default function ExportView() {
     window.print();
   };
 
-  const handleDirectPdfExport = async () => {
-    setIsGeneratingPdf(true);
-    try {
-      showNotif('Generating the EPD report PDF...', 'Compiling PDF');
-      await exportEpdPdf(reportDetails);
-    } catch (err) {
-      console.error('Direct PDF export failed:', err);
-      showNotif('PDF Export failed: ' + (err.message || 'Unknown error'), 'Export Error');
-    } finally {
-      setIsGeneratingPdf(false);
-    }
+  const handlePdfExport = () => setIsReportDetailsModalOpen(true);
+
+  const handleXlsxExport = () => {
+    const rows = (lca.indicators || []).map((indicator) => ({
+      Indicator: indicator.code || indicator.name || '',
+      Name: indicator.name || '',
+      Unit: indicator.unit || '',
+      'A1-A3': indicator.a1a3 ?? 'ND',
+      A4: indicator.a4 ?? 'ND',
+      'B1-B7': indicator.b ?? 'ND',
+      'C1-C4': indicator.c ?? 'ND',
+      'Module D': indicator.d ?? 'ND',
+      Total: [indicator.a1a3, indicator.a4, indicator.b, indicator.c, indicator.d].every((value) => typeof value === 'number')
+        ? [indicator.a1a3, indicator.a4, indicator.b, indicator.c, indicator.d].reduce((sum, value) => sum + value, 0)
+        : 'ND',
+    }));
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    worksheet['!freeze'] = { xSplit: 3, ySplit: 1 };
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'LCIA Results');
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet([{ Product: projectInfo.productName, Manufacturer: projectInfo.manufacturer, 'Declared unit': projectInfo.declaredUnitStatement, Methodology: projectInfo.lciaMethod }]), 'Declaration');
+    XLSX.writeFile(workbook, `EcoMetric_${(projectInfo.productName || 'EPD').replace(/[^a-z0-9]+/gi, '_')}.xlsx`);
+    showNotif('LCIA results XLSX downloaded', 'Downloaded');
   };
 
   const header = { declaration_number: reportDetails?.declaration_number };
@@ -120,9 +132,9 @@ export default function ExportView() {
             <button
               type="button"
               className="btn"
-              onClick={() => downloadOpenEpdJson()}
+              onClick={handleXlsxExport}
               disabled={isLoading}
-              title="Download openEPD v2.0 JSON format"
+              title="Download LCIA results as XLSX"
               style={{
                 fontSize: 12,
                 fontWeight: 500,
@@ -138,7 +150,18 @@ export default function ExportView() {
               }}
             >
               <DownloadIcon className="w-3.5 h-3.5" />
-              <span>openEPD (JSON)</span>
+              <span>LCIA results (XLSX)</span>
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => downloadIlcdJson()}
+              disabled={isLoading}
+              title="Download compliant JSON data"
+              style={{ fontSize: 12, fontWeight: 500, backgroundColor: '#FFFFFF', border: '1px solid #D2D2D7', borderRadius: 9999, padding: '6px 14px', color: '#1D1D1F', display: 'inline-flex', alignItems: 'center', gap: 5, cursor: 'pointer' }}
+            >
+              <DownloadIcon className="w-3.5 h-3.5" />
+              <span>Data (JSON)</span>
             </button>
           </div>
         </div>
@@ -197,11 +220,11 @@ export default function ExportView() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-end' }}>
             <button
               type="button"
-              onClick={handleDirectPdfExport}
-              disabled={isGeneratingPdf || isLoading}
+              onClick={handlePdfExport}
+              disabled={isLoading}
               style={{
-                backgroundColor: isGeneratingPdf ? '#E5E5EA' : '#0071E3',
-                color: isGeneratingPdf ? '#86868B' : '#FFFFFF',
+                backgroundColor: '#0071E3',
+                color: '#FFFFFF',
                 border: 'none',
                 borderRadius: 9999,
                 padding: '12px 26px',
@@ -210,22 +233,12 @@ export default function ExportView() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                cursor: isGeneratingPdf ? 'not-allowed' : 'pointer',
-                boxShadow: isGeneratingPdf ? 'none' : '0 4px 16px rgba(31, 122, 76, 0.28)',
+                cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(31, 122, 76, 0.28)',
                 transition: 'all 0.15s ease-in-out'
               }}
             >
-              {isGeneratingPdf ? (
-                <>
-                  <RefreshCwIcon size={16} className="spin" />
-                  <span>Generating PDF...</span>
-                </>
-              ) : (
-                <>
-                  <DownloadIcon className="w-4 h-4" />
-                  <span>Download EPD Report (PDF)</span>
-                </>
-              )}
+              <><DownloadIcon className="w-4 h-4" /><span>Edit details &amp; download PDF</span></>
             </button>
 
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -323,8 +336,8 @@ export default function ExportView() {
             Use “Configure Report Details” to fill in the declaration, program operator and verification, and
             preview it there before downloading.
           </p>
-          <button type="button" className="btn-apple-action-blue" onClick={handleDirectPdfExport} disabled={isGeneratingPdf || isLoading}>
-            {isGeneratingPdf ? 'Generating PDF...' : 'Download EPD Report (PDF)'}
+          <button type="button" className="btn-apple-action-blue" onClick={handlePdfExport} disabled={isLoading}>
+            Edit details &amp; download PDF
           </button>
         </div>
       )}

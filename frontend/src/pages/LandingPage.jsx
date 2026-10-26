@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LandingNavbar from '../components/landing/LandingNavbar';
-import LandingHero from '../components/landing/LandingHero';
+import Hero9 from '../components/landing/Hero9';
+import Features16 from '../components/landing/Features16';
+import Pricing11 from '../components/landing/Pricing11';
+import PricingAbstractAngles from '../components/landing/PricingAbstractAngles';
 import TrustProof from '../components/landing/TrustProof';
 import TheProblem from '../components/landing/TheProblem';
 import TheSolution from '../components/landing/TheSolution';
@@ -18,17 +21,10 @@ import '../styles/LandingPage.css';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    if (window.location.hash) {
-      const id = window.location.hash.replace('#', '');
-      const element = document.getElementById(id);
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-      }
-    }
+    window.scrollTo({ top: 0, behavior: 'auto' });
 
     // Scroll reveal observer for silky smooth page entrance
     const observer = new IntersectionObserver(
@@ -51,29 +47,58 @@ export default function LandingPage() {
     return () => {
       elements.forEach((el) => observer.unobserve(el));
     };
-  }, []);
+  }, [pathname]);
 
   const handleLaunchApp = () => {
     navigate('/app');
   };
 
+  const page = pathname === '/' ? 'overview' : pathname.slice(1);
+
+  const renderPageContent = () => {
+    switch (page) {
+      case 'pipeline':
+        return <TheSolution />;
+      case 'modules':
+        return <LifeCycleRibbon />;
+      case 'how-it-works':
+        return <HowItWorks />;
+      case 'capabilities':
+        return (
+          <>
+            <Features />
+            <EpdExplained />
+            <DashboardPreview onLaunchApp={handleLaunchApp} />
+            <WhoItsFor />
+          </>
+        );
+      case 'faq':
+        return (
+          <>
+            <Faq />
+            <CtaBanner onLaunchApp={handleLaunchApp} />
+          </>
+        );
+      case 'pricing':
+        return <PricingAbstractAngles onLaunchApp={handleLaunchApp} />;
+      case 'overview':
+      default:
+        return (
+          <>
+            <Hero9 onLaunchApp={handleLaunchApp} />
+            <Features16 />
+            <Pricing11 onLaunchApp={handleLaunchApp} />
+            <TrustProof />
+            <TheProblem />
+          </>
+        );
+    }
+  };
+
   return (
     <div className="landing-page-root">
       <LandingNavbar onLaunchApp={handleLaunchApp} />
-      <main>
-        <LandingHero onLaunchApp={handleLaunchApp} />
-        <TrustProof />
-        <TheProblem />
-        <TheSolution />
-        <LifeCycleRibbon />
-        <HowItWorks />
-        <Features />
-        <EpdExplained />
-        <DashboardPreview onLaunchApp={handleLaunchApp} />
-        <WhoItsFor />
-        <Faq />
-        <CtaBanner onLaunchApp={handleLaunchApp} />
-      </main>
+      <main>{renderPageContent()}</main>
       <LandingFooter />
     </div>
   );

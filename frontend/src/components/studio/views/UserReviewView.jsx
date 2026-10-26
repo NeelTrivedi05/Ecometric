@@ -842,7 +842,7 @@ export default function UserReviewView() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
             {/* Logistics & Inbound Transport */}
-            <div className="card">
+            <div className="card user-review-a2-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <TruckIcon size={15} style={{ color: 'var(--accent, #1f7a4c)' }} />
@@ -858,7 +858,7 @@ export default function UserReviewView() {
                 </button>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div className="user-review-transport-legs" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {transport.length > 0 ? (
                   transport.map((leg, lIdx) => (
                     <div key={lIdx} style={{
