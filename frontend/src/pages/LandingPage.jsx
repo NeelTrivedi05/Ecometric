@@ -2,7 +2,9 @@ import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LandingNavbar from '../components/landing/LandingNavbar';
 import Hero9 from '../components/landing/Hero9';
-import Features16 from '../components/landing/Features16';
+import WhatIsEpd from '../components/landing/WhatIsEpd';
+import WhyEpdMatters from '../components/landing/WhyEpdMatters';
+import WhoNeedsEpd from '../components/landing/WhoNeedsEpd';
 import Pricing11 from '../components/landing/Pricing11';
 import PricingAbstractAngles from '../components/landing/PricingAbstractAngles';
 import TrustProof from '../components/landing/TrustProof';
@@ -86,7 +88,9 @@ export default function LandingPage() {
         return (
           <>
             <Hero9 onLaunchApp={handleLaunchApp} />
-            <Features16 />
+            <WhatIsEpd />
+            <WhyEpdMatters />
+            <WhoNeedsEpd />
             <Pricing11 onLaunchApp={handleLaunchApp} />
             <TrustProof />
             <TheProblem />

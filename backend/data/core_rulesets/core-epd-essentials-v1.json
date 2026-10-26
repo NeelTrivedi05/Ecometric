@@ -46,20 +46,12 @@
       "check": {"type": "relation", "expression": "abs(scenarios.C3.recycling_share_pct + scenarios.C3.incineration_share_pct + scenarios.C4.landfill_share_pct - 100) <= 1"}
     },
     {
-      "id": "CORE.RES.GWP",
-      "title": "Climate change (GWP) results calculated",
-      "requirement": "Global warming potential must be reported.",
-      "source": {"section": "EN 15804+A2 §7.2.3 / ISO 21930 §9"},
-      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
-      "check": {"type": "required_field", "path": "results.GWP"}
-    },
-    {
       "id": "CORE.RES.PRODUCT_STAGE",
-      "title": "Product stage (A1-A3) declared with a positive GWP",
-      "requirement": "Every EPD declares the product stage; its GWP should be greater than zero.",
+      "title": "Product stage (A1-A3) declared",
+      "requirement": "Every EPD declares the product stage (A1-A3).",
       "source": {"section": "EN 15804+A2 §6.2.1 / ISO 21930 §7.1.7"},
       "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
-      "check": {"type": "relation", "expression": "results.GWP['A1-A3'] > 0"}
+      "check": {"type": "modules_required", "modules": ["A1", "A2", "A3"]}
     },
     {
       "id": "CORE.RES.CORE_INDICATORS",

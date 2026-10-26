@@ -24,7 +24,7 @@ export default function Faq() {
           </p>
         </div>
 
-        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+        <div>
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (

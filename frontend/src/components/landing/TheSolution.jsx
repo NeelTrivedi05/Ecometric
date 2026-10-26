@@ -76,7 +76,7 @@ export default function TheSolution() {
         </div>
 
         {/* Detail Container Card (Store Utility Card style: 18px radius, 1px hairline, no shadow) */}
-        <div className="store-utility-card" style={{ maxWidth: '860px', margin: '0 auto', padding: '32px' }}>
+        <div className="store-utility-card" style={{ padding: '32px' }}>
           <div key={activeStep} className="step-card-animate">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
               <span style={{
