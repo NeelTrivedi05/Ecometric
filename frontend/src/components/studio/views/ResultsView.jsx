@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
 import { indicatorPassesFilter } from '../../../data/lciaMethodologies';
 import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon, SearchIcon } from '../Icons';
@@ -15,6 +15,10 @@ export default function ResultsView() {
     isLoading,
     runCalculation,
     extractedData,
+    productProfile,
+    resultsMethodology,
+    methodologyStale,
+    calculationError,
   } = useStudio();
 
   const [showFullBreakdown, setShowFullBreakdown] = useState(false);
@@ -23,34 +27,45 @@ export default function ResultsView() {
 
   const FILTER_OPTIONS = [
     { id: 'all', label: 'All Indicators',  desc: 'Show all 25 computed impact categories' },
-    { id: 'pcr', label: 'PCR Mandatory',   desc: 'EN 15804+A2 + UL 10010-4 required (16 indicators)' },
+    { id: 'pcr', label: 'PCR Mandatory',   desc: `EN 15804+A2 + ${productProfile?.pcrShort || 'PCR'} required indicators` },
     { id: 'gpi', label: 'GPI Core',        desc: 'International EPD System primary page (6 indicators)' },
   ];
 
-  const [viewMode, setViewMode] = useState('pcr'); // 'pcr' | 'all'
+  // Open on every indicator the calculation returned for the selected methodology
+  const [viewMode, setViewMode] = useState('all'); // 'pcr' | 'all'
   const [displayedIndicators, setDisplayedIndicators] = useState([]);
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [isFlowModalOpen, setIsFlowModalOpen] = useState(false);
-  const [normMode, setNormMode] = useState('fu'); // 'fu' = per 1 ton chilling capacity | 'declared' = full machine declared unit
+  // Default to the calculated totals, exactly as written to epd_results.csv / epd_results_exp.csv
+  const [normMode, setNormMode] = useState('declared'); // 'fu' = per functional / declared unit | 'declared' = whole quantity in the BOM
 
+  // Number of functional units the BOM represents: chiller capacity in RT, otherwise the declared quantity (m², m, t ...)
+  const isChiller = productProfile?.isChiller !== false;
+  const fuUnit = productProfile?.fuUnit || 'unit';
   const capacityRt = Number(extractedData?.operational?.capacity_rt || extractedData?.project_info?.capacity_rt || 500);
-  const normFactor = normMode === 'fu' ? Math.max(1, capacityRt) : 1;
+  const fuQuantity = isChiller ? Math.max(1, capacityRt) : (Number(extractedData?.project_info?.fu_quantity) || 1);
+  const normFactor = normMode === 'fu' ? fuQuantity : 1;
+  const fuLabel = isChiller ? '1 ton chilling capacity' : `1 ${fuUnit}`;
+  const declaredLabel = isChiller ? `${capacityRt} RT` : `${fuQuantity} ${fuUnit}`;
 
-  // Auto-run genuine characterization if results not calculated yet but BOM exists
+  // Auto-run genuine characterization once if results not calculated yet but BOM exists
+  // (once only, so a failing backend is not called in a loop; Recalculate retries)
+  const autoRunDone = useRef(false);
   useEffect(() => {
+    if (autoRunDone.current) return;
     if (!lca.isCalculated && !isLoading && extractedData?.bom && extractedData.bom.length > 0) {
+      autoRunDone.current = true;
       runCalculation();
     }
   }, [lca.isCalculated, isLoading, extractedData?.bom, runCalculation]);
 
-  // Strict 3-significant-figure scientific notation per SKILL.md (e.g. 3.30E-01)
+  // Same scientific notation as epd_results_exp.csv (e.g. 1.882e-02), so the table matches the file
   const formatValue = (val) => {
     if (val === null || val === undefined || val === '') return '—';
     const rawNum = typeof val === 'number' ? val : parseFloat(val);
     if (isNaN(rawNum) || !isFinite(rawNum)) return '—';
-    if (rawNum === 0) return '0.00E+00';
     const num = rawNum / normFactor;
-    return num.toExponential(2).toUpperCase();
+    return num.toExponential(3).replace(/e([+-])(\d)$/, 'e$10$2');
   };
 
   const currentMethod = getMethodology(selectedMethodology);
@@ -102,19 +117,19 @@ export default function ResultsView() {
               type="button"
               className={`apple-segmented-tab ${normMode === 'fu' ? 'active' : ''}`}
               onClick={() => setNormMode('fu')}
-              title="Normalized per 1 ton chilling capacity over 25 yr RSL (UL 10010-4 §3.1)"
+              title={`Normalized per ${fuLabel} (${productProfile?.pcrShort || 'PCR'})`}
               style={{ fontSize: '11px', padding: '5px 12px' }}
             >
-              <span>Per 1 Ton (FU)</span>
+              <span>Per {isChiller ? '1 Ton' : `1 ${fuUnit}`} (FU)</span>
             </button>
             <button
               type="button"
               className={`apple-segmented-tab ${normMode === 'declared' ? 'active' : ''}`}
               onClick={() => setNormMode('declared')}
-              title={`Declared Machine Total (${capacityRt} RT)`}
+              title={`Total for the quantity in the BOM (${declaredLabel})`}
               style={{ fontSize: '11px', padding: '5px 12px' }}
             >
-              <span>Declared ({capacityRt} RT)</span>
+              <span>Declared ({declaredLabel})</span>
             </button>
           </div>
 
@@ -148,7 +163,7 @@ export default function ResultsView() {
               value={selectedMethodology}
               onChange={(e) => {
                 changeMethodology(e.target.value);
-                showNotif(`Characterized using ${getMethodology(e.target.value)?.name || e.target.value}`, 'Methodology Updated');
+                showNotif(`${getMethodology(e.target.value)?.name || e.target.value} selected - click Recalculate to apply it`, 'Methodology Selected');
               }}
               style={{ padding: '2px 4px', fontSize: '11px', height: 'auto', background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--accent, #1f7a4c)', cursor: 'pointer', maxWidth: '320px' }}
             >
@@ -182,6 +197,31 @@ export default function ResultsView() {
           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', margin: 0 }}>
             Dynamically characterizing all lifecycle modules (A1–A5, B1–B7, C1–C4, Module D) for {currentMethod?.name || selectedMethodology}.
           </p>
+        </div>
+      )}
+
+      {!isLoading && calculationError && (
+        <div className="card" role="alert" style={{ padding: '14px 20px', marginBottom: 20, border: '1px solid rgba(215, 58, 73, 0.5)', background: 'rgba(215, 58, 73, 0.08)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-primary)' }}>
+            <strong>Calculation failed.</strong> {calculationError}
+          </span>
+          <button type="button" className="btn-apple-secondary-pill" onClick={() => runCalculation()} style={{ fontSize: '12px' }}>
+            <RefreshCwIcon size={13} />
+            <span>Recalculate</span>
+          </button>
+        </div>
+      )}
+
+      {!isLoading && methodologyStale && (
+        <div className="card" style={{ padding: '14px 20px', marginBottom: 20, border: '1px solid rgba(230, 162, 60, 0.5)', background: 'rgba(230, 162, 60, 0.08)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-primary)' }}>
+            These results were calculated with <strong>{getMethodology(resultsMethodology)?.name || resultsMethodology}</strong>.
+            {' '}Click Recalculate to apply <strong>{currentMethod?.name || selectedMethodology}</strong>.
+          </span>
+          <button type="button" className="btn-apple-secondary-pill" onClick={() => runCalculation()} style={{ fontSize: '12px' }}>
+            <RefreshCwIcon size={13} />
+            <span>Recalculate</span>
+          </button>
         </div>
       )}
 
@@ -285,7 +325,7 @@ export default function ResultsView() {
               {viewMode === 'pcr' ? 'Standard PCR Environmental Matrix' : 'Full LCIA Environmental Matrix'}
             </span>
             <span style={{ fontSize: '12px', color: '#86868b', marginLeft: 8 }}>
-              ({currentMethod.name} — {activeRows.length} displayed • {normMode === 'fu' ? 'Normalized per 1 ton chilling capacity' : `Machine Total ${capacityRt} RT`})
+              ({currentMethod.name} — {activeRows.length} displayed • {normMode === 'fu' ? `Normalized per ${fuLabel}` : `Total for ${declaredLabel}`})
             </span>
           </div>
           
@@ -394,10 +434,8 @@ export default function ResultsView() {
                 </tr>
               ) : (
                 activeRows.map((ind) => {
-                  const isGwp = ind.code === 'GWP100' || ind.name.toLowerCase().includes('global warming');
-
                   return (
-                    <tr key={ind.rawCategory || ind.code} style={{ background: isGwp ? 'var(--accent-dim)' : undefined }}>
+                    <tr key={ind.rawCategory || ind.code}>
                       <td style={{ sticky: 'left', background: 'var(--bg-card)', zIndex: 1 }}>
                         <span style={{ fontFamily: 'var(--mono)', fontWeight: 700, fontSize: 'var(--text-2xs)', color: 'var(--accent)' }}>
                           {highlightMatch(ind.code, activeSearchTerm)}
@@ -405,7 +443,7 @@ export default function ResultsView() {
                       </td>
                       <td>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ fontWeight: isGwp ? 600 : 400 }}>
+                          <span style={{ fontWeight: 400 }}>
                             {highlightMatch(ind.name, activeSearchTerm)}
                           </span>
                           {ind.category && ind.category !== 'General' && ind.category !== ind.name && (

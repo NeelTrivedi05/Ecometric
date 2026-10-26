@@ -1208,9 +1208,12 @@ svg {
 }
 
 /* ─── VIEW TRANSITION ─── */
+/* No transform may remain on this wrapper after the animation: a transform (or will-change: transform)
+   turns it into the containing block for position: fixed, so the modals inside views would be
+   positioned against the whole scrolling page instead of the viewport. `backwards` keeps the start
+   frame during the animation and leaves no transform once it ends. */
 .studio-view-transition {
-  animation: studioViewGlide 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity;
+  animation: studioViewGlide 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   width: 100%;
 }
 
@@ -1905,6 +1908,187 @@ textarea.form-input {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* ─── LONG-RUNNING TASK PROGRESS OVERLAY ─── */
+.progress-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(13, 23, 17, 0.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: progressBackdropIn 0.25s ease-out;
+}
+
+.progress-overlay-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 26px 26px 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-product);
+  font-family: var(--font);
+  animation: toastSpringIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.progress-overlay-head {
+  margin-bottom: 22px;
+}
+
+.progress-overlay-title {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.progress-overlay-subtitle {
+  margin-top: 3px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.progress-overlay-track {
+  position: relative;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.progress-overlay-fill {
+  position: relative;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2e9e5b, var(--accent));
+  transition: width 0.2s linear;
+  overflow: hidden;
+}
+
+.progress-overlay-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-100%);
+  animation: progressShimmer 1.6s ease-in-out infinite;
+}
+
+.progress-overlay-percent {
+  margin-top: 10px;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-overlay-stages {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progress-overlay-stage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+
+.progress-overlay-stage-dot {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-bright);
+  background: var(--bg-card);
+  color: #FFFFFF;
+  transition: all 0.3s ease;
+}
+
+.progress-overlay-stage.is-active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.progress-overlay-stage.is-active .progress-overlay-stage-dot {
+  border-color: var(--accent);
+  border-top-color: transparent;
+  animation: progressSpin 0.9s linear infinite;
+}
+
+.progress-overlay-stage.is-done {
+  color: var(--text-secondary);
+}
+
+.progress-overlay-stage.is-done .progress-overlay-stage-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.progress-overlay-cancel {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.progress-overlay-cancel:hover {
+  background: var(--error-soft);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.progress-overlay-cancel:active {
+  transform: scale(0.97);
+}
+
+.progress-overlay-cancel:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+@keyframes progressBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes progressSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes progressShimmer {
+  to { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-overlay-fill::after {
+    animation: none;
   }
 }
 
@@ -2649,6 +2833,17 @@ textarea.form-input {
 .btn-apple-action-blue:active,
 .btn-apple-primary-pill:active {
   transform: scale(0.97);
+}
+
+/* Gate buttons (steps 4 and 7) must look locked when disabled */
+.btn-apple-action-blue:disabled,
+.btn-apple-primary-pill:disabled,
+.btn-accent:disabled {
+  background: #d2d2d7;
+  color: #86868b;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-apple-secondary-pill {

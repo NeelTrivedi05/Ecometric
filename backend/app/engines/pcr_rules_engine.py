@@ -135,8 +135,7 @@ class PcrRulesEngine:
         )
         has_d = (
             bool(results_payload.get("module_d_gwp") or results_payload.get("d_gwp") or results_payload.get("circularity_d") or results_payload.get("stages_data", {}).get("D_Circularity"))
-            or any(isinstance(v, dict) and "D" in v for v in epd_res.values() if isinstance(v, dict))
-            or True # Module D Annex A net circularity formula active
+            or any(isinstance(v, dict) and abs(float(v.get("D", 0) or 0)) > 0 for v in epd_res.values() if isinstance(v, dict))
         )
 
         missing_stages = []
@@ -154,7 +153,7 @@ class PcrRulesEngine:
             db_record = self.db.query(EcoinventDatabase).first()
         db_hash = db_record.file_hash if db_record else "6bc4e6475877e8e90d8a6184b681366154cc5f6ec42c7cec54eb871224b33e02"
         db_model = db_record.system_model if db_record else "cut-off"
-        dataset_quality_passed = True
+        dataset_quality_passed = db_record is not None
         dataset_quality_value = f"ecoinvent v3.12 ({db_model.title()}, SHA-256 verified)"
 
         # 5. Gate 5: Electricity Grid Specificity
@@ -164,7 +163,7 @@ class PcrRulesEngine:
             or {}
         )
         grid_region = manufacturing.get("grid_region") or results_payload.get("grid_region") or "US_Average"
-        grid_kwh = float(manufacturing.get("annual_facility_kwh", 0) or manufacturing.get("electricity_kwh", 0) or 34000)
+        grid_kwh = float(manufacturing.get("annual_facility_kwh", 0) or manufacturing.get("electricity_kwh", 0) or 0)
         grid_passed = bool(grid_region and grid_kwh > 0)
         grid_value = f"{grid_region} ({manufacturing.get('electricity_provider_id', 'ecoinvent_elec_mv_us')})"
 

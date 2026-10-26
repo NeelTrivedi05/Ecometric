@@ -44,7 +44,7 @@ export default function Features() {
           </p>
         </div>
 
-        <div className="store-utility-grid">
+        <div className="store-utility-grid store-utility-grid--three">
           {features.map((feat, idx) => (
             <div key={idx} className="store-utility-card stagger-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>

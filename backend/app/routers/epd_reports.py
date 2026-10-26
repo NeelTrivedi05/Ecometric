@@ -15,7 +15,7 @@ import json
 import os
 from datetime import date
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, Body, HTTPException, Response
 
@@ -46,10 +46,23 @@ def _resolve(payload: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Dict[str, An
     return data, adapter_warnings, options
 
 
-def _run(payload: Dict[str, Any], fn):
+def _publication_check(payload: Dict[str, Any], holder: Dict[str, Any]):
+    """PCR `document` rules on the rendered EPD (+ `input` rules with the final Report Details)."""
+    def run(html: str) -> List[Dict[str, Any]]:
+        from app.engines.pcr_validation import evaluate_publication, publication_warnings
+        check = evaluate_publication(payload.get("extractedData") or {}, payload.get("reportDetails") or {},
+                                     payload.get("resultsByMethod") or {}, html)
+        holder["pcr"] = check
+        return publication_warnings(check)
+    return run
+
+
+def _run(payload: Dict[str, Any], fn, holder: Optional[Dict[str, Any]] = None):
     data, adapter_warnings, options = _resolve(payload)
+    # Studio payloads (not a raw report `input`) are checked against the product's PCR before publishing.
+    extra = _publication_check(payload, holder if holder is not None else {}) if not payload.get("input") else None
     try:
-        result = fn(data, options)
+        result = fn(data, options, extra_checks=extra)
     except EpdReportInputError as e:
         raise HTTPException(status_code=422, detail={"error": "Invalid report input", "errors": e.errors})
     except EpdReportError as e:
@@ -76,8 +89,10 @@ def report_options():
 
 @router.post("/preview")
 def preview_report(payload: Dict[str, Any] = Body(...)):
-    r = _run(payload, preview_epd_report)
-    return {"html": r.html, "warnings": r.warnings, "filename": r.filename, "meta": r.meta}
+    holder: Dict[str, Any] = {}
+    r = _run(payload, preview_epd_report, holder)
+    return {"html": r.html, "warnings": r.warnings, "filename": r.filename, "meta": r.meta,
+            "pcr": holder.get("pcr")}
 
 
 @router.post("")

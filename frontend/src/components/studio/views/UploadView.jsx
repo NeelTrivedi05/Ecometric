@@ -16,6 +16,7 @@ import {
   CheckIcon,
 } from '../Icons';
 import ProcessFlowModal from '../ProcessFlowModal';
+import { PRODUCT_LIST } from '../../../data/products';
 
 export default function UploadView() {
   const {
@@ -33,7 +34,12 @@ export default function UploadView() {
     loadPreset,
     currentPresetId,
     PRESET_DATASETS,
+    productCategory,
+    selectProduct,
+    productProfile,
   } = useStudio();
+  const hasProduct = Boolean(productCategory);
+  const product = hasProduct ? productProfile : null;
 
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -42,10 +48,10 @@ export default function UploadView() {
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     setIsDragOver(false);
-    if (e.dataTransfer.files.length > 0) {
+    if (hasProduct && e.dataTransfer.files.length > 0) {
       addFiles(e.dataTransfer.files);
     }
-  }, [addFiles]);
+  }, [addFiles, hasProduct]);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -68,11 +74,6 @@ export default function UploadView() {
     if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / 1048576).toFixed(1)} MB`;
   };
-
-  const totalSize = uploadedFiles.reduce((total, file) => total + (file.size || 0), 0);
-  const completedSize = uploadedFiles
-    .filter((file) => file.status === 'done')
-    .reduce((total, file) => total + (file.size || 0), 0);
 
   const handleExtractAndProceed = async () => {
     await extractDocuments();
@@ -103,10 +104,13 @@ export default function UploadView() {
       <div className="apple-view-header">
         <div>
           <span className="apple-eyebrow">Phase 1 • Document Ingestion</span>
-          <h1 className="view-title">Upload & Ingest Chiller Engineering Documents</h1>
+          <h1 className="view-title">
+            {product ? `Upload & Ingest ${product.name} Documents` : 'Select Your Product, Then Upload Documents'}
+          </h1>
           <p className="view-subtitle">
-            Upload raw engineering files (BOM spreadsheets, freight manifests, plant utility submetering, and equipment cut sheets).
-            The automated engine parses component masses, links them to verified ecoinvent v3.12 activities, and audits UL 10010-4 Part B v2.0 &amp; EN 15804+A2 completeness.
+            Choose the product first so the right PCR, functional unit and life-cycle rules are applied. Then upload raw files
+            (BOM spreadsheets, freight manifests, plant utility data, specification sheets). The engine reads component masses,
+            matches each material to the best ecoinvent v3.12 dataset by name, and audits {product ? product.pcrShort : 'PCR'} completeness.
           </p>
         </div>
 
@@ -126,14 +130,82 @@ export default function UploadView() {
         </div>
       </div>
 
-      {/* Preset Chiller Benchmark Models Gallery (Apple Store Utility Card Grid) */}
+      {/* Step 1: Product selection (required before upload) */}
+      <div className="apple-benchmark-gallery">
+        <div className="gallery-header-row">
+          <div className="gallery-title-group">
+            <span className="gallery-title">Step 1 · Select the product for this EPD</span>
+            <span className="gallery-desc">
+              Each product has its own PCR, functional unit, life-cycle stages and ecoinvent material mapping.
+            </span>
+          </div>
+          <span className="gallery-pill-tag">
+            {product ? `Selected: ${product.name}` : `${PRODUCT_LIST.length} products available`}
+          </span>
+        </div>
+
+        <div className="benchmark-card-grid">
+          {PRODUCT_LIST.map((item) => {
+            const isSelected = productCategory === item.id;
+            return (
+              <div
+                key={item.id}
+                className={`benchmark-card ${isSelected ? 'active-benchmark' : ''}`}
+                onClick={() => selectProduct(item.id)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') selectProduct(item.id); }}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isSelected}
+              >
+                <div className="card-top-row">
+                  <span className="card-equipment-glyph" aria-hidden="true">{item.icon}</span>
+                  <span className="card-badge" style={{ color: '#0066cc', backgroundColor: '#0066cc15' }}>
+                    {item.pcrShort}
+                  </span>
+                </div>
+                <div className="card-title">{item.name}</div>
+                <div className="card-subtitle">{item.examples}</div>
+                <div className="card-specs-row">
+                  <div className="card-spec-item">
+                    <span className="spec-label">Unit</span>
+                    <span className="spec-value">{item.fuShort}</span>
+                  </div>
+                  <div className="card-spec-item">
+                    <span className="spec-label">Use stage</span>
+                    <span className="spec-value">
+                      {item.useStage.refrigerant ? 'Refrigerant + energy' : item.useStage.b6 === 'none' ? 'Not modelled' : 'Declared use'}
+                    </span>
+                  </div>
+                </div>
+                <div className="card-action-row">
+                  <button
+                    type="button"
+                    className={`btn-card-load ${isSelected ? 'is-selected' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); selectProduct(item.id); }}
+                    disabled={isLoading}
+                  >
+                    {isSelected ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <CheckIcon size={12} /> Selected
+                      </span>
+                    ) : 'Select →'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Preset Chiller Benchmark Models Gallery (chiller only) */}
+      {product?.isChiller && (
       <div className="apple-benchmark-gallery">
         <div className="gallery-header-row">
           <div className="gallery-title-group">
             <span className="gallery-title">Verified Equipment Benchmarks</span>
             <span className="gallery-desc">Pre-configured engineering models compliant with UL 10010-4 Part B v2.0, EN 15804+A2, and ecoinvent v3.12</span>
           </div>
-          <span className="gallery-pill-tag">4 Models Available</span>
+          <span className="gallery-pill-tag">{Object.keys(PRESET_DATASETS || {}).length} Models Available</span>
         </div>
 
         <div className="benchmark-card-grid">
@@ -218,23 +290,31 @@ export default function UploadView() {
           })}
         </div>
       </div>
+      )}
 
-      {/* Upload Dropzone */}
+      {/* Upload Dropzone (enabled once a product is selected) */}
       <div
-        className={`apple-upload-zone file-manager-dropzone ${isDragOver ? 'drag-over' : ''}`}
+        className={`apple-upload-zone ${isDragOver ? 'drag-over' : ''}`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => fileInputRef.current?.click()}
-        style={{ cursor: 'pointer' }}
+        onClick={() => hasProduct && fileInputRef.current?.click()}
+        style={{ cursor: hasProduct ? 'pointer' : 'not-allowed', opacity: hasProduct ? 1 : 0.5 }}
+        aria-disabled={!hasProduct}
       >
         <div className="upload-icon-circle">
           <UploadIcon size={26} style={{ color: 'var(--accent, #1f7a4c)' }} />
         </div>
 
-        <div className="upload-zone-title">Drop files here or click to browse</div>
+        <div className="upload-zone-title">
+          {hasProduct ? `Step 2 · Drop ${product.name} files here, or click to browse` : 'Select a product above to enable upload'}
+        </div>
 
-        <div className="upload-zone-desc">Up to 2 GB per file. Supports spreadsheets, technical PDFs, JSON payloads, and archives.</div>
+        <div className="upload-zone-desc">
+          {hasProduct
+            ? `Expected: ${product.bomHint} Also accepted: freight manifests, utility data, spec sheets, ZIP packages.`
+            : 'Supports BOM spreadsheets (Excel .xlsx, CSV), specification sheets (PDF), manifests, or complete ZIP packages'}
+        </div>
 
         <div className="upload-zone-formats">
           <span className="apple-chip-format" title="Multi-tab Excel workbooks (BOM, Transport, Utilities, EOL)">
@@ -271,71 +351,97 @@ export default function UploadView() {
 
       {/* Uploaded Documents Queue */}
       {uploadedFiles.length > 0 && (
-        <div className="file-manager-card">
-          <div className="file-manager-header">
+        <div className="apple-card" style={{ marginTop: '24px' }}>
+          <div className="card-header-flex">
             <div>
-              <span className="file-manager-eyebrow">Document workspace</span>
-              <h3>Engineering files <span>{uploadedFiles.length}</span></h3>
-              <p>Track ingestion progress before matching data to ecoinvent v3.12 activities.</p>
+              <h3 className="card-heading-title">Ingested Document Queue ({uploadedFiles.length})</h3>
+              <p className="card-heading-sub">Files queued for parsing and ecoinvent v3.12 activity matching</p>
             </div>
-            <button type="button" className="btn-apple-secondary-pill" onClick={() => fileInputRef.current?.click()}>
-              <UploadIcon size={14} />
-              Add files
-            </button>
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn-apple-secondary-pill"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                + Add More Files
+              </button>
+            </div>
           </div>
 
-          <div className="file-manager-list">
-            {uploadedFiles.map((file) => {
-              const isExtracted = file.status === 'done';
-              const isParsing = file.status === 'extracting';
-              const progress = isExtracted ? 100 : isParsing ? 62 : 0;
-              const scope = file.name.includes('A2') ? 'A2 Inbound Transport' :
-                file.name.includes('A4') ? 'A4/A5 Jobsite Logistics' :
-                file.name.includes('B1') ? 'B1–B7 Operational Use' :
-                file.name.includes('C1') ? 'C1–D End of Life' :
-                'A1 Raw Material BOM';
-
-              return (
-                <div className="file-manager-row" key={file.id}>
-                  <div className="file-manager-icon"><FileIcon size={19} /></div>
-                  <div className="file-manager-main">
-                    <div className="file-manager-name-line">
-                      <strong title={file.name}>{file.name}</strong>
-                      <span>{formatSize(file.size)}</span>
-                    </div>
-                    <div className="file-manager-meta">
-                      <span>{file.type?.toUpperCase() || 'DOCUMENT'}</span>
-                      <span>{scope}</span>
-                    </div>
-                    <div className="file-manager-progress-row">
-                      <div className="file-manager-progress">
-                        <span style={{ width: `${progress}%` }} className={isParsing ? 'is-loading' : ''} />
+          <div className="apple-files-table-container">
+            <table className="apple-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '40%' }}>Document Name</th>
+                  <th style={{ width: '15%' }}>Size</th>
+                  <th style={{ width: '20%' }}>Lifecycle Scope</th>
+                  <th style={{ width: '15%' }}>Status</th>
+                  <th style={{ width: '10%', textAlign: 'right' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {uploadedFiles.map((file) => (
+                  <tr key={file.id}>
+                    <td>
+                      <div className="file-name-cell">
+                        <span className="file-type-pill">{file.type?.toUpperCase() || 'DOC'}</span>
+                        <span className="file-name-text" title={file.name}>{file.name}</span>
                       </div>
-                      <small>{isExtracted ? 'Uploaded' : isParsing ? `${progress}%` : 'Waiting'}</small>
-                    </div>
-                  </div>
-                  <div className={`file-manager-status ${isExtracted ? 'is-done' : isParsing ? 'is-parsing' : ''}`}>
-                    {isExtracted ? <CheckCircleIcon size={14} /> : isParsing ? <RefreshCwIcon size={14} className="spin" /> : null}
-                    <span>{isExtracted ? 'Extracted' : isParsing ? 'Parsing' : 'Ready'}</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="file-manager-remove"
-                    onClick={() => removeFile(file.id)}
-                    title={`Remove ${file.name}`}
-                    aria-label={`Remove ${file.name}`}
-                  >
-                    <TrashIcon size={15} />
-                  </button>
-                </div>
-              );
-            })}
+                    </td>
+                    <td className="num-font">{formatSize(file.size)}</td>
+                    <td>
+                      <span className="scope-tag">
+                        {file.name.includes('A2') ? 'A2 Inbound Transport' :
+                         file.name.includes('A4') ? 'A4/A5 Jobsite Logistics' :
+                         file.name.includes('B1') ? 'B1–B7 Operational Use' :
+                         file.name.includes('C1') ? 'C1–D End of Life' :
+                         'A1 Raw Material BOM'}
+                      </span>
+                    </td>
+                    <td>
+                      {file.status === 'done' ? (
+                        <span className="status-chip success">
+                          <CheckCircleIcon size={12} />
+                          <span>Extracted</span>
+                        </span>
+                      ) : file.status === 'extracting' ? (
+                        <span className="status-chip pending">
+                          <RefreshCwIcon size={12} className="spin" />
+                          <span>Parsing...</span>
+                        </span>
+                      ) : (
+                        <span className="status-chip neutral">Ready</span>
+                      )}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        type="button"
+                        className="btn-icon-trash"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFile(file.id);
+                        }}
+                        title="Remove Document"
+                      >
+                        <TrashIcon size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          <div className="file-manager-footer">
-            <span><CheckCircleIcon size={14} /> {formatSize(completedSize)} of {formatSize(totalSize)} transferred</span>
-            <button type="button" className="btn-apple-primary-pill" onClick={handleExtractAndProceed} disabled={isLoading}>
-              <span>{isLoading ? 'Parsing engineering data...' : 'Extract & analyze inventory'}</span>
+          {/* Action Row */}
+          <div className="card-footer-action-row">
+            <button
+              type="button"
+              className="btn-apple-primary-pill"
+              onClick={handleExtractAndProceed}
+              disabled={isLoading || !hasProduct}
+            >
+              <span>{isLoading ? 'Parsing Engineering Data...' : 'Extract & Analyze Lifecycle Inventory'}</span>
               <ChevronRightIcon size={15} />
             </button>
           </div>
@@ -352,7 +458,7 @@ export default function UploadView() {
             <div>
               <div className="gap-title">PCR Gap Warning: {gaps.length} Requirement(s) Detected</div>
               <div className="gap-desc">
-                The engine checked the active inventory against UL 10010-4 Part B v2.0 cut-off & reporting requirements.
+                The engine checked the active inventory against {productProfile.pcrLabel} cut-off & reporting requirements.
               </div>
             </div>
           </div>

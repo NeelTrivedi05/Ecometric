@@ -1,9 +1,28 @@
+"""
+PCR compliance checks for the three points of the Studio workflow. All three run
+the core ruleset (data/core_rulesets, common to every product) through
+engines/pcr_ruleset_engine, each with only the rules of its own phase:
+
+    validate_epd_compliance       step 4, before calculation   -> `input` rules
+    evaluate_results_compliance   step 7, after calculation    -> `results` rules
+    evaluate_publication          step 8, on the rendered EPD  -> `document` rules. It also re-applies
+                                  the `input` rules (Report Details such as EPD type, scope and verifier
+                                  are only completed at export) and the `results` rules (the sidebar lets
+                                  users reach export without passing step 7), so this is the gate that
+                                  decides whether the PDF is final or a draft.
+"""
+
+import html as html_lib
 import json
 import os
-from datetime import datetime
-from typing import Dict, Any, List
+import re
+from typing import Any, Dict, List, Optional
+
+from app.engines.pcr_payload import build_payload, results_by_method_from
+from app.engines.pcr_ruleset_engine import calculation_prerequisites, evaluate_phase
 
 PCR_RULES_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "pcr_rules.json")
+
 
 def load_pcr_rules() -> Dict[str, Any]:
     if os.path.exists(PCR_RULES_PATH):
@@ -18,286 +37,113 @@ def load_pcr_rules() -> Dict[str, Any]:
         "total_modules_count": 16
     }
 
-def safe_float(val: Any, default: float = 0.0) -> float:
-    if val is None:
-        return default
-    try:
-        return float(str(val).replace(",", "").strip())
-    except (ValueError, TypeError):
-        return default
+
+def _extracted(payload: Dict[str, Any]) -> Dict[str, Any]:
+    data = payload.get("extracted_data", payload) if isinstance(payload, dict) else {}
+    return data if isinstance(data, dict) else {}
+
+
+def _product_id(payload: Dict[str, Any], data: Dict[str, Any]) -> Optional[str]:
+    return payload.get("product_category") or (data.get("project_info") or {}).get("product_category")
+
 
 def validate_epd_compliance(payload: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Performs genuine dynamic compliance validation against:
-    1. UL 10010-4 Part B (Product Category Rules for Water-Cooled Chillers)
-    2. International EPD System GPI v5.0.1 / ISO 21930 / EN 15804+A2
-    Evaluates 100% real extracted and user data with zero hardcoded values.
-    """
-    rules = load_pcr_rules()
-    data = payload.get("extracted_data", payload) if isinstance(payload, dict) else {}
-    if not isinstance(data, dict):
-        data = {}
+    """Step 4: `input` rules plus the calculation prerequisites. Critical failures block calculation;
+    critical data that is still missing is reported as required before publishing."""
+    payload = payload or {}
+    data = _extracted(payload)
+    pid = _product_id(payload, data)
+    canonical = build_payload(data, payload.get("report_details"), product_id=pid)
+    report = evaluate_phase(canonical, pid, "input", block_on_missing=False,
+                            prerequisites=calculation_prerequisites(data))
+    report["overall_pass"] = report["passed"]
+    return report
 
-    bom = data.get("bom", []) or []
-    total_mass = sum(safe_float(item.get("mass")) for item in bom)
-    
-    # ─── PCR CHECKS (UL 10010-4) ───
-    pcr_checks: List[Dict[str, Any]] = []
 
-    # Check 1: BOM Declaration
-    bom_has_items = len(bom) > 0 and total_mass > 0
-    pcr_checks.append({
-        "id": "pcr_bom",
-        "standard": "PCR",
-        "rule": "Material Composition Declared (BOM)",
-        "section": "UL 10010-4 §2.7 & EN 15804+A2 §6.3.1",
-        "passed": bom_has_items,
-        "critical": True,
-        "message": (
-            f"{len(bom)} materials declared in BOM with verified cumulative mass ({total_mass:,.1f} kg)"
-            if bom_has_items else
-            "No BOM components declared — upload equipment specification or add components in User Review"
-        )
-    })
+def evaluate_results_compliance(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Step 7: `results` rules on the calculation output. Critical failures or missing results block export."""
+    payload = payload or {}
+    data = _extracted(payload)
+    pid = _product_id(payload, data)
+    by_method = results_by_method_from(payload.get("results"), payload.get("methodology"),
+                                       payload.get("results_by_method"))
+    canonical = build_payload(data, payload.get("report_details"), by_method, product_id=pid)
+    return evaluate_phase(canonical, pid, "results", block_on_missing=True)
 
-    # Check 2: Functional Unit & RSL
-    proj_info = data.get("project_info", {}) or {}
-    op_info = data.get("operational", {}) or {}
-    fu = proj_info.get("functional_unit") or "1 ton chilling capacity"
-    rsl = safe_float(proj_info.get("lifespan_years") or op_info.get("lifespan_years"), 25.0)
-    pcr_checks.append({
-        "id": "pcr_functional_unit",
-        "standard": "PCR",
-        "rule": "Functional Unit & Reference Service Life (RSL)",
-        "section": "UL 10010-4 §3.1 & Table 4",
-        "passed": bool(rsl > 0),
-        "critical": True,
-        "message": f"Functional unit declared as '{fu}' over {rsl:.0f} years reference service life (RSL)"
-    })
 
-    # Check 3: Transport Legs (A2)
-    transport_legs = data.get("transport", []) or data.get("logistics", []) or []
-    pcr_checks.append({
-        "id": "pcr_transport",
-        "standard": "PCR",
-        "rule": "Inbound Freight Logistics (Module A2)",
-        "section": "UL 10010-4 Table 5",
-        "passed": True,
-        "critical": False,
-        "message": (
-            f"{len(transport_legs)} inbound freight leg(s) configured with verified transport distances"
-            if len(transport_legs) > 0 else
-            "Default applied per UL 10010-4 Table 2: 500 km heavy lorry freight (>32 metric ton)"
-        )
-    })
+def html_to_text(html: str) -> str:
+    text = re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", html or "")
+    text = re.sub(r"(?s)<[^>]+>", " ", text)
+    return re.sub(r"\s+", " ", html_lib.unescape(text)).strip()
 
-    # Check 4: Manufacturing Utilities (A3)
-    mfg = data.get("manufacturing", {}) or data.get("mfg", {}) or {}
-    elec_kwh = safe_float(mfg.get("annual_facility_kwh") or mfg.get("electricity_kwh"))
-    gas_mj = safe_float(mfg.get("natural_gas_mj") or mfg.get("gas_mj"))
-    water_m3 = safe_float(mfg.get("water_m3"))
-    mfg_has_energy = elec_kwh > 0 or gas_mj > 0
-    pcr_checks.append({
-        "id": "pcr_mfg_energy",
-        "standard": "PCR",
-        "rule": "Plant Utility Energy & Submetering (Module A3)",
-        "section": "UL 10010-4 §4.2",
-        "passed": mfg_has_energy,
-        "critical": True,
-        "message": (
-            f"Manufacturing utility consumption declared: {elec_kwh:,.1f} kWh electricity, {gas_mj:,.1f} MJ gas, {water_m3:,.1f} m³ water"
-            if mfg_has_energy else
-            "Plant utility consumption missing — specify annual manufacturing electricity (kWh) or natural gas (MJ)"
-        )
-    })
 
-    # Check 5: Refrigerant Specifications (B1/B2)
-    ref_type = op_info.get("refrigerant_type") or op_info.get("refrigerant") or "R134a"
-    ref_charge = safe_float(op_info.get("refrigerant_charge_kg"))
-    leak_rate = safe_float(op_info.get("annual_leak_rate_percent"), 2.0)
-    ref_valid = ref_charge > 0 and bool(ref_type)
-    pcr_checks.append({
-        "id": "pcr_refrigerant",
-        "standard": "PCR",
-        "rule": "Refrigerant Charge & Leakage Rate (Modules B1/B2)",
-        "section": "UL 10010-4 §3.3 & Table 8",
-        "passed": ref_valid,
-        "critical": True,
-        "message": (
-            f"Refrigerant characterized: {ref_charge:,.1f} kg of {ref_type} (annual leakage model: {leak_rate:.1f}%/yr per UL 10010-4)"
-            if ref_valid else
-            "Refrigerant charge mass missing — declare initial factory charge in kg"
-        )
-    })
+# Rendered report sections (epd_report/sections) -> the section names PCR rules use.
+REPORT_SECTION_NAMES = {
+    "cover": ["cover_page"],
+    "general": ["programme_information", "product_information", "pcr_and_verification"],
+    "methodology": ["lca_information"],
+    "results": ["environmental_performance"],
+    "interpretation": ["interpretation"],
+    "references": ["references"],
+}
 
-    # Check 6: Operational Energy Efficiency (B6)
-    kw_per_ton = safe_float(op_info.get("efficiency_kw_per_ton"))
-    capacity_rt = safe_float(op_info.get("capacity_rt"))
-    b6_declared = kw_per_ton > 0 and capacity_rt > 0
-    pcr_checks.append({
-        "id": "pcr_b6_energy",
-        "standard": "PCR",
-        "rule": "Operational Energy Performance (Module B6)",
-        "section": "UL 10010-4 §3.3.1 & AHRI 550/590",
-        "passed": True,
-        "critical": False,
-        "message": (
-            f"Chiller operational rating: {capacity_rt:.0f} RT @ {kw_per_ton:.4f} kW/ton full-load efficiency"
-            if b6_declared else
-            "Operational load point not provided; standard AHRI 550/590 part-load model will be used"
-        )
-    })
 
-    # Check 7: Module D Circularity
-    circ = data.get("circularity_d", {}) or data.get("circularity", {}) or {}
-    rec_rate = safe_float(circ.get("overall_recovery_rate_percent"))
-    pcr_checks.append({
-        "id": "pcr_module_d",
-        "standard": "PCR",
-        "rule": "Module D Net Recycling & Circularity Benefits",
-        "section": "EN 15804+A2 Annex A & UL 10010-4 §5.3",
-        "passed": True,
-        "critical": False,
-        "message": (
-            f"Net circularity recovery rate specified at {rec_rate:.1f}%"
-            if rec_rate > 0 else
-            "Module D declared as MND (Module Not Declared) per UL 10010-4 baseline"
-        )
-    })
+def document_from_html(html: str) -> Dict[str, Any]:
+    """{"text": full text, "sections": {rule section name: text}} from the rendered report HTML."""
+    sections: Dict[str, str] = {}
+    starts = list(re.finditer(r'<section[^>]*\bid="sec-([\w-]+)"', html or ""))
+    for i, m in enumerate(starts):
+        end = starts[i + 1].start() if i + 1 < len(starts) else len(html)
+        text = html_to_text(html[m.start():end])
+        for name in REPORT_SECTION_NAMES.get(m.group(1), []):
+            sections[name] = (sections.get(name, "") + " " + text).strip()
+    return {"text": html_to_text(html), "sections": sections}
 
-    # ─── GPI CHECKS (ISO 21930 / EN 15804+A2 / GPI 5.0.1) ───
-    gpi_checks: List[Dict[str, Any]] = []
 
-    # Check 8: Cut-off Criteria
-    covered_mass = sum(
-        safe_float(item.get("mass"))
-        for item in bom
-        if item.get("provider_id") or item.get("ecoinvent_id") or item.get("gwpFactor")
-    )
-    cutoff_pct = (covered_mass / total_mass * 100.0) if total_mass > 0 else (100.0 if not bom else 0.0)
-    cutoff_passed = cutoff_pct >= 95.0 or len(bom) == 0
-    gpi_checks.append({
-        "id": "gpi_cutoff",
-        "standard": "GPI",
-        "rule": "Cut-off Criteria Compliance (≥ 95% Mass Coverage)",
-        "section": "GPI v5.0.1 §4.3 & ISO 21930 §7.1.8",
-        "passed": cutoff_passed,
-        "critical": True,
-        "message": (
-            f"Material coverage: {cutoff_pct:.1f}% of product mass mapped to verified background datasets (Cut-off rule satisfied)"
-            if total_mass > 0 else
-            "Awaiting BOM components to evaluate cut-off criteria"
-        )
-    })
+def evaluate_publication(extracted_data: Dict[str, Any], report_details: Dict[str, Any],
+                         results_by_method: Dict[str, Any], html: str) -> Dict[str, Any]:
+    """Step 8: `document` rules on the rendered EPD, plus the input and results gates enforced on the
+    final data. Every critical failure or missing item blocks publication."""
+    data = extracted_data or {}
+    pid = (data.get("project_info") or {}).get("product_category")
+    canonical = build_payload(data, report_details, results_by_method,
+                              document=document_from_html(html), product_id=pid)
+    document = evaluate_phase(canonical, pid, "document", block_on_missing=True)
+    inputs = evaluate_phase(canonical, pid, "input", block_on_missing=True)
+    results = evaluate_phase(canonical, pid, "results", block_on_missing=True)
+    blocking = sum(r["summary"]["blocking"] for r in (document, inputs, results))
+    return {"document": document, "input": inputs, "results": results, "blocking": blocking, "passed": blocking == 0}
 
-    # Check 9: Primary Data Share
-    primary_mass = sum(
-        safe_float(item.get("mass"))
-        for item in bom
-        if item.get("supplier") or item.get("primary", False)
-    )
-    primary_pct = (primary_mass / total_mass * 100.0) if total_mass > 0 else 0.0
-    gpi_checks.append({
-        "id": "gpi_primary_share",
-        "standard": "GPI",
-        "rule": "Primary Supplier Data Share",
-        "section": "GPI v5.0.1 §4.5 & EN 15804+A2",
-        "passed": True,
-        "critical": False,
-        "message": (
-            f"Tier-1 primary manufacturer/supplier data covers {primary_pct:.1f}% of product mass ({primary_mass:,.1f} kg verified)"
-            if primary_mass > 0 else
-            "Secondary generic ecoinvent datasets applied for upstream supply chain"
-        )
-    })
 
-    # Check 10: LCI Database Proxy
-    gpi_checks.append({
-        "id": "gpi_database_proxy",
-        "standard": "GPI",
-        "rule": "LCI Background Database Validity",
-        "section": "GPI v5.0.1 §4.6 & ISO 14044 §4.3.4",
-        "passed": True,
-        "critical": True,
-        "message": "ecoinvent v3.12 (Cut-off cumulative system model, ISO 14040/44 verified reference period)"
-    })
+def publication_warnings(check: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Publication check -> report warnings: blocking items are errors (the PDF becomes a draft),
+    other failed or missing rules are warnings."""
+    out = []
+    for phase in ("input", "results", "document"):
+        for c in check[phase]["checks"]:
+            if c["status"] not in ("fail", "missing"):
+                continue
+            src = c.get("source") or {}
+            where = f" ({c['ruleset_id']} §{src['section']})" if src.get("section") else f" ({c['ruleset_id']})"
+            out.append({
+                "level": "error" if c["blocking"] else "warning",
+                "code": f"pcr.{c['id']}",
+                "path": f"pcr/{phase}",
+                "message": f"{c['title']}: {c['message']}{where}",
+            })
+    return out
 
-    # Check 11: System Boundary Harmonization
-    gpi_checks.append({
-        "id": "gpi_boundary",
-        "standard": "GPI",
-        "rule": "Cradle-to-Grave System Boundary Harmonization",
-        "section": "ISO 21930:2017 §5.2 & UL 10010-4 §5.1",
-        "passed": True,
-        "critical": True,
-        "message": "Modules A1–A5, B1–B7, C1–C4 + Module D fully accounted for in system boundary matrix"
-    })
 
-    # Check 12: Allocation Methodology
-    gpi_checks.append({
-        "id": "gpi_allocation",
-        "standard": "GPI",
-        "rule": "Allocation Hierarchy & Recycled Content",
-        "section": "GPI v5.0.1 §5.4 & ISO 14044 §4.3.4",
-        "passed": True,
-        "critical": True,
-        "message": "Cut-off allocation applied (recycled materials enter burden-free, scrap credits declared in Module D)"
-    })
-
-    all_checks = pcr_checks + gpi_checks
-    pcr_pass = all(c["passed"] or not c["critical"] for c in pcr_checks)
-    gpi_pass = all(c["passed"] or not c["critical"] for c in gpi_checks)
-    overall_pass = all(c["passed"] or not c["critical"] for c in all_checks)
-
-    # Optional dynamic evaluation against pcr_gpi_indicator_rules table
-    rule_matrix_audit = None
-    try:
-        from app.database import SessionLocal
-        from app.engines.pcr_rules_engine import PcrRulesEngine
-        db = SessionLocal()
-        try:
-            pcr_engine = PcrRulesEngine(db)
-            rule_id = payload.get("rule_id", "rule-ul10010-4-traci")
-            results_payload = payload.get("results", payload.get("epd_results", {}))
-            rule_matrix_audit = pcr_engine.evaluate_compliance(
-                rule_id=rule_id,
-                results_payload=results_payload,
-                bom_items=bom
-            )
-        finally:
-            db.close()
-    except Exception:
-        pass
-
-    return {
-        "pcr_checks": pcr_checks,
-        "gpi_checks": gpi_checks,
-        "checks": all_checks,
-        "pcr_pass": pcr_pass,
-        "gpi_pass": gpi_pass,
-        "overall_pass": overall_pass,
-        "rule_matrix_audit": rule_matrix_audit,
-        "run_at": datetime.now().isoformat(),
-        "summary": {
-            "total_checks": len(all_checks),
-            "passed_checks": sum(1 for c in all_checks if c["passed"]),
-            "critical_fails": sum(1 for c in all_checks if not c["passed"] and c["critical"]),
-            "warnings": sum(1 for c in all_checks if not c["passed"] and not c["critical"]),
-            "product_mass_kg": round(total_mass, 2),
-            "cutoff_coverage_pct": round(cutoff_pct, 2)
-        }
-    }
-
-# Backward compatibility alias
 def validate_chiller_inputs(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Backward-compatible wrapper used by the legacy /api/epd/calculate endpoint."""
     res = validate_epd_compliance(data)
-    errors = [c["message"] for c in res["checks"] if not c["passed"] and c["critical"]]
-    warnings = [c["message"] for c in res["checks"] if not c["passed"] and not c["critical"]]
+    errors = [c["message"] for c in res["checks"] if c["blocking"]]
+    warnings = [c["message"] for c in res["checks"] if c["status"] in ("fail", "missing") and not c["blocking"]]
     return {
         "valid": len(errors) == 0,
         "errors": errors,
         "warnings": warnings,
-        "pcr_ref": "UL 10010-4 Part B v2.0 (2018)",
+        "pcr_ref": res["pcr_label"],
         "total_modules_count": 16,
         "details": res
     }

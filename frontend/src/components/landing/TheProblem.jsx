@@ -43,7 +43,7 @@ export default function TheProblem() {
           </p>
         </div>
 
-        <div className="store-utility-grid">
+        <div className="store-utility-grid store-utility-grid--three">
           {problems.map((prob, idx) => (
             <div
               key={idx}

@@ -10,7 +10,7 @@ product categories, templates and text.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic import ValidationError
 
@@ -60,16 +60,35 @@ def _options(options: Union[None, Dict[str, Any], ReportOptions]) -> ReportOptio
     return ReportOptions.model_validate(options or {})
 
 
-def preview_epd_report(data, options=None) -> ReportResult:
+ExtraChecks = Callable[[str], List[Dict[str, Any]]]
+
+
+def _apply_extra_checks(doc: Document, opts: ReportOptions, extra_checks: Optional[ExtraChecks]) -> None:
+    """Runs checks that need the rendered text (e.g. PCR document rules); their errors make the
+    document a draft, like the built-in validation errors."""
+    if not extra_checks:
+        return
+    extra = extra_checks(render_html(doc, mode="preview"))
+    doc.warnings = doc.warnings + extra
+    if any(w.get("level") == "error" for w in extra) and opts.draft_watermark_on_errors:
+        doc.draft = True
+
+
+def preview_epd_report(data, options=None, *, extra_checks: Optional[ExtraChecks] = None) -> ReportResult:
     """Builds the document and preview HTML (no PDF). Used by the live preview."""
-    doc = build_document(parse_input(data), _options(options))
+    opts = _options(options)
+    doc = build_document(parse_input(data), opts)
+    _apply_extra_checks(doc, opts, extra_checks)
     return ReportResult(html=render_html(doc, mode="preview"), warnings=doc.warnings, document=doc,
                         filename=doc.filename, meta=doc.meta)
 
 
-def generate_epd_report(data, options=None, *, pdf: bool = True) -> ReportResult:
+def generate_epd_report(data, options=None, *, pdf: bool = True,
+                        extra_checks: Optional[ExtraChecks] = None) -> ReportResult:
     """Validates input, builds the document and renders print HTML + PDF."""
-    doc = build_document(parse_input(data), _options(options))
+    opts = _options(options)
+    doc = build_document(parse_input(data), opts)
+    _apply_extra_checks(doc, opts, extra_checks)
     html = render_html(doc, mode="print")
     pdf_bytes = None
     if pdf:

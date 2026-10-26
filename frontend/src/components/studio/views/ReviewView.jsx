@@ -10,6 +10,7 @@ import {
   EditIcon, 
   AlertIcon 
 } from '../Icons';
+import { ProviderLine, ProviderList, bomProvider, stageProvider } from '../providerMatch';
 
 export default function ReviewView() {
   const { 
@@ -24,8 +25,10 @@ export default function ReviewView() {
     updateEndOfLife,
     updateCircularityD,
     results,
-    lca
+    lca,
+    productProfile,
   } = useStudio();
+  const isChiller = productProfile?.isChiller !== false;
 
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'a1_a3' | 'a4_a5' | 'b1_b7' | 'c1_c4' | 'd'
 
@@ -38,6 +41,7 @@ export default function ReviewView() {
   const operational = extractedData?.operational || {};
   const end_of_life = extractedData?.end_of_life || {};
   const circularity_d = extractedData?.circularity_d || {};
+  const maintenance_b2 = extractedData?.maintenance_b2 || {};
 
   const hasData = (uploadedFiles && uploadedFiles.some(f => f.status === 'done')) || bom.length > 0;
 
@@ -60,6 +64,7 @@ export default function ReviewView() {
             >
               Go to Upload
             </button>
+            {isChiller && (
             <button
               type="button"
               className="btn btn-secondary"
@@ -69,6 +74,7 @@ export default function ReviewView() {
             >
               Load Sample 500RT Chiller
             </button>
+            )}
           </div>
         </div>
       </div>
@@ -92,6 +98,8 @@ export default function ReviewView() {
   const annualFactoryKwh = Number(manufacturing.annual_facility_kwh) || 0;
   const ratedEfficiency = Number(operational.efficiency_kw_per_ton) || 0;
   const capacityRt = Number(operational.capacity_rt) || 0;
+  const fuQuantity = isChiller ? Math.max(1, capacityRt) : (Number(extractedData?.project_info?.fu_quantity) || 1);
+  const fuLabel = isChiller ? 'ton chilling capacity' : (productProfile?.fuUnit || 'unit');
   // Only compute operational kWh when real capacity + efficiency data exists
   const annualOperationalKwh = (capacityRt > 0 && ratedEfficiency > 0)
     ? Math.round(capacityRt * ratedEfficiency * (Number(operational.annual_operating_hours) || 0))
@@ -106,7 +114,7 @@ export default function ReviewView() {
     { id: 'all', label: 'All Modules (A1–D)', badge: 'Full Lifecycle' },
     { id: 'a1_a3', label: 'A1–A3 Production', badge: 'Upstream & Factory' },
     { id: 'a4_a5', label: 'A4–A5 Construction', badge: 'Delivery & Rigging' },
-    { id: 'b1_b7', label: 'B1–B7 Operational Use', badge: 'Refrigerant & Power' },
+    { id: 'b1_b7', label: 'B1–B7 Operational Use', badge: isChiller ? 'Refrigerant & Power' : 'Use Stage' },
     { id: 'c1_c4', label: 'C1–C4 End of Life', badge: 'Decommissioning' },
     { id: 'd', label: 'Module D Circularity', badge: 'Avoided Burdens' },
   ];
@@ -121,7 +129,7 @@ export default function ReviewView() {
             Extracted Lifecycle Inventory (Modules A–D)
           </h1>
           <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
-            Mandatory ISO 14025 & EN 15804+A2 data coverage normalized per 1 ton chilling capacity over 25-yr RSL.
+            {productProfile?.name}: data coverage for {productProfile?.pcrLabel}, normalized per {productProfile?.functionalUnit}.
           </p>
         </div>
 
@@ -158,7 +166,7 @@ export default function ReviewView() {
             {totalMass.toLocaleString()} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary, #86868b)' }}>kg</span>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--text-muted, #86868b)', marginTop: '4px' }}>
-            {(totalMass / Math.max(1, capacityRt)).toFixed(2)} kg / ton chilling capacity
+            {(totalMass / fuQuantity).toFixed(2)} kg / {fuLabel}
           </div>
         </div>
 
@@ -328,8 +336,8 @@ export default function ReviewView() {
                             {item.module || item.mod || 'A1'}
                           </span>
                         </td>
-                        <td style={{ fontSize: '11px', color: '#6A584F', padding: '10px 12px' }}>
-                          {item.ecoinvent_id || item.ei || item.dataset || 'ecoinvent_verified_proxy'}
+                        <td style={{ padding: '10px 12px', maxWidth: '320px' }}>
+                          <ProviderLine provider={bomProvider(item)} />
                         </td>
                         <td style={{ fontSize: '12px', color: '#8A7A72', padding: '10px 12px' }}>
                           {item.supplier || 'Standard Supply Chain'}
@@ -362,6 +370,7 @@ export default function ReviewView() {
                       <tr>
                         <th style={{ textAlign: 'left', padding: '8px' }}>Transport Mode</th>
                         <th style={{ textAlign: 'right', padding: '8px' }}>Distance</th>
+                        <th style={{ textAlign: 'left', padding: '8px' }}>Dataset</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -371,6 +380,9 @@ export default function ReviewView() {
                           <td style={{ padding: '8px', textAlign: 'right', fontWeight: 600 }}>
                             {leg.dist || leg.distance ? `${leg.dist || leg.distance} km` : '—'}
                           </td>
+                          <td style={{ padding: '8px', maxWidth: '220px' }}>
+                            <ProviderLine provider={stageProvider(leg, 'provider_id')} />
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -378,7 +390,7 @@ export default function ReviewView() {
                 </div>
               ) : (
                 <div style={{ padding: '16px', backgroundColor: '#f5f5f7', borderRadius: '8px', fontSize: '12px', color: 'var(--text-secondary, #86868b)' }}>
-                  Defaulting to UL 10010-4 regional standard: <strong>500 km heavy lorry</strong> transport to assembly plant.
+                  No freight manifest uploaded: inbound transport is taken from each BOM line's supplier distance (lorry, regional ecoinvent dataset).
                 </div>
               )}
             </div>
@@ -420,6 +432,11 @@ export default function ReviewView() {
                   />
                 </div>
               </div>
+              <ProviderList rows={[
+                { label: 'Grid electricity', provider: stageProvider(manufacturing, 'electricity_provider_id') },
+                { label: 'Natural gas / heat', provider: stageProvider(manufacturing, 'gas_provider_id') },
+                { label: 'Process water', provider: stageProvider(manufacturing, 'water_provider_id') },
+              ]} />
             </div>
           </div>
         </div>
@@ -455,10 +472,10 @@ export default function ReviewView() {
                     placeholder="500"
                   />
                 </div>
-                <div style={{ padding: '8px 12px', backgroundColor: '#f5f5f7', borderRadius: '8px', fontSize: '12px', color: 'var(--text-secondary, #86868b)' }}>
-                  Standard emission factor: <strong>0.088 kg CO₂e / t·km</strong> (ecoinvent v3.12 market for transport, freight, lorry &gt;32 metric ton, EURO6).
-                </div>
               </div>
+              <ProviderList rows={[
+                { label: 'Delivery transport', provider: stageProvider(installation, 'outbound_provider_id') },
+              ]} />
             </div>
 
             {/* Module A5: Installation & Rigging */}
@@ -477,6 +494,7 @@ export default function ReviewView() {
                     placeholder="350"
                   />
                 </div>
+                {isChiller && (
                 <div className="form-group">
                   <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Commissioning Refrigerant Loss (kg)</label>
                   <input
@@ -488,6 +506,7 @@ export default function ReviewView() {
                     placeholder="0.5"
                   />
                 </div>
+                )}
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Rigging Crane Mobile Diesel (liters)</label>
                   <input
@@ -499,13 +518,32 @@ export default function ReviewView() {
                   />
                 </div>
               </div>
+              <ProviderList rows={[
+                { label: 'Installation energy', provider: stageProvider(installation, 'installation_energy_provider_id') },
+                { label: 'Crane diesel', provider: stageProvider(installation, 'consumable_provider_id') },
+              ]} />
             </div>
           </div>
         </div>
       )}
 
       {/* ── TAB: MODULE B1–B7 (Operational Use Stage) ── */}
-      {(activeTab === 'all' || activeTab === 'b1_b7') && (
+      {(activeTab === 'all' || activeTab === 'b1_b7') && !isChiller && (
+        <div className="apple-card" style={{ marginBottom: '24px', padding: '16px 20px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>B1–B7 Use Stage · {productProfile?.name}</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '4px' }}>
+            {productProfile?.useStage?.b6 === 'none'
+              ? 'This product uses no operational energy or water in service; B1–B7 cover only declared maintenance, repair, replacement and refurbishment.'
+              : 'Enter annual operational energy and water (e.g. cleaning), maintenance consumables and the reference service life in Review & Mapping.'}
+          </div>
+          <ProviderList rows={[
+            { label: 'B6 operational energy', provider: stageProvider(operational, 'energy_provider_id') },
+            { label: 'B7 operational water', provider: stageProvider(operational, 'water_provider_id') },
+          ]} />
+        </div>
+      )}
+
+      {(activeTab === 'all' || activeTab === 'b1_b7') && isChiller && (
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
             <span style={{ backgroundColor: 'rgba(31, 122, 76, 0.12)', color: 'var(--accent, #1f7a4c)', padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
@@ -639,6 +677,11 @@ export default function ReviewView() {
                 </div>
               </div>
             </div>
+            <ProviderList rows={[
+              { label: 'B2 maintenance consumable', provider: stageProvider(maintenance_b2, 'provider_id') },
+              { label: 'B6 operational energy', provider: stageProvider(operational, 'energy_provider_id') },
+              { label: 'B7 cooling tower water', provider: stageProvider(operational, 'water_provider_id') },
+            ]} />
           </div>
         </div>
       )}
@@ -711,6 +754,13 @@ export default function ReviewView() {
                 />
               </div>
             </div>
+            <ProviderList rows={[
+              { label: 'C1 deconstruction', provider: stageProvider(end_of_life, 'deconstruction_provider_id') },
+              { label: 'C2 waste transport', provider: stageProvider(end_of_life, 'waste_transport_provider_id') },
+              { label: 'C3 recycling', provider: stageProvider(end_of_life, 'recycling_process_provider_id') },
+              { label: 'C3 incineration', provider: stageProvider(end_of_life, 'incineration_process_provider_id') },
+              { label: 'C4 landfill', provider: stageProvider(end_of_life, 'landfill_process_provider_id') },
+            ]} />
           </div>
         </div>
       )}
@@ -779,6 +829,12 @@ export default function ReviewView() {
                 </div>
               </div>
             </div>
+            {(circularity_d.virgin_material_provider_id || circularity_d.recycled_process_provider_id) && (
+              <ProviderList rows={[
+                { label: 'Displaced virgin material', provider: stageProvider(circularity_d, 'virgin_material_provider_id') },
+                { label: 'Secondary (recycled) material', provider: stageProvider(circularity_d, 'recycled_process_provider_id') },
+              ]} />
+            )}
           </div>
         </div>
       )}

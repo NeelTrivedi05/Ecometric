@@ -1,19 +1,30 @@
 import React from 'react';
 
 /* Decorative landscape behind the hero: rolling hills, a small grove of trees
-   and wind turbines. Purely visual — hidden from assistive technology. */
+   and taller background trees. Purely visual — hidden from assistive technology. */
 
-function Turbine({ x, y, scale = 1, delay = '0s' }) {
+function Pine({ x, y, scale = 1, delay = '0s' }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`}>
-      <path d="M-2.2 0 L-0.9 -92 L0.9 -92 L2.2 0 Z" fill="currentColor" />
-      <g transform="translate(0 -92)">
-        <g className="eco-turbine-rotor" style={{ animationDelay: delay }}>
-          <path d="M0 0 C 3 -14, 2 -34, 0 -46 C -2 -34, -3 -14, 0 0 Z" fill="currentColor" />
-          <path d="M0 0 C 3 -14, 2 -34, 0 -46 C -2 -34, -3 -14, 0 0 Z" fill="currentColor" transform="rotate(120)" />
-          <path d="M0 0 C 3 -14, 2 -34, 0 -46 C -2 -34, -3 -14, 0 0 Z" fill="currentColor" transform="rotate(240)" />
-          <circle r="3.2" fill="currentColor" />
-        </g>
+      <g className="eco-tree-sway" style={{ animationDelay: delay }}>
+        <rect x="-3" y="-18" width="6" height="18" rx="1" fill="currentColor" />
+        <path d="M0 -112 L22 -72 L12 -72 L32 -42 L18 -42 L40 -14 L-40 -14 L-18 -42 L-32 -42 L-12 -72 L-22 -72 Z" fill="currentColor" />
+      </g>
+    </g>
+  );
+}
+
+function Broadleaf({ x, y, scale = 1, delay = '0s' }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`}>
+      <g className="eco-tree-sway" style={{ animationDelay: delay }}>
+        <path d="M-3 0 L-2.4 -46 L2.4 -46 L3 0 Z" fill="currentColor" />
+        <path d="M0 -38 L-12 -54 M0 -44 L10 -60" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+        <circle cy="-72" r="26" fill="currentColor" />
+        <circle cx="-20" cy="-58" r="18" fill="currentColor" />
+        <circle cx="20" cy="-60" r="19" fill="currentColor" />
+        <circle cx="-8" cy="-92" r="16" fill="currentColor" />
+        <circle cx="12" cy="-88" r="15" fill="currentColor" />
       </g>
     </g>
   );
@@ -55,11 +66,13 @@ export function HeroBackdrop() {
       <svg className="eco-hills" viewBox="0 0 1440 520" preserveAspectRatio="xMidYMax slice">
         <path className="eco-hill-far" d="M0 300 C 180 240, 360 250, 540 285 C 720 320, 900 230, 1100 240 C 1260 248, 1360 270, 1440 262 L1440 520 L0 520 Z" />
 
-        <g className="eco-turbine">
-          <Turbine x={150} y={262} scale={0.9} />
-          <Turbine x={250} y={256} scale={0.7} delay="-2s" />
-          <Turbine x={1210} y={252} scale={0.95} delay="-1s" />
-          <Turbine x={1320} y={262} scale={0.72} delay="-3s" />
+        <g className="eco-tree-far">
+          <Pine x={150} y={268} scale={1} />
+          <Broadleaf x={205} y={266} scale={0.8} delay="-2s" />
+          <Pine x={255} y={262} scale={0.72} delay="-4s" />
+          <Broadleaf x={1205} y={258} scale={0.95} delay="-1s" />
+          <Pine x={1265} y={260} scale={0.82} delay="-3s" />
+          <Pine x={1325} y={268} scale={0.68} delay="-5s" />
         </g>
 
         <path className="eco-hill-mid" d="M0 360 C 200 320, 380 330, 600 370 C 800 405, 1000 330, 1220 335 C 1330 338, 1400 350, 1440 346 L1440 520 L0 520 Z" />
@@ -84,10 +97,12 @@ export function BannerBackdrop() {
     <div className="eco-backdrop eco-backdrop-banner" aria-hidden="true">
       <svg className="eco-hills" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax slice">
         <path className="eco-hill-far" d="M0 200 C 220 150, 420 160, 640 190 C 860 220, 1060 150, 1260 158 C 1350 162, 1410 172, 1440 170 L1440 320 L0 320 Z" />
-        <g className="eco-turbine">
-          <Turbine x={1180} y={160} scale={0.75} />
-          <Turbine x={1270} y={164} scale={0.58} delay="-2s" />
-          <Turbine x={180} y={170} scale={0.62} delay="-1s" />
+        <g className="eco-tree-far">
+          <Broadleaf x={1180} y={166} scale={0.8} />
+          <Pine x={1240} y={168} scale={0.7} delay="-2s" />
+          <Pine x={1290} y={170} scale={0.55} delay="-4s" />
+          <Pine x={180} y={176} scale={0.66} delay="-1s" />
+          <Broadleaf x={230} y={178} scale={0.55} delay="-3s" />
         </g>
         <path className="eco-hill-near" d="M0 260 C 260 225, 520 240, 760 262 C 1000 284, 1220 236, 1440 246 L1440 320 L0 320 Z" />
       </svg>

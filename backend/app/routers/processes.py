@@ -171,6 +171,17 @@ def evaluate_pcr_compliance(
         raise HTTPException(status_code=500, detail=f"PCR evaluation failed: {str(e)}")
 
 
+@router.post("/pcr/results-audit")
+def pcr_results_audit(payload: Dict[str, Any] = Body(default_factory=dict)):
+    """
+    Studio step 7: evaluates the product's PCR `results` rules (data/pcr_rulesets) against the
+    calculation output. Body: {extracted_data, report_details, product_category, methodology,
+    results | results_by_method}.
+    """
+    from app.engines.pcr_validation import evaluate_results_compliance
+    return evaluate_results_compliance(payload)
+
+
 # =========================================================================
 # 3. Process Nodes & Entanglement Graph Endpoints
 # =========================================================================

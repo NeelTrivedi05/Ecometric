@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
+import { useStudio, ALL_METHODOLOGIES, getMethodology, waitUntil } from '../../../context/StudioContext';
 import { MethodologyIcon, CheckIcon, ChevronRightIcon, InfoIcon, RefreshCwIcon, SearchIcon, CloseIcon } from '../Icons';
 
 const GROUPS = [
@@ -19,6 +19,9 @@ const GROUPS = [
 const COMMONLY_USED_IDS = ['traci_v2_1', 'ef_v3_1', 'ipcc_2021'];
 const INITIAL_VISIBLE = COMMONLY_USED_IDS.length; // 3
 const BATCH_SIZE = 12;
+const CANCELLED = Symbol('cancelled');
+// Each calculation's progress bar runs for one of these, picked at random.
+const CALC_DURATIONS_MS = [36000, 42000, 47000, 51000];
 
 export default function MethodologyView() {
   const {
@@ -27,6 +30,7 @@ export default function MethodologyView() {
     runCalculation,
     isLoading,
     setActivePhase,
+    setProgressTask,
   } = useStudio();
 
   // Search & filter states
@@ -116,7 +120,32 @@ export default function MethodologyView() {
   }, [totalFiltered]);
 
   const handleApplyAndCalculate = async () => {
-    await runCalculation();
+    // Keep the progress bar up for one of the preset durations, even if the backend answers sooner.
+    const durationMs = CALC_DURATIONS_MS[Math.floor(Math.random() * CALC_DURATIONS_MS.length)];
+    const startedAt = Date.now();
+    let cancel;
+    const cancelled = new Promise(resolve => { cancel = () => resolve(CANCELLED); });
+    setProgressTask({
+      kind: 'calculation',
+      title: 'Running LCA calculation',
+      subtitle: activeMethodDetails?.name || 'Selected methodology',
+      durationMs,
+      startedAt,
+      onCancel: () => {
+        setProgressTask(null);
+        cancel();
+      },
+    });
+    const finished = (async () => {
+      const succeeded = await runCalculation();
+      // A failed calculation shows its error right away instead of waiting out the bar.
+      if (succeeded) await waitUntil(startedAt + durationMs);
+    })();
+    const outcome = await Promise.race([finished, cancelled]);
+    // Cancel only closes the bar: the calculation keeps running and its results are still saved,
+    // but the user stays on this step.
+    if (outcome === CANCELLED) return;
+    setProgressTask(null);
     setActivePhase('results');
   };
 
