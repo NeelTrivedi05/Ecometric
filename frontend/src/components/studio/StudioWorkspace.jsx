@@ -4,6 +4,7 @@ import { useStudio } from '../../context/StudioContext';
 import StudioHeader from './StudioHeader';
 import StudioSidebar from './StudioSidebar';
 import ProjectsConsole from './ProjectsConsole';
+import ProgressOverlay from './ProgressOverlay';
 
 import UploadView from './views/UploadView';
 import ReviewView from './views/ReviewView';
@@ -88,6 +89,7 @@ export default function StudioWorkspace() {
     notification,
     isSidebarOpen,
     setIsSidebarOpen,
+    progressTask,
   } = useStudio();
 
   // If a projectId is in the URL, ensure that project is opened in the calculation workspace
@@ -199,6 +201,8 @@ export default function StudioWorkspace() {
           />
         )}
       </div>
+
+      <ProgressOverlay task={progressTask} />
 
       {/* Toast */}
       {notification && (

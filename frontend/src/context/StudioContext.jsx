@@ -8,6 +8,13 @@ import { ACCOUNTS_DATA, DEFAULT_ACCOUNT_ID } from '../data/accountsData';
 
 const API_BASE = '/api';
 
+// Minimum time the progress bar stays up for a PDF export, even when the server is faster.
+const PDF_EXPORT_MIN_MS = 28000;
+
+// Resolves once Date.now() reaches the given timestamp (immediately if already past).
+export const waitUntil = (timestamp) =>
+  new Promise(resolve => setTimeout(resolve, Math.max(0, timestamp - Date.now())));
+
 // Dataset fields of a BOM line, dropped when a renamed line has to be matched again
 const BOM_DATASET_KEYS = ['provider_id', 'ecoinvent_id', 'ecoinvent_row', 'dataset', 'reference_product_name',
   'reference_unit', 'ecoinvent_geography', 'ecoinvent_matched', 'match_method', 'match_query'];
@@ -286,6 +293,8 @@ export function StudioProvider({ children }) {
     }
   });
   const [isLoading, setIsLoading] = useState(false);
+  // { title, durationMs, startedAt } while the full-screen progress bar is shown.
+  const [progressTask, setProgressTask] = useState(null);
 
   const toggleSidebar = useCallback(() => setIsSidebarOpen(prev => !prev), []);
   const toggleSidebarCollapsed = useCallback(() => {
@@ -474,6 +483,7 @@ export function StudioProvider({ children }) {
   // from older requests that arrive later are ignored.
   const latestCalcRequestRef = useRef(0);
 
+  // Resolves to true/false for success/failure, or null when a newer run superseded this one.
   const runCalculation = useCallback(async (methodOverride, dataOverride) => {
     const requestId = ++latestCalcRequestRef.current;
     setIsLoading(true);
@@ -512,9 +522,10 @@ export function StudioProvider({ children }) {
       }
     }
 
-    if (requestId !== latestCalcRequestRef.current) return;
+    if (requestId !== latestCalcRequestRef.current) return null;
 
-    if (data?.epd_results && Object.keys(data.epd_results).length > 0) {
+    const succeeded = Boolean(data?.epd_results && Object.keys(data.epd_results).length > 0);
+    if (succeeded) {
       setResults(data);
       setResultsByMethod(prev => ({
         ...prev,
@@ -535,6 +546,7 @@ export function StudioProvider({ children }) {
       showNotif(message, 'Calculation Failed');
     }
     setIsLoading(false);
+    return succeeded;
   }, [extractedData, selectedMethodology, reportDetails, productCategory, showNotif]);
 
   // ─── PRODUCT SELECTION ───
@@ -1545,13 +1557,22 @@ export function StudioProvider({ children }) {
   }, [buildEpdReportRequest]);
 
   const downloadEpdReport = useCallback(async (selection, options, detailsOverride) => {
-    const res = await fetch(`${API_BASE}/epd-reports`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildEpdReportRequest(selection, options, detailsOverride)),
-    });
-    if (!res.ok) throw await epdReportError(res);
-    const blob = await res.blob();
+    const startedAt = Date.now();
+    setProgressTask({ title: 'Generating EPD PDF…', durationMs: PDF_EXPORT_MIN_MS, startedAt });
+    let res;
+    let blob;
+    try {
+      res = await fetch(`${API_BASE}/epd-reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildEpdReportRequest(selection, options, detailsOverride)),
+      });
+      if (!res.ok) throw await epdReportError(res);
+      blob = await res.blob();
+      await waitUntil(startedAt + PDF_EXPORT_MIN_MS);
+    } finally {
+      setProgressTask(null);
+    }
     const disp = res.headers.get('Content-Disposition') || '';
     const match = disp.match(/filename="?([^";]+)"?/i);
     const filename = (match && match[1]) || res.headers.get('X-EPD-Filename') || 'EPD.pdf';
@@ -1680,6 +1701,8 @@ export function StudioProvider({ children }) {
         setIsSidebarCollapsed,
         toggleSidebarCollapsed,
         isLoading,
+        progressTask,
+        setProgressTask,
         selectedPcrRule,
         setSelectedPcrRule,
         validationStale,
