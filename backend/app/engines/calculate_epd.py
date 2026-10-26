@@ -238,6 +238,19 @@ class MethodContext:
         )
         return None
 
+    def row_units(self) -> dict:
+        """{row_label: unit}, read from the EF keys ('<method> | <category> | <indicator> [<unit>]')."""
+        units = {}
+        for row, category, indicator in self.rows:
+            prefixes = (f"{self.method_label} | {category} | {indicator} [",
+                        f"{self.method_label} | {category} no LT | {indicator} no LT [")
+            for entry in self.ef_lookup.values():
+                key = next((k for k in entry.get("values", {}) if k.startswith(prefixes)), None)
+                if key:
+                    units[row] = key.rsplit(" [", 1)[1].rstrip("]")
+                    break
+        return units
+
     def ef_vector(self, provider_id: str, warnings: list) -> dict:
         """Returns {row_label: ef_value} for one provider across all indicator rows."""
         vec = {}
@@ -837,6 +850,7 @@ def calculate_epd(payload: dict, ef_lookup: dict, methodology_override: str = No
         "replacement_cycles": replacement_cycles,
         "total_bom_mass": total_bom_mass,
         "row_names": rows,
+        "row_units": ctx.row_units(),
         "mandatory_row_names": list(ctx.mandatory_row_names),
         "total_indicators_calculated": len(rows),
         "methodology_label": ctx.method_label,

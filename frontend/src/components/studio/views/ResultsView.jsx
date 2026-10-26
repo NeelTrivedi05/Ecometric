@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useStudio, ALL_METHODOLOGIES, getMethodology } from '../../../context/StudioContext';
 import { indicatorPassesFilter } from '../../../data/lciaMethodologies';
 import { ResultsIcon, ChevronRightIcon, CheckIcon, RefreshCwIcon, SearchIcon } from '../Icons';
@@ -18,6 +18,7 @@ export default function ResultsView() {
     productProfile,
     resultsMethodology,
     methodologyStale,
+    calculationError,
   } = useStudio();
 
   const [showFullBreakdown, setShowFullBreakdown] = useState(false);
@@ -30,11 +31,13 @@ export default function ResultsView() {
     { id: 'gpi', label: 'GPI Core',        desc: 'International EPD System primary page (6 indicators)' },
   ];
 
-  const [viewMode, setViewMode] = useState('pcr'); // 'pcr' | 'all'
+  // Open on every indicator the calculation returned for the selected methodology
+  const [viewMode, setViewMode] = useState('all'); // 'pcr' | 'all'
   const [displayedIndicators, setDisplayedIndicators] = useState([]);
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [isFlowModalOpen, setIsFlowModalOpen] = useState(false);
-  const [normMode, setNormMode] = useState('fu'); // 'fu' = per functional / declared unit | 'declared' = whole quantity in the BOM
+  // Default to the calculated totals, exactly as written to epd_results.csv / epd_results_exp.csv
+  const [normMode, setNormMode] = useState('declared'); // 'fu' = per functional / declared unit | 'declared' = whole quantity in the BOM
 
   // Number of functional units the BOM represents: chiller capacity in RT, otherwise the declared quantity (m², m, t ...)
   const isChiller = productProfile?.isChiller !== false;
@@ -45,21 +48,24 @@ export default function ResultsView() {
   const fuLabel = isChiller ? '1 ton chilling capacity' : `1 ${fuUnit}`;
   const declaredLabel = isChiller ? `${capacityRt} RT` : `${fuQuantity} ${fuUnit}`;
 
-  // Auto-run genuine characterization if results not calculated yet but BOM exists
+  // Auto-run genuine characterization once if results not calculated yet but BOM exists
+  // (once only, so a failing backend is not called in a loop; Recalculate retries)
+  const autoRunDone = useRef(false);
   useEffect(() => {
+    if (autoRunDone.current) return;
     if (!lca.isCalculated && !isLoading && extractedData?.bom && extractedData.bom.length > 0) {
+      autoRunDone.current = true;
       runCalculation();
     }
   }, [lca.isCalculated, isLoading, extractedData?.bom, runCalculation]);
 
-  // Strict 3-significant-figure scientific notation per SKILL.md (e.g. 3.30E-01)
+  // Same scientific notation as epd_results_exp.csv (e.g. 1.882e-02), so the table matches the file
   const formatValue = (val) => {
     if (val === null || val === undefined || val === '') return '—';
     const rawNum = typeof val === 'number' ? val : parseFloat(val);
     if (isNaN(rawNum) || !isFinite(rawNum)) return '—';
-    if (rawNum === 0) return '0.00E+00';
     const num = rawNum / normFactor;
-    return num.toExponential(2).toUpperCase();
+    return num.toExponential(3).replace(/e([+-])(\d)$/, 'e$10$2');
   };
 
   const currentMethod = getMethodology(selectedMethodology);
@@ -191,6 +197,18 @@ export default function ResultsView() {
           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', margin: 0 }}>
             Dynamically characterizing all lifecycle modules (A1–A5, B1–B7, C1–C4, Module D) for {currentMethod?.name || selectedMethodology}.
           </p>
+        </div>
+      )}
+
+      {!isLoading && calculationError && (
+        <div className="card" role="alert" style={{ padding: '14px 20px', marginBottom: 20, border: '1px solid rgba(215, 58, 73, 0.5)', background: 'rgba(215, 58, 73, 0.08)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-primary)' }}>
+            <strong>Calculation failed.</strong> {calculationError}
+          </span>
+          <button type="button" className="btn-apple-secondary-pill" onClick={() => runCalculation()} style={{ fontSize: '12px' }}>
+            <RefreshCwIcon size={13} />
+            <span>Recalculate</span>
+          </button>
         </div>
       )}
 

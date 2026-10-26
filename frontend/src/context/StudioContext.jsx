@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
 import { ALL_METHODOLOGIES, METHODOLOGIES, getMethodology } from '../data/lciaMethodologies';
 import { PRESET_DATASETS } from '../data/presetDatasets';
 import { DEFAULT_PRODUCT_ID, getProduct } from '../data/products';
@@ -181,7 +181,9 @@ export function StudioProvider({ children }) {
   const [selectedMethodology, setSelectedMethodology] = useState('ef31');
 
   // Characterized results from backend or instant local engine
-  const [results, setResults] = useState(() => generateClientResults(BENCHMARK_EXTRACTED_DATA, 'ef31'));
+  // Results always come from the backend calculation engine; null until a calculation has succeeded.
+  const [results, setResults] = useState(null);
+  const [calculationError, setCalculationError] = useState(null);
   // Calculation outputs kept per LCIA methodology so a report can include several methods.
   const [resultsByMethod, setResultsByMethod] = useState({});
   const [dqrReport, setDqrReport] = useState(null);
@@ -385,7 +387,7 @@ export function StudioProvider({ children }) {
           pcr_ref: proj.standard || preset.data.project_info.pcr_ref,
         },
       });
-      setResults(generateClientResults(preset.data, selectedMethodology));
+      setResults(null);
       setCurrentPresetId(proj.preset_key);
     } else {
       setExtractedData((prev) => ({
@@ -468,8 +470,14 @@ export function StudioProvider({ children }) {
   }, []);
 
   // ─── CALCULATE ENGINE ───
+  // Only the most recent calculation may update the results and the loading state; responses
+  // from older requests that arrive later are ignored.
+  const latestCalcRequestRef = useRef(0);
+
   const runCalculation = useCallback(async (methodOverride, dataOverride) => {
+    const requestId = ++latestCalcRequestRef.current;
     setIsLoading(true);
+    setCalculationError(null);
     const targetMethod = methodOverride || selectedMethodology;
     const activeData = dataOverride || extractedData;
     const payload = {
@@ -479,13 +487,14 @@ export function StudioProvider({ children }) {
       product_category: activeData?.project_info?.product_category || productCategory || DEFAULT_PRODUCT_ID,
     };
 
-    let success = false;
     const endpoints = [
       `${API_BASE}/epd/calculate-anti`,
       'http://localhost:8000/api/epd/calculate-anti',
       'http://127.0.0.1:8000/api/epd/calculate-anti'
     ];
 
+    let data = null;
+    let failure = 'Could not reach the EcoMetric backend on port 8000 (cd backend && python main.py).';
     for (const ep of endpoints) {
       try {
         const res = await fetch(ep, {
@@ -494,40 +503,39 @@ export function StudioProvider({ children }) {
           body: JSON.stringify(payload),
         });
         if (res.ok) {
-          const data = await res.json();
-          setResults(data);
-          if (data.epd_results && Object.keys(data.epd_results).length > 0) {
-            setResultsByMethod(prev => ({
-              ...prev,
-              [targetMethod]: { epd_results: data.epd_results, epd_metadata: data.epd_metadata },
-            }));
-          }
-          setResultsAudit(data.pcr_results_audit
-            ? { ...data.pcr_results_audit, inputSignature: signatureOf(activeData) }
-            : null);
-          success = true;
+          data = await res.json();
           break;
         }
+        failure = `The calculation API returned HTTP ${res.status}.`;
       } catch (err) {
         console.warn(`[StudioContext] Fetch attempt failed for ${ep}:`, err);
       }
     }
 
-    if (!success) {
-      console.warn('[StudioContext] Backend calculation API unreachable, generating client-side characterization.');
-      setResults(generateClientResults(activeData, targetMethod));
-      // Client-side estimates are not checked against the PCR; step 7 stays blocked until a real calculation.
+    if (requestId !== latestCalcRequestRef.current) return;
+
+    if (data?.epd_results && Object.keys(data.epd_results).length > 0) {
+      setResults(data);
+      setResultsByMethod(prev => ({
+        ...prev,
+        [targetMethod]: { epd_results: data.epd_results, epd_metadata: data.epd_metadata },
+      }));
+      setResultsAudit(data.pcr_results_audit
+        ? { ...data.pcr_results_audit, inputSignature: signatureOf(activeData) }
+        : null);
+      showNotif('LCA calculation complete', 'Calculation');
+    } else {
+      // Never show placeholder or older results as if they came from this calculation.
+      const message = data
+        ? 'The calculation engine returned no indicator results. Check the backend console for the error and recalculate.'
+        : failure;
+      setResults(null);
       setResultsAudit(null);
+      setCalculationError(message);
+      showNotif(message, 'Calculation Failed');
     }
     setIsLoading(false);
-    showNotif('LCA calculation complete', 'Calculation');
   }, [extractedData, selectedMethodology, reportDetails, productCategory, showNotif]);
-
-  // Pre-calculate on initial mount to sync with backend engine
-  React.useEffect(() => {
-    runCalculation(selectedMethodology, BENCHMARK_EXTRACTED_DATA);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // ─── PRODUCT SELECTION ───
   // Switching product starts a clean inventory with that product's functional unit and PCR.
@@ -760,7 +768,7 @@ export function StudioProvider({ children }) {
           { from: 'p3', to: 's2' }
         ]
       });
-      setResults(generateClientResults(sample, selectedMethodology));
+      setResults(null);
       showNotif('Loaded verified 500RT Chiller sample dataset', 'Sample Dataset');
       runCalculation(selectedMethodology, sample);
     } catch {
@@ -816,7 +824,7 @@ export function StudioProvider({ children }) {
         setGaps([]);
       }
 
-      setResults(generateClientResults(merged, selectedMethodology));
+      setResults(null);
       return merged;
     };
 
@@ -1161,6 +1169,7 @@ export function StudioProvider({ children }) {
     if (epdRes && typeof epdRes === 'object' && Object.keys(epdRes).length > 0) {
       let gwpRow = null;
       const mandatoryLookup = results?.mandatory_pcr_indicators || {};
+      const rowUnits = results?.epd_metadata?.row_units || {};
       const hasMandatorySplit = Object.keys(mandatoryLookup).length > 0;
 
       const indicators = Object.entries(epdRes).map(([catKey, row]) => {
@@ -1222,24 +1231,26 @@ export function StudioProvider({ children }) {
         } else if (catKey.toLowerCase().includes('eutrophication')) {
           code = 'EP';
           acronyms.push('EP', 'Nutrients', 'PO4');
+        } else if (catKey.toLowerCase().includes('photochemical') || catKey.toLowerCase().includes('smog')) {
+          // Checked before 'ozone': smog rows mention "tropospheric ozone"
+          code = 'POCP';
+          acronyms.push('POCP', 'Smog', 'NMVOC', 'Ozone Formation');
         } else if (catKey.toLowerCase().includes('ozone')) {
           code = 'ODP';
           acronyms.push('ODP', 'CFC', 'Ozone');
-        } else if (catKey.toLowerCase().includes('photochemical') || catKey.toLowerCase().includes('smog')) {
-          code = 'POCP';
-          acronyms.push('POCP', 'Smog', 'NMVOC', 'Ozone Formation');
         } else if (catKey.toLowerCase().includes('abiotic') || catKey.toLowerCase().includes('resource')) {
           code = 'ADP';
           acronyms.push('ADP', 'Minerals', 'Fossil', 'Depletion');
-        } else if (catKey.toLowerCase().includes('water')) {
-          code = 'WDP';
-          acronyms.push('Water', 'WSI', 'Scarcity');
         } else if (catKey.toLowerCase().includes('ecotoxicity')) {
+          // Checked before 'water': "ecotoxicity: freshwater" is not water use
           code = 'FAETP';
           acronyms.push('Ecotoxicity', 'FAETP');
         } else if (catKey.toLowerCase().includes('carcinogenic') || catKey.toLowerCase().includes('toxicity')) {
           code = 'HTP';
           acronyms.push('Toxicity', 'HTP', 'Human Health');
+        } else if (catKey.toLowerCase().includes('water')) {
+          code = 'WDP';
+          acronyms.push('Water', 'WSI', 'Scarcity');
         } else if (catKey.toLowerCase().includes('particulate')) {
           code = 'PM';
           acronyms.push('PM', 'PM2.5', 'Dust');
@@ -1252,7 +1263,7 @@ export function StudioProvider({ children }) {
           rawCategory: catKey,
           category,
           name: catName,
-          unit: unit || 'impact unit',
+          unit: unit || rowUnits[catKey] || 'impact unit',
           isMandatory,
           acronyms,
           a1,
@@ -1637,6 +1648,7 @@ export function StudioProvider({ children }) {
         projectInfo,
         downloadIlcdJson,
         runCalculation,
+        calculationError,
         resultsByMethod,
         dqrReport,
         setDqrReport,
@@ -1733,205 +1745,3 @@ export const STANDARD_DATABASE_PROVIDERS = [
   { id: 'ecoinvent_virgin_steel_primary_glo', name: 'Primary virgin steel production (Blast Furnace)', category: 'Virgin Materials', geography: 'GLO', unit: 'kg', defaultEf: 2.25 },
   { id: 'ecoinvent_secondary_steel_electric_glo', name: 'Secondary steel via Electric Arc Furnace (EAF)', category: 'Recycled Processes', geography: 'GLO', unit: 'kg', defaultEf: 0.65 },
 ];
-
-// ─── CLIENT-SIDE RESULTS (when backend offline or fallback) ───
-function generateClientResults(data, methodology) {
-  const methodName = getMethodology(methodology)?.name || methodology;
-  const isChiller = (data?.project_info?.product_category || DEFAULT_PRODUCT_ID) === 'water_cooled_chiller';
-  const bom = Array.isArray(data?.bom) ? data.bom : [];
-  const totalMass = bom.reduce((acc, item) => acc + (Number(item.mass) || 0), 0) || (isChiller ? 3470 : 0);
-  const capacityRt = Number(data?.operational?.capacity_rt || 500);
-  const lifespanYears = Number(data?.project_info?.lifespan_years || 25);
-  const annualHours = Number(data?.operational?.annual_operating_hours || 3500);
-  const efficiency = Number(data?.operational?.efficiency_kw_per_ton || 0.54);
-  const chargeKg = Number(data?.operational?.refrigerant_charge_kg || 45);
-  const leakRate = (Number(data?.operational?.annual_leak_rate_percent) || 2.0) / 100;
-  const facilityKwh = Number(data?.manufacturing?.annual_facility_kwh || 34000);
-  const unitsProduced = Number(data?.manufacturing?.annual_production_units || 50) || 1;
-  const outboundKm = Number(data?.installation?.outbound_transport_km || 500);
-  const recRate = (Number(data?.end_of_life?.recycling_rate_percent) || (isChiller ? 92.4 : 0)) / 100;
-  const landRate = (Number(data?.end_of_life?.landfill_rate_percent) || (isChiller ? 4.5 : 0)) / 100;
-  const incRate = (Number(data?.end_of_life?.incineration_rate_percent) || (isChiller ? 3.1 : 0)) / 100;
-
-  // Material A1 GWP calculation based on component types
-  let a1Gwp = 0;
-  let a1Penrt = 0;
-  bom.forEach(item => {
-    const m = Number(item.mass) || 0;
-    const mat = String(item.material || item.name || '').toLowerCase();
-    let gwpFactor = 1.85; // default steel-like
-    let penrtFactor = 24.5;
-    if (mat.includes('copper')) { gwpFactor = 4.82; penrtFactor = 58.2; }
-    else if (mat.includes('aluminium') || mat.includes('aluminum')) { gwpFactor = 8.24; penrtFactor = 115.0; }
-    else if (mat.includes('motor')) { gwpFactor = 4.12; penrtFactor = 52.0; }
-    else if (mat.includes('insulation') || mat.includes('polyurethane')) { gwpFactor = 3.85; penrtFactor = 72.0; }
-    else if (mat.includes('electronics') || mat.includes('vfd')) { gwpFactor = 18.5; penrtFactor = 240.0; }
-    a1Gwp += m * gwpFactor;
-    a1Penrt += m * penrtFactor;
-  });
-  if (a1Gwp === 0) {
-    a1Gwp = totalMass * 2.2;
-    a1Penrt = totalMass * 32.0;
-  }
-
-  // A2 Transport GWP
-  const a2FreightKm = (data?.transport || []).reduce((acc, t) => acc + (Number(t.distance || t.dist) || 450), 0) || 450;
-  const a2Gwp = (totalMass / 1000) * a2FreightKm * 0.088;
-  const a2Penrt = (totalMass / 1000) * a2FreightKm * 1.25;
-
-  // A3 Plant Manufacturing GWP
-  const a3Gwp = (facilityKwh / unitsProduced) * 0.42 + 250;
-  const a3Penrt = (facilityKwh / unitsProduced) * 3.6 * 2.6;
-
-  // A1-A3 total
-  const a1a3Gwp = a1Gwp + a2Gwp + a3Gwp;
-
-  // A4 Jobsite Delivery GWP
-  const a4Gwp = (totalMass / 1000) * outboundKm * 0.088;
-  const a4Penrt = (totalMass / 1000) * outboundKm * 1.25;
-
-  // A5 Installation Rigging & Commissioning
-  const a5Gwp = isChiller ? 25 * 3.15 + (0.5 * 1430) : 0;
-  const a5Penrt = 25 * 42.0;
-
-  // B1-B7 Operational Use GWP
-  const refGwpFactor = String(data?.operational?.refrigerant_type || 'R134a').includes('410') ? 2088 : 1430;
-  const b1Gwp = isChiller ? chargeKg * leakRate * lifespanYears * refGwpFactor : 0; // Fugitive leaks
-  const b2Gwp = isChiller ? 5 * 25 * 1.82 : 0; // Maintenance lubricant
-  const b3Gwp = isChiller ? 1 * 45 * 2.1 : 0; // Motor bearing repair
-  const b4Gwp = 0;
-  const b5Gwp = isChiller ? 1 * 120 * 4.82 : 0; // Condenser refurbishment
-  const b6AnnualKwh = isChiller ? capacityRt * efficiency * annualHours : Number(data?.operational?.annual_energy_kwh || 0);
-  const b6Gwp = b6AnnualKwh * lifespanYears * 0.42; // Grid electricity over 25 yrs
-  const b6Penrt = b6AnnualKwh * lifespanYears * 3.6 * 2.5;
-  const b7Gwp = isChiller ? 120 * lifespanYears * 0.0003 : 0; // Cooling tower water
-  const bStageGwp = b1Gwp + b2Gwp + b3Gwp + b4Gwp + b5Gwp + b6Gwp + b7Gwp;
-
-  // C1-C4 End of life GWP
-  const c1Gwp = isChiller ? 120 * 0.42 : 0;
-  const c2Gwp = (totalMass / 1000) * 100 * 0.088;
-  const c3Gwp = totalMass * recRate * 0.045;
-  const c4Gwp = totalMass * (landRate + incRate) * 0.032;
-  const cStageGwp = c1Gwp + c2Gwp + c3Gwp + c4Gwp;
-
-  // Module D Net Avoided Burden GWP
-  const moduleDGwp = isChiller ? - (totalMass * recRate * 1.35 + 250) : 0;
-
-  const totalGwp = a1a3Gwp + a4Gwp + a5Gwp + bStageGwp + cStageGwp + moduleDGwp;
-  const totalPenrt = a1Penrt + a2Penrt + a3Penrt + a4Penrt + a5Penrt + b6Penrt;
-
-  // Generate standard indicator row helper
-  const makeRow = (scale) => ({
-    'A1': a1Gwp * scale,
-    'A2': a2Gwp * scale,
-    'A3': a3Gwp * scale,
-    'A1-A3': a1a3Gwp * scale,
-    'A4': a4Gwp * scale,
-    'A5': a5Gwp * scale,
-    'B1': b1Gwp * scale,
-    'B2': b2Gwp * scale,
-    'B3': b3Gwp * scale,
-    'B4': 0,
-    'B5': b5Gwp * scale,
-    'B6': b6Gwp * scale,
-    'B7': b7Gwp * scale,
-    'B': bStageGwp * scale,
-    'C1': c1Gwp * scale,
-    'C2': c2Gwp * scale,
-    'C3': c3Gwp * scale,
-    'C4': c4Gwp * scale,
-    'C1-C4': cStageGwp * scale,
-    'D': moduleDGwp * scale,
-  });
-
-  const epdResults = {
-    'climate change | global warming potential (GWP100) [kg CO2 eq]': makeRow(1.0),
-    'ozone depletion | ozone depletion potential (ODP) [kg CFC-11 eq]': makeRow(6.0e-9),
-    'acidification | acidification potential (AP) [mol H+ eq]': makeRow(0.0045),
-    'eutrophication: freshwater | eutrophication potential freshwater [kg P eq]': makeRow(0.00032),
-    'eutrophication: marine | eutrophication potential marine [kg N eq]': makeRow(0.00085),
-    'eutrophication: terrestrial | eutrophication potential terrestrial [mol N eq]': makeRow(0.0092),
-    'photochemical oxidant formation | POCP [kg NMVOC eq]': makeRow(0.0038),
-    'abiotic depletion: non-fossil | ADP-minerals [kg Sb eq]': makeRow(0.00012),
-    'abiotic depletion: fossil | ADP-fossil [MJ]': makeRow(14.5),
-    'water use | water deprivation potential (WDP) [m3 world eq]': makeRow(0.18),
-    'particulate matter | particulate matter (PM) [disease incidence]': makeRow(2.1e-7),
-    'ionising radiation | ionising radiation (IRP) [kBq U235 eq]': makeRow(0.085),
-    'ecotoxicity: freshwater | ecotoxicity: freshwater [CTUe]': makeRow(1.42),
-    'primary energy resources | PENRT [MJ]': {
-      'A1': a1Penrt,
-      'A2': a2Penrt,
-      'A3': a3Penrt,
-      'A1-A3': a1Penrt + a2Penrt + a3Penrt,
-      'A4': a4Penrt,
-      'A5': a5Penrt,
-      'B1': 0,
-      'B2': 1800,
-      'B3': 2200,
-      'B4': 0,
-      'B5': 4500,
-      'B6': b6Penrt,
-      'B7': 120,
-      'B': b6Penrt + 8620,
-      'C1': 850,
-      'C2': 420,
-      'C3': 1200,
-      'C4': 380,
-      'C1-C4': 2850,
-      'D': - (a1Penrt * recRate * 0.75),
-    }
-  };
-
-  const indicators = [
-    { code: 'GWP-total', name: 'Global Warming Potential - Total', unit: 'kg CO₂ eq', total: totalGwp, a1a3: a1a3Gwp, a4: a4Gwp, b: bStageGwp, c: cStageGwp, d: moduleDGwp },
-    { code: 'ODP', name: 'Ozone Depletion Potential', unit: 'kg CFC-11 eq', total: totalGwp * 6.0e-9 },
-    { code: 'AP', name: 'Acidification Potential', unit: 'mol H⁺ eq', total: totalGwp * 0.0045 },
-    { code: 'EP-fw', name: 'Eutrophication Freshwater', unit: 'kg P eq', total: totalGwp * 0.00032 },
-    { code: 'EP-marine', name: 'Eutrophication Marine', unit: 'kg N eq', total: totalGwp * 0.00085 },
-    { code: 'EP-terr', name: 'Eutrophication Terrestrial', unit: 'mol N eq', total: totalGwp * 0.0092 },
-    { code: 'POCP', name: 'Photochemical Ozone Formation', unit: 'kg NMVOC eq', total: totalGwp * 0.0038 },
-    { code: 'ADP-minerals', name: 'Abiotic Depletion - Minerals & Metals', unit: 'kg Sb eq', total: totalGwp * 0.00012 },
-    { code: 'ADP-fossil', name: 'Abiotic Depletion - Fossil Fuels', unit: 'MJ', total: totalGwp * 14.5 },
-    { code: 'WDP', name: 'Water Deprivation Potential', unit: 'm³ world eq', total: totalGwp * 0.18 },
-    { code: 'PM', name: 'Particulate Matter Emissions', unit: 'disease incidence', total: totalGwp * 2.1e-7 },
-    { code: 'IRP', name: 'Ionizing Radiation Potential', unit: 'kBq U235 eq', total: totalGwp * 0.085 },
-    { code: 'ETP-fw', name: 'Ecotoxicity Freshwater', unit: 'CTUe', total: totalGwp * 1.42 },
-  ];
-
-  return {
-    methodology,
-    lcia_method: methodName,
-    calculated_at: new Date().toISOString(),
-    is_calculated: true,
-    total_mass_kg: totalMass,
-    mass_cutoff_pct: 0.0,
-    is_mass_cutoff_valid: true,
-    a1_gwp: Math.round(a1Gwp * 100) / 100,
-    a2_gwp: Math.round(a2Gwp * 100) / 100,
-    a3_gwp: Math.round(a3Gwp * 100) / 100,
-    a4_gwp: Math.round(a4Gwp * 100) / 100,
-    a5_gwp: Math.round(a5Gwp * 100) / 100,
-    b1_gwp: Math.round(b1Gwp * 100) / 100,
-    b2_gwp: Math.round(b2Gwp * 100) / 100,
-    b3_gwp: Math.round(b3Gwp * 100) / 100,
-    b4_gwp: Math.round(b4Gwp * 100) / 100,
-    b5_gwp: Math.round(b5Gwp * 100) / 100,
-    b6_gwp: Math.round(b6Gwp * 100) / 100,
-    b7_gwp: Math.round(b7Gwp * 100) / 100,
-    b_stage_gwp: Math.round(bStageGwp * 100) / 100,
-    c1_gwp: Math.round(c1Gwp * 100) / 100,
-    c2_gwp: Math.round(c2Gwp * 100) / 100,
-    c3_gwp: Math.round(c3Gwp * 100) / 100,
-    c4_gwp: Math.round(c4Gwp * 100) / 100,
-    c_stage_gwp: Math.round(cStageGwp * 100) / 100,
-    module_d_gwp: Math.round(moduleDGwp * 100) / 100,
-    total_gwp: Math.round(totalGwp * 100) / 100,
-    total_penrt_mj: Math.round(totalPenrt * 100) / 100,
-    rec_rate_pct: Math.round(recRate * 1000) / 10,
-    primary_share_pct: 82.5,
-    avg_dqr: 1.42,
-    epd_results: epdResults,
-    indicators,
-    source: 'ecoinvent 3.12 cutoff (Client LCIA Engine)',
-  };
-}
