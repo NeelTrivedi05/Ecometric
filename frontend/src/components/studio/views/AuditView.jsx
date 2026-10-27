@@ -79,7 +79,7 @@ export default function AuditView() {
         }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Step 4 · PCR input rules
+              Step 4 · Pre-calculation checks
             </div>
             <div style={{ fontSize: 14, fontWeight: 600, marginTop: 2, color: inputOk ? '#1b5e20' : '#d70015' }}>
               {!inputRun ? 'Not run yet'
