@@ -781,6 +781,43 @@ export default function ReportDetailsModal() {
                   </div>
                 </div>
 
+                {/* Checked by the PCR rules at export (e.g. UL 10010-4 requires product-specific, cradle-to-grave) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: '#1D1D1F' }}>
+                      EPD Type *
+                    </label>
+                    <select
+                      value={reportDetails.epd_type || ''}
+                      onChange={(e) => updateField('epd_type', e.target.value)}
+                      style={inputStyle}
+                    >
+                      <option value="">Select…</option>
+                      <option value="product-specific">Product-specific</option>
+                      <option value="average-product">Average product</option>
+                      <option value="industry-average">Industry average</option>
+                      <option value="sector">Sector EPD</option>
+                      <option value="representative">Representative product</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: '#1D1D1F' }}>
+                      Scope of the Declaration *
+                    </label>
+                    <select
+                      value={reportDetails.scope || ''}
+                      onChange={(e) => updateField('scope', e.target.value)}
+                      style={inputStyle}
+                    >
+                      <option value="">Select…</option>
+                      <option value="Cradle-to-gate">Cradle-to-gate</option>
+                      <option value="Cradle-to-gate with options">Cradle-to-gate with options</option>
+                      <option value="Cradle-to-grave">Cradle-to-grave</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div>
                   <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: '#1D1D1F' }}>
                     Reference PCR and Version Number *
@@ -1189,7 +1226,7 @@ export default function ReportDetailsModal() {
                     <strong style={{ fontSize: 13, color: validationResult.valid ? '#1B5E20' : '#D70015', fontWeight: 600 }}>
                       {validationResult.valid
                         ? 'PRE-EXPORT INTEGRITY GATE PASSED — Document conforms to reference EPD11017'
-                        : 'EXPORT GATE BLOCKED — Resolve critical mass balance or dataset mapping errors before compiling PDF'}
+                        : 'EXPORT GATE BLOCKED — Resolve the errors below (report completeness and critical PCR rules) before compiling the final PDF'}
                     </strong>
                   </div>
 

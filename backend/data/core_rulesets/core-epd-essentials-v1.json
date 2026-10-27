@@ -1,0 +1,99 @@
+{
+  "ruleset_id": "core-epd-essentials-v1",
+  "title": "Core EPD requirements (all products)",
+  "program_operator": "EN 15804+A2 / ISO 21930 / ISO 14025 common requirements",
+  "document": {
+    "code": "CORE",
+    "version": "1.0",
+    "status_note": "Short, product-independent set of the essential checks the Studio gates on. Product-specific values (required and forbidden modules) come from the product profile in app/products.py. The detailed PCR rulesets in data/pcr_rulesets are kept for reference but are not evaluated."
+  },
+  "parent_rulesets": [],
+  "depends_on_unavailable": [],
+  "product_category": "*",
+  "defaults": {},
+  "rules": [
+    {
+      "id": "CORE.IN.UNIT",
+      "title": "Functional or declared unit stated",
+      "requirement": "Results must refer to a functional unit or a declared unit.",
+      "source": {"section": "EN 15804+A2 §6.3.1-6.3.2 / ISO 21930 §7.1.3"},
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": {"type": "required_any", "paths": ["functional_unit.description", "declared_unit.description"]}
+    },
+    {
+      "id": "CORE.IN.MASS",
+      "title": "Product mass known",
+      "requirement": "The mass of one declared product (or of the BOM) must be greater than zero.",
+      "source": {"section": "EN 15804+A2 §6.3.1"},
+      "phase": "input", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": {"type": "numeric_range", "path": "product.mass_per_unit_kg", "min": 1e-06, "unit": "kg"}
+    },
+    {
+      "id": "CORE.IN.RSL",
+      "title": "Reference service life stated",
+      "requirement": "A reference service life is needed when use-stage modules are declared.",
+      "source": {"section": "EN 15804+A2 §6.3.3 / ISO 21930 §7.1.6"},
+      "phase": "input", "severity": "major", "obligation": "shall", "derived": false,
+      "check": {"type": "numeric_range", "path": "rsl_years", "min": 1e-06, "unit": "years"}
+    },
+    {
+      "id": "CORE.IN.EOL_SHARES",
+      "title": "End-of-life shares add up to 100 %",
+      "requirement": "Recycling, incineration and landfill shares of the end-of-life scenario should add up to 100 %.",
+      "source": {"section": "EN 15804+A2 §6.3.8"},
+      "phase": "input", "severity": "major", "obligation": "should", "derived": true,
+      "applies_when": "scenarios.C3.recycling_share_pct + scenarios.C3.incineration_share_pct + scenarios.C4.landfill_share_pct > 0",
+      "check": {"type": "relation", "expression": "abs(scenarios.C3.recycling_share_pct + scenarios.C3.incineration_share_pct + scenarios.C4.landfill_share_pct - 100) <= 1"}
+    },
+    {
+      "id": "CORE.RES.PRODUCT_STAGE",
+      "title": "Product stage (A1-A3) declared",
+      "requirement": "Every EPD declares the product stage (A1-A3).",
+      "source": {"section": "EN 15804+A2 §6.2.1 / ISO 21930 §7.1.7"},
+      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": {"type": "modules_required", "modules": ["A1", "A2", "A3"]}
+    },
+    {
+      "id": "CORE.RES.CORE_INDICATORS",
+      "title": "Core impact indicators calculated",
+      "requirement": "Every mandatory core impact indicator of the selected LCIA method has a result.",
+      "source": {"section": "EN 15804+A2 Table 3 / ISO 21930 §9"},
+      "phase": "results", "severity": "critical", "obligation": "shall", "derived": false,
+      "check": {"type": "none_listed", "path": "results.core_indicators_missing", "label": "Core indicator(s) without results"}
+    },
+    {
+      "id": "CORE.RES.MODULES",
+      "title": "Modules required for this product declared",
+      "requirement": "The life-cycle modules the product's PCR requires should have results.",
+      "source": {"section": "Product PCR (see product profile)"},
+      "phase": "results", "severity": "major", "obligation": "shall", "derived": false,
+      "check": {"type": "modules_required", "modules_path": "profile.modules.required"}
+    },
+    {
+      "id": "CORE.RES.FORBIDDEN_MODULES",
+      "title": "Modules not allowed for this product left out",
+      "requirement": "Modules the product's PCR does not allow (e.g. D for chillers) must not be declared.",
+      "source": {"section": "Product PCR (see product profile)"},
+      "phase": "results", "severity": "major", "obligation": "shall", "derived": false,
+      "check": {"type": "modules_forbidden", "modules_path": "profile.modules.forbidden"}
+    },
+    {
+      "id": "CORE.DOC.COMPARABILITY",
+      "title": "Comparability statement present",
+      "requirement": "The EPD states that EPDs from different programmes or PCRs may not be comparable.",
+      "source": {"section": "ISO 14025 §5.3 / EN 15804+A2 §5.3"},
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": {"type": "text_present", "any_of": ["may not be comparable", "not be comparable", "comparab"]}
+    },
+    {
+      "id": "CORE.DOC.NO_CLAIMS",
+      "title": "No unsupported environmental claims",
+      "requirement": "Claims such as 'free of' or 'harmless' are not allowed in an EPD.",
+      "source": {"section": "ISO 14025 §5.4 / ISO 14021"},
+      "phase": "document", "severity": "major", "obligation": "shall", "derived": false,
+      "check": {"type": "text_forbidden", "patterns": ["free of", "is free from", "entirely harmless", "completely harmless"]}
+    }
+  ],
+  "manual_checks": [],
+  "notes": []
+}

@@ -157,7 +157,7 @@ export default function LogisticsView() {
         )}
 
         {/* Legs Table */}
-        <div className="table-responsive">
+        <div className="table-responsive logistics-legs-scroll">
           <table className="studio-table" aria-label="Transport legs table">
             <thead>
               <tr>

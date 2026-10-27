@@ -23,15 +23,29 @@ export default function StudioHeader() {
     loadPreset,
     currentPresetId,
     PRESET_DATASETS,
-    isLoading
+    isLoading,
+    productProfile,
+    activePhase,
+    exportEpdPdf,
+    reportDetails,
+    showNotif,
   } = useStudio();
+
+  const handleExportPdf = async () => {
+    try {
+      await exportEpdPdf(reportDetails);
+    } catch (err) {
+      showNotif('PDF export failed: ' + (err.message || 'Unknown error'), 'Export Error');
+    }
+  };
 
   const [isPresetMenuOpen, setIsPresetMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const productName = extractedData?.project_info?.product_name || 'AquaEdge® 19DV Centrifugal Chiller';
+  const isChiller = productProfile?.isChiller !== false;
+  const productName = extractedData?.project_info?.product_name || productProfile?.name;
   const capacityRt = extractedData?.operational?.capacity_rt || 500;
-  const pcrStandard = extractedData?.project_info?.pcr_ref || 'UL 10010-4 & EN 15804+A2';
+  const pcrStandard = extractedData?.project_info?.pcr_ref || productProfile?.pcrLabel;
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -117,7 +131,7 @@ export default function StudioHeader() {
               {renderPresetIcon(currentPresetId, 14)}
             </span>
             <span className="preset-active-label">
-              {productName} ({Math.round(capacityRt)} RT)
+              {isChiller ? `${productName} (${Math.round(capacityRt)} RT)` : productName}
             </span>
             <span className="preset-chevron">▾</span>
           </button>
@@ -167,19 +181,22 @@ export default function StudioHeader() {
         {/* Compliance Capsule Badge */}
         <div className="compliance-pill-header hide-tablet">
           <span className="compliance-dot-pulse" />
-          <span className="compliance-pill-text">UL 10010-4 Part B v2.0 • EN 15804+A2</span>
+          <span className="compliance-pill-text">{productProfile?.pcrShort} • ISO 14025</span>
         </div>
 
-        {/* Primary Action Blue CTA */}
-        <button
-          type="button"
-          className="btn-apple-action-blue"
-          onClick={() => setActivePhase('export')}
-          title="Export Environmental Product Declaration"
-        >
-          <ExportIcon size={14} />
-          <span>Export EPD</span>
-        </button>
+        {/* Export action: only on the report generation stage (step 8) */}
+        {activePhase === 'export' && (
+          <button
+            type="button"
+            className="btn-apple-action-blue"
+            onClick={handleExportPdf}
+            disabled={isLoading}
+            title="Download the EPD report (PDF)"
+          >
+            <ExportIcon size={14} />
+            <span>{isLoading ? 'Generating…' : 'Export EPD'}</span>
+          </button>
+        )}
       </div>
     </header>
   );

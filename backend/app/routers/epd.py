@@ -1,5 +1,7 @@
 import sys
 import os
+import re
+import copy
 import json
 from datetime import datetime
 from pathlib import Path
@@ -19,6 +21,9 @@ try:
     from app.engines.pcr_validation import validate_chiller_inputs
     from app.engines.calc_engine import calculate_chiller_lca, calculate_anti_lca
     from app.engines.extract_ef_values import extract_ef_for_payload
+    from app.engines.material_matcher import (assign_bom_providers, assign_stage_providers, default_provider,
+                                              meta_key, project_region, row_reference_unit, transport_kind)
+    from app.products import get_product, is_chiller, normalize_product_id
 except ImportError:
     from ..database import get_db
     from ..models import Project, TechnicalData, Result, Report
@@ -26,6 +31,9 @@ except ImportError:
     from ..engines.pcr_validation import validate_chiller_inputs
     from ..engines.calc_engine import calculate_chiller_lca, calculate_anti_lca
     from ..engines.extract_ef_values import extract_ef_for_payload
+    from ..engines.material_matcher import (assign_bom_providers, assign_stage_providers, default_provider,
+                                            meta_key, project_region, row_reference_unit, transport_kind)
+    from ..products import get_product, is_chiller, normalize_product_id
 
 router = APIRouter(prefix="/api/epd", tags=["EPD"])
 
@@ -98,6 +106,18 @@ REFRIGERANT_GWP_CF = {
     "R32": 675.0,
 }
 
+LEGACY_DEFAULT_SLUGS = {
+    "electricity": "ecoinvent_elec_mv_us",
+    "natural_gas": "ecoinvent_gas_burned_boiler_glo",
+    "water": "ecoinvent_water_deionised_glo",
+    "diesel_machine": "ecoinvent_row_2621",
+    "lorry": "ecoinvent_transport_lorry_32t_rer",
+    "lorry_16_32": "ecoinvent_transport_lorry_32t_rer",
+    "ship": "ecoinvent_transport_container_ship_glo",
+    "train": "ecoinvent_transport_freight_train_rer",
+    "lubricating_oil": "ecoinvent_lubricating_oil_glo",
+}
+
 def resolve_reference_unit(pid: str, default: str = "kg") -> str:
     pid_l = str(pid).lower()
     if "elec" in pid_l or "kwh" in pid_l:
@@ -112,211 +132,249 @@ def resolve_reference_unit(pid: str, default: str = "kg") -> str:
         return "unit"
     return default
 
-def build_enriched_stages_data(extracted_data: dict) -> dict:
-    # A1 BOM
-    bom = extracted_data.get("bom", [])
+def _num(value, default=0.0) -> float:
+    try:
+        if value is None or value == "":
+            return float(default)
+        return float(str(value).replace(",", ""))
+    except (TypeError, ValueError):
+        return float(default)
+
+
+def _ensure_provider(block: dict, field: str, fallback_unit: str, legacy_kind: Optional[str] = None):
+    """
+    Datasets are picked by assign_stage_providers; this only covers a missing ecoinvent database
+    (legacy seed slug) and fills in the reference unit the calculation converts to.
+    """
+    if not block.get(field) and legacy_kind:
+        block[field] = LEGACY_DEFAULT_SLUGS[legacy_kind]
+    if block.get(field):
+        unit_key = meta_key(field, "reference_unit")
+        block[unit_key] = block.get(unit_key) or _provider_unit(block[field], fallback_unit)
+
+
+def _provider_unit(pid: str, default: str) -> str:
+    """Reference unit of a provider: database unit for ecoinvent_row_N ids, name heuristic otherwise."""
+    m = re.match(r"^ecoinvent_row_(\d+)$", str(pid or ""))
+    if m:
+        unit = row_reference_unit(int(m.group(1)))
+        if unit:
+            return unit
+    return resolve_reference_unit(pid, default)
+
+
+def build_enriched_stages_data(extracted_data: dict, product_id: Optional[str] = None) -> dict:
+    """
+    Distributes the extracted inventory into life-cycle stages for the selected product and
+    assigns ecoinvent datasets: BOM lines are matched by material name, energy / water /
+    transport use regional market datasets, end-of-life and module D use the product's
+    PCR scenario datasets. Chiller-only models (refrigerant, kW/ton x RT) apply to chillers only.
+    """
+    info = extracted_data.get("project_info", {}) or {}
+    pid = normalize_product_id(product_id or info.get("product_category"))
+    product = get_product(pid)
+    defaults = product["defaults"]
+    chiller = is_chiller(pid)
+    region = project_region(extracted_data)
+
+    # Same dataset selection as upload: fills only inputs without a dataset, never a user's choice
+    extracted_data = copy.deepcopy(extracted_data)
+    assign_stage_providers(extracted_data, pid, region)
+
+    # A1 BOM: match every line to a dataset by name (user-picked rows are kept)
     a1_bom = []
     bom_mass_map = {}
-    for item in bom:
+    for item in extracted_data.get("bom", []) or []:
         item_copy = dict(item)
+        item_copy["mass"] = _num(item_copy.get("mass"))
         if "ecoinvent_id" not in item_copy and "provider_id" in item_copy:
             item_copy["ecoinvent_id"] = item_copy["provider_id"]
         elif "provider_id" not in item_copy and "ecoinvent_id" in item_copy:
             item_copy["provider_id"] = item_copy["ecoinvent_id"]
-        pid = item_copy.get("provider_id", "ecoinvent_steel_hot_rolled_glo")
-        item_copy["reference_unit"] = item_copy.get("reference_unit") or resolve_reference_unit(pid, "kg")
+        if item_copy.get("ecoinvent_id") and str(item_copy["ecoinvent_id"]).startswith("ecoinvent_row_"):
+            item_copy["provider_id"] = item_copy["ecoinvent_id"]
         a1_bom.append(item_copy)
         if item_copy.get("id"):
-            try:
-                bom_mass_map[str(item_copy["id"])] = float(item_copy.get("mass", 0))
-            except (ValueError, TypeError):
-                bom_mass_map[str(item_copy["id"])] = 0.0
+            bom_mass_map[str(item_copy["id"])] = item_copy["mass"]
+    assign_bom_providers(a1_bom, pid, region)
+    for item_copy in a1_bom:
+        pid_item = item_copy.get("provider_id") or "ecoinvent_steel_hot_rolled_glo"
+        item_copy["reference_unit"] = item_copy.get("reference_unit") or _provider_unit(pid_item, "kg")
+    total_mass = sum(i["mass"] for i in a1_bom)
 
-    # A2 Transport
-    raw_transport = extracted_data.get("transport", [])
+    # A2 Transport (inbound legs)
     a2_transport = []
-    for leg in raw_transport:
+    for leg in extracted_data.get("transport", []) or []:
         leg_copy = dict(leg)
-        mode_str = str(leg_copy.get("mode", "")).lower()
-        if not leg_copy.get("provider_id") and not leg_copy.get("ecoinvent_id"):
-            if "ship" in mode_str or "sea" in mode_str or "ocean" in mode_str:
-                leg_copy["provider_id"] = "ecoinvent_transport_container_ship_glo"
-            elif "rail" in mode_str or "train" in mode_str:
-                leg_copy["provider_id"] = "ecoinvent_transport_freight_train_rer"
-            else:
-                leg_copy["provider_id"] = "ecoinvent_transport_lorry_32t_rer"
-        pid = leg_copy.get("provider_id", "ecoinvent_transport_lorry_32t_rer")
-        leg_copy["reference_unit"] = leg_copy.get("reference_unit") or resolve_reference_unit(pid, "tkm")
-        
-        # linked_material_ids & mass_kg
+        leg_copy["module"] = leg_copy.get("module") or "A2"
+        leg_copy["distance"] = _num(leg_copy.get("distance", leg_copy.get("dist")))
+        leg_copy["provider_id"] = leg_copy.get("provider_id") or leg_copy.get("ecoinvent_id")
+        _ensure_provider(leg_copy, "provider_id", "tkm", transport_kind(leg_copy.get("mode")))
+
         linked_ids = leg_copy.get("linked_material_ids", leg_copy.get("linked_materials", []))
         if not isinstance(linked_ids, list):
             linked_ids = []
         leg_copy["linked_material_ids"] = linked_ids
-        
         if linked_ids and bom_mass_map:
-            calculated_mass = sum(bom_mass_map.get(str(mid), 0.0) for mid in linked_ids)
-            leg_copy["mass_kg"] = round(calculated_mass, 2)
+            leg_copy["mass_kg"] = round(sum(bom_mass_map.get(str(mid), 0.0) for mid in linked_ids), 2)
         else:
-            leg_copy["mass_kg"] = float(leg_copy.get("mass_kg", leg_copy.get("mass", 0.0)))
-
+            leg_copy["mass_kg"] = _num(leg_copy.get("mass_kg", leg_copy.get("mass", 0.0)))
         a2_transport.append(leg_copy)
 
+    # BOM lines that carry their own supplier distance become A2 legs when no manifest was given
+    if not a2_transport:
+        for item_copy in a1_bom:
+            km = _num(item_copy.get("transport_km"))
+            if km > 0 and item_copy["mass"] > 0:
+                leg = {"id": f"a2-{item_copy.get('id')}", "name": f"{item_copy.get('supplier') or 'Supplier'} -> plant",
+                       "mode": "Lorry", "distance": km, "module": "A2",
+                       "linked_material_ids": [item_copy.get("id")], "mass_kg": item_copy["mass"]}
+                hit = default_provider("lorry", region)
+                if hit:
+                    leg["provider_id"] = hit["provider_id"]
+                    leg["reference_unit"] = hit["reference_unit"]
+                    leg["dataset"] = f"{hit['activity_name']} [{hit['geography']}]"
+                _ensure_provider(leg, "provider_id", "tkm", "lorry")
+                a2_transport.append(leg)
+
     # A3 Manufacturing
-    mfg = dict(extracted_data.get("manufacturing", {}))
-    if not mfg.get("electricity_provider_id"):
-        mfg["electricity_provider_id"] = "ecoinvent_elec_mv_us"
-    if not mfg.get("gas_provider_id"):
-        mfg["gas_provider_id"] = "ecoinvent_gas_burned_boiler_glo"
-    if not mfg.get("water_provider_id"):
-        mfg["water_provider_id"] = "ecoinvent_water_deionised_glo"
-    mfg["annual_production_units"] = float(mfg.get("annual_production_units", 1000))
-    mfg["electricity_provider_id_reference_unit"] = resolve_reference_unit(mfg["electricity_provider_id"], "kWh")
-    mfg["gas_provider_id_reference_unit"] = resolve_reference_unit(mfg["gas_provider_id"], "MJ")
-    mfg["water_provider_id_reference_unit"] = resolve_reference_unit(mfg["water_provider_id"], "m3")
+    mfg = dict(extracted_data.get("manufacturing", {}) or {})
+    _ensure_provider(mfg, "electricity_provider_id", "kWh", "electricity")
+    _ensure_provider(mfg, "gas_provider_id", "MJ", "natural_gas")
+    _ensure_provider(mfg, "water_provider_id", "kg", "water")
+    mfg["annual_production_units"] = _num(mfg.get("annual_production_units"), 1000)
+    for k in ("annual_facility_kwh", "natural_gas_mj", "water_m3"):
+        mfg[k] = _num(mfg.get(k))
 
-    # A4/A5 Installation & Logistics
-    inst = dict(extracted_data.get("installation", {}))
-    if not inst.get("outbound_provider_id"):
-        inst["outbound_provider_id"] = "ecoinvent_transport_lorry_32t_rer"
-    if not inst.get("outbound_transport_km"):
-        inst["outbound_transport_km"] = 500.0  # UL 10010-4 default: 500 km truck
-    if not inst.get("installation_energy_provider_id"):
-        inst["installation_energy_provider_id"] = "ecoinvent_elec_mv_us"
-    if not inst.get("consumable_provider_id"):
-        inst["consumable_provider_id"] = "ecoinvent_diesel_burned_building_machine_glo"
-    if not inst.get("rigging_crane_diesel_liters"):
-        inst["rigging_crane_diesel_liters"] = 37.8  # UL 10010-4: 3 hrs * 12.6 L/hr crane unloading
-    inst["outbound_provider_id_reference_unit"] = resolve_reference_unit(inst["outbound_provider_id"], "tkm")
-    inst["installation_energy_provider_id_reference_unit"] = resolve_reference_unit(inst["installation_energy_provider_id"], "kWh")
-    inst["consumable_provider_id_reference_unit"] = resolve_reference_unit(inst["consumable_provider_id"], "MJ")
+    # A4/A5 Transport to site and installation
+    inst = dict(extracted_data.get("installation", {}) or {})
+    _ensure_provider(inst, "outbound_provider_id", "tkm", "lorry")
+    if not _num(inst.get("outbound_transport_km")) and defaults.get("a4_distance_km"):
+        inst["outbound_transport_km"] = float(defaults["a4_distance_km"])   # PCR default scenario
+        inst["outbound_transport_km_source"] = f"{product['pcr']['label']} default"
+    inst["outbound_transport_km"] = _num(inst.get("outbound_transport_km"))
+    _ensure_provider(inst, "installation_energy_provider_id", "kWh", "electricity")
+    _ensure_provider(inst, "consumable_provider_id", "MJ", "diesel_machine")
+    if not _num(inst.get("rigging_crane_diesel_liters")) and defaults.get("installation_crane_diesel_l"):
+        inst["rigging_crane_diesel_liters"] = float(defaults["installation_crane_diesel_l"])  # UL 10010-4: 3 h x 12.6 L/h
+    inst["rigging_crane_diesel_liters"] = _num(inst.get("rigging_crane_diesel_liters"))
+    inst["installation_energy_kwh"] = _num(inst.get("installation_energy_kwh"))
+    if not chiller:
+        inst["commissioning_refrigerant_loss_kg"] = 0.0
 
-    # B1-B7 Operational Use
-    op = dict(extracted_data.get("operational", {}))
-    ref_type = op.get("refrigerant_type", "R134a")
-    op["refrigerant_gwp_cf"] = REFRIGERANT_GWP_CF.get(ref_type, 1430.0)
-    if not op.get("energy_provider_id"):
-        op["energy_provider_id"] = "ecoinvent_elec_mv_us"
-    if not op.get("water_provider_id"):
-        op["water_provider_id"] = "ecoinvent_water_deionised_glo"
-    op["energy_provider_id_reference_unit"] = resolve_reference_unit(op["energy_provider_id"], "kWh")
-    op["water_provider_id_reference_unit"] = resolve_reference_unit(op["water_provider_id"], "m3")
+    # B1-B7 Use stage
+    op = dict(extracted_data.get("operational", {}) or {})
+    _ensure_provider(op, "energy_provider_id", "kWh", "electricity")
+    _ensure_provider(op, "water_provider_id", "kg", "water")
+    rsl = _num(info.get("lifespan_years") or op.get("rsl_years"), product.get("default_rsl_years") or 25.0)
+    op["rsl_years"] = rsl
+    if chiller:
+        ref_type = op.get("refrigerant_type", "R134a")
+        op["refrigerant_gwp_cf"] = REFRIGERANT_GWP_CF.get(ref_type, 1430.0)
+        op["annual_operating_hours"] = _num(op.get("annual_operating_hours"), 8760)
+        op["load_basis"] = str(op.get("load_basis", "full_load")).lower()
+        cap = (
+            op.get("capacity_rt")
+            or op.get("cooling_capacity_tons")
+            or op.get("capacity_tons")
+            or op.get("rated_capacity_tons")
+            or extracted_data.get("operational_characteristics", {}).get("cooling_capacity_tons")
+        )
+        if not cap:
+            kw = op.get("cooling_capacity_kw") or op.get("capacity_kw") or extracted_data.get("operational_characteristics", {}).get("cooling_capacity_kw")
+            if kw:
+                cap = float(kw) / 3.51685
+        op["capacity_rt"] = _num(cap, 800.0)
+        eff = (
+            op.get("efficiency_kw_per_ton")
+            or op.get("kw_per_ton")
+            or extracted_data.get("operational_characteristics", {}).get("efficiency_kw_per_ton")
+        )
+        op["efficiency_kw_per_ton"] = _num(eff, 0.54)
+        op["b6_model"] = "chiller_kw_per_ton"
+        op["b7_model"] = "cooling_tower"
+    else:
+        # No refrigerant or kW/ton model outside chillers: B6/B7 come from declared annual use
+        for k in ("refrigerant_charge_kg", "annual_leak_rate_percent", "capacity_rt", "efficiency_kw_per_ton"):
+            op.pop(k, None)
+        op["refrigerant_gwp_cf"] = None
+        op["b6_model"] = product["use_stage"].get("b6_model", "none")
+        op["b7_model"] = product["use_stage"].get("b7_model", "none")
+        op["annual_energy_kwh"] = _num(op.get("annual_energy_kwh"))
+        op["annual_water_m3"] = _num(op.get("annual_water_m3"))
 
-    op["annual_operating_hours"] = float(op.get("annual_operating_hours", 8760))
-    op["load_basis"] = str(op.get("load_basis", "full_load")).lower()
+    b2 = dict(extracted_data.get("maintenance_b2", {}) or {})
+    if chiller:
+        _ensure_provider(b2, "provider_id", "kg", "lubricating_oil")
+        if not b2.get("maintenance_cycles_per_rsl"):
+            b2["maintenance_cycles_per_rsl"] = 25.0
+        if not b2.get("consumable_mass_kg"):
+            # Refrigerant top-up per UL 10010-4 Table 8: 2% annual leak rate
+            b2["consumable_mass_kg"] = round(_num(op.get("refrigerant_charge_kg"), 45.0) * 0.02, 3)
+    else:
+        _ensure_provider(b2, "provider_id", "kg")
+    b2["reference_unit"] = b2.get("reference_unit") or _provider_unit(b2.get("provider_id"), "kg")
 
-    # Populate capacity_rt and efficiency_kw_per_ton for B6 calculation
-    cap = (
-        op.get("capacity_rt")
-        or op.get("cooling_capacity_tons")
-        or op.get("capacity_tons")
-        or op.get("rated_capacity_tons")
-        or extracted_data.get("operational_characteristics", {}).get("cooling_capacity_tons")
-    )
-    if not cap:
-        kw = op.get("cooling_capacity_kw") or op.get("capacity_kw") or extracted_data.get("operational_characteristics", {}).get("cooling_capacity_kw")
-        if kw:
-            cap = float(kw) / 3.51685
-    op["capacity_rt"] = float(cap or 800.0)
+    b3 = dict(extracted_data.get("repair_b3", {}) or {})
+    if chiller and not b3.get("provider_id"):
+        b3["provider_id"] = "ecoinvent_steel_hot_rolled_glo"   # only reached without the ecoinvent database
+    _ensure_provider(b3, "provider_id", "kg")
 
-    eff = (
-        op.get("efficiency_kw_per_ton")
-        or op.get("kw_per_ton")
-        or extracted_data.get("operational_characteristics", {}).get("efficiency_kw_per_ton")
-    )
-    op["efficiency_kw_per_ton"] = float(eff or 0.54)
-    op["rsl_years"] = float(extracted_data.get("project_info", {}).get("lifespan_years") or op.get("rsl_years") or 25.0)
-    
-    city_grids = op.get("city_grid_providers", {})
-    if not isinstance(city_grids, dict) or not city_grids:
-        city_grids = {
-            "Chicago": "ecoinvent_elec_mv_us",
-            "Houston": "ecoinvent_elec_tx",
-            "Frankfurt": "ecoinvent_elec_de",
-            "Dubai": "ecoinvent_elec_ae",
-        }
-    op["city_grid_providers"] = city_grids
-    op["city_grid_providers_reference_units"] = {city: resolve_reference_unit(pid, "kWh") for city, pid in city_grids.items()}
-
-    b2 = dict(extracted_data.get("maintenance_b2", {}))
-    if not b2.get("provider_id"):
-        b2["provider_id"] = "ecoinvent_lubricating_oil_glo"
-    if not b2.get("maintenance_cycles_per_rsl"):
-        b2["maintenance_cycles_per_rsl"] = 25.0
-    if not b2.get("consumable_mass_kg"):
-        # Refrigerant top-up per UL 10010-4 Table 8: 2% annual leak rate
-        b2["consumable_mass_kg"] = round(float(op.get("refrigerant_charge_kg", 45.0)) * 0.02, 3)
-    b2["reference_unit"] = resolve_reference_unit(b2["provider_id"], "kg")
-
-    b3 = dict(extracted_data.get("repair_b3", {}))
-    if not b3.get("provider_id"):
-        b3["provider_id"] = "ecoinvent_steel_hot_rolled_glo"
-    b3["reference_unit"] = resolve_reference_unit(b3["provider_id"], "kg")
-
-    b4 = dict(extracted_data.get("replacement_b4", {}))
+    b4 = dict(extracted_data.get("replacement_b4", {}) or {})
     if not b4.get("esl_years"):
-        b4["esl_years"] = float(extracted_data.get("project_info", {}).get("building_esl_years", 75))
+        b4["esl_years"] = _num(info.get("building_esl_years"), product.get("esl_years") or rsl)
 
-    b5 = dict(extracted_data.get("refurbishment_b5", {}))
-    if not b5.get("provider_id"):
-        b5["provider_id"] = "ecoinvent_copper_tube_wire_glo"
-    b5["reference_unit"] = resolve_reference_unit(b5["provider_id"], "kg")
+    b5 = dict(extracted_data.get("refurbishment_b5", {}) or {})
+    if chiller and not b5.get("provider_id"):
+        b5["provider_id"] = "ecoinvent_copper_tube_wire_glo"   # only reached without the ecoinvent database
+    _ensure_provider(b5, "provider_id", "kg")
 
-    # C1-C4 End of Life
-    eol = dict(extracted_data.get("end_of_life", {}))
-    if not eol.get("deconstruction_provider_id"):
-        # Row 2621: "diesel, burned in building machine" | GLO | MJ (verified v3.12)
-        eol["deconstruction_provider_id"] = "ecoinvent_row_2621"
-    if not eol.get("waste_transport_provider_id"):
-        eol["waste_transport_provider_id"] = "ecoinvent_transport_lorry_32t_rer"
-    if not eol.get("waste_transport_km"):
-        eol["waste_transport_km"] = 100.0  # UL 10010-4 Table 12: 100 km disposal transport
-    if eol.get("recycling_rate_percent") is None:
-        eol["recycling_rate_percent"] = 90.0
-    if eol.get("landfill_rate_percent") is None:
-        eol["landfill_rate_percent"] = 10.0
-    if not eol.get("recycling_process_provider_id"):
-        # Row 20713: "sorting and pressing of iron scrap" | RoW | kg (verified v3.12)
-        eol["recycling_process_provider_id"] = "ecoinvent_row_20713"
-    if not eol.get("incineration_process_provider_id"):
-        # Row 22918: "treatment of municipal solid waste, municipal incineration" | RoW | kg (verified v3.12)
-        eol["incineration_process_provider_id"] = "ecoinvent_row_22918"
-    if not eol.get("landfill_process_provider_id"):
-        # Row 14191: "market for process-specific burdens, sanitary landfill" | RoW | kg (verified v3.12)
-        eol["landfill_process_provider_id"] = "ecoinvent_row_14191"
-    
-    eol["deconstruction_provider_id_reference_unit"] = resolve_reference_unit(eol["deconstruction_provider_id"], "MJ")
-    eol["waste_transport_provider_id_reference_unit"] = resolve_reference_unit(eol["waste_transport_provider_id"], "tkm")
-    eol["recycling_process_provider_id_reference_unit"] = resolve_reference_unit(eol["recycling_process_provider_id"], "kg")
-    eol["incineration_process_provider_id_reference_unit"] = resolve_reference_unit(eol["incineration_process_provider_id"], "kg")
-    eol["landfill_process_provider_id_reference_unit"] = resolve_reference_unit(eol["landfill_process_provider_id"], "kg")
+    # C1-C4 End of life
+    eol = dict(extracted_data.get("end_of_life", {}) or {})
+    _ensure_provider(eol, "deconstruction_provider_id", "MJ", "diesel_machine")
+    waste_kind = "lorry" if product["pcr"]["program_operator"] == "UL Environment" else "lorry_16_32"
+    _ensure_provider(eol, "waste_transport_provider_id", "tkm", waste_kind)
+    if not _num(eol.get("waste_transport_km")) and defaults.get("c2_distance_km"):
+        eol["waste_transport_km"] = float(defaults["c2_distance_km"])
+        eol["waste_transport_km_source"] = f"{product['pcr']['label']} default"
+    eol["waste_transport_km"] = _num(eol.get("waste_transport_km"))
+    if not _num(eol.get("decommissioning_energy_kwh")) and defaults.get("c1_diesel_kwh_per_tonne"):
+        # PCR 2019:14 Table 4: demolition diesel per tonne of product
+        eol["decommissioning_energy_kwh"] = round(defaults["c1_diesel_kwh_per_tonne"] * total_mass / 1000.0, 4)
+        eol["decommissioning_energy_source"] = "PCR 2019:14 Table 4 default"
+    eol["decommissioning_energy_kwh"] = _num(eol.get("decommissioning_energy_kwh"))
+    eol_defaults = defaults.get("eol") or {}
+    for k in ("recycling_rate_percent", "landfill_rate_percent", "incineration_rate_percent"):
+        if eol.get(k) in (None, ""):
+            eol[k] = eol_defaults.get(k, 0.0)
+        eol[k] = _num(eol.get(k))
+    _ensure_provider(eol, "recycling_process_provider_id", "kg")
+    _ensure_provider(eol, "incineration_process_provider_id", "kg")
+    _ensure_provider(eol, "landfill_process_provider_id", "kg")
 
-    # Module D Circularity
-    circ_d = dict(extracted_data.get("circularity_d", {}))
-    if not circ_d.get("virgin_material_provider_id"):
-        # Row 15528: "market for steel, low-alloyed, hot rolled" | GLO | kg (verified v3.12)
-        circ_d["virgin_material_provider_id"] = "ecoinvent_row_15528"
-    if not circ_d.get("recycled_process_provider_id"):
-        # Row 15529: "market for steel, structural, 100% scrap" | GLO | kg (verified v3.12)
-        circ_d["recycled_process_provider_id"] = "ecoinvent_row_15529"
-    
-    # Replace per-material recovery fields with overall_recovery_rate_percent
+    # Module D
+    circ_d = dict(extracted_data.get("circularity_d", {}) or {})
+    if product.get("d_datasets"):
+        _ensure_provider(circ_d, "virgin_material_provider_id", "kg")
+        _ensure_provider(circ_d, "recycled_process_provider_id", "kg")
+    else:
+        circ_d.pop("virgin_material_provider_id", None)
+        circ_d.pop("recycled_process_provider_id", None)
     overall_rate = circ_d.get("overall_recovery_rate_percent")
-    if overall_rate is None:
-        overall_rate = 90.0
-    circ_d["overall_recovery_rate_percent"] = float(overall_rate)
-    
-    # Remove old per-material recovery rates & hardcoded credit
-    circ_d.pop("steel_scrap_recovery_rate", None)
-    circ_d.pop("copper_scrap_recovery_rate", None)
-    circ_d.pop("aluminium_recovery_rate", None)
-    circ_d.pop("refrigerant_reclamation_rate", None)
-    circ_d.pop("net_avoided_burden_gwp_kg", None)
-
-    circ_d["virgin_material_provider_id_reference_unit"] = resolve_reference_unit(circ_d["virgin_material_provider_id"], "kg")
-    circ_d["recycled_process_provider_id_reference_unit"] = resolve_reference_unit(circ_d["recycled_process_provider_id"], "kg")
+    if overall_rate in (None, "") or (not chiller and not _num(overall_rate)):
+        overall_rate = defaults.get("recovery_rate_percent")
+    circ_d["overall_recovery_rate_percent"] = None if overall_rate is None else _num(overall_rate)
+    for k in ("steel_scrap_recovery_rate", "copper_scrap_recovery_rate", "aluminium_recovery_rate",
+              "refrigerant_reclamation_rate", "net_avoided_burden_gwp_kg"):
+        circ_d.pop(k, None)
 
     return {
+        "product": {
+            "id": pid, "name": product["name"], "pcr": product["pcr"]["label"],
+            "functional_unit": product["functional_unit"], "declared_unit": product["declared_unit"],
+            "fu_unit": product["fu_unit"], "fu_quantity": _num(info.get("fu_quantity"), 1) or 1,
+            "region": region,
+        },
         "A1_BOM": a1_bom,
         "A2_Transport": a2_transport,
         "A3_Manufacturing": mfg,
@@ -340,8 +398,12 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
     data = payload or {}
     methodology = data.get("methodology", "TRACI 2.1")
     extracted_data = data.get("extracted_data", data)
-    
-    stages_data = build_enriched_stages_data(extracted_data)
+    product_id = normalize_product_id(
+        data.get("product_category") or (extracted_data.get("project_info") or {}).get("product_category")
+    )
+    extracted_data.setdefault("project_info", {})["product_category"] = product_id
+
+    stages_data = build_enriched_stages_data(extracted_data, product_id)
 
     # Structure the calculation input record
     calculation_record = {
@@ -349,6 +411,8 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
             "title": "EPD Calculation Engine Input Payload",
             "generated_at": datetime.now().isoformat(),
             "methodology": methodology,
+            "product_category": product_id,
+            "product": stages_data.get("product"),
             "database_version": "ecoinvent v3.12 Cut-off",
             "standard": "EN 15804+A2:2019 / ISO 14025:2006"
         },
@@ -456,27 +520,18 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
                 float(row.get("A1-A3", 0)) + float(row.get("A4", 0)) + float(row.get("A5", 0)) + b_tot + c_tot + float(row.get("D", 0)), 2
             )
 
-    # Automated PCR & GPI Rule Evaluation (Phase 3)
+    # PCR `results` rules (Studio step 7) on this calculation's output
     try:
-        from app.engines.pcr_rules_engine import PcrRulesEngine
-        from app.database import SessionLocal
-        db_sess = SessionLocal()
-        try:
-            pcr_engine = PcrRulesEngine(db_sess)
-            pcr_rule_id = data.get("pcr_rule_id") or "rule-ul10010-4-traci"
-            pcr_report = pcr_engine.evaluate_compliance(
-                rule_id=pcr_rule_id,
-                results_payload=res_anti,
-                bom_items=extracted_data.get("bom", [])
-            )
-            res_anti["pcr_evaluation"] = pcr_report
-            res_anti["audit_rules"] = pcr_report.get("audit_rules", [])
-            res_anti["compliance_score_pct"] = pcr_report.get("compliance_score_pct", 100.0)
-            res_anti["overall_verdict"] = pcr_report.get("overall_verdict", "COMPLIANT")
-        finally:
-            db_sess.close()
+        from app.engines.pcr_validation import evaluate_results_compliance
+        res_anti["pcr_results_audit"] = evaluate_results_compliance({
+            "extracted_data": extracted_data,
+            "report_details": data.get("report_details") or {},
+            "product_category": product_id,
+            "methodology": methodology,
+            "results": res_anti,
+        })
     except Exception as pcr_err:
-        print(f"[EPD Router] PCR evaluation notice: {pcr_err}")
+        print(f"[EPD Router] PCR results audit failed: {pcr_err}")
 
     return res_anti
 

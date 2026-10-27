@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { aboutTopics } from '../data/aboutTopics';
 import { LeafIcon, ChevronRightIcon, ChevronLeftIcon } from '../components/studio/Icons';
+import AboutTimeline from '../components/info/AboutTimeline';
+import TopicTimeline from '../components/info/TopicTimeline';
 import '../styles/InfoPage.css';
 
 export default function InfoPage() {
@@ -92,68 +94,9 @@ export default function InfoPage() {
           </aside>
 
           {/* Main Topic Details Panel */}
-          <article key={activeTopic.id} className="info-content-card">
-            <div className="info-panel-section-title">Key Frameworks & Technical Specifications</div>
-
-            {/* Points Grid */}
-            <div className="info-points-grid">
-              {activeTopic.points.map((point, index) => (
-                <div key={index} className="info-point-card">
-                  <div className="info-point-num">{index + 1}</div>
-                  <div className="info-point-content">
-                    <h3 className="info-point-heading">{point.heading}</h3>
-                    <p className="info-point-body">{point.body}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Tag Chips */}
-            <div className="info-tags-section">
-              <div className="info-tags-label">Associated Compliance Tags</div>
-              <div className="info-tags-row">
-                {activeTopic.tags.map((tag, index) => (
-                  <span key={index} className="info-tag-chip">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Verified Sources Links */}
-            <div className="info-sources-section">
-              <div className="info-sources-label">Official Sources & Standard Documentation</div>
-              <div className="info-sources-grid">
-                {activeTopic.sources.map((src, index) => (
-                  <a
-                    key={index}
-                    href={src.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="info-source-card"
-                  >
-                    <div className="info-source-text">
-                      <span className="info-source-title">{src.title}</span>
-                      <span className="info-source-url">{src.url}</span>
-                    </div>
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                      <polyline points="15 3 21 3 21 9" />
-                      <line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
-                  </a>
-                ))}
-              </div>
-            </div>
+          <article key={activeTopic.id} className={`info-content-card ${activeTopic.id === 'more-info' ? 'info-content-card--about' : 'info-content-card--timeline'}`}>
+            {activeTopic.id === 'more-info' && <AboutTimeline />}
+            {activeTopic.id !== 'more-info' && <TopicTimeline topic={activeTopic} />}
           </article>
         </div>
       </main>

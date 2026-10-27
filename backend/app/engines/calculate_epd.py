@@ -56,6 +56,7 @@ A5_REFRIGERANT_LOSS_USES_B1_CF = True
 # provider's reference unit. That unit is read from "<provider_key>_reference_unit"
 # in the payload when present, otherwise from DEFAULT_PROVIDER_REF_UNITS.
 KWH_TO_MJ = 3.6
+WATER_KG_PER_M3 = 1000.0
 DIESEL_MJ_PER_LITRE = 35.8  # ASSUMPTION: ~43 MJ/kg x ~0.83 kg/L. Edit if you use another value.
 DEFAULT_PROVIDER_REF_UNITS = {
     "consumable_provider_id": "MJ",       # A5 crane diesel
@@ -237,6 +238,19 @@ class MethodContext:
         )
         return None
 
+    def row_units(self) -> dict:
+        """{row_label: unit}, read from the EF keys ('<method> | <category> | <indicator> [<unit>]')."""
+        units = {}
+        for row, category, indicator in self.rows:
+            prefixes = (f"{self.method_label} | {category} | {indicator} [",
+                        f"{self.method_label} | {category} no LT | {indicator} no LT [")
+            for entry in self.ef_lookup.values():
+                key = next((k for k in entry.get("values", {}) if k.startswith(prefixes)), None)
+                if key:
+                    units[row] = key.rsplit(" [", 1)[1].rstrip("]")
+                    break
+        return units
+
     def ef_vector(self, provider_id: str, warnings: list) -> dict:
         """Returns {row_label: ef_value} for one provider across all indicator rows."""
         vec = {}
@@ -329,7 +343,8 @@ def add_scaled(totals: dict, vec: dict, scale: float):
 # ============================================================
 
 _UNIT_ALIASES = {"l": "l", "liter": "l", "liters": "l", "litre": "l", "litres": "l",
-                 "kwh": "kwh", "mj": "mj"}
+                 "kwh": "kwh", "mj": "mj", "m³": "m3", "cubicmeter": "m3", "cubicmetre": "m3",
+                 "metricton*km": "tkm", "t*km": "tkm", "tonne*km": "tkm"}
 _UNIT_FACTORS = {
     ("kwh", "mj"): KWH_TO_MJ,
     ("mj", "kwh"): 1.0 / KWH_TO_MJ,
@@ -337,6 +352,8 @@ _UNIT_FACTORS = {
     ("mj", "l"): 1.0 / DIESEL_MJ_PER_LITRE,
     ("l", "kwh"): DIESEL_MJ_PER_LITRE / KWH_TO_MJ,
     ("kwh", "l"): KWH_TO_MJ / DIESEL_MJ_PER_LITRE,
+    ("m3", "kg"): WATER_KG_PER_M3,                 # water only
+    ("kg", "m3"): 1.0 / WATER_KG_PER_M3,
 }
 
 
@@ -386,22 +403,24 @@ def calc_A1(bom_items, ctx, warnings):
 
 def calc_A2(transport_entries, ctx, total_bom_mass, warnings):
     totals = ctx.zero_vector()
-    legs = [t for t in transport_entries if t.get("module") == "A2"]
+    legs = [t for t in transport_entries if (t.get("module") or "A2") == "A2"]
     if not legs:
         return totals
-    warnings.append(
-        f"A2: no per-leg linked mass in payload - using total BOM mass "
-        f"({total_bom_mass} kg) on every A2 leg ({A2_MASS_FALLBACK} fallback). "
-        f"This likely overcounts if materials actually split across legs."
-    )
     for leg in legs:
-        distance = leg.get("distance", 0)
+        distance = leg.get("distance", 0) or 0
         provider_id = leg.get("provider_id")
         if not provider_id:
             warnings.append(f"A2 leg '{leg.get('mode')}' has no provider_id - skipped.")
             continue
+        mass_kg = leg.get("mass_kg") or 0
+        if not mass_kg:
+            mass_kg = total_bom_mass
+            warnings.append(
+                f"A2 leg '{leg.get('name') or leg.get('mode')}': no linked mass - using total BOM mass "
+                f"({total_bom_mass} kg) ({A2_MASS_FALLBACK} fallback)."
+            )
         vec = ctx.ef_vector(provider_id, warnings)
-        add_scaled(totals, vec, (total_bom_mass / 1000.0) * distance)
+        add_scaled(totals, vec, (mass_kg / 1000.0) * distance)
     return totals
 
 
@@ -443,7 +462,9 @@ def calc_A3(manufacturing, ctx, warnings):
     water_m3 = manufacturing.get("water_m3", 0) * per_unit
     water_provider = manufacturing.get("water_provider_id")
     if water_provider:
-        add_scaled(totals, ctx.ef_vector(water_provider, warnings), water_m3)
+        water_amount = convert_amount(water_m3, "m3", manufacturing.get("water_provider_id_reference_unit"),
+                                      "A3 process water", warnings)
+        add_scaled(totals, ctx.ef_vector(water_provider, warnings), water_amount)
     else:
         warnings.append("A3: no water_provider_id - process water term skipped.")
 
@@ -572,6 +593,15 @@ def calc_B5(refurbishment, ctx, warnings):
 
 def calc_B6(operational, rsl_years, ctx, warnings):
     totals = ctx.zero_vector()
+    model = operational.get("b6_model", "chiller_kw_per_ton")
+    if model == "none":
+        return totals
+    if model == "annual_energy":
+        annual_energy_kwh = operational.get("annual_energy_kwh", 0) or 0
+        provider_id = operational.get("energy_provider_id")
+        if annual_energy_kwh and provider_id:
+            add_scaled(totals, ctx.ef_vector(provider_id, warnings), annual_energy_kwh * rsl_years)
+        return totals
     hours = operational.get("annual_operating_hours", ANNUAL_OPERATING_HOURS)
     if hours is None:
         warnings.append(
@@ -592,12 +622,18 @@ def calc_B6(operational, rsl_years, ctx, warnings):
 
 def calc_B7(operational, rsl_years, ctx, warnings):
     totals = ctx.zero_vector()
-    annual_water = operational.get("cooling_tower_water_m3_yr", 0)
+    model = operational.get("b7_model", "cooling_tower")
+    if model == "none":
+        return totals
+    annual_water = (operational.get("annual_water_m3", 0) if model == "annual_water"
+                    else operational.get("cooling_tower_water_m3_yr", 0)) or 0
     provider_id = operational.get("water_provider_id")
     if not provider_id:
         warnings.append("B7: no water_provider_id - B7 = 0.")
         return totals
-    add_scaled(totals, ctx.ef_vector(provider_id, warnings), annual_water * rsl_years)
+    amount = convert_amount(annual_water * rsl_years, "m3", operational.get("water_provider_id_reference_unit"),
+                            "B7 operational water", warnings)
+    add_scaled(totals, ctx.ef_vector(provider_id, warnings), amount)
     return totals
 
 
@@ -703,15 +739,10 @@ def calc_D(circularity, end_of_life, bom_items, total_bom_mass, ctx, warnings):
         warnings.append("D: missing virgin_material_provider_id / recycled_process_provider_id - D = 0.")
         return totals
 
-    steel_mass = sum(
-        item.get("mass", 0) for item in bom_items
-        if "steel" in (item.get("material") or "").lower()
-    )
-    steel_share = (100.0 * steel_mass / total_bom_mass) if total_bom_mass else 0.0
     warnings.append(
-        f"D: one virgin/recycled provider pair is applied to the WHOLE recovered mass. Steel is "
-        f"{steel_share:.0f}% of the BOM mass, so copper, aluminium, foam and electronics are "
-        f"credited as if they were steel (approximation)."
+        f"D: one virgin/recycled dataset pair ({virgin_provider} / {recycled_provider}) is applied to "
+        f"the whole recovered mass - materials other than the product's main recovered material are "
+        f"credited as if they were that material (approximation)."
     )
 
     recovered_mass = total_bom_mass * (recovery_pct / 100.0)
@@ -819,6 +850,7 @@ def calculate_epd(payload: dict, ef_lookup: dict, methodology_override: str = No
         "replacement_cycles": replacement_cycles,
         "total_bom_mass": total_bom_mass,
         "row_names": rows,
+        "row_units": ctx.row_units(),
         "mandatory_row_names": list(ctx.mandatory_row_names),
         "total_indicators_calculated": len(rows),
         "methodology_label": ctx.method_label,

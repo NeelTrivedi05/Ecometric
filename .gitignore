@@ -30,6 +30,11 @@ venv/
 **/.venv/
 env/
 .pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+coverage.xml
+.coverage
+htmlcov/
 
 # Databases & local sqlite files
 *.db
@@ -42,6 +47,18 @@ env/
 .env
 .env*.local
 *.env
+**/.env
+**/.env.local
+**/.env.*.local
+!.env.example
+!**/.env.example
+
+# Local Supabase and deployment secrets
+supabase/.temp/
+supabase/.branches/
+*.pem
+*.key
+*.crt
 
 # Local AI & Private Tracking Files (Never commit to Git)
 .trace/
@@ -74,6 +91,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+*.swo
 
 # Temporary directories and generated export PDFs
 temp-skills/
@@ -81,4 +99,8 @@ results/pdfs/
 test/*.pdf
 results/epd_calculation_input_*.json
 
+# Frontend tooling caches
+.vite/
+**/.vite/
+.eslintcache
 
