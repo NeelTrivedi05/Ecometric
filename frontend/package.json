@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "@untitledui/file-icons": "^0.0.9",
     "@untitledui/icons": "^0.0.23",
     "fuse.js": "^7.5.0",
