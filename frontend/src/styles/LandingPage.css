@@ -2175,6 +2175,8 @@ html {
 }
 
 .landing-page-root .footer-8__wordmark {
+  display: flex;
+  align-items: center;
   max-width: 1440px;
   margin: 0 auto;
   overflow: hidden;
@@ -2186,6 +2188,12 @@ html {
   white-space: nowrap;
   -webkit-text-stroke: 1.25px #525852;
   text-shadow: 0 0 1px rgb(184 221 197 / 0.18);
+}
+
+.landing-page-root .footer-8__wordmark img {
+  width: min(520px, 100%);
+  height: auto;
+  object-fit: contain;
 }
 
 .landing-page-root .footer-8__bottom {

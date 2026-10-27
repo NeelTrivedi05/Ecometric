@@ -390,6 +390,12 @@ svg {
   text-decoration: none;
 }
 
+.brand-logo .brand-logo-image {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
 .brand-name {
   font-family: var(--font-display);
   font-weight: 600;

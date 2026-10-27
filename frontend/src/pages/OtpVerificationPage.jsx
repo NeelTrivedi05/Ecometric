@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, LayersTwo01 } from '@untitledui/icons';
 import { supabase } from '../lib/supabase';
+import BrandLogo from '../components/BrandLogo';
 
 const OTP_LIFETIME_SECONDS = 100;
 
@@ -88,7 +89,7 @@ export default function OtpVerificationPage() {
   return (
     <main className="auth3-page auth3-page--otp">
       <section className="otp-card" aria-labelledby="otp-title">
-        <div className="otp-mark"><LayersTwo01 size={22} /></div>
+        <div className="otp-mark"><BrandLogo /></div>
         <p className="eyebrow">Secure sign in</p>
         <h1 id="otp-title">Check your email</h1>
         <p className="otp-description">Enter the 6-digit code we sent to <strong>{email}</strong>. It expires in 100 seconds.</p>

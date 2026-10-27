@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
+import BrandLogo from '../BrandLogo';
 import {
   MenuIcon,
   ExportIcon,
@@ -12,7 +13,6 @@ import {
   ThermalIcon,
   AlertTriangleIcon,
   CheckIcon,
-  LeafIcon
 } from './Icons';
 
 export default function StudioHeader() {
@@ -102,7 +102,7 @@ export default function StudioHeader() {
               justifyContent: 'center',
               color: 'var(--accent, #1f7a4c)'
             }}>
-              <LeafIcon size={16} />
+              <BrandLogo />
             </span>
             <span className="brand-name">EcoMetric Studio</span>
           </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import BrandLogo from '../../../BrandLogo';
 import { LayersTwo01, XClose } from '@untitledui/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useStudio } from '../../../../context/StudioContext';
@@ -26,7 +27,7 @@ export function SidebarNavigationSlim({ items = [], footerItems = [], className 
   return (
     <aside className={`studio-sidebar untitled-sidebar ${isSidebarOpen ? 'mobile-open' : ''} ${className}`} aria-label="Primary navigation">
       <div className="untitled-sidebar-brand">
-        <span className="untitled-sidebar-brand-mark"><LayersTwo01 size={18} /></span>
+        <span className="untitled-sidebar-brand-mark"><BrandLogo /></span>
         <span>EcoMetric</span>
       </div>
       <nav className="untitled-sidebar-nav">

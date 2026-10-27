@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import BrandLogo from '../BrandLogo';
 
 function SocialIcon({ kind }) {
   const paths = {
@@ -47,7 +48,7 @@ export default function LandingFooter() {
         </div>
       </div>
 
-      <div className="footer-8__wordmark" aria-hidden="true">ECOMETRIC</div>
+      <div className="footer-8__wordmark"><img src="/brand-wordmark.png" alt="EcoMetric" /></div>
       <div className="footer-8__bottom">
         <span>© {new Date().getFullYear()} EcoMetric Systems Inc. / Built for transparent LCA.</span>
         <div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LayersTwo01, Mail01 } from '@untitledui/icons';
 import { supabase } from '../lib/supabase';
+import BrandLogo from '../components/BrandLogo';
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function ForgotPasswordPage() {
   return (
     <main className="auth3-page">
       <section className="auth3-card" aria-labelledby="forgot-password-title">
-        <div className="brand-lockup"><span className="brand-mark"><LayersTwo01 size={20} /></span><span>EcoMetric</span></div>
+        <div className="brand-lockup"><span className="brand-mark"><BrandLogo /></span><span>EcoMetric</span></div>
         <div className="auth-heading">
           <p className="eyebrow">Account recovery</p>
           <h1 id="forgot-password-title">Forgot password?</h1>

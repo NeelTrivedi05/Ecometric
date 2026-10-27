@@ -100,13 +100,25 @@
   background: radial-gradient(circle at 12% 0%, var(--color-brand-100), transparent 34%), var(--bg-base);
 }
 
-.auth3-page { min-height: 100dvh; height: 100dvh; overflow: hidden; display: grid; grid-template-columns: minmax(360px, 456px) minmax(260px, 390px); align-items: center; justify-content: center; gap: clamp(48px, 9vw, 130px); padding: 24px clamp(20px, 7vw, 100px); background: linear-gradient(90deg, rgb(3 23 39 / 0.7), rgb(0 105 145 / 0.08)), url('/auth-background.png') center / cover no-repeat; background-color: #06364f; }
-.auth3-card { width: 100%; max-height: calc(100dvh - 48px); overflow: hidden; padding: 30px 34px; background: rgb(255 255 255 / 0.98); border: 1px solid rgb(255 255 255 / 0.7); border-radius: 20px; box-shadow: 0 24px 80px rgb(0 20 35 / 0.32); animation: auth3-slide-in-left 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.auth3-page { position: relative; min-height: 100dvh; height: 100dvh; overflow: hidden; display: grid; grid-template-columns: minmax(360px, 456px) minmax(260px, 390px); align-items: center; justify-content: center; gap: clamp(48px, 9vw, 130px); padding: 24px clamp(20px, 7vw, 100px); background: #102719; }
+.auth3-video-background { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.auth3-page > .auth3-card, .auth3-page > .auth3-intro { position: relative; z-index: 1; }
+.auth3-card { width: 100%; max-height: calc(100dvh - 48px); overflow: hidden; padding: 30px 34px; background: rgb(255 255 255 / 0.88); border: 1px solid rgb(255 255 255 / 0.95); border-radius: 20px; box-shadow: 0 24px 80px rgb(0 20 35 / 0.32), inset 0 1px rgb(255 255 255 / 0.65); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); animation: auth3-slide-in-left 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .auth3-card--signup { animation-name: auth3-signup-in; }
 .auth3-card .auth-heading { margin: 30px 0 20px; }
 .auth3-card .auth-heading h1 { font-size: 32px; }
 .auth3-card .auth-form { gap: 7px; }
 .auth3-card .auth-form input { min-height: 48px; }
+.base-input { display: grid; gap: 7px; }
+.base-input__label { display: flex; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 13px; font-weight: 600; }
+.base-input__required { color: var(--error); }
+.base-input__tooltip { display: inline-grid; place-items: center; width: 15px; height: 15px; margin-left: 3px; color: var(--text-muted); border: 1px solid currentColor; border-radius: 50%; font-size: 10px; cursor: help; }
+.base-input__control { display: flex; align-items: center; min-height: 48px; gap: 8px; padding: 0 12px; color: var(--text-muted); background: rgb(255 255 255 / 0.82); border: 1px solid var(--border); border-radius: var(--radius-md); transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease; }
+.base-input__control:focus-within { border-color: var(--border-focus); background: white; box-shadow: 0 0 0 3px rgb(31 122 76 / 0.12); }
+.base-input__icon { flex: 0 0 auto; }
+.auth3-card .base-input__control input { width: 100%; min-width: 0; min-height: 46px; margin: 0; padding: 10px 0; color: var(--text-primary); background: transparent; border: 0; outline: 0; font: inherit; }
+.auth3-card .base-input__control input:focus { border: 0; outline: none; box-shadow: none; background: transparent; }
+.base-input__hint { margin: -2px 0 0; color: var(--text-muted); font-size: 12px; }
 .auth3-submit { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; margin-top: 8px; color: white; background: #171717; border: 0; border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer; }
 .auth3-submit:disabled { opacity: 0.6; cursor: wait; }
 .auth3-divider { display: flex; align-items: center; gap: 12px; margin: 26px 0 16px; color: var(--text-muted); font-size: 13px; }
@@ -143,8 +155,8 @@
 .auth3-card--signup .auth-heading { margin-top: 18px; margin-bottom: 12px; }
 .auth3-card--signup .auth-heading h1 { font-size: 29px; }
 .auth3-card--signup .auth-form { gap: 3px; }
-.auth3-card--signup .auth-form input { min-height: 38px; margin-bottom: 4px; padding-top: 7px; padding-bottom: 7px; }
-.auth3-card--signup .input-with-icon { min-height: 38px; margin-bottom: 4px; }
+.auth3-card--signup .base-input__control { min-height: 38px; margin-bottom: 4px; }
+.auth3-card--signup .base-input__control input { min-height: 36px; padding-top: 7px; padding-bottom: 7px; }
 .auth3-card--signup .auth3-submit { min-height: 40px; margin-top: 3px; }
 .auth3-card--signup .auth3-divider { margin: 12px 0 8px; }
 .auth3-card--signup .auth3-provider { min-height: 38px; }
@@ -181,6 +193,8 @@
 
 .brand-lockup { gap: 10px; font-size: 16px; font-weight: 700; }
 .brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; color: var(--color-neutral-0); background: var(--accent); border-radius: var(--radius-md); }
+.brand-logo-image { display: block; width: 26px; height: 26px; object-fit: contain; }
+.brand-mark .brand-logo-image { width: 25px; height: 25px; }
 .auth-heading { margin: 56px 0 28px; }
 .eyebrow { margin: 0 0 6px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .auth-heading h1, .page-header h1, .portal-report h1 { margin: 0; font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.02em; }

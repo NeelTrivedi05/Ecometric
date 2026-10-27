@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, LayersTwo01, Lock01, Mail01 } from '@untitledui/icons';
 import { supabase } from '../../lib/supabase';
+import Input from '../base/input/input';
+import BrandLogo from '../BrandLogo';
 
 export default function Auth3({ initialMode = 'signin' }) {
   const navigate = useNavigate();
@@ -129,18 +131,27 @@ export default function Auth3({ initialMode = 'signin' }) {
 
   return (
     <main className={`auth3-page ${mode === 'signup' ? 'auth3-page--signup' : ''}`}>
+      <video
+        className="auth3-video-background"
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-hidden="true"
+      >
+        <source src="/login-bg.mp4" type="video/mp4" />
+      </video>
       <section key={mode} className={`auth3-card ${mode === 'signup' ? 'auth3-card--signup' : ''}`} aria-labelledby="auth3-title">
-        <div className="brand-lockup"><span className="brand-mark"><LayersTwo01 size={20} /></span><span>EcoMetric</span></div>
+        <div className="brand-lockup"><span className="brand-mark"><BrandLogo /></span><span>EcoMetric</span></div>
         <div className="auth-heading">
           <p className="eyebrow">EPD automation studio</p>
           <h1 id="auth3-title">{mode === 'signin' ? 'Log in' : 'Create your account'}</h1>
           {mode === 'signin' && <p>Continue your environmental product declaration work.</p>}
         </div>
         <form className="auth-form" onSubmit={submit}>
-          {mode === 'signup' && <><label htmlFor="organizationName">Organization name</label><input id="organizationName" value={form.organizationName} onChange={update('organizationName')} required /></>}
-          <label htmlFor="email">Work email</label>
-          <div className="input-with-icon"><Mail01 size={17} /><input id="email" type="email" autoComplete="email" value={form.email} onChange={update('email')} required /></div>
-          {mode === 'signup' && <><label htmlFor="password">Password</label><div className="input-with-icon"><Lock01 size={17} /><input id="password" type="password" autoComplete="new-password" value={form.password} onChange={update('password')} minLength="8" required /></div></>}
+          {mode === 'signup' && <Input id="organizationName" label="Organization name" isRequired value={form.organizationName} onChange={update('organizationName')} />}
+          <Input id="email" label="Work email" type="email" autoComplete="email" isRequired value={form.email} onChange={update('email')} leadingIcon={Mail01} />
+          {mode === 'signup' && <Input id="password" label="Password" type="password" autoComplete="new-password" minLength="8" isRequired value={form.password} onChange={update('password')} leadingIcon={Lock01} />}
           <button className="auth3-submit" type="submit" disabled={busy}>{busy ? 'Please wait…' : mode === 'signin' ? 'Continue' : 'Create account'} <ArrowRight size={17} /></button>
         </form>
         <div className="auth3-divider"><span>Or</span></div>
@@ -152,8 +163,7 @@ export default function Auth3({ initialMode = 'signin' }) {
         {mode === 'signin' && <p className="auth-footnote">Access is managed by your EcoMetric organization administrator.</p>}
       </section>
       <section key={`intro-${mode}`} className={`auth3-intro ${mode === 'signup' ? 'auth3-intro--signup' : ''}`} aria-label="About EcoMetric">
-        <p className="auth3-intro__eyebrow">Environmental intelligence platform</p>
-        <h2>EcoMetric</h2>
+        <h2>Think<br />Green</h2>
         <p>Turn product evidence into accurate, audit-ready Environmental Product Declarations.</p>
       </section>
     </main>

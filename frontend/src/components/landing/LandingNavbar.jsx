@@ -1,6 +1,7 @@
 import React from 'react';
-import { LeafIcon, ChevronRightIcon } from '../studio/Icons';
+import { ChevronRightIcon } from '../studio/Icons';
 import { Link, NavLink } from 'react-router-dom';
+import BrandLogo from '../BrandLogo';
 
 export default function LandingNavbar({ onLaunchApp }) {
   return (
@@ -8,7 +9,7 @@ export default function LandingNavbar({ onLaunchApp }) {
       <div className="lp-container apple-sub-nav-inner">
         <Link to="/overview" className="apple-subnav-title">
           <span className="apple-subnav-mark">
-            <LeafIcon size={16} />
+            <BrandLogo />
           </span>
           EcoMetric Studio
         </Link>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronRightIcon } from '../studio/Icons';
 
-const VIDEO_SOURCE = '/new_video.mp4';
+const VIDEO_SOURCE = '/landing-bg.mp4';
 
 export default function Hero9({ onLaunchApp }) {
   return (
@@ -20,12 +20,9 @@ export default function Hero9({ onLaunchApp }) {
       <div className="hero-9__veil" aria-hidden="true" />
 
       <div className="hero-9__content">
-        <p className="hero-9__eyebrow hero-9__reveal hero-9__reveal--one">
-          EcoMetric / Environmental intelligence
-        </p>
         <h1 className="hero-9__title">
-          <span className="hero-9__reveal hero-9__reveal--two">Make every</span>
-          <span className="hero-9__reveal hero-9__reveal--three">product count.</span>
+          <span className="hero-9__reveal hero-9__reveal--two">Think</span>
+          <span className="hero-9__reveal hero-9__reveal--three">Green</span>
         </h1>
         <p className="hero-9__description hero-9__reveal hero-9__reveal--four">
           Turn engineering data into audit-ready EPDs, with every impact mapped,

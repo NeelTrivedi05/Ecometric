@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { aboutTopics } from '../data/aboutTopics';
-import { LeafIcon, ChevronRightIcon, ChevronLeftIcon } from '../components/studio/Icons';
+import { ChevronRightIcon, ChevronLeftIcon } from '../components/studio/Icons';
+import BrandLogo from '../components/BrandLogo';
 import AboutTimeline from '../components/info/AboutTimeline';
 import TopicTimeline from '../components/info/TopicTimeline';
 import '../styles/InfoPage.css';
@@ -32,7 +33,7 @@ export default function InfoPage() {
       <header className="info-header">
         <div className="lp-container info-header-inner">
           <Link to="/" className="info-brand">
-            <LeafIcon size={18} style={{ color: 'var(--apple-primary)' }} />
+            <BrandLogo />
             <span className="info-brand-title">EcoMetric Studio</span>
             <span className="info-brand-badge">Knowledge Base</span>
           </Link>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayersTwo01, Lock01 } from '@untitledui/icons';
 import { supabase } from '../lib/supabase';
+import BrandLogo from '../components/BrandLogo';
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function ResetPasswordPage() {
   return (
     <main className="auth3-page">
       <section className="auth3-card" aria-labelledby="reset-password-title">
-        <div className="brand-lockup"><span className="brand-mark"><LayersTwo01 size={20} /></span><span>EcoMetric</span></div>
+        <div className="brand-lockup"><span className="brand-mark"><BrandLogo /></span><span>EcoMetric</span></div>
         <div className="auth-heading"><p className="eyebrow">Account recovery</p><h1 id="reset-password-title">Set a new password</h1><p>Choose a new password for your EcoMetric account.</p></div>
         {!ready && !error && <p className="auth3-message">Validating your reset link…</p>}
         {ready && <form className="auth-form" onSubmit={submit}>

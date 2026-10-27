@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronRightIcon, CheckCircleIcon, FileIcon, LeafIcon } from '../studio/Icons';
+import { ChevronRightIcon, CheckCircleIcon, FileIcon } from '../studio/Icons';
+import BrandLogo from '../BrandLogo';
 
 export default function DashboardPreview({ onLaunchApp }) {
   const [activeView, setActiveView] = useState('results');
@@ -31,7 +32,7 @@ export default function DashboardPreview({ onLaunchApp }) {
             alignItems: 'center'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <LeafIcon size={16} style={{ color: 'var(--apple-primary)' }} />
+              <BrandLogo />
               <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--apple-ink)', letterSpacing: '-0.2px' }}>
                 EcoMetric Studio
               </span>
