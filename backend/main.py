@@ -38,6 +38,17 @@ app.include_router(documents.router)
 app.include_router(processes.router)
 app.include_router(products.router)
 
+@app.get("/")
+def root():
+    return {
+        "status": "online",
+        "service": "EcoMetric Backend Engine",
+        "docs": "/docs",
+        "health": "/health",
+        "pcr_standard": "UL 10010-4 Part B v2.0 (2018)",
+        "ecoinvent_version": "3.12"
+    }
+
 @app.get("/health")
 @app.get("/api/health")
 def healthcheck():
