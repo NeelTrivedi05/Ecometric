@@ -5,9 +5,6 @@ import BrandLogo from '../BrandLogo';
 import {
   MenuIcon,
   ExportIcon,
-  CheckCircleIcon,
-  ChevronRightIcon,
-  RefreshCwIcon,
   DropletIcon,
   SnowflakeIcon,
   ThermalIcon,
@@ -45,7 +42,6 @@ export default function StudioHeader() {
   const isChiller = productProfile?.isChiller !== false;
   const productName = extractedData?.project_info?.product_name || productProfile?.name;
   const capacityRt = extractedData?.operational?.capacity_rt || 500;
-  const pcrStandard = extractedData?.project_info?.pcr_ref || productProfile?.pcrLabel;
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -178,6 +174,30 @@ export default function StudioHeader() {
       </div>
 
       <div className="topbar-right">
+        {/* Account Admin Console Quick Navigation */}
+        <Link
+          to="/console"
+          className="hide-mobile"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '5px 12px',
+            borderRadius: '8px',
+            border: '1px solid var(--border, #dfe7dd)',
+            backgroundColor: 'var(--bg-card, #ffffff)',
+            fontSize: '12px',
+            fontWeight: 600,
+            color: 'var(--text-secondary, #2f3b33)',
+            textDecoration: 'none',
+            transition: 'all 0.16s ease',
+          }}
+          title="Account Admin Console (Multi-Tenant Isolation)"
+        >
+          <span style={{ fontSize: '12px' }}>🛡️</span>
+          <span>Admin Console</span>
+        </Link>
+
         {/* Compliance Capsule Badge */}
         <div className="compliance-pill-header hide-tablet">
           <span className="compliance-dot-pulse" />

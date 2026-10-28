@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
 import {
   UploadIcon,
@@ -167,6 +168,36 @@ export default function StudioSidebar() {
         })}
       </nav>
 
+      {/* Account Admin Console Footer Link */}
+      <div
+        style={{
+          marginTop: 'auto',
+          padding: '12px 10px',
+          borderTop: '1px solid var(--border, #dfe7dd)',
+        }}
+      >
+        <Link
+          to="/console"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 10px',
+            borderRadius: '8px',
+            backgroundColor: 'var(--bg-card, #ffffff)',
+            border: '1px solid var(--border, #dfe7dd)',
+            color: 'var(--text-secondary, #2f3b33)',
+            textDecoration: 'none',
+            fontSize: '12px',
+            fontWeight: 600,
+            transition: 'all 0.16s ease',
+          }}
+          title="Account Admin Console (Multi-Tenant Management)"
+        >
+          <ShieldCheckIcon size={14} style={{ color: 'var(--accent, #1f7a4c)', flexShrink: 0 }} />
+          {!isSidebarCollapsed && <span>Admin Console</span>}
+        </Link>
+      </div>
     </aside>
   );
 }

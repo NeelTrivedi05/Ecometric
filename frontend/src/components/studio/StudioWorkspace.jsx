@@ -158,7 +158,9 @@ export default function StudioWorkspace() {
   if (!projectId) {
     return (
       <div className="studio-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <ProjectsConsole />
+        <StudioErrorBoundary onReset={() => navigate('/app')}>
+          <ProjectsConsole />
+        </StudioErrorBoundary>
 
         {/* Toast */}
         {notification && (

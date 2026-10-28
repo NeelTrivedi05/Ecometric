@@ -1,6 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
+import { useAuth } from '../../context/AuthContext';
+import { useTenant } from '../../context/TenantContext';
 import {
   FolderIcon,
   TagIcon,
@@ -21,8 +23,75 @@ import {
   HelpCircleIcon,
 } from './Icons';
 import EpdCertificateModal from './EpdCertificateModal';
+import {
+  User01,
+  Settings01,
+  BookOpen01,
+  LogOut01,
+  ChevronSelectorVertical,
+} from '@untitledui/icons';
 import Table04AlternatingFills from './Table04AlternatingFills';
 import { Button } from '@/components/base/buttons/button';
+
+// Popover menu item adhering strictly to Untitled UI and DESIGN.md nature-led tokens
+function AccountMenuItem({ icon: Icon, label, shortcut, onClick, isDestructive = false }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '8px 10px',
+        borderRadius: '8px',
+        color: isHovered ? '#ffffff' : (isDestructive ? '#e4ebe6' : '#d2ded7'),
+        backgroundColor: isHovered ? (isDestructive ? 'rgba(220, 38, 38, 0.16)' : '#26342b') : 'transparent',
+        cursor: 'pointer',
+        fontSize: '13px',
+        fontWeight: 500,
+        transition: 'all 0.12s ease',
+        userSelect: 'none',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <Icon
+          size={16}
+          style={{
+            color: isHovered ? (isDestructive ? '#f87171' : '#ffffff') : '#8ea195',
+            flexShrink: 0,
+            transition: 'color 0.12s ease',
+          }}
+        />
+        <span style={{ color: isHovered && isDestructive ? '#f87171' : 'inherit' }}>{label}</span>
+      </div>
+      {shortcut && (
+        <kbd
+          style={{
+            fontSize: '11px',
+            fontWeight: 500,
+            color: isHovered ? '#b1c2b7' : '#8ea195',
+            backgroundColor: '#202c24',
+            border: '1px solid #334438',
+            borderRadius: '4px',
+            padding: '2px 5px',
+            fontFamily: 'inherit',
+            letterSpacing: '0.02em',
+            lineHeight: 1,
+            display: 'inline-flex',
+            alignItems: 'center',
+            transition: 'all 0.12s ease',
+          }}
+        >
+          {shortcut}
+        </kbd>
+      )}
+    </div>
+  );
+}
 
 export default function ProjectsConsole() {
   const {
@@ -62,9 +131,123 @@ export default function ProjectsConsole() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
 
-  // Modals
+  // Modals & Popovers
   const [selectedEpdForCert, setSelectedEpdForCert] = useState(null);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+
+  const { user, signOut } = useAuth();
+  const { activeOrg } = useTenant();
+
+  const [isCardHovered, setIsCardHovered] = useState(false);
+  const [avatarImgFailed, setAvatarImgFailed] = useState(false);
+  const accountCardRef = useRef(null);
+  const popoverRef = useRef(null);
+
+  const displayName = useMemo(() => {
+    return (
+      user?.user_metadata?.full_name ||
+      user?.user_metadata?.name ||
+      currentAccount?.user_name ||
+      'Dhruvil Patel'
+    );
+  }, [user, currentAccount]);
+
+  const displayEmail = useMemo(() => {
+    return (
+      user?.email ||
+      currentAccount?.user_email ||
+      'dhruvil@ecometric.io'
+    );
+  }, [user, currentAccount]);
+
+  const avatarUrl = useMemo(() => {
+    return (
+      user?.user_metadata?.avatar_url ||
+      user?.user_metadata?.picture ||
+      currentAccount?.avatar_url ||
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+    );
+  }, [user, currentAccount]);
+
+  const userInitials = useMemo(() => {
+    if (currentAccount?.avatar && currentAccount.avatar.length <= 3) {
+      return currentAccount.avatar;
+    }
+    const parts = displayName.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return displayName.slice(0, 2).toUpperCase() || 'DP';
+  }, [displayName, currentAccount]);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target) &&
+        accountCardRef.current &&
+        !accountCardRef.current.contains(event.target)
+      ) {
+        setIsAccountDropdownOpen(false);
+      }
+    }
+    if (isAccountDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isAccountDropdownOpen]);
+
+  const activeSlug = activeOrg?.slug || currentAccount?.id || 'carrier-hvac';
+
+  const handleViewProfile = () => {
+    setIsAccountDropdownOpen(false);
+    navigate('/console/' + activeSlug + '/overview');
+  };
+
+  const handleAccountSettings = () => {
+    setIsAccountDropdownOpen(false);
+    navigate('/console/' + activeSlug + '/settings');
+  };
+
+  const handleDocumentation = () => {
+    setIsAccountDropdownOpen(false);
+    navigate('/info');
+  };
+
+  const handleSignOut = async () => {
+    setIsAccountDropdownOpen(false);
+    try {
+      if (signOut) {
+        await signOut();
+      }
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
+    navigate('/login');
+  };
+
+  // Keyboard shortcut listener (Cmd+S for Settings, Alt+Shift+Q for Sign out, Escape to close)
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        navigate('/console/' + activeSlug + '/settings');
+        setIsAccountDropdownOpen(false);
+      }
+      if (e.altKey && e.shiftKey && e.key.toLowerCase() === 'q') {
+        e.preventDefault();
+        handleSignOut();
+      }
+      if (e.key === 'Escape' && isAccountDropdownOpen) {
+        setIsAccountDropdownOpen(false);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeSlug, isAccountDropdownOpen]);
 
   useEffect(() => {
     const folderByRoute = {
@@ -518,7 +701,7 @@ export default function ProjectsConsole() {
               justifyContent: 'space-between',
               cursor: 'pointer',
             }}
-            onClick={() => setIsAccountDropdownOpen(true)}
+            onClick={() => navigate(`/console/${activeSlug}/domain-data`)}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BuildingIcon size={15} style={{ color: '#829589' }} />
@@ -555,171 +738,192 @@ export default function ProjectsConsole() {
             <span>Trash</span>
           </div>
 
-          {/* Account Profile Footer */}
-          <div
-            style={{
-              marginTop: '8px',
-              padding: '10px',
-              borderRadius: '8px',
-              backgroundColor: '#26342b',
-              border: '1px solid #334438',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              position: 'relative',
-            }}
-          >
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '6px',
-                backgroundColor: currentAccount?.accent_color || '#1f7a4c',
-                color: '#ffffff',
-                fontWeight: 700,
-                fontSize: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              {currentAccount?.avatar || 'AC'}
-            </div>
-            <div style={{ overflow: 'hidden', flex: 1 }}>
-              <div
-                style={{
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: '#ffffff',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {currentAccount?.company_name || 'Signed In Account'}
-              </div>
-              <div
-                style={{
-                  fontSize: '10.5px',
-                  color: '#8ea195',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {currentAccount?.user_name}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#829589',
-                cursor: 'pointer',
-                padding: '4px',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-              title="Switch Signed-in Account"
-            >
-              <MoreVerticalIcon size={15} />
-            </button>
-
-            {/* Account Switcher Popover */}
+          {/* Account Profile Footer Card & Popover Menu (Matching DESIGN.md & Untitled UI) */}
+          <div style={{ position: 'relative', marginTop: '8px' }}>
+            {/* Popover Menu Triggered on Click */}
             {isAccountDropdownOpen && (
               <div
+                ref={popoverRef}
                 style={{
                   position: 'absolute',
-                  bottom: '52px',
-                  left: '0',
-                  width: '260px',
-                  backgroundColor: '#ffffff',
+                  bottom: 'calc(100% + 8px)',
+                  left: 0,
+                  width: '100%',
+                  minWidth: '236px',
+                  backgroundColor: '#1b2620',
                   borderRadius: '12px',
-                  border: '1px solid #dfe7dd',
-                  boxShadow: '0 16px 36px rgba(16, 52, 33, 0.22)',
+                  border: '1px solid #334438',
+                  boxShadow: '0 16px 36px rgba(10, 25, 18, 0.55)',
+                  padding: '6px',
                   zIndex: 100,
-                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '2px',
+                  userSelect: 'none',
                 }}
+                onClick={(e) => e.stopPropagation()}
               >
+                {/* 1. View profile */}
+                <AccountMenuItem
+                  icon={User01}
+                  label="View profile"
+                  shortcut="⌘K→P"
+                  onClick={handleViewProfile}
+                />
+
+                {/* 2. Account settings */}
+                <AccountMenuItem
+                  icon={Settings01}
+                  label="Account settings"
+                  shortcut="⌘S"
+                  onClick={handleAccountSettings}
+                />
+
+                {/* 3. Documentation */}
+                <AccountMenuItem
+                  icon={BookOpen01}
+                  label="Documentation"
+                  onClick={handleDocumentation}
+                />
+
+                {/* Divider Line */}
                 <div
                   style={{
-                    padding: '10px 14px',
-                    backgroundColor: '#f8faf6',
-                    borderBottom: '1px solid #dfe7dd',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    color: '#5b6f62',
-                    textTransform: 'uppercase',
+                    height: '1px',
+                    backgroundColor: '#28372d',
+                    margin: '4px 6px',
                   }}
-                >
-                  Switch Signed-In Account & Database
-                </div>
-                <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
-                  {accountsList.map((acc) => {
-                    const isSelected = acc.id === currentAccount?.id;
-                    return (
-                      <div
-                        key={acc.id}
-                        onClick={() => {
-                          switchAccount(acc.id);
-                          setIsAccountDropdownOpen(false);
-                        }}
-                        style={{
-                          padding: '10px 14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          backgroundColor: isSelected ? '#eef7f1' : '#ffffff',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #edf2ec',
-                          transition: 'background 0.15s ease',
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '26px',
-                            height: '26px',
-                            borderRadius: '5px',
-                            backgroundColor: acc.accent_color || '#1f7a4c',
-                            color: '#ffffff',
-                            fontWeight: 700,
-                            fontSize: '11px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {acc.avatar}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div
-                            style={{
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              color: isSelected ? '#1f7a4c' : '#16231b',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {acc.company_name}
-                          </div>
-                          <div style={{ fontSize: '10px', color: '#5b6f62' }}>
-                            {acc.facility_name}
-                          </div>
-                        </div>
-                        {isSelected && <CheckIcon size={14} style={{ color: '#1f7a4c' }} />}
-                      </div>
-                    );
-                  })}
-                </div>
+                />
+
+                {/* 4. Sign out (Notice: Switch account and + Add account are completely omitted as instructed) */}
+                <AccountMenuItem
+                  icon={LogOut01}
+                  label="Sign out"
+                  shortcut="⌥↑Q"
+                  onClick={handleSignOut}
+                  isDestructive
+                />
               </div>
             )}
+
+            {/* Account Profile Trigger Card */}
+            <div
+              ref={accountCardRef}
+              onClick={() => setIsAccountDropdownOpen((prev) => !prev)}
+              onMouseEnter={() => setIsCardHovered(true)}
+              onMouseLeave={() => setIsCardHovered(false)}
+              style={{
+                padding: '8px 10px',
+                borderRadius: '10px',
+                backgroundColor: isCardHovered ? '#2c3c31' : '#26342b',
+                border: isCardHovered ? '1px solid #3f5345' : '1px solid #334438',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+              title="Open Account Menu"
+            >
+              {/* Circular Avatar with Online Status Dot at bottom right */}
+              <div
+                style={{
+                  position: 'relative',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  flexShrink: 0,
+                }}
+              >
+                {avatarUrl && !avatarImgFailed ? (
+                  <img
+                    src={avatarUrl}
+                    alt={displayName}
+                    onError={() => setAvatarImgFailed(true)}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #1f7a4c 0%, #16482e 100%)',
+                      color: '#ffffff',
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {userInitials}
+                  </div>
+                )}
+
+                {/* Green Status Dot Badge (Bottom-Right) */}
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: '-1px',
+                    right: '-1px',
+                    width: '10px',
+                    height: '10px',
+                    backgroundColor: '#12b76a',
+                    borderRadius: '50%',
+                    border: '2px solid #26342b',
+                    boxSizing: 'border-box',
+                    zIndex: 2,
+                  }}
+                />
+              </div>
+
+              {/* Text Info: User Name and Email */}
+              <div style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#ffffff',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    lineHeight: '1.25',
+                  }}
+                >
+                  {displayName}
+                </div>
+                <div
+                  style={{
+                    fontSize: '12px',
+                    color: '#8ea195',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    lineHeight: '1.3',
+                    marginTop: '1px',
+                  }}
+                >
+                  {displayEmail}
+                </div>
+              </div>
+
+              {/* Untitled UI Selector Chevron on Right */}
+              <ChevronSelectorVertical
+                size={16}
+                style={{
+                  color: isCardHovered ? '#b1c2b7' : '#8ea195',
+                  flexShrink: 0,
+                  transition: 'color 0.15s ease',
+                }}
+              />
+            </div>
           </div>
         </div>
       </aside>

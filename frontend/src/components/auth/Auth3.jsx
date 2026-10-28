@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, LayersTwo01, Lock01, Mail01 } from '@untitledui/icons';
 import { supabase } from '../../lib/supabase';
@@ -18,6 +18,34 @@ export default function Auth3({ initialMode = 'signin' }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
+  // Check if account is already logged in on mount; if so, directly redirect to main console
+  useEffect(() => {
+    if (!supabase) return;
+
+    // Check if previous presence session expired after 24 hours
+    const storedLoginTime = window.localStorage.getItem('ecometric_session_login_time');
+    if (storedLoginTime) {
+      const elapsed = Date.now() - parseInt(storedLoginTime, 10);
+      if (elapsed >= 24 * 60 * 60 * 1000) {
+        window.localStorage.removeItem('ecometric_session_login_time');
+        supabase.auth.signOut().catch(() => {});
+        setMessage('Your presence session expired after 24 hours. Please log in again.');
+        return;
+      }
+    }
+
+    if (location.search.includes('session_expired')) {
+      setMessage('Your presence session expired after 24 hours. Please log in again.');
+    }
+
+    // Direct redirect to main console if valid active session exists
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        navigate('/app', { replace: true });
+      }
+    });
+  }, [navigate, location.search]);
+
   const update = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
 
   async function submit(event) {
@@ -30,21 +58,29 @@ export default function Auth3({ initialMode = 'signin' }) {
     setError('');
     setMessage('');
     const normalizedEmail = form.email.trim().toLowerCase();
-    const { data: accountExists, error: accountCheckError } = await supabase.rpc('account_exists', {
-      user_email: normalizedEmail,
-    });
-    if (accountCheckError) {
-      setBusy(false);
-      setError('Unable to verify this email right now. Please try again.');
-      console.error('Unable to check whether the account exists', accountCheckError);
-      return;
+
+    // 1. Check whether account exists in database
+    let accountExists = null;
+    try {
+      const { data, error: accountCheckError } = await supabase.rpc('account_exists', {
+        user_email: normalizedEmail,
+      });
+      if (!accountCheckError) {
+        accountExists = data;
+      }
+    } catch (err) {
+      console.warn('account_exists check warning:', err);
     }
-    if (mode === 'signin' && !accountExists) {
+
+    // If account not found in DB
+    if (mode === 'signin' && accountExists === false) {
       setBusy(false);
       setError('Account not found. Create an account first.');
       return;
     }
-    if (mode === 'signup' && accountExists) {
+
+    // If signup requested for existing account
+    if (mode === 'signup' && accountExists === true) {
       setBusy(false);
       navigate('/login', {
         replace: true,
@@ -52,7 +88,32 @@ export default function Auth3({ initialMode = 'signin' }) {
       });
       return;
     }
+
+    // 2. Sign In Execution: if account exists in DB, directly authenticate and redirect to main console
     if (mode === 'signin') {
+      // If user typed a password, sign in immediately with password
+      if (form.password && form.password.trim()) {
+        const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: normalizedEmail,
+          password: form.password,
+        });
+
+        if (signInError) {
+          setBusy(false);
+          setError(signInError.message);
+          return;
+        }
+
+        // Stamp 24-hr presence timestamp
+        window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
+        setBusy(false);
+
+        // Directly redirect to main console
+        navigate('/app', { replace: true });
+        return;
+      }
+
+      // Password omitted -> send OTP code
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: normalizedEmail,
         options: { shouldCreateUser: false },
@@ -67,10 +128,16 @@ export default function Auth3({ initialMode = 'signin' }) {
       return;
     }
 
+    // 3. Sign Up Execution
     const result = await supabase.auth.signUp({
-        email: normalizedEmail,
-        password: form.password,
-        options: { data: { full_name: form.email.split('@')[0], organization_name: form.organizationName } },
+      email: normalizedEmail,
+      password: form.password,
+      options: {
+        data: {
+          full_name: form.email.split('@')[0],
+          organization_name: form.organizationName || 'EcoMetric Organization',
+        },
+      },
     });
     setBusy(false);
     if (result.error) {
@@ -91,7 +158,17 @@ export default function Auth3({ initialMode = 'signin' }) {
       });
       return;
     }
-    if (mode === 'signup') setMessage('Check your email to confirm your account. Your organization will be created after confirmation.');
+
+    if (result.data.session) {
+      // Direct session returned (email confirmation disabled or auto-confirmed)
+      window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
+      navigate('/app', { replace: true });
+      return;
+    }
+
+    if (mode === 'signup') {
+      setMessage('Check your email to confirm your account. Your organization will be ready upon verification.');
+    }
   }
 
   async function signInWithGoogle() {
@@ -104,23 +181,10 @@ export default function Auth3({ initialMode = 'signin' }) {
         setError('Enter your organization name before continuing with Google.');
         return;
       }
-      const { data: accountExists, error: accountCheckError } = await supabase.rpc('account_exists', {
-        user_email: form.email.trim().toLowerCase(),
-      });
-      if (accountCheckError) {
-        setError('Unable to verify this email right now. Please try again.');
-        console.error('Unable to check whether the Google account exists', accountCheckError);
-        return;
-      }
-      if (accountExists) {
-        navigate('/login', {
-          replace: true,
-          state: { email: form.email.trim().toLowerCase(), message: 'This account already exists. Log in or reset your password.' },
-        });
-        return;
-      }
       window.sessionStorage.setItem('pending_organization_name', form.organizationName.trim());
     }
+    // Stamp 24-hr presence timestamp for OAuth session
+    window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
     setError('');
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -149,10 +213,40 @@ export default function Auth3({ initialMode = 'signin' }) {
           {mode === 'signin' && <p>Continue your environmental product declaration work.</p>}
         </div>
         <form className="auth-form" onSubmit={submit}>
-          {mode === 'signup' && <Input id="organizationName" label="Organization name" isRequired value={form.organizationName} onChange={update('organizationName')} />}
-          <Input id="email" label="Work email" type="email" autoComplete="email" isRequired value={form.email} onChange={update('email')} leadingIcon={Mail01} />
-          {mode === 'signup' && <Input id="password" label="Password" type="password" autoComplete="new-password" minLength="8" isRequired value={form.password} onChange={update('password')} leadingIcon={Lock01} />}
-          <button className="auth3-submit" type="submit" disabled={busy}>{busy ? 'Please wait…' : mode === 'signin' ? 'Continue' : 'Create account'} <ArrowRight size={17} /></button>
+          {mode === 'signup' && (
+            <Input
+              id="organizationName"
+              label="Organization name"
+              isRequired
+              value={form.organizationName}
+              onChange={update('organizationName')}
+            />
+          )}
+          <Input
+            id="email"
+            label="Work email"
+            type="email"
+            autoComplete="email"
+            isRequired
+            value={form.email}
+            onChange={update('email')}
+            leadingIcon={Mail01}
+          />
+          <Input
+            id="password"
+            label="Password"
+            type="password"
+            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+            isRequired={mode === 'signup'}
+            value={form.password}
+            onChange={update('password')}
+            leadingIcon={Lock01}
+            hint={mode === 'signin' ? 'Enter password for direct login, or leave blank to receive an email code' : undefined}
+          />
+          <button className="auth3-submit" type="submit" disabled={busy}>
+            {busy ? 'Please wait…' : mode === 'signin' ? (form.password ? 'Log in & Open Console' : 'Continue with Email Code') : 'Create account'}{' '}
+            <ArrowRight size={17} />
+          </button>
         </form>
         <div className="auth3-divider"><span>Or</span></div>
         <button className="auth3-provider" type="button" onClick={signInWithGoogle}> <strong>G</strong> Sign in with Google</button>

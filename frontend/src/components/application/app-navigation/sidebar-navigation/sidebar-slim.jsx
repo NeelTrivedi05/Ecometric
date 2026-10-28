@@ -20,7 +20,7 @@ export function SidebarNavigationSlim({ items = [], footerItems = [], className 
   };
 
   const handleFooter = (item) => {
-    if (item.label === 'Settings') navigate('/settings');
+    if (item.label === 'Settings') navigate('/console');
     if (item.label === 'Support') item.onClick?.();
   };
 

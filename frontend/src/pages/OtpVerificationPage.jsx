@@ -39,6 +39,7 @@ export default function OtpVerificationPage() {
       setError(verifyError.message);
       return;
     }
+    window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
     window.sessionStorage.removeItem('pending_otp_email');
     navigate('/app', { replace: true });
   }
