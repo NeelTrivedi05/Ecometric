@@ -50,6 +50,23 @@ async function processInviteAcceptance(userId, email, token, orgSlug) {
   }
 }
 
+// Resolve active organization slug from Supabase
+async function resolveUserOrgSlug(userId) {
+  if (!supabase || !userId) return null;
+  try {
+    const { data } = await supabase
+      .from('organization_members')
+      .select('organizations(slug)')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .maybeSingle();
+    return data?.organizations?.slug || null;
+  } catch (err) {
+    console.warn('resolveUserOrgSlug note:', err);
+    return null;
+  }
+}
+
 export default function Auth3({ initialMode = 'signin' }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,6 +85,32 @@ export default function Auth3({ initialMode = 'signin' }) {
   const [message, setMessage] = useState(location.state?.message || '');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+
+  // Directly redirect user to their primary organization console or intended deep-link
+  const performPostAuthRedirect = async (userId, explicitOrgSlug = null) => {
+    let targetSlug = explicitOrgSlug || invitedOrgSlug;
+    if (!targetSlug && userId) {
+      targetSlug = await resolveUserOrgSlug(userId);
+    }
+    if (!targetSlug) {
+      targetSlug = window.localStorage.getItem('ecometric_active_org_slug') || 'carrier-hvac';
+    } else {
+      window.localStorage.setItem('ecometric_active_org_slug', targetSlug);
+    }
+
+    const redirectFrom = location.state?.from;
+    if (
+      redirectFrom &&
+      typeof redirectFrom === 'string' &&
+      !redirectFrom.startsWith('/login') &&
+      !redirectFrom.startsWith('/signup')
+    ) {
+      navigate(redirectFrom, { replace: true });
+      return;
+    }
+
+    navigate(`/console/${targetSlug}/overview`, { replace: true });
+  };
 
   // Check if account is already logged in on mount; if so, directly redirect to main console
   useEffect(() => {
@@ -96,10 +139,10 @@ export default function Auth3({ initialMode = 'signin' }) {
           await processInviteAcceptance(session.user.id, session.user.email, inviteToken, invitedOrgSlug);
           if (invitedOrgSlug) window.localStorage.setItem('ecometric_active_org_slug', invitedOrgSlug);
         }
-        navigate('/app', { replace: true });
+        await performPostAuthRedirect(session.user.id, invitedOrgSlug);
       }
     });
-  }, [navigate, location.search]);
+  }, [navigate, location.search, inviteToken, invitedOrgSlug]);
 
   const update = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
 
@@ -150,7 +193,7 @@ export default function Auth3({ initialMode = 'signin' }) {
         window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
         if (invitedOrgSlug) window.localStorage.setItem('ecometric_active_org_slug', invitedOrgSlug);
         setBusy(false);
-        navigate('/app', { replace: true });
+        await performPostAuthRedirect(signUpRes.data?.user?.id, invitedOrgSlug);
         return;
       }
 
@@ -162,7 +205,7 @@ export default function Auth3({ initialMode = 'signin' }) {
     // If signup requested for existing account
     if (mode === 'signup' && accountExists === true) {
       setBusy(false);
-      navigate('/login', {
+      navigate(`/login${location.search}`, {
         replace: true,
         state: { email: normalizedEmail, message: 'This account already exists. Log in or reset your password.' },
       });
@@ -195,7 +238,7 @@ export default function Auth3({ initialMode = 'signin' }) {
         setBusy(false);
 
         // Directly redirect to main console
-        navigate('/app', { replace: true });
+        await performPostAuthRedirect(authData.user.id, invitedOrgSlug);
         return;
       }
 
@@ -228,7 +271,7 @@ export default function Auth3({ initialMode = 'signin' }) {
     setBusy(false);
     if (result.error) {
       if (mode === 'signup' && /already registered|already exists/i.test(result.error.message)) {
-        navigate('/login', {
+        navigate(`/login${location.search}`, {
           replace: true,
           state: { email: form.email, message: 'This email is already registered. Sign in or reset your password.' },
         });
@@ -238,7 +281,7 @@ export default function Auth3({ initialMode = 'signin' }) {
       return;
     }
     if (mode === 'signup' && result.data.user && result.data.user.identities?.length === 0) {
-      navigate('/login', {
+      navigate(`/login${location.search}`, {
         replace: true,
         state: { email: form.email, message: 'This email is already registered. Sign in or reset your password.' },
       });
@@ -248,7 +291,12 @@ export default function Auth3({ initialMode = 'signin' }) {
     if (result.data.session) {
       // Direct session returned (email confirmation disabled or auto-confirmed)
       window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
-      navigate('/app', { replace: true });
+      if (inviteToken || invitedOrgSlug) {
+        await processInviteAcceptance(result.data.user?.id, normalizedEmail, inviteToken, invitedOrgSlug);
+        if (invitedOrgSlug) window.localStorage.setItem('ecometric_active_org_slug', invitedOrgSlug);
+      }
+      setBusy(false);
+      await performPostAuthRedirect(result.data.user?.id, invitedOrgSlug);
       return;
     }
 
@@ -342,7 +390,15 @@ export default function Auth3({ initialMode = 'signin' }) {
         )}
         {error && <p className="auth3-message auth3-error" role="alert">{error}</p>}
         {message && <p className="auth3-message">{message}</p>}
-        <p className="auth3-switch">{mode === 'signin' ? 'New user?' : 'Already have an account?'} <button type="button" onClick={() => navigate(mode === 'signin' ? '/signup' : '/login')}>{mode === 'signin' ? 'Create an account' : 'Log in'}</button></p>
+        <p className="auth3-switch">
+          {mode === 'signin' ? 'New user?' : 'Already have an account?'}{' '}
+          <button
+            type="button"
+            onClick={() => navigate(mode === 'signin' ? `/signup${location.search}` : `/login${location.search}`)}
+          >
+            {mode === 'signin' ? 'Create an account' : 'Log in'}
+          </button>
+        </p>
         {mode === 'signin' && <p className="auth-footnote">Access is managed by your EcoMetric organization administrator.</p>}
       </section>
       <section key={`intro-${mode}`} className={`auth3-intro ${mode === 'signup' ? 'auth3-intro--signup' : ''}`} aria-label="About EcoMetric">

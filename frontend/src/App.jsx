@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import InfoPage from './pages/InfoPage';
 import LoginPage from './pages/LoginPage';
@@ -28,6 +28,8 @@ import ApiView from './components/admin/tabs/ApiView';
 
 function RequireAuth() {
   const { user, loading, isSessionExpired } = useAuth();
+  const location = useLocation();
+
   if (loading) {
     return (
       <main
@@ -51,6 +53,7 @@ function RequireAuth() {
         to="/login"
         replace
         state={{
+          from: location.pathname + location.search,
           message: isSessionExpired
             ? 'Your presence session expired after 24 hours. Please log in again.'
             : undefined,
@@ -77,7 +80,26 @@ function RequireAdmin() {
 }
 
 function ConsoleRedirect({ to = 'overview' }) {
-  const { activeOrg } = useTenant();
+  const { activeOrg, loading } = useTenant();
+
+  if (loading) {
+    return (
+      <main
+        className="auth-page"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          backgroundColor: '#f2f6f0',
+          fontFamily: 'Google Sans Flex, sans-serif',
+        }}
+      >
+        <p style={{ color: '#1f7a4c', fontWeight: 600, fontSize: '15px' }}>Opening organization console…</p>
+      </main>
+    );
+  }
+
   const slug = activeOrg?.slug || window.localStorage.getItem('ecometric_active_org_slug') || 'carrier-hvac';
   return <Navigate to={`/console/${slug}/${to}`} replace />;
 }
@@ -127,7 +149,7 @@ export default function App() {
           </Route>
 
           {/* Isolated Multi-Tenant Account Admin Console */}
-          <Route path="/console" element={<ConsoleRedirect to="settings" />} />
+          <Route path="/console" element={<ConsoleRedirect to="overview" />} />
           <Route element={<AdminRouteGuard />}>
             <Route path="/console/:orgSlug" element={<AdminConsoleLayout />}>
               <Route index element={<Navigate to="overview" replace />} />

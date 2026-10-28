@@ -33,7 +33,7 @@ export default function OtpVerificationPage() {
     if (code.length !== 6 || !supabase) return;
     setBusy(true);
     setError('');
-    const { error: verifyError } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' });
+    const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' });
     setBusy(false);
     if (verifyError) {
       setError(verifyError.message);
@@ -41,7 +41,26 @@ export default function OtpVerificationPage() {
     }
     window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
     window.sessionStorage.removeItem('pending_otp_email');
-    navigate('/app', { replace: true });
+
+    let targetSlug = window.localStorage.getItem('ecometric_active_org_slug');
+    if (verifyData?.user?.id) {
+      try {
+        const { data: memberData } = await supabase
+          .from('organization_members')
+          .select('organizations(slug)')
+          .eq('user_id', verifyData.user.id)
+          .eq('status', 'active')
+          .maybeSingle();
+        if (memberData?.organizations?.slug) {
+          targetSlug = memberData.organizations.slug;
+        }
+      } catch (err) {
+        console.warn('OTP target org lookup warning:', err);
+      }
+    }
+    const slug = targetSlug || 'carrier-hvac';
+    window.localStorage.setItem('ecometric_active_org_slug', slug);
+    navigate(`/console/${slug}/overview`, { replace: true });
   }
 
   async function resend() {

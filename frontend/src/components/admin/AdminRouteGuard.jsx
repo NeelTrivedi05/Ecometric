@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Outlet, Link } from 'react-router-dom';
+import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import BrandLogo from '../BrandLogo';
@@ -7,6 +7,7 @@ import BrandLogo from '../BrandLogo';
 export default function AdminRouteGuard() {
   const { user, loading: authLoading } = useAuth();
   const { activeOrg, isAccountAdmin, userRole, loading: tenantLoading } = useTenant();
+  const location = useLocation();
 
   const isLoading = authLoading || tenantLoading;
 
@@ -101,9 +102,9 @@ export default function AdminRouteGuard() {
     );
   }
 
-  // Not logged in -> redirect to login
-  if (!user && !activeOrg) {
-    return <Navigate to="/login" replace />;
+  // Not logged in -> redirect to login preserving intended target
+  if (!user) {
+    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
   }
 
   // If user has no active organization in database
