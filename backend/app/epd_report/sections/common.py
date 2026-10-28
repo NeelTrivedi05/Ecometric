@@ -97,19 +97,24 @@ def _inline(s: str) -> str:
 def markdown_blocks(md: str) -> List[Paragraph]:
     """Converts a small, safe markdown subset (paragraphs, ###/#### headings, bullet and numbered lists,
     bold, italic, code, http(s) links). All user text is HTML-escaped first."""
+    bullet_pattern = re.compile(r"^\s*[-*]\s+")
+    numbered_pattern = re.compile(r"^\s*\d+[.)]\s+")
+    heading_pattern = re.compile(r"^#{1,4}\s+")
+
     blocks: List[Paragraph] = []
     for chunk in re.split(r"\n\s*\n", md.strip()):
         lines = [l.rstrip() for l in chunk.splitlines() if l.strip()]
         if not lines:
             continue
-        if all(re.match(r"^\s*[-*]\s+", l) for l in lines):
-            items = "".join(f"<li>{_inline(re.sub(r'^\s*[-*]\s+', '', l))}</li>" for l in lines)
+        if all(bullet_pattern.match(l) for l in lines):
+            items = "".join(f"<li>{_inline(bullet_pattern.sub('', l))}</li>" for l in lines)
             blocks.append(Paragraph(text=f"<ul>{items}</ul>", html=True))
-        elif all(re.match(r"^\s*\d+[.)]\s+", l) for l in lines):
-            items = "".join(f"<li>{_inline(re.sub(r'^\s*\d+[.)]\s+', '', l))}</li>" for l in lines)
+        elif all(numbered_pattern.match(l) for l in lines):
+            items = "".join(f"<li>{_inline(numbered_pattern.sub('', l))}</li>" for l in lines)
             blocks.append(Paragraph(text=f"<ol>{items}</ol>", html=True))
-        elif re.match(r"^#{1,4}\s+", lines[0]) and len(lines) == 1:
-            blocks.append(Paragraph(text=f"<h4>{_inline(re.sub(r'^#{1,4}\s+', '', lines[0]))}</h4>", html=True))
+        elif heading_pattern.match(lines[0]) and len(lines) == 1:
+            clean_heading = _inline(heading_pattern.sub('', lines[0]))
+            blocks.append(Paragraph(text=f"<h4>{clean_heading}</h4>", html=True))
         else:
             blocks.append(Paragraph(text=f"<p>{'<br>'.join(_inline(l) for l in lines)}</p>", html=True))
     return blocks
