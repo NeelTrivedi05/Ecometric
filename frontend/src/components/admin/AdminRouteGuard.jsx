@@ -106,8 +106,8 @@ export default function AdminRouteGuard() {
     return <Navigate to="/login" replace />;
   }
 
-  // Active user exists but does NOT have account_admin permissions in this tenant
-  if (!isAccountAdmin) {
+  // If user has no active organization in database
+  if (!activeOrg) {
     return (
       <div
         style={{
@@ -146,25 +146,8 @@ export default function AdminRouteGuard() {
               marginBottom: '16px',
             }}
           >
-            🛡️
+            ✉️
           </div>
-
-          <span
-            style={{
-              display: 'inline-block',
-              padding: '4px 12px',
-              borderRadius: '9999px',
-              fontSize: '11px',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              backgroundColor: 'rgba(217, 119, 6, 0.1)',
-              color: '#b45309',
-              marginBottom: '12px',
-            }}
-          >
-            Restricted Console Access
-          </span>
 
           <h1
             style={{
@@ -174,7 +157,7 @@ export default function AdminRouteGuard() {
               marginBottom: '8px',
             }}
           >
-            Account Administrator Required
+            Organization Membership Required
           </h1>
 
           <p
@@ -185,19 +168,7 @@ export default function AdminRouteGuard() {
               marginBottom: '20px',
             }}
           >
-            You are signed into <strong>{activeOrg?.name || 'this Organization'}</strong> with the role{' '}
-            <code
-              style={{
-                backgroundColor: 'var(--bg-hover, #eef7f1)',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                color: 'var(--accent, #1f7a4c)',
-              }}
-            >
-              {userRole}
-            </code>
-            . Only designated <strong>Account Admins</strong> can access the administrative management console and
-            security settings under PostgreSQL RLS isolation rules.
+            Your account is not currently associated with an active organization. Ask an Account Admin to send you an invitation, or launch the calculation studio.
           </p>
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
@@ -214,10 +185,9 @@ export default function AdminRouteGuard() {
                 backgroundColor: 'var(--accent, #1f7a4c)',
                 color: '#ffffff',
                 textDecoration: 'none',
-                transition: 'all 0.16s ease',
               }}
             >
-              ← Return to Calculation Studio
+              Launch Studio
             </Link>
           </div>
         </div>
@@ -225,6 +195,7 @@ export default function AdminRouteGuard() {
     );
   }
 
+  // Active member of organization (Admin or Employee) is allowed into console
   return <Outlet />;
 }
 

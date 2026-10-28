@@ -5,12 +5,54 @@ import { supabase } from '../../lib/supabase';
 import Input from '../base/input/input';
 import BrandLogo from '../BrandLogo';
 
+// Process invitation acceptance for employee joining organization
+async function processInviteAcceptance(userId, email, token, orgSlug) {
+  if (!supabase || !userId) return;
+  try {
+    const normalizedEmail = (email || '').trim().toLowerCase();
+    const { data: invRows } = await supabase
+      .from('organization_invites')
+      .select('id, organization_id, role')
+      .eq('email', normalizedEmail)
+      .is('accepted_at', null);
+
+    if (invRows && invRows.length > 0) {
+      for (const inv of invRows) {
+        await supabase.from('organization_members').upsert({
+          organization_id: inv.organization_id,
+          user_id: userId,
+          role: 'member', // Employee role
+          status: 'active',
+        }, { onConflict: 'organization_id,user_id' });
+
+        await supabase
+          .from('organization_invites')
+          .update({ accepted_at: new Date().toISOString() })
+          .eq('id', inv.id);
+
+        await supabase
+          .from('profiles')
+          .update({ default_org_id: inv.organization_id })
+          .eq('id', userId);
+      }
+    }
+  } catch (err) {
+    console.warn('Error accepting invitation in Supabase:', err);
+  }
+}
+
 export default function Auth3({ initialMode = 'signin' }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [mode] = useState(initialMode);
+  
+  const searchParams = new URLSearchParams(location.search);
+  const inviteToken = searchParams.get('invite') || searchParams.get('token');
+  const invitedOrgSlug = searchParams.get('org');
+  const invitedEmail = searchParams.get('email');
+
   const [form, setForm] = useState({
-    email: location.state?.email || '',
+    email: location.state?.email || invitedEmail || '',
     password: '',
     organizationName: '',
   });
@@ -38,9 +80,13 @@ export default function Auth3({ initialMode = 'signin' }) {
       setMessage('Your presence session expired after 24 hours. Please log in again.');
     }
 
-    // Direct redirect to main console if valid active session exists
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Direct redirect or accept invite if active session exists
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
+        if (inviteToken) {
+          await processInviteAcceptance(session.user.id, session.user.email, inviteToken, invitedOrgSlug);
+          if (invitedOrgSlug) window.localStorage.setItem('ecometric_active_org_slug', invitedOrgSlug);
+        }
         navigate('/app', { replace: true });
       }
     });
@@ -74,6 +120,31 @@ export default function Auth3({ initialMode = 'signin' }) {
 
     // If account not found in DB
     if (mode === 'signin' && accountExists === false) {
+      if (inviteToken) {
+        // Automatically create account for invited employee with entered password
+        const signUpRes = await supabase.auth.signUp({
+          email: normalizedEmail,
+          password: form.password,
+          options: {
+            data: {
+              full_name: normalizedEmail.split('@')[0],
+              role: 'member',
+            },
+          },
+        });
+        if (signUpRes.error) {
+          setBusy(false);
+          setError(signUpRes.error.message);
+          return;
+        }
+        await processInviteAcceptance(signUpRes.data?.user?.id, normalizedEmail, inviteToken, invitedOrgSlug);
+        window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
+        if (invitedOrgSlug) window.localStorage.setItem('ecometric_active_org_slug', invitedOrgSlug);
+        setBusy(false);
+        navigate('/app', { replace: true });
+        return;
+      }
+
       setBusy(false);
       setError('Account not found. Create an account first.');
       return;
@@ -102,6 +173,12 @@ export default function Auth3({ initialMode = 'signin' }) {
           setBusy(false);
           setError(signInError.message);
           return;
+        }
+
+        // Accept pending invitation if present
+        if (inviteToken || invitedOrgSlug) {
+          await processInviteAcceptance(authData.user.id, normalizedEmail, inviteToken, invitedOrgSlug);
+          if (invitedOrgSlug) window.localStorage.setItem('ecometric_active_org_slug', invitedOrgSlug);
         }
 
         // Stamp 24-hr presence timestamp
@@ -207,6 +284,29 @@ export default function Auth3({ initialMode = 'signin' }) {
       </video>
       <section key={mode} className={`auth3-card ${mode === 'signup' ? 'auth3-card--signup' : ''}`} aria-labelledby="auth3-title">
         <div className="brand-lockup"><BrandLogo theme="light" height={26} /></div>
+        {inviteToken && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 14px',
+              borderRadius: '10px',
+              backgroundColor: 'rgba(31, 122, 76, 0.08)',
+              border: '1px solid rgba(31, 122, 76, 0.25)',
+              margin: '16px 0 6px',
+              fontSize: '13px',
+              color: 'var(--text-primary, #16231b)',
+            }}
+          >
+            <span style={{ fontSize: '18px' }}>✉️</span>
+            <div>
+              <strong>Team Invitation:</strong> You have been invited to join{' '}
+              <strong>{invitedOrgSlug ? invitedOrgSlug.replace(/-/g, ' ').toUpperCase() : 'your team'}</strong> on EcoMetric as an{' '}
+              <strong>Employee</strong>.
+            </div>
+          </div>
+        )}
         <div className="auth-heading">
           <p className="eyebrow">EPD automation studio</p>
           <h1 id="auth3-title">{mode === 'signin' ? 'Log in' : 'Create your account'}</h1>

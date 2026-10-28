@@ -1,0 +1,53 @@
+services:
+  # -------------------------------------------------------------
+  # 1. EcoMetric FastAPI Backend
+  # Uses Docker to automatically configure Python 3.12, 
+  # Linux system dependencies, and headless Chromium for EPD reports.
+  # -------------------------------------------------------------
+  - type: web
+    name: ecometric-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    region: oregon
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 1440
+      - key: DATABASE_URL
+        value: sqlite:///./ecometric.db
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:5173,https://ecometric-frontend.onrender.com
+
+  # -------------------------------------------------------------
+  # 2. EcoMetric React / Vite Frontend
+  # Deployed as a high-speed CDN static site with SPA rewrite rules.
+  # -------------------------------------------------------------
+  - type: web
+    name: ecometric-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: ecometric-backend
+          property: host
+      - key: VITE_SUPABASE_URL
+        value: https://icurerepycrpkaybfarw.supabase.co
+      - key: VITE_SUPABASE_ANON_KEY
+        value: sb_publishable_ClcHwn5beKTBkqG2D8ueEg_htT6wLkx
+

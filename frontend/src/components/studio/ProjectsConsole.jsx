@@ -35,7 +35,7 @@ import Table04AlternatingFills from './Table04AlternatingFills';
 import { Button } from '@/components/base/buttons/button';
 
 // Popover menu item adhering strictly to Untitled UI and DESIGN.md nature-led tokens
-function AccountMenuItem({ icon: Icon, label, shortcut, onClick, isDestructive = false }) {
+function AccountMenuItem({ icon: Icon, label, onClick, isDestructive = false }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -46,7 +46,6 @@ function AccountMenuItem({ icon: Icon, label, shortcut, onClick, isDestructive =
       style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
         padding: '8px 10px',
         borderRadius: '8px',
         color: isHovered ? '#ffffff' : (isDestructive ? '#e4ebe6' : '#d2ded7'),
@@ -69,27 +68,6 @@ function AccountMenuItem({ icon: Icon, label, shortcut, onClick, isDestructive =
         />
         <span style={{ color: isHovered && isDestructive ? '#f87171' : 'inherit' }}>{label}</span>
       </div>
-      {shortcut && (
-        <kbd
-          style={{
-            fontSize: '11px',
-            fontWeight: 500,
-            color: isHovered ? '#b1c2b7' : '#8ea195',
-            backgroundColor: '#202c24',
-            border: '1px solid #334438',
-            borderRadius: '4px',
-            padding: '2px 5px',
-            fontFamily: 'inherit',
-            letterSpacing: '0.02em',
-            lineHeight: 1,
-            display: 'inline-flex',
-            alignItems: 'center',
-            transition: 'all 0.12s ease',
-          }}
-        >
-          {shortcut}
-        </kbd>
-      )}
     </div>
   );
 }
@@ -758,7 +736,6 @@ export default function ProjectsConsole() {
                 <AccountMenuItem
                   icon={User01}
                   label="View profile"
-                  shortcut="⌘K→P"
                   onClick={handleViewProfile}
                 />
 
@@ -766,7 +743,6 @@ export default function ProjectsConsole() {
                 <AccountMenuItem
                   icon={Settings01}
                   label="Account settings"
-                  shortcut="⌘S"
                   onClick={handleAccountSettings}
                 />
 
@@ -790,7 +766,6 @@ export default function ProjectsConsole() {
                 <AccountMenuItem
                   icon={LogOut01}
                   label="Sign out"
-                  shortcut="⌥↑Q"
                   onClick={handleSignOut}
                   isDestructive
                 />

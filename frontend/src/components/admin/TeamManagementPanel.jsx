@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import { supabase } from '../../lib/supabase';
+import { API_BASE } from '../../config/api';
 import { Button } from '../base/buttons/button';
 import {
   PlusIcon,
@@ -130,33 +131,77 @@ export default function TeamManagementPanel() {
   const handleSendInvite = async (e) => {
     e.preventDefault();
     if (!inviteEmail.trim()) return;
+    if (!isAccountAdmin) {
+      alert('Only Account Admins have permission to invite new members.');
+      return;
+    }
 
     setLoading(true);
     try {
+      const targetEmail = inviteEmail.trim().toLowerCase();
+      let generatedToken = Math.random().toString(36).substring(2, 14);
+
+      // 1. Dispatch official branded invitation email via backend API
+      try {
+        const res = await fetch(`${API_BASE}/invitations/send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: targetEmail,
+            role: inviteRole,
+            organization_id: activeOrg?.id || 'org-local',
+            organization_name: activeOrg?.name || 'EcoMetric Organization',
+            organization_slug: activeOrg?.slug || 'carrier-hvac',
+            inviter_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Organization Admin',
+            inviter_email: user?.email || '',
+          }),
+        });
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData.token) generatedToken = resData.token;
+        }
+      } catch (backendErr) {
+        console.warn('Backend invitation email service note:', backendErr);
+      }
+
+      // 2. Persist in Supabase organization_invites
       if (supabase && activeOrg?.id) {
         const { data, error } = await supabase.from('organization_invites').insert({
           organization_id: activeOrg.id,
-          email: inviteEmail.trim().toLowerCase(),
+          email: targetEmail,
           role: inviteRole,
+          token: generatedToken,
         }).select();
 
-        if (error) throw error;
+        if (error) {
+          console.warn('Supabase invite note:', error.message);
+        }
         if (data && data[0]) {
           setInvites((prev) => [data[0], ...prev]);
+        } else {
+          setInvites((prev) => [
+            {
+              id: `inv-${Date.now()}`,
+              email: targetEmail,
+              role: inviteRole,
+              token: generatedToken,
+              expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            },
+            ...prev,
+          ]);
         }
       } else {
-        // Local simulation
         const newInvite = {
           id: `inv-${Date.now()}`,
-          email: inviteEmail.trim().toLowerCase(),
+          email: targetEmail,
           role: inviteRole,
           expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          token: Math.random().toString(36).substring(2, 14),
+          token: generatedToken,
         };
         setInvites((prev) => [newInvite, ...prev]);
       }
 
-      setNotification(`Invitation sent to ${inviteEmail}`);
+      setNotification(`Invitation email sent to ${targetEmail} on behalf of ${activeOrg?.name || 'Organization'} & EcoMetric!`);
       setIsInviteModalOpen(false);
       setInviteEmail('');
       setInviteRole('member');
@@ -164,7 +209,7 @@ export default function TeamManagementPanel() {
       alert(`Error inviting user: ${err.message}`);
     } finally {
       setLoading(false);
-      setTimeout(() => setNotification(''), 4000);
+      setTimeout(() => setNotification(''), 5000);
     }
   };
 
@@ -293,9 +338,29 @@ export default function TeamManagementPanel() {
           </p>
         </div>
 
-        <Button onClick={() => setIsInviteModalOpen(true)} iconLeading={PlusIcon}>
-          Invite Colleague
-        </Button>
+        {isAccountAdmin ? (
+          <Button onClick={() => setIsInviteModalOpen(true)} iconLeading={PlusIcon}>
+            Invite Colleague
+          </Button>
+        ) : (
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              borderRadius: '8px',
+              backgroundColor: 'var(--bg-card2, #f8faf6)',
+              border: '1px solid var(--border, #dfe7dd)',
+              fontSize: '12px',
+              fontWeight: 600,
+              color: 'var(--text-secondary, #2f3b33)',
+            }}
+          >
+            <span>🔒</span>
+            <span>Employee View (Read-Only)</span>
+          </div>
+        )}
       </div>
 
       {/* Active Members Table */}

@@ -610,12 +610,55 @@ export default function OrganizationSettingsView() {
           }}
         >
           <div style={{ paddingBottom: '20px', borderBottom: '1px solid var(--border, #dfe7dd)' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #16231b)', margin: 0 }}>
-              Organization & LCA Profile
-            </h2>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted, #5b6f62)', margin: '4px 0 0' }}>
-              Official manufacturer identity and default impact assessment standards embedded in published EPDs.
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+              <div>
+                <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #16231b)', margin: 0 }}>
+                  Organization & LCA Profile
+                </h2>
+                <p style={{ fontSize: '13px', color: 'var(--text-muted, #5b6f62)', margin: '4px 0 0' }}>
+                  Official manufacturer identity and default impact assessment standards embedded in published EPDs.
+                </p>
+              </div>
+              {!isAccountAdmin && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    padding: '4px 10px',
+                    borderRadius: '9999px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                    color: '#b45309',
+                    border: '1px solid rgba(217, 119, 6, 0.25)',
+                  }}
+                >
+                  🔒 Admin Restricted (Read-Only)
+                </span>
+              )}
+            </div>
+            {!isAccountAdmin && (
+              <div
+                style={{
+                  marginTop: '14px',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--bg-card2, #f8faf6)',
+                  border: '1px solid var(--border, #dfe7dd)',
+                  fontSize: '12px',
+                  color: 'var(--text-secondary, #2f3b33)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <span>🛡️</span>
+                <span>
+                  <strong>Employee Access:</strong> You are viewing organization details as an employee. Organization identity and compliance standards can only be modified by an <strong>Account Admin</strong>.
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Org Row 1: Legal Name */}
@@ -639,9 +682,11 @@ export default function OrganizationSettingsView() {
                 type="text"
                 required
                 value={orgName}
+                disabled={!isAccountAdmin}
+                readOnly={!isAccountAdmin}
                 onChange={(e) => setOrgName(e.target.value)}
                 placeholder="Carrier Commercial HVAC"
-                style={inputStyle}
+                style={{ ...inputStyle, cursor: !isAccountAdmin ? 'not-allowed' : 'text', backgroundColor: !isAccountAdmin ? 'var(--bg-card2, #f8faf6)' : 'var(--bg-card, #ffffff)' }}
                 {...focusProps}
               />
             </div>
@@ -667,9 +712,11 @@ export default function OrganizationSettingsView() {
               <input
                 type="url"
                 value={website}
+                disabled={!isAccountAdmin}
+                readOnly={!isAccountAdmin}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://www.carrier.com"
-                style={inputStyle}
+                style={{ ...inputStyle, cursor: !isAccountAdmin ? 'not-allowed' : 'text', backgroundColor: !isAccountAdmin ? 'var(--bg-card2, #f8faf6)' : 'var(--bg-card, #ffffff)' }}
                 {...focusProps}
               />
             </div>
@@ -698,9 +745,11 @@ export default function OrganizationSettingsView() {
               <textarea
                 rows={2}
                 value={address}
+                disabled={!isAccountAdmin}
+                readOnly={!isAccountAdmin}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="One Carrier Place, Farmington, CT 06032, USA"
-                style={{ ...inputStyle, resize: 'vertical' }}
+                style={{ ...inputStyle, resize: 'vertical', cursor: !isAccountAdmin ? 'not-allowed' : 'text', backgroundColor: !isAccountAdmin ? 'var(--bg-card2, #f8faf6)' : 'var(--bg-card, #ffffff)' }}
                 {...focusProps}
               />
             </div>
@@ -725,8 +774,9 @@ export default function OrganizationSettingsView() {
             <div style={{ maxWidth: '560px', width: '100%' }}>
               <select
                 value={methodology}
+                disabled={!isAccountAdmin}
                 onChange={(e) => setMethodology(e.target.value)}
-                style={inputStyle}
+                style={{ ...inputStyle, cursor: !isAccountAdmin ? 'not-allowed' : 'pointer', backgroundColor: !isAccountAdmin ? 'var(--bg-card2, #f8faf6)' : 'var(--bg-card, #ffffff)' }}
               >
                 <option value="TRACI 2.1">TRACI 2.1 (US EPA Standard)</option>
                 <option value="CML-IA Baseline">CML-IA Baseline (European Standard)</option>
@@ -754,8 +804,9 @@ export default function OrganizationSettingsView() {
             <div style={{ maxWidth: '560px', width: '100%' }}>
               <select
                 value={pcrStandard}
+                disabled={!isAccountAdmin}
                 onChange={(e) => setPcrStandard(e.target.value)}
-                style={inputStyle}
+                style={{ ...inputStyle, cursor: !isAccountAdmin ? 'not-allowed' : 'pointer', backgroundColor: !isAccountAdmin ? 'var(--bg-card2, #f8faf6)' : 'var(--bg-card, #ffffff)' }}
               >
                 <option value="UL 10010-4 Part B v2.0 & EN 15804+A2">UL 10010-4 Part B v2.0 & EN 15804+A2 (HVAC & Mechanical)</option>
                 <option value="ISO 21930:2017 Core PCR">ISO 21930:2017 Core PCR for Building Products</option>
@@ -806,7 +857,7 @@ export default function OrganizationSettingsView() {
                 opacity: saving ? 0.7 : 1,
               }}
             >
-              {saving ? 'Saving...' : 'Save All Settings'}
+              {saving ? 'Saving...' : (isAccountAdmin ? 'Save All Settings' : 'Save Personal Profile')}
             </button>
           </div>
         </div>

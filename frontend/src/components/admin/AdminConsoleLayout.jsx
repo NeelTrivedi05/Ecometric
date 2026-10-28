@@ -295,7 +295,7 @@ export default function AdminConsoleLayout() {
             <span>RLS Isolated Tenant</span>
           </div>
 
-          {/* Account Admin Role Badge */}
+          {/* Dynamic Role Badge */}
           <div
             style={{
               display: 'flex',
@@ -305,13 +305,13 @@ export default function AdminConsoleLayout() {
               borderRadius: '9999px',
               fontSize: '11px',
               fontWeight: 600,
-              backgroundColor: 'var(--bg-card2, #f8faf6)',
-              color: 'var(--text-secondary, #2f3b33)',
-              border: '1px solid var(--border, #dfe7dd)',
+              backgroundColor: isAccountAdmin ? 'rgba(31, 122, 76, 0.08)' : 'var(--bg-card2, #f8faf6)',
+              color: isAccountAdmin ? 'var(--accent, #1f7a4c)' : 'var(--text-secondary, #2f3b33)',
+              border: `1px solid ${isAccountAdmin ? 'rgba(31, 122, 76, 0.25)' : 'var(--border, #dfe7dd)'}`,
             }}
           >
-            <span style={{ fontSize: '12px' }}>🛡️</span>
-            <span>Account Admin</span>
+            <span style={{ fontSize: '12px' }}>{isAccountAdmin ? '🛡️' : '👤'}</span>
+            <span>{isAccountAdmin ? 'Account Admin' : 'Employee (LCA Member)'}</span>
           </div>
 
           {/* Return to Calculation Studio */}

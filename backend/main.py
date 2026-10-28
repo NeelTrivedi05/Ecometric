@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routers import auth_routes, epd, epd_reports, submissions, documents, processes, products
+from app.routers import auth_routes, epd, epd_reports, submissions, documents, processes, products, invitations
 
 # Initialize DB tables
 Base.metadata.create_all(bind=engine)
@@ -23,7 +23,7 @@ origins = [o.strip() for o in allowed_origins_str.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"^https:\/\/.*\.vercel\.app$",
+    allow_origin_regex=r"^https:\/\/.*(\.vercel\.app|\.onrender\.com)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,6 +37,7 @@ app.include_router(submissions.router)
 app.include_router(documents.router)
 app.include_router(processes.router)
 app.include_router(products.router)
+app.include_router(invitations.router)
 
 @app.get("/")
 def root():
