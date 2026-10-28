@@ -193,8 +193,9 @@
 
 .brand-lockup { gap: 10px; font-size: 16px; font-weight: 700; }
 .brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; color: var(--color-neutral-0); background: var(--accent); border-radius: var(--radius-md); }
-.brand-logo-image { display: block; width: 26px; height: 26px; object-fit: contain; }
-.brand-mark .brand-logo-image { width: 25px; height: 25px; }
+.brand-logo-image { display: block; height: 22px; width: auto; max-width: 100%; object-fit: contain; }
+.brand-logo-symbol { display: block; width: 26px; height: 26px; object-fit: contain; }
+.brand-mark .brand-logo-image { width: auto; height: 22px; }
 .auth-heading { margin: 56px 0 28px; }
 .eyebrow { margin: 0 0 6px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .auth-heading h1, .page-header h1, .portal-report h1 { margin: 0; font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.02em; }

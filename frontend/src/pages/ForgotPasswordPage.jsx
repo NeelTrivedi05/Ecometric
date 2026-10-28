@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
   return (
     <main className="auth3-page">
       <section className="auth3-card" aria-labelledby="forgot-password-title">
-        <div className="brand-lockup"><span className="brand-mark"><BrandLogo /></span><span>EcoMetric</span></div>
+        <div className="brand-lockup"><BrandLogo theme="light" height={26} /></div>
         <div className="auth-heading">
           <p className="eyebrow">Account recovery</p>
           <h1 id="forgot-password-title">Forgot password?</h1>

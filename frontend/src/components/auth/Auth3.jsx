@@ -206,7 +206,7 @@ export default function Auth3({ initialMode = 'signin' }) {
         <source src="/login-bg.mp4" type="video/mp4" />
       </video>
       <section key={mode} className={`auth3-card ${mode === 'signup' ? 'auth3-card--signup' : ''}`} aria-labelledby="auth3-title">
-        <div className="brand-lockup"><span className="brand-mark"><BrandLogo /></span><span>EcoMetric</span></div>
+        <div className="brand-lockup"><BrandLogo theme="light" height={26} /></div>
         <div className="auth-heading">
           <p className="eyebrow">EPD automation studio</p>
           <h1 id="auth3-title">{mode === 'signin' ? 'Log in' : 'Create your account'}</h1>

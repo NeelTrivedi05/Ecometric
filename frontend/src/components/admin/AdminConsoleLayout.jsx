@@ -88,27 +88,23 @@ export default function AdminConsoleLayout() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '12px',
               textDecoration: 'none',
               color: 'inherit',
             }}
           >
+            <BrandLogo theme="light" height={22} />
             <span
               style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(31, 122, 76, 0.12)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--accent, #1f7a4c)',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: 'var(--text-muted, #5b6f62)',
+                borderLeft: '1px solid var(--border, #dfe7dd)',
+                paddingLeft: '10px',
+                lineHeight: '18px',
               }}
             >
-              <BrandLogo />
-            </span>
-            <span style={{ fontSize: '15px', fontWeight: 600, letterSpacing: '-0.015em' }}>
-              EcoMetric <span style={{ color: 'var(--text-muted, #5b6f62)', fontWeight: 400 }}>Admin Console</span>
+              Admin Console
             </span>
           </Link>
 

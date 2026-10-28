@@ -85,22 +85,22 @@ export default function StudioHeader() {
           <div
             className="brand-logo"
             onClick={() => setActivePhase('upload')}
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
             title="EcoMetric EPD Studio Home"
           >
-            <span style={{
-              width: '26px',
-              height: '26px',
-              borderRadius: '7px',
-              backgroundColor: 'rgba(31, 122, 76, 0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--accent, #1f7a4c)'
-            }}>
-              <BrandLogo />
+            <BrandLogo theme="light" height={22} />
+            <span
+              style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                color: 'var(--text-muted, #5b6f62)',
+                borderLeft: '1px solid var(--border, #dfe7dd)',
+                paddingLeft: '10px',
+                lineHeight: '18px',
+              }}
+            >
+              Studio
             </span>
-            <span className="brand-name">EcoMetric Studio</span>
           </div>
 
           <Link

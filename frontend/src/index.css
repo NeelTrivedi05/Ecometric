@@ -391,8 +391,9 @@ svg {
 }
 
 .brand-logo .brand-logo-image {
-  width: 26px;
-  height: 26px;
+  height: 22px;
+  width: auto;
+  max-width: 100%;
   object-fit: contain;
 }
 

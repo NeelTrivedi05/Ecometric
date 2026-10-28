@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import BrandLogo from '../BrandLogo';
 import { useStudio } from '../../context/StudioContext';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
@@ -422,31 +423,21 @@ export default function ProjectsConsole() {
               borderBottom: '1px solid #28372d',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
+              gap: '12px',
             }}
           >
-            <div
+            <BrandLogo theme="dark" height={22} />
+            <span
               style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '8px',
-                backgroundColor: '#1f7a4c',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#ffffff',
+                fontSize: '11px',
+                color: '#97a89e',
+                borderLeft: '1px solid #28372d',
+                paddingLeft: '10px',
+                lineHeight: '16px',
               }}
             >
-              <LayersIcon size={16} />
-            </div>
-            <div>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em' }}>
-                EcoMetric
-              </div>
-              <div style={{ fontSize: '11px', color: '#97a89e' }}>
-                LCA & EPD Studio
-              </div>
-            </div>
+              Studio
+            </span>
           </div>
 
           {/* Navigation Items (Projects) */}

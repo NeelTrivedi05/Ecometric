@@ -26,9 +26,8 @@ export function SidebarNavigationSlim({ items = [], footerItems = [], className 
 
   return (
     <aside className={`studio-sidebar untitled-sidebar ${isSidebarOpen ? 'mobile-open' : ''} ${className}`} aria-label="Primary navigation">
-      <div className="untitled-sidebar-brand">
-        <span className="untitled-sidebar-brand-mark"><BrandLogo /></span>
-        <span>EcoMetric</span>
+      <div className="untitled-sidebar-brand" style={{ display: 'flex', alignItems: 'center', padding: '0 10px 22px' }}>
+        <BrandLogo theme="light" height={22} />
       </div>
       <nav className="untitled-sidebar-nav">
         {items.map((item, index) => {
