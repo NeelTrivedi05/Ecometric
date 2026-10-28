@@ -7,7 +7,6 @@ import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import OtpVerificationPage from './pages/OtpVerificationPage';
-import SettingsPage from './pages/SettingsPage';
 import VerifierPortal from './pages/VerifierPortal';
 import { StudioProvider } from './context/StudioContext';
 import StudioWorkspace from './components/studio/StudioWorkspace';
@@ -100,7 +99,11 @@ function ConsoleRedirect({ to = 'overview' }) {
     );
   }
 
-  const slug = activeOrg?.slug || window.localStorage.getItem('ecometric_active_org_slug') || 'carrier-hvac';
+  let storedSlug = window.localStorage.getItem('ecometric_active_org_slug');
+  if (storedSlug === 'undefined' || storedSlug === 'null' || !storedSlug) {
+    storedSlug = 'carrier-hvac';
+  }
+  const slug = activeOrg?.slug || storedSlug;
   return <Navigate to={`/console/${slug}/${to}`} replace />;
 }
 
@@ -143,12 +146,12 @@ export default function App() {
               <Route path="/app/project/:projectId/:phase" element={<StudioWorkspace />} />
               <Route path="/projects/:projectId" element={<StudioWorkspace />} />
               <Route path="/projects/:projectId/:phase" element={<StudioWorkspace />} />
-              <Route path="/settings" element={<ConsoleRedirect to="settings" />} />
               <Route path="/verifier/:projectId" element={<VerifierPortal />} />
             </Route>
           </Route>
 
-          {/* Isolated Multi-Tenant Account Admin Console */}
+          {/* Isolated Multi-Tenant Account Admin Console & Global Settings */}
+          <Route path="/settings" element={<ConsoleRedirect to="settings" />} />
           <Route path="/console" element={<ConsoleRedirect to="overview" />} />
           <Route element={<AdminRouteGuard />}>
             <Route path="/console/:orgSlug" element={<AdminConsoleLayout />}>

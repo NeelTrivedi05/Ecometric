@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import { ACCOUNTS_DATA } from '../data/accountsData';
@@ -8,8 +8,12 @@ const TenantContext = createContext(null);
 
 export function TenantProvider({ children }) {
   const { user } = useAuth();
-  const params = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // Extract orgSlug from URL if in /console/:orgSlug/*
+  const consoleMatch = location.pathname.match(/^\/console\/([^/]+)/);
+  const currentRouteSlug = consoleMatch && consoleMatch[1] !== 'undefined' ? consoleMatch[1] : null;
 
   const [memberships, setMemberships] = useState([]);
   const [activeOrg, setActiveOrg] = useState(null);
@@ -40,13 +44,55 @@ export function TenantProvider({ children }) {
     }));
   }, []);
 
-  const loadTenantData = useCallback(async () => {
+  const loadTenantData = useCallback(async (isRetry = false) => {
+    let storedSlug = window.localStorage.getItem('ecometric_active_org_slug');
+    if (storedSlug === 'undefined' || storedSlug === 'null' || !storedSlug) {
+      storedSlug = 'carrier-hvac';
+    }
+
     if (!user?.id) {
       // If no auth user yet, fallback to mock demo memberships
       setMemberships(mockMemberships);
-      const storedSlug = window.localStorage.getItem('ecometric_active_org_slug') || 'carrier-hvac';
-      const resolved = mockMemberships.find((m) => m.organizations?.slug === storedSlug) || mockMemberships[0];
+      const targetSlug = currentRouteSlug || storedSlug;
+      let resolved = mockMemberships.find((m) => m.organizations?.slug === targetSlug || m.organization_id === targetSlug);
+
+      if (!resolved && currentRouteSlug) {
+        const title = currentRouteSlug
+          .split(/[-_]/)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
+        const dynamicMock = {
+          organization_id: currentRouteSlug,
+          role: 'account_admin',
+          status: 'active',
+          organizations: {
+            id: currentRouteSlug,
+            name: title || 'EcoMetric Organization',
+            slug: currentRouteSlug,
+            logo_url: null,
+            settings: {
+              default_methodology: 'TRACI 2.1',
+              pcr_standard: 'UL 10010-4 Part B v2.0 & EN 15804+A2',
+              facility_name: `${title} Facility`,
+              facility_location: 'Syracuse, NY, USA',
+              company_address: 'One Carrier Place, Farmington, CT 06032, USA',
+              company_website: `https://${currentRouteSlug}.com`,
+            },
+            created_at: new Date().toISOString(),
+          },
+        };
+        setMemberships([dynamicMock, ...mockMemberships]);
+        setActiveOrg({ ...dynamicMock.organizations, role: 'account_admin' });
+        window.localStorage.setItem('ecometric_active_org_slug', currentRouteSlug);
+        setLoading(false);
+        return;
+      }
+
+      resolved = resolved || mockMemberships[0];
       setActiveOrg(resolved ? { ...resolved.organizations, role: resolved.role } : null);
+      if (resolved?.organizations?.slug) {
+        window.localStorage.setItem('ecometric_active_org_slug', resolved.organizations.slug);
+      }
       setLoading(false);
       return;
     }
@@ -70,7 +116,7 @@ export function TenantProvider({ children }) {
           organization_id,
           role,
           status,
-          organizations:organization_id (
+          organizations (
             id,
             name,
             slug,
@@ -92,56 +138,86 @@ export function TenantProvider({ children }) {
       }
 
       if (!memberRows || memberRows.length === 0) {
-        // Attempt to auto-bootstrap an organization for this user in DB
-        const orgTitle =
-          user.user_metadata?.organization_name ||
-          user.user_metadata?.full_name ||
-          (user.email ? user.email.split('@')[0] + ' Org' : 'EcoMetric Organization');
+        if (!isRetry) {
+          // Attempt to auto-bootstrap an organization for this user in DB
+          const orgTitle =
+            user.user_metadata?.organization_name ||
+            user.user_metadata?.full_name ||
+            (user.email ? user.email.split('@')[0] + ' Org' : 'EcoMetric Organization');
 
-        const { data: bootstrappedId, error: rpcError } = await supabase.rpc('bootstrap_current_user');
-        if (!rpcError && bootstrappedId) {
-          return loadTenantData();
-        }
+          const { data: bootstrappedId, error: rpcError } = await supabase.rpc('bootstrap_current_user');
+          if (!rpcError && bootstrappedId) {
+            return loadTenantData(true);
+          }
 
-        // Try direct create_organization_with_admin fallback
-        const { data: newOrgId } = await supabase.rpc('create_organization_with_admin', {
-          org_name: orgTitle,
-        });
-        if (newOrgId) {
-          return loadTenantData();
+          // Try direct create_organization_with_admin fallback
+          const { data: newOrgId } = await supabase.rpc('create_organization_with_admin', {
+            org_name: orgTitle,
+          });
+          if (newOrgId) {
+            return loadTenantData(true);
+          }
         }
 
         // Fallback to demo orgs for testing if no rows in DB
         setMemberships(mockMemberships);
-        setActiveOrg({ ...mockMemberships[0].organizations, role: mockMemberships[0].role });
+        const targetSlug = currentRouteSlug || storedSlug;
+        const resolved = mockMemberships.find((m) => m.organizations?.slug === targetSlug) || mockMemberships[0];
+        setActiveOrg({ ...resolved.organizations, role: resolved.role });
         setLoading(false);
         return;
       }
 
-      setMemberships(memberRows);
+      const normalizedMembers = memberRows.map((m) => {
+        const org = Array.isArray(m.organizations) ? m.organizations[0] : m.organizations;
+        return {
+          ...m,
+          organizations: org,
+        };
+      });
+
+      setMemberships(normalizedMembers);
 
       // Resolve active organization
-      const routeSlug = params.orgSlug;
-      const storedSlug = window.localStorage.getItem('ecometric_active_org_slug');
-
       let target = null;
-      if (routeSlug) {
-        target = memberRows.find((m) => m.organizations?.slug === routeSlug);
+      if (currentRouteSlug) {
+        target = normalizedMembers.find((m) => m.organizations?.slug === currentRouteSlug || m.organization_id === currentRouteSlug);
       }
       if (!target && storedSlug) {
-        target = memberRows.find((m) => m.organizations?.slug === storedSlug);
+        target = normalizedMembers.find((m) => m.organizations?.slug === storedSlug || m.organization_id === storedSlug);
       }
-      if (!target) {
-        target = memberRows[0];
+      if (!target && normalizedMembers.length > 0) {
+        target = normalizedMembers[0];
       }
 
       if (target?.organizations) {
         const enrichedOrg = {
           ...target.organizations,
-          role: target.role,
+          role: target.role || 'account_admin',
         };
         setActiveOrg(enrichedOrg);
         window.localStorage.setItem('ecometric_active_org_slug', target.organizations.slug);
+      } else if (currentRouteSlug) {
+        const title = currentRouteSlug
+          .split(/[-_]/)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
+        const fallbackOrg = {
+          id: currentRouteSlug,
+          name: title || 'EcoMetric Organization',
+          slug: currentRouteSlug,
+          logo_url: null,
+          role: 'account_admin',
+          settings: {
+            default_methodology: 'TRACI 2.1',
+            pcr_standard: 'UL 10010-4 Part B v2.0 & EN 15804+A2',
+            company_address: 'One Carrier Place, Farmington, CT 06032, USA',
+            company_website: `https://${currentRouteSlug}.com`,
+          },
+          created_at: new Date().toISOString(),
+        };
+        setActiveOrg(fallbackOrg);
+        window.localStorage.setItem('ecometric_active_org_slug', currentRouteSlug);
       }
     } catch (err) {
       console.error('Failed to load tenant state:', err);
@@ -151,22 +227,28 @@ export function TenantProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [user?.id, params.orgSlug, mockMemberships]);
+  }, [user?.id, currentRouteSlug, mockMemberships]);
 
   useEffect(() => {
     loadTenantData();
   }, [loadTenantData]);
 
-  // Synchronize when route orgSlug changes
+  // Synchronize when route currentRouteSlug changes
   useEffect(() => {
-    if (params.orgSlug && memberships.length > 0) {
-      const match = memberships.find((m) => m.organizations?.slug === params.orgSlug);
+    if (currentRouteSlug && memberships.length > 0) {
+      const match = memberships.find((m) => {
+        const org = Array.isArray(m.organizations) ? m.organizations[0] : m.organizations;
+        return org?.slug === currentRouteSlug || m.organization_id === currentRouteSlug;
+      });
       if (match && match.organizations?.id !== activeOrg?.id) {
-        setActiveOrg({ ...match.organizations, role: match.role });
-        window.localStorage.setItem('ecometric_active_org_slug', match.organizations.slug);
+        const orgObj = Array.isArray(match.organizations) ? match.organizations[0] : match.organizations;
+        if (orgObj) {
+          setActiveOrg({ ...orgObj, role: match.role });
+          window.localStorage.setItem('ecometric_active_org_slug', orgObj.slug);
+        }
       }
     }
-  }, [params.orgSlug, memberships, activeOrg?.id]);
+  }, [currentRouteSlug, memberships, activeOrg?.id]);
 
   const switchOrganization = useCallback(
     (slugOrId, redirect = true) => {

@@ -102,8 +102,8 @@ export default function AdminRouteGuard() {
     );
   }
 
-  // Not logged in -> redirect to login preserving intended target
-  if (!user) {
+  // If user is not logged in and no fallback active organization exists, redirect to login
+  if (!user && !activeOrg) {
     return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
   }
 
