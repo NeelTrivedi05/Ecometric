@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CloseIcon, FileIcon, ChevronRightIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon } from './Icons';
 import { useStudio } from '../../context/StudioContext';
+import { API_BASE } from '../../config/api';
 
 export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, gaps = [] }) {
   if (!isOpen) return null;
@@ -57,7 +58,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
   useEffect(() => {
     if (activeTab === 'entanglement') {
       setIsLoadingEntanglement(true);
-      fetch(`/api/processes/proc-steel-converter-parent/entanglement?methodology=${entanglementMethodology}`)
+      fetch(`${API_BASE}/processes/proc-steel-converter-parent/entanglement?methodology=${entanglementMethodology}`)
         .then(r => r.json())
         .then(data => {
           setEntanglementData(data);
@@ -78,7 +79,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
   useEffect(() => {
     if (activeTab === 'pcr_rules') {
       setIsLoadingPcr(true);
-      fetch('/api/pcr/rules')
+      fetch(`${API_BASE}/pcr/rules`)
         .then(r => r.json())
         .then(data => {
           setPcrRulesList(data?.rules || []);
@@ -117,7 +118,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
         { material: "Trace Lubricant", mass: 0.8, is_included: false }
       ];
 
-      fetch('/api/pcr/evaluate', {
+      fetch(`${API_BASE}/pcr/evaluate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -141,7 +142,7 @@ export default function ProcessFlowModal({ isOpen, onClose, traceabilityFlow, ga
   // Run Simulation with Overrides
   const handleRunSimulation = () => {
     setIsSimulating(true);
-    fetch('/api/processes/entanglement/resolve', {
+    fetch(`${API_BASE}/processes/entanglement/resolve`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

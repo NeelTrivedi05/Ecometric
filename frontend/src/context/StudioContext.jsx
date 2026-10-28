@@ -5,8 +5,7 @@ import { DEFAULT_PRODUCT_ID, getProduct } from '../data/products';
 import { CARRIER_19DV_500RT_EPD11017 } from '../data/carrier19dvBenchmark';
 import { USER_SELECTED } from '../components/studio/providerMatch';
 import { ACCOUNTS_DATA, DEFAULT_ACCOUNT_ID } from '../data/accountsData';
-
-const API_BASE = '/api';
+import { API_BASE } from '../config/api';
 
 // Minimum time the progress bar stays up for a PDF export, even when the server is faster.
 const PDF_EXPORT_MIN_MS = 28000;
@@ -156,7 +155,7 @@ export function StudioProvider({ children }) {
 
   // Sync accounts from backend if online
   React.useEffect(() => {
-    fetch('/api/accounts')
+    fetch(`${API_BASE}/accounts`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -497,10 +496,13 @@ export function StudioProvider({ children }) {
       product_category: activeData?.project_info?.product_category || productCategory || DEFAULT_PRODUCT_ID,
     };
 
+    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const endpoints = [
       `${API_BASE}/epd/calculate-anti`,
-      'http://localhost:8000/api/epd/calculate-anti',
-      'http://127.0.0.1:8000/api/epd/calculate-anti'
+      ...(isLocal && API_BASE === '/api' ? [
+        'http://localhost:8000/api/epd/calculate-anti',
+        'http://127.0.0.1:8000/api/epd/calculate-anti'
+      ] : [])
     ];
 
     let data = null;

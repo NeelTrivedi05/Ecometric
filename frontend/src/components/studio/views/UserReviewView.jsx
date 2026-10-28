@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useStudio, STANDARD_DATABASE_PROVIDERS } from '../../../context/StudioContext';
+import { API_BASE } from '../../../config/api';
 import {
   MatchBadge, PROVIDER_KINDS, bomProvider, matchStatus, stageProvider, userBomPatch, userProviderPatch,
 } from '../providerMatch';
@@ -252,7 +253,7 @@ export default function UserReviewView() {
   const searchDebounceRef = useRef(null);
 
   // Ranked like the automatic matcher: materials are per kg, the project region first
-  const searchUrl = (q, unit) => `/api/documents/lcia-search?query=${encodeURIComponent(q)}&limit=200` +
+  const searchUrl = (q, unit) => `${API_BASE}/documents/lcia-search?query=${encodeURIComponent(q)}&limit=200` +
     `${unit ? `&unit=${encodeURIComponent(unit)}` : ''}&region=${encodeURIComponent(project_info.geography || '')}`;
 
   // Debounced provider search execution
