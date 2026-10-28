@@ -9,6 +9,15 @@ import BrandLogo from '../BrandLogo';
 async function processInviteAcceptance(userId, email, token, orgSlug) {
   if (!supabase || !userId) return;
   try {
+    // 1. Try Supabase RPC function (runs with SECURITY DEFINER in PostgreSQL)
+    if (token) {
+      const { data: rpcRes, error: rpcErr } = await supabase.rpc('accept_organization_invite', { p_token: token });
+      if (!rpcErr && rpcRes?.success) {
+        return;
+      }
+    }
+
+    // 2. Direct Supabase table upsert fallback
     const normalizedEmail = (email || '').trim().toLowerCase();
     const { data: invRows } = await supabase
       .from('organization_invites')
@@ -248,28 +257,6 @@ export default function Auth3({ initialMode = 'signin' }) {
     }
   }
 
-  async function signInWithGoogle() {
-    if (!supabase) {
-      setError('Supabase is not configured. Add the required VITE_SUPABASE_* variables.');
-      return;
-    }
-    if (mode === 'signup') {
-      if (!form.organizationName.trim()) {
-        setError('Enter your organization name before continuing with Google.');
-        return;
-      }
-      window.sessionStorage.setItem('pending_organization_name', form.organizationName.trim());
-    }
-    // Stamp 24-hr presence timestamp for OAuth session
-    window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
-    setError('');
-    const { error: authError } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/app` },
-    });
-    if (authError) setError(authError.message);
-  }
-
   return (
     <main className={`auth3-page ${mode === 'signup' ? 'auth3-page--signup' : ''}`}>
       <video
@@ -348,9 +335,11 @@ export default function Auth3({ initialMode = 'signin' }) {
             <ArrowRight size={17} />
           </button>
         </form>
-        <div className="auth3-divider"><span>Or</span></div>
-        <button className="auth3-provider" type="button" onClick={signInWithGoogle}> <strong>G</strong> Sign in with Google</button>
-        <button className="auth3-forgot" type="button" onClick={() => navigate('/forgot-password', { state: { email: form.email } })}>Forgot password?</button>
+        {mode === 'signin' && (
+          <button className="auth3-forgot" type="button" onClick={() => navigate('/forgot-password', { state: { email: form.email } })}>
+            Forgot password?
+          </button>
+        )}
         {error && <p className="auth3-message auth3-error" role="alert">{error}</p>}
         {message && <p className="auth3-message">{message}</p>}
         <p className="auth3-switch">{mode === 'signin' ? 'New user?' : 'Already have an account?'} <button type="button" onClick={() => navigate(mode === 'signin' ? '/signup' : '/login')}>{mode === 'signin' ? 'Create an account' : 'Log in'}</button></p>

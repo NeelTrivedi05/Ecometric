@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import { supabase } from '../../lib/supabase';
-import { API_BASE } from '../../config/api';
 import { Button } from '../base/buttons/button';
 import {
   PlusIcon,
@@ -141,55 +140,82 @@ export default function TeamManagementPanel() {
       const targetEmail = inviteEmail.trim().toLowerCase();
       let generatedToken = Math.random().toString(36).substring(2, 14);
 
-      // 1. Dispatch official branded invitation email via backend API
-      try {
-        const res = await fetch(`${API_BASE}/invitations/send`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: targetEmail,
-            role: inviteRole,
-            organization_id: activeOrg?.id || 'org-local',
-            organization_name: activeOrg?.name || 'EcoMetric Organization',
-            organization_slug: activeOrg?.slug || 'carrier-hvac',
-            inviter_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Organization Admin',
-            inviter_email: user?.email || '',
-          }),
-        });
-        if (res.ok) {
-          const resData = await res.json();
-          if (resData.token) generatedToken = resData.token;
-        }
-      } catch (backendErr) {
-        console.warn('Backend invitation email service note:', backendErr);
-      }
-
-      // 2. Persist in Supabase organization_invites
       if (supabase && activeOrg?.id) {
-        const { data, error } = await supabase.from('organization_invites').insert({
-          organization_id: activeOrg.id,
-          email: targetEmail,
-          role: inviteRole,
-          token: generatedToken,
-        }).select();
+        // 1. Send invite via Supabase RPC (PostgreSQL SECURITY DEFINER with RLS verification)
+        const { data: rpcData, error: rpcErr } = await supabase.rpc('invite_organization_member', {
+          p_email: targetEmail,
+          p_role: inviteRole,
+          p_org_id: activeOrg.id,
+        });
 
-        if (error) {
-          console.warn('Supabase invite note:', error.message);
-        }
-        if (data && data[0]) {
-          setInvites((prev) => [data[0], ...prev]);
+        if (!rpcErr && rpcData?.token) {
+          generatedToken = rpcData.token;
         } else {
-          setInvites((prev) => [
-            {
-              id: `inv-${Date.now()}`,
+          // Direct Supabase table insert with RLS policy
+          const { data: insertData, error: insertErr } = await supabase
+            .from('organization_invites')
+            .upsert({
+              organization_id: activeOrg.id,
               email: targetEmail,
               role: inviteRole,
               token: generatedToken,
+              invited_by: user?.id,
               expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            },
-            ...prev,
-          ]);
+            }, { onConflict: 'organization_id,email' })
+            .select();
+
+          if (insertData && insertData[0]?.token) {
+            generatedToken = insertData[0].token;
+          }
+          if (insertErr) {
+            console.warn('Supabase invite table note:', insertErr.message);
+          }
         }
+
+        // 2. Dispatch invitation via Supabase (Edge Function or Supabase Auth Magic Link)
+        try {
+          // Attempt Supabase Edge Function
+          const { error: fnErr } = await supabase.functions.invoke('invite-member', {
+            body: {
+              email: targetEmail,
+              organization_id: activeOrg.id,
+              organization_name: activeOrg.name || 'EcoMetric Organization',
+              organization_slug: activeOrg.slug || 'carrier-hvac',
+              role: inviteRole,
+              token: generatedToken,
+            },
+          });
+
+          // Fallback if Edge function is not deployed: dispatch Supabase Auth Magic Link directly
+          if (fnErr) {
+            const redirectUrl = `${window.location.origin}/login?invite=${generatedToken}&org=${activeOrg.slug || ''}&email=${encodeURIComponent(targetEmail)}`;
+            await supabase.auth.signInWithOtp({
+              email: targetEmail,
+              options: {
+                emailRedirectTo: redirectUrl,
+                data: {
+                  organization_name: activeOrg.name,
+                  organization_id: activeOrg.id,
+                  invited_role: inviteRole,
+                },
+              },
+            });
+          }
+        } catch (authDispatchErr) {
+          console.warn('Supabase email dispatch note:', authDispatchErr);
+        }
+
+        // Update local state
+        setInvites((prev) => [
+          {
+            id: `inv-${Date.now()}`,
+            email: targetEmail,
+            role: inviteRole,
+            token: generatedToken,
+            expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+          ...prev.filter(inv => inv.email !== targetEmail),
+        ]);
       } else {
         const newInvite = {
           id: `inv-${Date.now()}`,
@@ -201,7 +227,7 @@ export default function TeamManagementPanel() {
         setInvites((prev) => [newInvite, ...prev]);
       }
 
-      setNotification(`Invitation email sent to ${targetEmail} on behalf of ${activeOrg?.name || 'Organization'} & EcoMetric!`);
+      setNotification(`Invitation successfully sent via Supabase to ${targetEmail} on behalf of ${activeOrg?.name || 'Organization'}!`);
       setIsInviteModalOpen(false);
       setInviteEmail('');
       setInviteRole('member');
