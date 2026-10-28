@@ -19,7 +19,7 @@ const PHASES = [
   { id: 'upload', step: '1', label: 'Upload Documents', sub: 'XLSX, CSV, PDF Ingestion', icon: UploadIcon },
   { id: 'extract', step: '2', label: 'Extracted Inventory', sub: 'Modules A1–D Coverage', icon: ReviewIcon },
   { id: 'user_review', step: '3', label: 'Review & Mapping', sub: 'BOM & ecoinvent Providers', icon: EditIcon },
-  { id: 'validate', step: '4', label: 'PCR Input Rules', sub: 'Checked before calculation', icon: ValidateIcon },
+  { id: 'validate', step: '4', label: 'Pre-Calculation Checks', sub: 'Checked before calculation', icon: ValidateIcon },
   { id: 'methodology', step: '5', label: 'LCIA Methodology', sub: 'EF v3.1, TRACI, CML-IA', icon: MethodologyIcon },
   { id: 'results', step: '6', label: 'LCIA Results', sub: '25 Indicators × 16 Stages', icon: ResultsIcon },
   { id: 'audit', step: '7', label: 'Pre-Audit Verification', sub: 'PCR results rules', icon: ShieldCheckIcon },

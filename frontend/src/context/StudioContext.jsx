@@ -1118,7 +1118,7 @@ export function StudioProvider({ children }) {
       if (!res.ok) throw new Error(`Validation service returned ${res.status}. Is the EcoMetric backend running on port 8000 (cd backend && python main.py)?`);
       const data = await res.json();
       setValidationResults({ ...data, inputSignature: signatureOf(extractedData) });
-      showNotif(`${data.summary.pass} of ${data.summary.total} PCR input rules met`, 'PCR Rules Audit');
+      showNotif(`${data.summary.pass} of ${data.summary.total} pre-calculation checks met`, 'Pre-Calculation Checks');
     } catch (err) {
       // No offline fallback: the gate must not pass without the PCR rule engine.
       setValidationResults({ checks: [], overall_pass: false, passed: false, run_at: null,

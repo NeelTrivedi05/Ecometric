@@ -35,9 +35,9 @@ export default function ValidateView() {
   if (validationResults.error) {
     banner = { tone: 'error', title: 'PCR validation service unavailable', text: `${validationResults.error} Calculation stays blocked until the rules can be checked.` };
   } else if (!hasRun) {
-    banner = { tone: 'neutral', title: 'Validation pending', text: 'Run the PCR input rules to check the inventory before calculation.' };
+    banner = { tone: 'neutral', title: 'Validation pending', text: 'Run the pre-calculation checks to check the inventory before calculation.' };
   } else if (validationStale) {
-    banner = { tone: 'warn', title: 'Inventory changed since this check', text: 'Re-run the PCR input rules before calculating.' };
+    banner = { tone: 'warn', title: 'Inventory changed since this check', text: 'Re-run the pre-calculation checks before calculating.' };
   } else if (blocking > 0) {
     banner = { tone: 'error', title: `${blocking} critical requirement${blocking > 1 ? 's' : ''} not met`, text: 'Fix the items marked “Blocks calculation” to continue.' };
   } else {
@@ -62,7 +62,7 @@ export default function ValidateView() {
         <div>
           <span className="apple-eyebrow">Phase 4 • Before calculation</span>
           <h1 className="view-title" style={{ margin: 0, fontFamily: 'var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif)', letterSpacing: '-0.022em' }}>
-            PCR Input Rules
+            Pre-Calculation Checks
           </h1>
           <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
             Checks the essential EPD requirements that apply to every product before the LCA is calculated
@@ -109,7 +109,7 @@ export default function ValidateView() {
           <div style={{ fontSize: '13px', color: '#86868b', marginBottom: 20 }}>
             Evaluate the inventory against {productProfile?.pcrShort} input rules.
           </div>
-          <button type="button" className="btn-apple-action-blue" onClick={runValidation}>Run PCR Input Rules</button>
+          <button type="button" className="btn-apple-action-blue" onClick={runValidation}>Run Pre-Calculation Checks</button>
         </div>
       )}
 
