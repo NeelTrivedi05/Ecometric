@@ -2179,6 +2179,7 @@ html {
   align-items: center;
   max-width: 1440px;
   margin: 0 auto;
+  padding-bottom: 36px;
   overflow: hidden;
   color: transparent;
   font-size: clamp(100px, 16vw, 245px);
