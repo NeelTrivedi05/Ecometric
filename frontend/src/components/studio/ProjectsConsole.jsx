@@ -397,24 +397,25 @@ export default function ProjectsConsole() {
           {/* Brand Mark */}
           <div
             style={{
-              padding: '18px 20px',
+              padding: '18px 20px 14px',
               borderBottom: '1px solid #28372d',
               display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '6px',
             }}
           >
             <BrandLogo theme="dark" height={22} />
             <span
               style={{
-                fontSize: '11px',
+                fontSize: '12px',
+                fontWeight: 600,
                 color: '#97a89e',
-                borderLeft: '1px solid #28372d',
-                paddingLeft: '10px',
+                letterSpacing: '0.02em',
                 lineHeight: '16px',
               }}
             >
-              Studio
+              Console
             </span>
           </div>
 
