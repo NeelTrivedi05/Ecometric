@@ -9,7 +9,6 @@ export default function LandingNavbar({ onLaunchApp }) {
       <div className="lp-container apple-sub-nav-inner">
         <Link to="/overview" className="apple-subnav-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <BrandLogo theme="light" height={22} />
-          <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-muted, #5b6f62)', borderLeft: '1px solid #dfe7dd', paddingLeft: '8px', lineHeight: '18px' }}>Studio</span>
         </Link>
 
         <nav className="apple-subnav-links" aria-label="Sections">
