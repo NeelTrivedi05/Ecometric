@@ -492,10 +492,10 @@ export default function VerifyPage() {
                   ↑
                 </div>
                 <p style={{ fontWeight: 600, fontSize: '14px', margin: '0 0 4px', color: '#16231b' }}>
-                  {selectedFile ? selectedFile.name : 'Upload or drop document'}
+                  {selectedFile ? selectedFile.name : 'Upload or drop EPD PDF'}
                 </p>
                 <p style={{ fontSize: '12px', color: '#5b6f62', margin: 0 }}>
-                  PDF, JSON, or Sealed .ecmx (up to 64 MB)
+                  Supports PDF reports, Sealed .ecmx, or JSON declarations (up to 64 MB)
                 </p>
               </div>
 
@@ -750,3 +750,4 @@ export default function VerifyPage() {
     </div>
   );
 }
+

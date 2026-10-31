@@ -32,6 +32,7 @@ export default function LandingFooter() {
           <h2>Product</h2>
           <a href="#solution">Platform overview</a>
           <a href="#how-it-works">How it works</a>
+          <button type="button" onClick={() => navigate('/verify')}>Verify Authenticity</button>
           <button type="button" onClick={() => navigate('/login')}>Launch Studio</button>
         </div>
         <div className="footer-8__column">
