@@ -7,6 +7,7 @@ import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import OtpVerificationPage from './pages/OtpVerificationPage';
+import VerifyPage from './pages/VerifyPage';
 import VerifierPortal from './pages/VerifierPortal';
 import { StudioProvider } from './context/StudioContext';
 import StudioWorkspace from './components/studio/StudioWorkspace';
@@ -130,6 +131,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-otp" element={<OtpVerificationPage />} />
+          <Route path="/verify" element={<VerifyPage />} />
 
           {/* EcoMetric Calculation Studio Workspace & Projects with dedicated URLs */}
           <Route element={<RequireAuth />}>

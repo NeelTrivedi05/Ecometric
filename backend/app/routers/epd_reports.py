@@ -97,18 +97,71 @@ def preview_report(payload: Dict[str, Any] = Body(...)):
 
 @router.post("")
 def generate_report(payload: Dict[str, Any] = Body(...)):
+    from app.database import SessionLocal
     r = _run(payload, generate_epd_report)
     project_id = payload.get("projectId")
     if project_id:
         _store(project_id, r)
     errors = sum(1 for w in r.warnings if w.get("level") == "error")
-    return Response(content=r.pdf, media_type="application/pdf", headers={
-        "Content-Disposition": f'attachment; filename="{r.filename}"',
-        "X-EPD-Filename": r.filename,
+
+    # ── File Sealing (post-generation step, does not alter generators) ──────
+    export_mode = payload.get("exportMode", "signed_open")
+    if export_mode not in ("sealed", "signed_open"):
+        export_mode = "signed_open"
+
+    cert_id = None
+    verify_url = None
+    final_bytes = r.pdf
+    content_type = "application/pdf"
+    filename = r.filename
+
+    if SEALING_ENABLED:
+        try:
+            db = SessionLocal()
+            try:
+                meta = SealMeta(
+                    organization_id=payload.get("organizationId") or "unknown",
+                    organization_name=payload.get("organizationName") or "Unknown Organization",
+                    created_by_user_id=payload.get("userId") or "unknown",
+                    created_by_name=payload.get("userName") or "Unknown User",
+                    administrator_user_id=payload.get("adminUserId") or "unknown",
+                    administrator_name=payload.get("adminName") or "Unknown Admin",
+                    epd_id=project_id or "unknown",
+                    epd_version=payload.get("epdVersion") or "1.0",
+                    product_name=(
+                        payload.get("reportDetails", {}).get("product_name")
+                        or payload.get("extractedData", {}).get("project_info", {}).get("product_name")
+                        or "Unknown Product"
+                    ),
+                    calculation_run_id=project_id or "unknown",
+                    original_file_name=r.filename,
+                )
+                seal_result = export_finalize(r.pdf, "pdf", meta, export_mode, db)
+                final_bytes = seal_result.file_bytes
+                content_type = seal_result.content_type
+                filename = seal_result.filename
+                cert_id = seal_result.certificate_id
+                verify_url = seal_result.verify_url
+            finally:
+                db.close()
+        except Exception as seal_err:
+            # Sealing must never block the download
+            print(f"[Seal] Warning: sealing failed, returning unsigned PDF: {seal_err}")
+
+    expose = "Content-Disposition, X-EPD-Filename, X-EPD-Warning-Count, X-EPD-Error-Count"
+    headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "X-EPD-Filename": filename,
         "X-EPD-Warning-Count": str(len(r.warnings)),
         "X-EPD-Error-Count": str(errors),
-        "Access-Control-Expose-Headers": "Content-Disposition, X-EPD-Filename, X-EPD-Warning-Count, X-EPD-Error-Count",
-    })
+        "Access-Control-Expose-Headers": expose,
+    }
+    if cert_id:
+        headers["X-Certificate-ID"] = cert_id
+        headers["X-Verify-URL"] = verify_url or ""
+        headers["Access-Control-Expose-Headers"] = expose + ", X-Certificate-ID, X-Verify-URL"
+
+    return Response(content=final_bytes, media_type=content_type, headers=headers)
 
 
 def _store(project_id: str, r) -> None:

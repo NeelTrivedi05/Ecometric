@@ -13,6 +13,10 @@ openpyxl>=3.1.0
 email-validator>=2.0.0
 # EPD report module (app/epd_report): PDF via headless Chromium — run `playwright install chromium` once
 playwright>=1.45
+# File Sealing: Ed25519 signatures + AES-256-GCM encryption
+cryptography>=42.0.0
+# Rate limiting for public verify endpoints
+slowapi>=0.1.9
 # Tests
 pytest>=8.0
 pypdf>=4.0

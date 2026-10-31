@@ -30,6 +30,8 @@ export default function OrganizationSettingsView() {
   const [address, setAddress] = useState('');
   const [methodology, setMethodology] = useState('TRACI 2.1');
   const [pcrStandard, setPcrStandard] = useState('UL 10010-4 Part B v2.0 & EN 15804+A2');
+  const [defaultExportMode, setDefaultExportMode] = useState('sealed');
+  const [showContributorNames, setShowContributorNames] = useState(false);
 
   // Status & Notification
   const [saving, setSaving] = useState(false);
@@ -68,6 +70,8 @@ export default function OrganizationSettingsView() {
       setAddress(activeOrg.settings?.company_address || 'One Carrier Place, Farmington, CT 06032, USA');
       setMethodology(activeOrg.settings?.default_methodology || 'TRACI 2.1');
       setPcrStandard(activeOrg.settings?.pcr_standard || 'UL 10010-4 Part B v2.0 & EN 15804+A2');
+      setDefaultExportMode(activeOrg.settings?.default_export_mode || 'sealed');
+      setShowContributorNames(Boolean(activeOrg.settings?.show_contributor_names));
     }
   }, [user, activeOrg]);
 
@@ -135,6 +139,8 @@ export default function OrganizationSettingsView() {
                 company_address: address.trim(),
                 default_methodology: methodology,
                 pcr_standard: pcrStandard,
+                default_export_mode: defaultExportMode,
+                show_contributor_names: showContributorNames,
               },
               updated_at: new Date().toISOString(),
             })
@@ -793,6 +799,7 @@ export default function OrganizationSettingsView() {
               gridTemplateColumns: 'minmax(180px, 240px) 1fr',
               gap: '24px',
               padding: '20px 0',
+              borderBottom: '1px solid var(--border, #dfe7dd)',
               alignItems: 'center',
             }}
           >
@@ -812,6 +819,71 @@ export default function OrganizationSettingsView() {
                 <option value="ISO 21930:2017 Core PCR">ISO 21930:2017 Core PCR for Building Products</option>
                 <option value="EN 15804+A1 Legacy">EN 15804+A1 Legacy Standard</option>
               </select>
+            </div>
+          </div>
+
+          {/* Org Row 6: Default Export Protection Mode */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(180px, 240px) 1fr',
+              gap: '24px',
+              padding: '20px 0',
+              borderBottom: '1px solid var(--border, #dfe7dd)',
+              alignItems: 'center',
+            }}
+          >
+            <div>
+              <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)' }}>
+                Default Export Sealing Mode
+              </label>
+              <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--text-tertiary, #5b6f62)' }}>
+                Default packaging for team members downloading EPD files.
+              </p>
+            </div>
+            <div style={{ maxWidth: '560px', width: '100%' }}>
+              <select
+                value={defaultExportMode}
+                disabled={!isAccountAdmin}
+                onChange={(e) => setDefaultExportMode(e.target.value)}
+                style={{ ...inputStyle, cursor: !isAccountAdmin ? 'not-allowed' : 'pointer', backgroundColor: !isAccountAdmin ? 'var(--bg-card2, #f8faf6)' : 'var(--bg-card, #ffffff)' }}
+              >
+                <option value="sealed">Sealed Container (.ecmx) — Envelope Encrypted (Recommended)</option>
+                <option value="signed_open">Signed Open Copy — Open PDF/JSON with Embedded Seal</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Org Row 7: Public Verification Contributor Privacy */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(180px, 240px) 1fr',
+              gap: '24px',
+              padding: '20px 0',
+              alignItems: 'center',
+            }}
+          >
+            <div>
+              <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)' }}>
+                Public Contributor Privacy
+              </label>
+              <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--text-tertiary, #5b6f62)' }}>
+                Whether engineer names appear on the public /verify page.
+              </p>
+            </div>
+            <div style={{ maxWidth: '560px', width: '100%', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="checkbox"
+                id="show-contributor-names"
+                checked={showContributorNames}
+                disabled={!isAccountAdmin}
+                onChange={(e) => setShowContributorNames(e.target.checked)}
+                style={{ width: '16px', height: '16px', cursor: !isAccountAdmin ? 'not-allowed' : 'pointer', accentColor: '#1f7a4c' }}
+              />
+              <label htmlFor="show-contributor-names" style={{ fontSize: '13px', color: 'var(--text-primary, #16231b)', cursor: !isAccountAdmin ? 'not-allowed' : 'pointer' }}>
+                Display individual author and admin names publicly (organization name is always verified)
+              </label>
             </div>
           </div>
 

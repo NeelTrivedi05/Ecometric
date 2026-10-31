@@ -2,10 +2,17 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routers import auth_routes, epd, epd_reports, submissions, documents, processes, products, invitations
+from app.routers import auth_routes, epd, epd_reports, submissions, documents, processes, products, invitations, verify as verify_router, seal_export
 
 # Initialize DB tables
 Base.metadata.create_all(bind=engine)
+
+# File Sealing: ensure seal tables exist (idempotent)
+try:
+    from app.seal.models import FileSeal, SealKey, SealVerificationLog  # noqa
+    Base.metadata.create_all(bind=engine)
+except Exception as _e:
+    print(f"[Seal] Warning: could not initialise seal tables: {_e}")
 
 app = FastAPI(
     title="EcoMetric EPD & Life-Cycle Assessment API Engine",
@@ -38,6 +45,8 @@ app.include_router(documents.router)
 app.include_router(processes.router)
 app.include_router(products.router)
 app.include_router(invitations.router)
+app.include_router(verify_router.router)
+app.include_router(seal_export.router)
 
 @app.get("/")
 def root():

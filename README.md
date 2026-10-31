@@ -70,3 +70,71 @@ alembic upgrade head
 2. **Ecoinvent Version**: Pinned to version `"3.12"` in `backend/data/emission_factors.json` metadata.
 3. **Build Patch**: Includes `frontend/patch-node25.js` preloader in `frontend/package.json` for Node v25 Windows compatibility.
 4. **16-Module Count**: Full support for 15 mandatory modules (`A1-A3`, `A4`, `A5`, `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `C1`, `C2`, `C3`, `C4`, `C1-C4`) + `Module D` (Beyond System Boundary, displayed separately).
+
+
+---
+
+## File Sealing & Cryptographic Provenance
+
+EcoMetric provides end-to-end cryptographic integrity and origin attestation for all exported Environmental Product Declarations (PDF, ILCD+EPD JSON, and openEPD v2.0 JSON).
+
+### 1. Cryptographic Architecture
+
+| Guarantee | Mechanism | What it proves |
+|---|---|---|
+| **Authenticity and integrity** | Ed25519 digital signature over canonical manifest, plus database registry entry | The file was produced by EcoMetric, for the registered organization, at the recorded UTC timestamp, and has not been altered by even one byte. |
+| **Confidentiality** | AES-256-GCM envelope encryption container (`.ecmx`) | A random 256-bit data encryption key (DEK) encrypts the document; the DEK is wrapped using an AES Key Encryption Key (KEK). |
+
+### 2. Export Modes
+
+* **Sealed Container (`<filename>.<ext>.ecmx`)**: Encrypted using AES-256-GCM with associated authenticated data (AAD) binding header metadata. Can only be decrypted within the authenticated EcoMetric console.
+* **Signed Open Document**: The standard PDF or JSON file with an embedded certificate identifier (`ECM-XXXX-XXXX-XXXX-XXXX`). Opens in any standard viewer (Adobe Acrobat, browser, JSON parser) while remaining fully verifiable against the public registry.
+
+### 3. Public Verification
+
+Anyone can verify an exported EPD without logging in:
+* **Web UI**: Navigate to `/verify` (e.g., `https://app.ecometric.io/verify`). Upload the file or enter the Certificate ID.
+* **API Endpoints**:
+  * `POST /api/verify`: Upload file (multipart, max 64MB) to check SHA-256 checksum against registered declarations.
+  * `GET /api/verify/{certificate_id}`: Query declaration status (`authentic`, `modified`, `revoked`, or `superseded`).
+  * `GET /.well-known/ecometric-seal-keys.json`: Download public Ed25519 keys for independent third-party verification without connecting to EcoMetric.
+
+### 4. Downstream Schema Note (`_ecometric_seal`)
+
+Signed open JSON exports (ILCD and openEPD) contain a non-intrusive top-level seal object:
+```json
+{
+  "_ecometric_seal": {
+    "certificate_id": "ECM-7K3Q-9XPD-2M4T-H8VN",
+    "verify_url": "https://app.ecometric.io/verify?c=ECM-7K3Q-9XPD-2M4T-H8VN"
+  }
+}
+```
+Downstream consumers and automated ingestion pipelines should ignore keys prefixed with `_` or specifically ignore `_ecometric_seal`.
+
+### 5. Key Rotation Procedure
+
+Keys are referenced by unique identifiers (`key_id`), allowing key rotation without invalidating existing declarations:
+1. Generate a new Ed25519 keypair:
+   ```bash
+   python backend/scripts/seal_key_rotate.py --generate-signing k2
+   ```
+2. Update environment variables in production:
+   ```bash
+   SEAL_SIGNING_KEY_k2=<new_private_key_base64>
+   SEAL_ACTIVE_SIGNING_KEY_ID=k2
+   ```
+3. Retire the previous key once transitioned:
+   ```bash
+   python backend/scripts/seal_key_rotate.py --retire k1
+   ```
+Retired keys remain published in `/.well-known/ecometric-seal-keys.json` so existing documents remain verifiable.
+
+### 6. Contributor Privacy Settings
+
+Organization Administrators can configure whether individual engineer names are included in public verification metadata under **Organization Settings → Public Contributor Privacy**. The organization name is always displayed.
+
+### 7. What the Seal Proves (and What it Does Not)
+
+* **Proves**: File integrity, publishing organization identity, software engine version, LCI database version, and issuance timestamp.
+* **Does Not Prove**: The physical accuracy of raw supplier BOM measurements before they were uploaded to EcoMetric.

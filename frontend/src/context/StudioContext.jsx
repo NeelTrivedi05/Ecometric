@@ -1471,8 +1471,8 @@ export function StudioProvider({ children }) {
     fuUnit: productProfile.fuUnit,
   }), [extractedData.project_info, selectedMethodology, productProfile]);
 
-  // Download ILCD+EPD compliant JSON
-  const downloadIlcdJson = useCallback(() => {
+  // Download ILCD+EPD compliant JSON (sealed/signed server-side)
+  const downloadIlcdJson = useCallback(async (exportMode = 'signed_open') => {
     const epdExportData = {
       format: 'ILCD+EPD',
       version: '1.2',
@@ -1486,15 +1486,63 @@ export function StudioProvider({ children }) {
       verification_hash: 'SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
     };
 
+    const filename = `EPD_${(projectInfo.productName || 'Export').replace(/\s+/g, '_')}_ILCD.json`;
+    let certId = null;
+    let verifyUrl = null;
+    let finalFilename = filename;
+
+    try {
+      const res = await fetch(`${API_BASE}/seal/export/ilcd`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          epd_data: epdExportData,
+          export_mode: exportMode,
+          organization_id: currentAccount?.id || 'carrier-hvac',
+          organization_name: currentAccount?.company_name || 'Carrier Commercial HVAC',
+          user_id: 'user-current',
+          user_name: 'Current User',
+          admin_user_id: 'admin-current',
+          admin_name: 'Account Administrator',
+          epd_id: activeProjectId || 'proj-current',
+          epd_version: '1.0',
+          product_name: projectInfo.productName || 'Commercial HVAC Equipment',
+          calculation_run_id: activeProjectId || 'run-current',
+          filename,
+        }),
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const disp = res.headers.get('Content-Disposition') || '';
+        const match = disp.match(/filename="?([^";]+)"?/i);
+        finalFilename = (match && match[1]) || filename;
+        certId = res.headers.get('X-Certificate-ID');
+        verifyUrl = res.headers.get('X-Verify-URL');
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = finalFilename;
+        link.click();
+        URL.revokeObjectURL(url);
+        showNotif(`ILCD+EPD export downloaded ${certId ? `(Sealed: ${certId})` : ''}`, 'Export Complete');
+        return { filename: finalFilename, certificateId: certId, verifyUrl };
+      }
+    } catch (err) {
+      console.warn('Server sealing fallback for ILCD:', err);
+    }
+
     const blob = new Blob([JSON.stringify(epdExportData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `EPD_${(projectInfo.productName || 'Export').replace(/\s+/g, '_')}_ILCD.json`;
+    link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
     showNotif('ILCD+EPD JSON package exported successfully', 'Export Complete');
-  }, [selectedMethodology, projectInfo, lca, extractedData, showNotif]);
+    return { filename, certificateId: null, verifyUrl: null };
+  }, [selectedMethodology, projectInfo, lca, extractedData, currentAccount, activeProjectId, showNotif]);
 
   // ─── DQR DATA QUALITY ASSESSMENT (Phase 4) ───
   const generateDqrReport = useCallback(async () => {
@@ -1549,18 +1597,66 @@ export function StudioProvider({ children }) {
     return null;
   }, [extractedData, selectedMethodology, results, showNotif]);
 
-  const downloadOpenEpdJson = useCallback((docToDownload) => {
+  const downloadOpenEpdJson = useCallback(async (docToDownload, exportMode = 'signed_open') => {
     const doc = docToDownload || openepdDocument;
-    if (!doc) return;
+    if (!doc) return null;
+    const filename = `openEPD_${(projectInfo.productName || 'Declaration').replace(/\s+/g, '_')}_v2.json`;
+    let certId = null;
+    let verifyUrl = null;
+    let finalFilename = filename;
+
+    try {
+      const res = await fetch(`${API_BASE}/seal/export/openepd`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          epd_data: doc,
+          export_mode: exportMode,
+          organization_id: currentAccount?.id || 'carrier-hvac',
+          organization_name: currentAccount?.company_name || 'Carrier Commercial HVAC',
+          user_id: 'user-current',
+          user_name: 'Current User',
+          admin_user_id: 'admin-current',
+          admin_name: 'Account Administrator',
+          epd_id: activeProjectId || 'proj-current',
+          epd_version: '1.0',
+          product_name: projectInfo.productName || 'Commercial HVAC Equipment',
+          calculation_run_id: activeProjectId || 'run-current',
+          filename,
+        }),
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const disp = res.headers.get('Content-Disposition') || '';
+        const match = disp.match(/filename="?([^";]+)"?/i);
+        finalFilename = (match && match[1]) || filename;
+        certId = res.headers.get('X-Certificate-ID');
+        verifyUrl = res.headers.get('X-Verify-URL');
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = finalFilename;
+        link.click();
+        URL.revokeObjectURL(url);
+        showNotif(`openEPD export downloaded ${certId ? `(Sealed: ${certId})` : ''}`, 'Downloaded');
+        return { filename: finalFilename, certificateId: certId, verifyUrl };
+      }
+    } catch (err) {
+      console.warn('Server sealing fallback for openEPD:', err);
+    }
+
     const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `openEPD_${(projectInfo.productName || 'Declaration').replace(/\s+/g, '_')}_v2.json`;
+    link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
     showNotif('openEPD standard JSON downloaded', 'Downloaded');
-  }, [openepdDocument, projectInfo, showNotif]);
+    return { filename, certificateId: null, verifyUrl: null };
+  }, [openepdDocument, projectInfo, currentAccount, activeProjectId, showNotif]);
 
   // ─── VERIFICATION AUDIT ZIP BUNDLE (Phase 4) ───
   const downloadVerificationBundle = useCallback(async () => {
@@ -1672,10 +1768,21 @@ export function StudioProvider({ children }) {
     let res;
     let blob;
     try {
+      const exportMode = options?.exportMode || 'signed_open';
+      const reqPayload = {
+        ...buildEpdReportRequest(selection, options, detailsOverride),
+        exportMode,
+        organizationId: currentAccount?.id || 'carrier-hvac',
+        organizationName: currentAccount?.company_name || 'Carrier Commercial HVAC',
+        userId: 'user-current',
+        userName: 'Current User',
+        adminUserId: 'admin-current',
+        adminName: 'Account Administrator',
+      };
       res = await fetch(`${API_BASE}/epd-reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildEpdReportRequest(selection, options, detailsOverride)),
+        body: JSON.stringify(reqPayload),
       });
       if (!res.ok) throw await epdReportError(res);
       blob = await res.blob();
@@ -1690,6 +1797,9 @@ export function StudioProvider({ children }) {
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
+    const certId = res.headers.get('X-Certificate-ID');
+    const verifyUrl = res.headers.get('X-Verify-URL');
+
     link.click();
     URL.revokeObjectURL(url);
 
@@ -1742,9 +1852,9 @@ export function StudioProvider({ children }) {
       return [newCert, ...prev];
     });
 
-    showNotif(`${filename} downloaded and verified`, 'EPD Report');
-    return filename;
-  }, [buildEpdReportRequest, showNotif, activeProject, activeProjectId, assembledDatabase, epdsList, extractedData]);
+    showNotif(`${filename} downloaded ${certId ? `(Sealed: ${certId})` : ''}`, 'EPD Report');
+    return { filename, certificateId: certId, verifyUrl };
+  }, [buildEpdReportRequest, showNotif, activeProject, activeProjectId, assembledDatabase, epdsList, extractedData, currentAccount]);
 
   // Report Details modal helpers, built on the same report API.
   const validatePreExport = useCallback(async (detailsToValidate) => {
