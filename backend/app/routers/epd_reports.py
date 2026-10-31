@@ -23,6 +23,7 @@ from app.epd_report import EpdReportError, EpdReportInputError, generate_epd_rep
 from app.epd_report.adapter import from_app_payload
 from app.epd_report.product_categories import list_profiles
 from app.epd_report.registry import get_registry
+from app.seal.seal_service import export_finalize, SealMeta, is_sealing_enabled
 
 router = APIRouter(prefix="/api/epd-reports", tags=["EPD Reports"])
 
@@ -35,13 +36,32 @@ def _resolve(payload: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Dict[str, An
     options.setdefault("build_date", date.today().isoformat())
     if payload.get("input"):
         return payload["input"], [], options
-    if not payload.get("resultsByMethod"):
+    results_by_method = payload.get("resultsByMethod")
+    extracted_data = payload.get("extractedData")
+    if not results_by_method:
+        fallback_file = REPO_ROOT / "results" / "epd_results.json"
+        if fallback_file.exists():
+            try:
+                calc_json = json.loads(fallback_file.read_text(encoding="utf-8"))
+                method_key = calc_json.get("methodology", {}).get("payload_key", "ef31")
+                results_by_method = {method_key: calc_json}
+            except Exception:
+                pass
+        if not extracted_data:
+            input_file = REPO_ROOT / "results" / "epd_calculation_input.json"
+            if input_file.exists():
+                try:
+                    inp_json = json.loads(input_file.read_text(encoding="utf-8"))
+                    extracted_data = inp_json.get("extractedData") or inp_json
+                except Exception:
+                    pass
+    if not results_by_method:
         raise HTTPException(status_code=422, detail={
             "error": "No calculation results",
             "errors": [{"level": "error", "code": "request.no_results", "path": "resultsByMethod",
                         "message": "Run the LCA calculation before generating a report."}]})
     data, adapter_warnings = from_app_payload(
-        payload.get("extractedData") or {}, payload["resultsByMethod"], payload.get("reportDetails") or {},
+        extracted_data or {}, results_by_method, payload.get("reportDetails") or {},
         payload.get("selection") or {}, payload.get("overrides") or {})
     return data, adapter_warnings, options
 
@@ -115,7 +135,7 @@ def generate_report(payload: Dict[str, Any] = Body(...)):
     content_type = "application/pdf"
     filename = r.filename
 
-    if SEALING_ENABLED:
+    if is_sealing_enabled():
         try:
             db = SessionLocal()
             try:

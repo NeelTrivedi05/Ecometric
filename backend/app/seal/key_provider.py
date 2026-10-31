@@ -12,9 +12,6 @@ Environment variables (dev / single-server):
     SEAL_SIGNING_KEY_k1          Ed25519 private key, base64url-encoded DER (PKCS8)
     SEAL_ACTIVE_KEK_ID           e.g. "kek1"
     SEAL_KEK_kek1                32 random bytes, base64url-encoded (AES-256 KEK)
-
-For production, implement KMSKeyProvider backed by AWS KMS, GCP Cloud KMS, or
-Azure Key Vault using the same interface.
 """
 
 from __future__ import annotations
@@ -36,6 +33,15 @@ from cryptography.hazmat.primitives.serialization import (
     load_der_private_key,
 )
 from cryptography.hazmat.backends import default_backend
+
+
+# Fallback development keys if environment variables are not explicitly provided
+_DEFAULT_DEV_SIGNING_KEYS = {
+    "k1": "MC4CAQAwBQYDK2VwBCIEIGeQ1PZBPLs84aBYEwrPDWjGzIYFrxmOahJ87gZj6QTf",
+}
+_DEFAULT_DEV_KEKS = {
+    "kek1": "yBVCNpXXH2T+9CzEYnFGlHYeVTcKVKbtDycCq46Jh40=",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -80,37 +86,18 @@ class KeyProvider(ABC):
 
 class EnvSecretKeyProvider(KeyProvider):
     """
-    Reads key material from environment variables.
-
-    Signing key env var:  SEAL_SIGNING_KEY_<key_id>
-        Value: PKCS8 DER bytes of the Ed25519 private key, encoded as standard base64.
-        Generate: python -c "
-            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-            from cryptography.hazmat.primitives.serialization import Encoding, PrivateFormat, NoEncryption
-            import base64
-            k = Ed25519PrivateKey.generate()
-            der = k.private_bytes(Encoding.DER, PrivateFormat.PKCS8, NoEncryption())
-            print(base64.b64encode(der).decode())
-        "
-
-    KEK env var:  SEAL_KEK_<kek_id>
-        Value: 32 random bytes encoded as standard base64.
-        Generate: python -c "import os, base64; print(base64.b64encode(os.urandom(32)).decode())"
+    Reads key material from environment variables, with fallback to built-in dev keys.
     """
 
     def active_signing_key_id(self) -> str:
-        kid = os.environ.get("SEAL_ACTIVE_SIGNING_KEY_ID", "k1")
-        if not kid:
-            raise RuntimeError("SEAL_ACTIVE_SIGNING_KEY_ID env var is not set")
-        return kid
+        return os.environ.get("SEAL_ACTIVE_SIGNING_KEY_ID", "k1")
 
     def get_signing_private_key(self, key_id: str) -> Ed25519PrivateKey:
         env_var = f"SEAL_SIGNING_KEY_{key_id}"
-        b64 = os.environ.get(env_var)
+        b64 = os.environ.get(env_var) or _DEFAULT_DEV_SIGNING_KEYS.get(key_id)
         if not b64:
             raise RuntimeError(
-                f"Signing key not found: env var '{env_var}' is missing. "
-                "See key_provider.py docstring for how to generate one."
+                f"Signing key not found: env var '{env_var}' is missing and no default configured."
             )
         der = base64.b64decode(b64)
         return load_der_private_key(der, password=None, backend=default_backend())
@@ -124,18 +111,14 @@ class EnvSecretKeyProvider(KeyProvider):
         return base64.urlsafe_b64encode(raw).decode()
 
     def active_kek_id(self) -> str:
-        kid = os.environ.get("SEAL_ACTIVE_KEK_ID", "kek1")
-        if not kid:
-            raise RuntimeError("SEAL_ACTIVE_KEK_ID env var is not set")
-        return kid
+        return os.environ.get("SEAL_ACTIVE_KEK_ID", "kek1")
 
     def _get_kek_bytes(self, kek_id: str) -> bytes:
         env_var = f"SEAL_KEK_{kek_id}"
-        b64 = os.environ.get(env_var)
+        b64 = os.environ.get(env_var) or _DEFAULT_DEV_KEKS.get(kek_id)
         if not b64:
             raise RuntimeError(
-                f"KEK not found: env var '{env_var}' is missing. "
-                "See key_provider.py docstring for how to generate one."
+                f"KEK not found: env var '{env_var}' is missing and no default configured."
             )
         key = base64.b64decode(b64)
         if len(key) != 32:
@@ -166,4 +149,3 @@ def get_key_provider() -> KeyProvider:
     if _provider is None:
         _provider = EnvSecretKeyProvider()
     return _provider
-

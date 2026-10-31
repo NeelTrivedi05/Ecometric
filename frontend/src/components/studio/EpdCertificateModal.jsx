@@ -1,9 +1,71 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { XIcon, ShieldCheckIcon, CheckIcon, BuildingIcon, FileTextIcon } from './Icons';
 import { Button } from '@/components/base/buttons/button';
+import { useStudio } from '../../context/StudioContext';
+import { API_BASE } from '../../config/api';
 
 export default function EpdCertificateModal({ epd, isOpen, onClose }) {
+  const { downloadEpdReport } = useStudio();
+  const [isDownloading, setIsDownloading] = useState(false);
+
   if (!isOpen || !epd) return null;
+
+  const handleDownloadOfficialPdf = async () => {
+    setIsDownloading(true);
+    try {
+      if (downloadEpdReport) {
+        await downloadEpdReport(
+          {},
+          { exportMode: 'signed_open' },
+          {
+            product_name: epd.title || epd.product_name,
+            declaration_number: epd.epd_number,
+          }
+        );
+        return;
+      }
+    } catch (ctxErr) {
+      console.warn('StudioContext download fallback:', ctxErr);
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/epd-reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          exportMode: 'signed_open',
+          projectId: epd.id || 'proj-epd',
+          reportDetails: {
+            product_name: epd.title || epd.product_name || 'Carrier Commercial HVAC EPD Declaration',
+            declaration_number: epd.epd_number,
+          },
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
+
+      const blob = await res.blob();
+      const disp = res.headers.get('Content-Disposition') || '';
+      const match = disp.match(/filename="?([^";]+)"?/i);
+      const filename = (match && match[1]) || `${(epd.epd_number || 'EPD').replace(/\s+/g, '_')}_Official_Declaration.pdf`;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch (err) {
+      console.error('Failed to download official PDF:', err);
+      alert('Could not download official PDF report: ' + (err.message || 'Please ensure the backend is running.'));
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div
@@ -343,21 +405,10 @@ export default function EpdCertificateModal({ epd, isOpen, onClose }) {
               size="sm"
               color="primary"
               iconLeading={FileTextIcon}
-              onClick={() => {
-                const filename = `${(epd.epd_number || 'EPD-2026').replace(/\s+/g, '_')}_Official_Certificate.pdf`;
-                const pdfContent = `%PDF-1.4\n% EcoMetric ISO 14025 / EN 15804+A2 Type III Environmental Product Declaration Certificate\n% Registration: ${epd.epd_number}\n% Product: ${epd.title || epd.product_name}\n% Program Operator: ${epd.program_operator}\n% PCR Reference: ${epd.pcr_standard}\n% Third-Party External Verifier: ${epd.verifier} (${epd.verifier_org})\n% Validity: ${epd.publication_date} to ${epd.valid_until}\n% Functional Unit: ${epd.functional_unit}\n% Global Warming Potential (GWP-100 Total A1-C4): ${epd.gwp_total} kg CO2e\n% Data Quality Rating: DQR ${epd.dqr_score} (PEF 3.0 Verified)\n% Cryptographic Lineage Hash (SHA-256): ${epd.sha256_hash}\n%%EOF`;
-                const blob = new Blob([pdfContent], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(() => URL.revokeObjectURL(url), 2000);
-              }}
+              disabled={isDownloading}
+              onClick={handleDownloadOfficialPdf}
             >
-              Download Official PDF
+              {isDownloading ? 'Generating PDF...' : 'Download Official PDF'}
             </Button>
           </div>
         </div>

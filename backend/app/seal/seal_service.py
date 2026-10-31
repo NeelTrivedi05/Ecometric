@@ -33,9 +33,10 @@ from .models import FileSeal, SealKey
 
 # ─── Feature flag ───────────────────────────────────────────────────────────
 
-SEALING_ENABLED = os.environ.get("FILE_SEALING_ENABLED", "false").lower() in (
-    "1", "true", "yes"
-)
+def is_sealing_enabled() -> bool:
+    return os.environ.get("FILE_SEALING_ENABLED", "true").lower() in ("1", "true", "yes")
+
+SEALING_ENABLED = is_sealing_enabled()
 
 # ─── Software version (single source of truth) ──────────────────────────────
 
@@ -299,7 +300,7 @@ def export_finalize(
     base_name = meta.original_file_name.rsplit(".", 1)[0]
     ext = _EXT.get(file_type, "")
 
-    if not SEALING_ENABLED:
+    if not is_sealing_enabled():
         return ExportResult(
             file_bytes=file_bytes,
             content_type=_MIME[file_type],

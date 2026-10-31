@@ -239,6 +239,68 @@ async def verify_by_file(request: Request, file: UploadFile = File(...)):
         )
 
         if not seal:
+            # Check if file has an embedded certificate ID (e.g. PDF metadata or JSON key)
+            extracted_cert_id = None
+            try:
+                # 1. If PDF, check metadata
+                if content.startswith(b"%PDF") or filename.lower().endswith(".pdf"):
+                    try:
+                        from pypdf import PdfReader
+                        reader = PdfReader(io.BytesIO(content))
+                        if reader.metadata:
+                            for mk in ("/EcoMetricCertificate", "EcoMetricCertificate", "/EcoMetric-Certificate"):
+                                if mk in reader.metadata and reader.metadata[mk]:
+                                    extracted_cert_id = str(reader.metadata[mk]).strip()
+                                    break
+                    except Exception:
+                        pass
+                    if not extracted_cert_id:
+                        import re
+                        m = re.search(rb"ECM-[0-9A-HJ-NP-Z]{4}-[0-9A-HJ-NP-Z]{4}-[0-9A-HJ-NP-Z]{4}-[0-9A-HJ-NP-Z]{4}", content)
+                        if m:
+                            extracted_cert_id = m.group(0).decode("ascii")
+                # 2. If JSON, check _ecometric_seal
+                elif content.strip().startswith(b"{"):
+                    try:
+                        import json
+                        obj = json.loads(content.decode("utf-8", errors="ignore"))
+                        if isinstance(obj, dict) and "_ecometric_seal" in obj:
+                            extracted_cert_id = obj["_ecometric_seal"].get("certificate_id")
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+            if extracted_cert_id:
+                seal_by_id = db.query(FileSeal).filter(FileSeal.certificate_id == extracted_cert_id).first()
+                if seal_by_id:
+                    # The certificate is in our registry, but the file hash did NOT match
+                    manifest = seal_by_id.manifest or {}
+                    if seal_by_id.status == "revoked":
+                        _log_verification(db, "revoked", extracted_cert_id, request)
+                        return JSONResponse({
+                            "result": "revoked",
+                            "certificate_id": extracted_cert_id,
+                            "revoked_at": seal_by_id.revoked_at.isoformat() if seal_by_id.revoked_at else None,
+                            "revoke_reason": seal_by_id.revoke_reason,
+                            "provenance": _safe_provenance(manifest, show_names=False),
+                        })
+                    if seal_by_id.status == "superseded":
+                        _log_verification(db, "superseded", extracted_cert_id, request)
+                        return JSONResponse({
+                            "result": "superseded",
+                            "certificate_id": extracted_cert_id,
+                            "superseded_by": seal_by_id.superseded_by,
+                            "provenance": _safe_provenance(manifest, show_names=False),
+                        })
+                    _log_verification(db, "modified", extracted_cert_id, request)
+                    return JSONResponse({
+                        "result": "modified",
+                        "certificate_id": extracted_cert_id,
+                        "detail": "Certificate ID was identified, but the file contents have been modified or tampered with since issuance.",
+                        "provenance": _safe_provenance(manifest, show_names=False),
+                    })
+
             _log_verification(db, "not_found", None, request)
             return JSONResponse({"result": "not_found", "detail": "No matching certificate found for this file."})
 
