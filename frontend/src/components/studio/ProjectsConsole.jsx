@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import CreateProjectModal from './CreateProjectModal';
 import BrandLogo from '../BrandLogo';
 import { useStudio } from '../../context/StudioContext';
 import { useAuth } from '../../context/AuthContext';
@@ -72,6 +73,217 @@ function AccountMenuItem({ icon: Icon, label, onClick, isDestructive = false }) 
   );
 }
 
+// Full project title hover card revealing entire unclipped title and complete specifications
+function ProjectTitleCell({ project, onOpen }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
+  const containerRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setTooltipPos({
+        top: rect.top - 8,
+        left: Math.max(16, rect.left),
+      });
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      onClick={() => onOpen(project)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{ minWidth: 0, paddingRight: '12px', position: 'relative', cursor: 'pointer' }}
+      title={project.name}
+    >
+      <div
+        style={{
+          fontWeight: 600,
+          color: '#16231b',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}
+      >
+        <span style={{ color: '#1f7a4c', display: 'flex', flexShrink: 0 }}>
+          <FileTextIcon size={15} />
+        </span>
+        <span
+          style={{
+            color: isHovered ? '#1f7a4c' : '#16231b',
+            transition: 'color 0.15s ease',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {project.name}
+        </span>
+      </div>
+      <div style={{ fontSize: '11px', color: '#5b6f62', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        Model: {project.product_model} • {project.capacity_rt} RT • {project.refrigerant}
+      </div>
+
+      {/* Floating hover card revealing entire name and specs */}
+      {isHovered && (
+        <div
+          style={{
+            position: 'fixed',
+            top: `${tooltipPos.top}px`,
+            left: `${tooltipPos.left}px`,
+            transform: 'translateY(-100%)',
+            zIndex: 99999,
+            backgroundColor: '#17231c',
+            color: '#ffffff',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            border: '1px solid #2d3e33',
+            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.15)',
+            maxWidth: '420px',
+            pointerEvents: 'none',
+            fontSize: '12px',
+            lineHeight: 1.45,
+            animation: 'studioFadeIn 0.15s ease-out',
+          }}
+        >
+          <div style={{ fontWeight: 600, fontSize: '13px', color: '#ffffff', marginBottom: '4px' }}>
+            {project.name}
+          </div>
+          <div style={{ fontSize: '11.5px', color: '#a3b8ab' }}>
+            <div><strong style={{ color: '#d1e0d7' }}>Model:</strong> {project.product_model}</div>
+            <div><strong style={{ color: '#d1e0d7' }}>Capacity:</strong> {project.capacity_rt} RT • {project.refrigerant} ({project.refrigerant_charge_kg || 250} kg)</div>
+            {project.standard && <div><strong style={{ color: '#d1e0d7' }}>Standard:</strong> {project.standard}</div>}
+            {project.epd_number && (
+              <div style={{ marginTop: '4px', color: '#68d391', fontWeight: 600 }}>
+                EPD Registration: {project.epd_number}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Interactive status badge with real-time dropdown selection
+function ProjectStatusCell({ project, onUpdateStatus }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  const STATUS_OPTIONS = [
+    { value: 'Verified EPD', label: 'Verified EPD', color: '#1f7a4c', bg: '#eaf7ee', border: '#c3e8cd' },
+    { value: 'In Calculation', label: 'In Calculation', color: '#b45309', bg: '#fef3c7', border: '#fde68a' },
+    { value: 'BOM Extracted', label: 'BOM Extracted', color: '#0f766e', bg: '#e6f4f2', border: '#bce3de' },
+    { value: 'Draft', label: 'Draft', color: '#5b6f62', bg: '#edf2ec', border: '#dfe7dd' },
+    { value: 'Archived', label: 'Archived', color: '#6b7a70', bg: '#f1f3f1', border: '#d5ddd7' },
+  ];
+
+  const currentOption = STATUS_OPTIONS.find((s) => s.value === project.status) || STATUS_OPTIONS[3];
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }} onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '5px',
+          fontSize: '11px',
+          fontWeight: 600,
+          padding: '2px 8px',
+          borderRadius: '9999px',
+          backgroundColor: currentOption.bg,
+          color: currentOption.color,
+          border: `1px solid ${currentOption.border}`,
+          cursor: 'pointer',
+          outline: 'none',
+          transition: 'all 0.15s ease',
+        }}
+        title="Click to change status"
+      >
+        {project.status === 'Verified EPD' && <CheckIcon size={10} />}
+        <span>{project.status}</span>
+        <span style={{ fontSize: '9px', opacity: 0.7 }}>▾</span>
+      </button>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            zIndex: 10000,
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            border: '1px solid #dfe7dd',
+            boxShadow: '0 8px 24px rgba(16, 52, 33, 0.15)',
+            padding: '4px',
+            minWidth: '145px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '2px',
+          }}
+        >
+          {STATUS_OPTIONS.map((opt) => (
+            <div
+              key={opt.value}
+              onClick={() => {
+                onUpdateStatus(project.id, opt.value);
+                setIsOpen(false);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 10px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: project.status === opt.value ? 600 : 500,
+                color: opt.color,
+                backgroundColor: project.status === opt.value ? opt.bg : 'transparent',
+                cursor: 'pointer',
+                transition: 'background 0.1s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (project.status !== opt.value) e.currentTarget.style.backgroundColor = '#f8faf6';
+              }}
+              onMouseLeave={(e) => {
+                if (project.status !== opt.value) e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              {opt.value === 'Verified EPD' ? <CheckIcon size={12} /> : <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: opt.color }} />}
+              <span>{opt.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ProjectsConsole() {
   const {
     currentAccount,
@@ -82,12 +294,17 @@ export default function ProjectsConsole() {
     assembledDatabase,
     openProject,
     createProject,
+    updateProjectStatus,
+    archiveProject,
+    restoreProject,
     duplicateProject,
     deleteProject,
   } = useStudio();
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { folder } = useParams();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Navigation sidebar selection
   const [activeFolder, setActiveFolder] = useState('all'); // 'all', 'mine', 'shared', 'archived', 'epds'
@@ -228,21 +445,21 @@ export default function ProjectsConsole() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeSlug, isAccountDropdownOpen]);
 
+  const currentFolder = useMemo(() => {
+    const path = (location.pathname || '').replace(/\/+$/, '');
+    if (path.endsWith('/mine') || folder === 'mine') return 'mine';
+    if (path.endsWith('/shared') || folder === 'shared') return 'shared';
+    if (path.endsWith('/archived') || folder === 'archived') return 'archived';
+    if (path.endsWith('/epds') || folder === 'epds') return 'epds';
+    return 'all';
+  }, [location.pathname, folder]);
+
   useEffect(() => {
-    const folderByRoute = {
-      projects: 'all',
-      mine: 'mine',
-      shared: 'shared',
-      archived: 'archived',
-      epds: 'epds',
-    };
-    if (folder && folderByRoute[folder] && folderByRoute[folder] !== activeFolder) {
-      setActiveFolder(folderByRoute[folder]);
-      setSelectedTag(null);
-      setSearchQuery('');
-      setStatusFilter('all');
-    }
-  }, [folder, activeFolder]);
+    setActiveFolder(currentFolder);
+    setSelectedTag(null);
+    setSearchQuery('');
+    setStatusFilter('all');
+  }, [currentFolder]);
 
   const navigateToFolder = (nextFolder) => {
     const routeByFolder = {
@@ -259,14 +476,32 @@ export default function ProjectsConsole() {
     navigate(routeByFolder[nextFolder]);
   };
 
-  // Filter projects based on folder, tag, status, search
+  const activeCount = useMemo(() => {
+    return projectsList.filter((p) => p.status !== 'Archived').length;
+  }, [projectsList]);
+
+  const epdsCount = useMemo(() => {
+    return epdsList.length;
+  }, [epdsList]);
+
+  // Filter projects based on folder, tag, status, search across all organization members
   const filteredProjects = useMemo(() => {
     return projectsList.filter((proj) => {
+      const isMine = proj.owner === 'You' || proj.owner === displayName || proj.owner === displayEmail;
+
       // Folder filter
-      if (activeFolder === 'mine' && proj.owner !== 'You') return false;
-      if (activeFolder === 'shared' && proj.owner === 'You') return false;
-      if (activeFolder === 'archived' && proj.status !== 'Archived') return false;
-      if (activeFolder !== 'archived' && proj.status === 'Archived') return false;
+      if (activeFolder === 'mine') {
+        if (!isMine || proj.status === 'Archived') return false;
+      } else if (activeFolder === 'shared') {
+        if (isMine || proj.status === 'Archived') return false;
+      } else if (activeFolder === 'archived') {
+        if (proj.status !== 'Archived') return false;
+      } else if (activeFolder === 'epds') {
+        return false;
+      } else {
+        // 'all' folder
+        if (proj.status === 'Archived') return false;
+      }
 
       // Tag filter
       if (selectedTag && (!proj.tags || !proj.tags.includes(selectedTag))) {
@@ -293,7 +528,7 @@ export default function ProjectsConsole() {
 
       return true;
     });
-  }, [projectsList, activeFolder, selectedTag, statusFilter, searchQuery]);
+  }, [projectsList, activeFolder, selectedTag, statusFilter, searchQuery, displayName, displayEmail]);
 
   // Select all handler
   const isAllSelected =
@@ -332,30 +567,12 @@ export default function ProjectsConsole() {
     navigate(`/app/projects/${project.id}`);
   };
 
-  // New project handler: create a default project and go straight to the studio
+  // New project handler: opens creation modal to specify real project metadata
   const handleNewProject = () => {
-    const capacityRt = 500;
-    const lifespanYears = 25;
-    const newProj = {
-      id: `proj-${Date.now()}`,
-      name: 'Untitled project',
-      product_model: `UNTITLED-${capacityRt}RT`,
-      capacity_rt: capacityRt,
-      refrigerant: assembledDatabase?.default_refrigerant || 'R1233zd',
-      refrigerant_charge_kg: 320,
-      gwp_total: Math.round(capacityRt * 76.8),
-      status: 'In Calculation',
-      standard: assembledDatabase?.pcr_standard || 'UL 10010-4 Part B v2.0 & EN 15804+A2',
-      owner: 'You',
-      last_modified: 'Just now by You',
-      created_at: new Date().toISOString().split('T')[0],
-      tags: ['Chillers', 'Primary Facility LCI'],
-      preset_key: 'carrier_19dv_benchmark',
-      functional_unit: `1 ton chilling capacity over ${lifespanYears} years reference service life`,
-      declared_unit: `1 complete chiller unit (${capacityRt} RT)`,
-      facility: assembledDatabase?.facility_name || currentAccount?.facility_name || 'Primary Facility',
-      epd_number: null,
-    };
+    setIsCreateModalOpen(true);
+  };
+
+  const handleProjectCreated = (newProj) => {
     createProject(newProj);
     navigate(`/app/projects/${newProj.id}`);
   };
@@ -453,7 +670,7 @@ export default function ProjectsConsole() {
                   borderRadius: '9999px',
                 }}
               >
-                {projectsList.length}
+                {activeCount}
               </span>
             </div>
 
@@ -1065,7 +1282,7 @@ export default function ProjectsConsole() {
                 transition: 'all 0.15s ease',
               }}
             >
-              Recent Projects ({projectsList.length})
+              Recent Projects ({activeCount})
             </button>
             <button
               type="button"
@@ -1189,6 +1406,7 @@ export default function ProjectsConsole() {
                   <option value="In Calculation">In Calculation</option>
                   <option value="BOM Extracted">BOM Extracted</option>
                   <option value="Draft">Draft</option>
+                  {activeFolder === 'archived' && <option value="Archived">Archived</option>}
                 </>
               )}
             </select>
@@ -1326,76 +1544,12 @@ export default function ProjectsConsole() {
                           />
                         </div>
 
-                        {/* Title & Model */}
-                        <div
-                          onClick={() => handleOpenProject(proj)}
-                          style={{ minWidth: 0, paddingRight: '12px' }}
-                        >
-                          <div
-                            style={{
-                              fontWeight: 600,
-                              color: '#16231b',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                            }}
-                          >
-                            <span style={{ color: '#1f7a4c', display: 'flex' }}>
-                              <FileTextIcon size={15} />
-                            </span>
-                            <span
-                              style={{
-                                color: '#16231b',
-                                transition: 'color 0.15s ease',
-                              }}
-                              onMouseEnter={(e) => (e.currentTarget.style.color = '#1f7a4c')}
-                              onMouseLeave={(e) => (e.currentTarget.style.color = '#16231b')}
-                            >
-                              {proj.name}
-                            </span>
-                          </div>
-                          <div style={{ fontSize: '11px', color: '#5b6f62', marginTop: '2px' }}>
-                            Model: {proj.product_model} • {proj.capacity_rt} RT • {proj.refrigerant}
-                          </div>
-                        </div>
+                        {/* Title & Model with Full Name Hover Tooltip */}
+                        <ProjectTitleCell project={proj} onOpen={handleOpenProject} />
 
-                        {/* Status Badge */}
-                        <div onClick={() => handleOpenProject(proj)}>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              fontSize: '11px',
-                              fontWeight: 600,
-                              padding: '2px 8px',
-                              borderRadius: '9999px',
-                              backgroundColor:
-                                proj.status === 'Verified EPD'
-                                  ? '#eaf7ee'
-                                  : proj.status === 'In Calculation'
-                                  ? '#fef3c7'
-                                  : '#edf2ec',
-                              color:
-                                proj.status === 'Verified EPD'
-                                  ? '#1f7a4c'
-                                  : proj.status === 'In Calculation'
-                                  ? '#b45309'
-                                  : '#5b6f62',
-                              border:
-                                proj.status === 'Verified EPD'
-                                  ? '1px solid #c3e8cd'
-                                  : proj.status === 'In Calculation'
-                                  ? '1px solid #fde68a'
-                                  : '1px solid #dfe7dd',
-                            }}
-                          >
-                            {proj.status === 'Verified EPD' && <CheckIcon size={10} />}
-                            <span>{proj.status}</span>
-                          </span>
+                        {/* Status & Compliance Interactive Dropdown */}
+                        <div>
+                          <ProjectStatusCell project={proj} onUpdateStatus={updateProjectStatus} />
                         </div>
 
                         {/* Owner */}
@@ -1436,58 +1590,100 @@ export default function ProjectsConsole() {
                           style={{ textAlign: 'right', display: 'flex', justifyContent: 'flex-end', gap: '6px' }}
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <button
-                            type="button"
-                            onClick={() => handleOpenProject(proj)}
-                            style={{
-                              padding: '5px 12px',
-                              fontSize: '11.5px',
-                              fontWeight: 600,
-                              color: '#ffffff',
-                              backgroundColor: '#1f7a4c',
-                              border: 'none',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              transition: 'background 0.15s ease',
-                            }}
-                            title="Open in Calculation Studio"
-                          >
-                            Open
-                          </button>
+                          {proj.status === 'Archived' ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => restoreProject(proj.id)}
+                                style={{
+                                  padding: '5px 10px',
+                                  fontSize: '11.5px',
+                                  fontWeight: 600,
+                                  color: '#1f7a4c',
+                                  backgroundColor: '#eef7f1',
+                                  border: '1px solid #c8e2d1',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                }}
+                                title="Restore Project to Active"
+                              >
+                                Restore
+                              </button>
 
-                          <button
-                            type="button"
-                            onClick={() => duplicateProject(proj.id)}
-                            style={{
-                              padding: '5px 8px',
-                              background: 'none',
-                              border: '1px solid #dfe7dd',
-                              borderRadius: '6px',
-                              color: '#5b6f62',
-                              cursor: 'pointer',
-                              backgroundColor: '#ffffff',
-                            }}
-                            title="Duplicate Project"
-                          >
-                            <CopyIcon size={12} />
-                          </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteProject(proj.id)}
+                                style={{
+                                  padding: '5px 8px',
+                                  background: 'none',
+                                  border: '1px solid #dfe7dd',
+                                  borderRadius: '6px',
+                                  color: '#dc2626',
+                                  cursor: 'pointer',
+                                  backgroundColor: '#ffffff',
+                                }}
+                                title="Delete Permanently"
+                              >
+                                <TrashIcon size={12} />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleOpenProject(proj)}
+                                style={{
+                                  padding: '5px 12px',
+                                  fontSize: '11.5px',
+                                  fontWeight: 600,
+                                  color: '#ffffff',
+                                  backgroundColor: '#1f7a4c',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  transition: 'background 0.15s ease',
+                                }}
+                                title="Open in Calculation Studio"
+                              >
+                                Open
+                              </button>
 
-                          <button
-                            type="button"
-                            onClick={() => deleteProject(proj.id)}
-                            style={{
-                              padding: '5px 8px',
-                              background: 'none',
-                              border: '1px solid #dfe7dd',
-                              borderRadius: '6px',
-                              color: '#dc2626',
-                              cursor: 'pointer',
-                              backgroundColor: '#ffffff',
-                            }}
-                            title="Archive / Delete Project"
-                          >
-                            <TrashIcon size={12} />
-                          </button>
+                              <button
+                                type="button"
+                                onClick={() => duplicateProject(proj.id)}
+                                style={{
+                                  padding: '5px 8px',
+                                  background: 'none',
+                                  border: '1px solid #dfe7dd',
+                                  borderRadius: '6px',
+                                  color: '#5b6f62',
+                                  cursor: 'pointer',
+                                  backgroundColor: '#ffffff',
+                                }}
+                                title="Duplicate Project"
+                              >
+                                <CopyIcon size={12} />
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => archiveProject(proj.id)}
+                                style={{
+                                  padding: '5px 8px',
+                                  background: 'none',
+                                  border: '1px solid #dfe7dd',
+                                  borderRadius: '6px',
+                                  color: '#dc2626',
+                                  cursor: 'pointer',
+                                  backgroundColor: '#ffffff',
+                                }}
+                                title="Archive Project"
+                              >
+                                <TrashIcon size={12} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     );
@@ -1509,7 +1705,7 @@ export default function ProjectsConsole() {
                 }}
               >
                 <div>
-                  Showing {filteredProjects.length} out of {projectsList.length} projects.
+                  Showing {filteredProjects.length} out of {activeFolder === 'archived' ? projectsList.filter(p => p.status === 'Archived').length : activeCount} projects.
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1589,6 +1785,12 @@ export default function ProjectsConsole() {
         epd={selectedEpdForCert}
         isOpen={Boolean(selectedEpdForCert)}
         onClose={() => setSelectedEpdForCert(null)}
+      />
+
+      <CreateProjectModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onProjectCreated={handleProjectCreated}
       />
     </div>
   );

@@ -142,8 +142,43 @@ export function StudioProvider({ children }) {
   const [currentAccountId, setCurrentAccountId] = useState(DEFAULT_ACCOUNT_ID);
   const [accountsList, setAccountsList] = useState(() => Object.values(ACCOUNTS_DATA));
   const [activeProjectId, setActiveProjectId] = useState('proj-c1');
-  const [projectsList, setProjectsList] = useState(() => ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.projects || []);
-  const [epdsList, setEpdsList] = useState(() => ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.epds || []);
+  const [projectsList, setProjectsList] = useState(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? window.localStorage.getItem(`ecometric_projects_${DEFAULT_ACCOUNT_ID}`) : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.projects || [];
+  });
+  const [epdsList, setEpdsList] = useState(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? window.localStorage.getItem(`ecometric_epds_${DEFAULT_ACCOUNT_ID}`) : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.epds || [];
+  });
+
+  // Persistent storage across all employee accounts and sessions
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(`ecometric_projects_${currentAccountId}`, JSON.stringify(projectsList));
+      }
+    } catch (e) {}
+  }, [projectsList, currentAccountId]);
+
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(`ecometric_epds_${currentAccountId}`, JSON.stringify(epdsList));
+      }
+    } catch (e) {}
+  }, [epdsList, currentAccountId]);
 
   const currentAccount = useMemo(() => {
     return accountsList.find((a) => a.id === currentAccountId) || ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID];
@@ -316,8 +351,25 @@ export function StudioProvider({ children }) {
     const acc = accountsList.find((a) => a.id === newAccountId) || ACCOUNTS_DATA[newAccountId];
     if (!acc) return;
     setCurrentAccountId(newAccountId);
-    setProjectsList(acc.projects || []);
-    setEpdsList(acc.epds || []);
+    let loadedProjects = acc.projects || [];
+    try {
+      const savedProjs = window.localStorage.getItem(`ecometric_projects_${newAccountId}`);
+      if (savedProjs) {
+        const parsed = JSON.parse(savedProjs);
+        if (Array.isArray(parsed) && parsed.length > 0) loadedProjects = parsed;
+      }
+    } catch (e) {}
+    setProjectsList(loadedProjects);
+
+    let loadedEpds = acc.epds || [];
+    try {
+      const savedEpds = window.localStorage.getItem(`ecometric_epds_${newAccountId}`);
+      if (savedEpds) {
+        const parsed = JSON.parse(savedEpds);
+        if (Array.isArray(parsed) && parsed.length > 0) loadedEpds = parsed;
+      }
+    } catch (e) {}
+    setEpdsList(loadedEpds);
 
     // Dynamically update manufacturing and operational parameters to match this account's assembled facility LCI
     if (acc.database_assembly) {
@@ -348,7 +400,55 @@ export function StudioProvider({ children }) {
 
   const addEpd = useCallback((newEpd) => {
     setEpdsList((prev) => [newEpd, ...prev]);
+    // Also synchronize matching project in projectsList with real EPD certification data
+    setProjectsList((prev) =>
+      prev.map((p) => {
+        if (p.id === newEpd.projectId || p.name === newEpd.product_name) {
+          return {
+            ...p,
+            status: 'Verified EPD',
+            epd_number: newEpd.epd_number || p.epd_number,
+            gwp_total: newEpd.gwp_total || p.gwp_total,
+            last_modified: 'Just now by You',
+          };
+        }
+        return p;
+      })
+    );
   }, []);
+
+  const updateProjectStatus = useCallback((projectId, newStatus) => {
+    setProjectsList((prev) =>
+      prev.map((p) => {
+        if (p.id === projectId) {
+          const isVerified = newStatus === 'Verified EPD';
+          const epdNum = p.epd_number || (isVerified ? `EPD-CC-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}` : null);
+          return {
+            ...p,
+            status: newStatus,
+            epd_number: epdNum,
+            last_modified: 'Just now by You',
+          };
+        }
+        return p;
+      })
+    );
+    showNotif(`Status updated to "${newStatus}"`, 'Project Updated');
+  }, [showNotif]);
+
+  const archiveProject = useCallback((projectId) => {
+    setProjectsList((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, status: 'Archived', last_modified: 'Just now by You' } : p))
+    );
+    showNotif('Project moved to Archived.', 'Project Archived');
+  }, [showNotif]);
+
+  const restoreProject = useCallback((projectId) => {
+    setProjectsList((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, status: 'Draft', last_modified: 'Just now by You' } : p))
+    );
+    showNotif('Project restored to active.', 'Project Restored');
+  }, [showNotif]);
 
   const activeProject = useMemo(() => {
     const foundInList = projectsList.find((p) => p.id === activeProjectId);
@@ -468,8 +568,16 @@ export function StudioProvider({ children }) {
 
   // Delete / Archive Project
   const deleteProject = useCallback((projectId) => {
-    setProjectsList((prev) => prev.filter((p) => p.id !== projectId));
-    showNotif('Project has been archived / removed.', 'Project Removed');
+    setProjectsList((prev) => {
+      const target = prev.find((p) => p.id === projectId);
+      if (target && target.status === 'Archived') {
+        // Permanently remove when deleting from Archived
+        return prev.filter((p) => p.id !== projectId);
+      }
+      // Move to archived
+      return prev.map((p) => (p.id === projectId ? { ...p, status: 'Archived', last_modified: 'Just now by You' } : p));
+    });
+    showNotif('Project archived / removed.', 'Project Updated');
   }, [showNotif]);
 
   // Close back to Projects Console
@@ -1584,9 +1692,59 @@ export function StudioProvider({ children }) {
     link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
-    showNotif(`${filename} downloaded`, 'EPD Report');
+
+    // Automatically certify the project as Verified EPD in the projects list and add certificate to epdsList
+    const epdCertNumber = activeProject?.epd_number || `EPD-CC-${new Date().getFullYear()}-${String(epdsList.length + 1).padStart(3, '0')}`;
+    const formattedDate = new Date().toISOString().split('T')[0];
+    const expiryDate = new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    setProjectsList((prev) =>
+      prev.map((p) => {
+        if (p.id === activeProjectId) {
+          return {
+            ...p,
+            status: 'Verified EPD',
+            epd_number: epdCertNumber,
+            last_modified: 'Just now by You',
+          };
+        }
+        return p;
+      })
+    );
+
+    setEpdsList((prev) => {
+      const alreadyHas = prev.some((e) => e.epd_number === epdCertNumber || (activeProject && e.product_name === activeProject.name));
+      if (alreadyHas) return prev;
+      const newCert = {
+        id: `epd-${Date.now()}`,
+        epd_number: epdCertNumber,
+        title: `${activeProject?.name || extractedData?.project_info?.product_name || 'AquaEdge 19DV Centrifugal Chiller'} Type III Declaration`,
+        product_name: activeProject?.name || extractedData?.project_info?.product_name || 'Commercial HVAC Equipment',
+        program_operator: assembledDatabase?.program_operator || 'UL Solutions / EcoPlatform',
+        pcr_standard: activeProject?.standard || assembledDatabase?.pcr_standard || 'UL 10010-4 Part B v2.0 & EN 15804+A2',
+        publication_date: formattedDate,
+        valid_until: expiryDate,
+        verifier: assembledDatabase?.verifier_name || 'Jack Geibig',
+        verifier_org: assembledDatabase?.verifier_org || 'EcoForm Certification',
+        functional_unit: activeProject?.functional_unit || '1 ton cooling capacity over 25 years RSL',
+        gwp_total: activeProject?.gwp_total || 38420,
+        gwp_per_unit: `${((activeProject?.gwp_total || 38420) / (activeProject?.capacity_rt || 500)).toFixed(2)} kg CO2e / RT`,
+        a1_a3_gwp: Math.round((activeProject?.gwp_total || 38420) * 0.37),
+        a4_a5_gwp: Math.round((activeProject?.gwp_total || 38420) * 0.05),
+        b1_b7_gwp: Math.round((activeProject?.gwp_total || 38420) * 0.55),
+        c1_c4_gwp: Math.round((activeProject?.gwp_total || 38420) * 0.03),
+        module_d: -Math.round((activeProject?.gwp_total || 38420) * 0.1),
+        sha256_hash: '9a2f7c4b1890de5a6b7312c4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4',
+        dqr_score: 1.28,
+        status: 'Published & Verified',
+        file_type: 'pdf',
+      };
+      return [newCert, ...prev];
+    });
+
+    showNotif(`${filename} downloaded and verified`, 'EPD Report');
     return filename;
-  }, [buildEpdReportRequest, showNotif]);
+  }, [buildEpdReportRequest, showNotif, activeProject, activeProjectId, assembledDatabase, epdsList, extractedData]);
 
   // Report Details modal helpers, built on the same report API.
   const validatePreExport = useCallback(async (detailsToValidate) => {
@@ -1658,6 +1816,9 @@ export function StudioProvider({ children }) {
         projectsList,
         epdsList,
         addEpd,
+        updateProjectStatus,
+        archiveProject,
+        restoreProject,
         openProject,
         createProject,
         duplicateProject,

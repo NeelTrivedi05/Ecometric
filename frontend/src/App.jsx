@@ -140,6 +140,7 @@ export default function App() {
               <Route path="/app/shared" element={<StudioWorkspace />} />
               <Route path="/app/archived" element={<StudioWorkspace />} />
               <Route path="/app/epds" element={<StudioWorkspace />} />
+              <Route path="/app/:folder" element={<StudioWorkspace />} />
               <Route path="/app/projects/:projectId" element={<StudioWorkspace />} />
               <Route path="/app/projects/:projectId/:phase" element={<StudioWorkspace />} />
               <Route path="/app/project/:projectId" element={<StudioWorkspace />} />
