@@ -136,7 +136,7 @@ export function StudioProvider({ children }) {
   const { user } = useAuth();
   const { activeOrg } = useTenant();
   // Navigation
-  const [activePhase, setActivePhase] = useState('product');
+  const [activePhase, setActivePhase] = useState('upload');
   const [currentPresetId, setCurrentPresetId] = useState('aquaedge_500rt');
   // Product category chosen in step 1 (null until the user selects one)
   const [productCategory, setProductCategory] = useState(null);
@@ -146,7 +146,7 @@ export function StudioProvider({ children }) {
 
   // Multi-tenant accounts and assembled database state
   const [currentAccountId, setCurrentAccountId] = useState(() => activeOrg?.id || DEFAULT_ACCOUNT_ID);
-  const [accountsList, setAccountsList] = useState(() => Object.values(ACCOUNTS_DATA));
+  const [accountsList] = useState(() => Object.values(ACCOUNTS_DATA));
   const [hydratedWorkspaceId, setHydratedWorkspaceId] = useState(null);
   const [activeProjectId, setActiveProjectId] = useState('proj-c1');
   const [projectsList, setProjectsList] = useState(() => {
@@ -235,18 +235,6 @@ export function StudioProvider({ children }) {
   const assembledDatabase = useMemo(() => {
     return currentAccount?.database_assembly;
   }, [currentAccount]);
-
-  // Sync accounts from backend if online
-  React.useEffect(() => {
-    apiFetch(`${API_BASE}/accounts`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setAccountsList(data);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   // Upload state
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -677,6 +665,7 @@ export function StudioProvider({ children }) {
         failure = `The calculation API returned HTTP ${res.status}.`;
       } catch (err) {
         console.warn(`[StudioContext] Fetch attempt failed for ${ep}:`, err);
+        if (!(err instanceof TypeError) && err?.message) failure = err.message;
       }
     }
 

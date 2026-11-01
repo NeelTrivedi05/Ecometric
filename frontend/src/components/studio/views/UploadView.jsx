@@ -10,15 +10,12 @@ import {
   InfoIcon,
   ChevronRightIcon,
   LayersIcon,
-  DropletIcon,
-  SnowflakeIcon,
-  ThermalIcon,
   CheckIcon,
 } from '../Icons';
 import ProcessFlowModal from '../ProcessFlowModal';
 import { PRODUCT_LIST } from '../../../data/products';
 
-export default function UploadView({ uploadOnly = false }) {
+export default function UploadView() {
   const {
     uploadedFiles,
     addFiles,
@@ -31,9 +28,6 @@ export default function UploadView({ uploadOnly = false }) {
     isFlowModalOpen,
     setIsFlowModalOpen,
     loadSampleData,
-    loadPreset,
-    currentPresetId,
-    PRESET_DATASETS,
     productCategory,
     selectProduct,
     productProfile,
@@ -43,7 +37,6 @@ export default function UploadView({ uploadOnly = false }) {
 
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [loadingPresetKey, setLoadingPresetKey] = useState(null);
 
   const handleDrop = useCallback((e) => {
     e.preventDefault();
@@ -80,28 +73,8 @@ export default function UploadView({ uploadOnly = false }) {
     setActivePhase('extract');
   };
 
-  const handleSelectPreset = async (key) => {
-    setLoadingPresetKey(key);
-    try {
-      await loadPreset(key);
-    } finally {
-      setLoadingPresetKey(null);
-    }
-  };
-
-  const formatRefrigerant = (refrig) => {
-    if (!refrig) return 'None';
-    const clean = refrig.trim();
-    if (clean.toLowerCase().startsWith('not') || clean.toLowerCase().startsWith('none') || clean.includes('0 kg')) {
-      return 'None';
-    }
-    return clean.split(' ')[0];
-  };
-
   return (
     <div className="view-container">
-      {!uploadOnly && (
-      <>
       {/* Header & Quick Action Row */}
       <div className="apple-view-header">
         <div>
@@ -194,105 +167,6 @@ export default function UploadView({ uploadOnly = false }) {
         </div>
       </div>
 
-      {/* Preset Chiller Benchmark Models Gallery (chiller only) */}
-      {product?.isChiller && (
-      <div className="apple-benchmark-gallery">
-        <div className="gallery-header-row">
-          <div className="gallery-title-group">
-            <span className="gallery-title">Verified Equipment Benchmarks</span>
-            <span className="gallery-desc">Pre-configured engineering models compliant with UL 10010-4 Part B v2.0, EN 15804+A2, and ecoinvent v3.12</span>
-          </div>
-          <span className="gallery-pill-tag">{Object.keys(PRESET_DATASETS || {}).length} Models Available</span>
-        </div>
-
-        <div className="benchmark-card-grid">
-          {Object.entries(PRESET_DATASETS || {}).map(([key, item]) => {
-            const isSelected = currentPresetId === key;
-            const isCurrentLoading = loadingPresetKey === key;
-
-            return (
-              <div
-                key={key}
-                className={`benchmark-card ${isSelected ? 'active-benchmark' : ''}`}
-                onClick={() => handleSelectPreset(key)}
-                role="button"
-                tabIndex={0}
-                aria-pressed={isSelected}
-              >
-                <div className="card-top-row">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span className="card-equipment-glyph">
-                      {key === 'screw_chiller_300rt' ? <SnowflakeIcon size={18} style={{ color: 'var(--accent, #1f7a4c)' }} /> :
-                       key === 'heat_pump_150rt' ? <ThermalIcon size={18} style={{ color: '#d97706' }} /> :
-                       key === 'incomplete_gap_analysis' ? <AlertTriangleIcon size={18} style={{ color: '#dc2626' }} /> :
-                       <DropletIcon size={18} style={{ color: 'var(--accent, #1f7a4c)' }} />}
-                    </span>
-                    {isSelected && (
-                      <span className="card-active-pill">
-                        <span className="card-active-dot" /> Active
-                      </span>
-                    )}
-                  </div>
-                  <span
-                    className="card-badge"
-                    style={{ color: item.badgeColor, backgroundColor: `${item.badgeColor}15` }}
-                  >
-                    {item.badge}
-                  </span>
-                </div>
-
-                <div className="card-title">{item.title}</div>
-                <div className="card-subtitle">{item.subtitle}</div>
-
-                <div className="card-specs-row">
-                  <div className="card-spec-item">
-                    <span className="spec-label">Capacity</span>
-                    <span className="spec-value">{Math.round(item.capacityRt)} RT</span>
-                  </div>
-                  <div className="card-spec-item">
-                    <span className="spec-label">Mass</span>
-                    <span className="spec-value">{item.totalMassKg} kg</span>
-                  </div>
-                  <div className="card-spec-item" title={`Refrigerant: ${item.refrigerant}`}>
-                    <span className="spec-label">Refrigerant</span>
-                    <span className="spec-value">{formatRefrigerant(item.refrigerant)}</span>
-                  </div>
-                </div>
-
-                <div className="card-action-row">
-                  <button
-                    type="button"
-                    className={`btn-card-load ${isSelected ? 'is-selected' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSelectPreset(key);
-                    }}
-                    disabled={isLoading || isCurrentLoading}
-                  >
-                    {isCurrentLoading ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <RefreshCwIcon size={12} className="spin" /> Loading Model...
-                      </span>
-                    ) : isSelected ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <CheckIcon size={12} /> Loaded in Workspace
-                      </span>
-                    ) : (
-                      <span>Load Benchmark →</span>
-                    )}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      )}
-      </>
-      )}
-
-      {uploadOnly && (
-      <>
       {/* Upload Dropzone (enabled once a product is selected) */}
       <div
         className={`apple-upload-zone ${isDragOver ? 'drag-over' : ''}`}
@@ -447,8 +321,6 @@ export default function UploadView({ uploadOnly = false }) {
             </button>
           </div>
         </div>
-      )}
-      </>
       )}
 
       {/* PCR Completeness Gap Audit Banner if gaps detected */}

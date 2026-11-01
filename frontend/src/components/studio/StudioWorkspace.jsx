@@ -15,7 +15,7 @@ import ResultsView from './views/ResultsView';
 import ExportView from './views/ExportView';
 import AuditView from './views/AuditView';
 
-const STUDIO_PHASES = ['product', 'upload', 'extract', 'user_review', 'validate', 'audit', 'methodology', 'results', 'export'];
+const STUDIO_PHASES = ['upload', 'extract', 'user_review', 'validate', 'audit', 'methodology', 'results', 'export'];
 
 class StudioErrorBoundary extends Component {
   constructor(props) {
@@ -133,10 +133,8 @@ export default function StudioWorkspace() {
 
   const renderActiveView = () => {
     switch (activePhase) {
-      case 'product':
-        return <UploadView uploadOnly={false} />;
       case 'upload':
-        return <UploadView uploadOnly />;
+        return <UploadView />;
       case 'extract':
       case 'review':
         return <ReviewView />;
@@ -188,7 +186,7 @@ export default function StudioWorkspace() {
         <StudioSidebar />
 
         <main className="studio-main-workspace" id="studio-main-scroll">
-          <StudioErrorBoundary onReset={() => setActivePhase('product')}>
+          <StudioErrorBoundary onReset={() => setActivePhase('upload')}>
             <div key={activePhase} className="studio-view-transition">
               {renderActiveView()}
             </div>

@@ -1,11 +1,13 @@
 import json
 import os
+import ssl
 import time
 from dataclasses import dataclass
 from threading import Lock
 from typing import Any, Dict, Optional
 from urllib.request import urlopen
 
+import certifi
 from fastapi import Depends, Header, HTTPException, status
 from jose import JWTError, jwt
 
@@ -15,6 +17,7 @@ JWKS_TTL_SECONDS = 300
 _jwks_cache: Optional[Dict[str, Any]] = None
 _jwks_cached_at = 0.0
 _jwks_lock = Lock()
+_ssl_context = ssl.create_default_context(cafile=certifi.where())
 
 
 @dataclass(frozen=True)
@@ -35,7 +38,7 @@ def _jwks() -> Dict[str, Any]:
         if _jwks_cache and time.time() - _jwks_cached_at < JWKS_TTL_SECONDS:
             return _jwks_cache
         try:
-            with urlopen(f"{SUPABASE_URL}/auth/v1/.well-known/jwks.json", timeout=5) as response:
+            with urlopen(f"{SUPABASE_URL}/auth/v1/.well-known/jwks.json", timeout=5, context=_ssl_context) as response:
                 _jwks_cache = json.loads(response.read().decode("utf-8"))
                 _jwks_cached_at = time.time()
         except Exception as exc:
