@@ -552,18 +552,6 @@ export function StudioProvider({ children }) {
       return false;
     }
 
-    const { error } = await supabase.rpc('reserve_epd_usage', {
-      target_org: activeOrg.id,
-      reservation_key: `project:${newProj.id}`,
-    });
-    if (error) {
-      const message = error.message?.includes('EPD quota exceeded')
-        ? 'This workspace has reached its monthly EPD limit.'
-        : error.message || 'This workspace cannot create another EPD right now.';
-      showNotif(message, 'EPD Creation Blocked');
-      return false;
-    }
-
     setProjectsList((prev) => [newProj, ...prev]);
     setActiveProjectId(newProj.id);
 
