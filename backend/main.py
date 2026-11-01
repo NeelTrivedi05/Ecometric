@@ -3,8 +3,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from app.database import engine, Base
 from app.routers import auth_routes, epd, epd_reports, submissions, documents, processes, products, invitations, verify as verify_router, seal_export
 
@@ -39,6 +40,36 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+PUBLIC_API_PREFIXES = (
+    "/api/health",
+    "/api/auth/",
+    "/api/verify",
+    "/api/lcia/",
+    "/api/products",
+    "/health",
+    "/docs",
+    "/redoc",
+    "/openapi.json",
+)
+
+
+@app.middleware("http")
+async def require_authenticated_api_requests(request: Request, call_next):
+    if (
+        request.method == "OPTIONS"
+        or not request.url.path.startswith("/api/")
+        or request.url.path.startswith(PUBLIC_API_PREFIXES)
+    ):
+        return await call_next(request)
+
+    from app.auth import authenticate_token
+
+    try:
+        authenticate_token(request.headers.get("authorization"))
+    except HTTPException as exc:
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    return await call_next(request)
 
 # Include Routers
 app.include_router(auth_routes.router)

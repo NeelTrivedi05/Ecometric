@@ -6,6 +6,10 @@ import { CARRIER_19DV_500RT_EPD11017 } from '../data/carrier19dvBenchmark';
 import { USER_SELECTED } from '../components/studio/providerMatch';
 import { ACCOUNTS_DATA, DEFAULT_ACCOUNT_ID } from '../data/accountsData';
 import { API_BASE } from '../config/api';
+import { apiFetch } from '../lib/apiFetch';
+import { useAuth } from './AuthContext';
+import { useTenant } from './TenantContext';
+import { supabase } from '../lib/supabase';
 
 // Minimum time the progress bar stays up for a PDF export, even when the server is faster.
 const PDF_EXPORT_MIN_MS = 28000;
@@ -129,6 +133,8 @@ export function buildEmptyStudioState(productId) {
 export const BENCHMARK_EXTRACTED_DATA = CARRIER_19DV_500RT_EPD11017;
 
 export function StudioProvider({ children }) {
+  const { user } = useAuth();
+  const { activeOrg } = useTenant();
   // Navigation
   const [activePhase, setActivePhase] = useState('product');
   const [currentPresetId, setCurrentPresetId] = useState('aquaedge_500rt');
@@ -139,50 +145,92 @@ export function StudioProvider({ children }) {
   const [studioViewMode, setStudioViewMode] = useState('dashboard'); // 'dashboard' | 'workspace'
 
   // Multi-tenant accounts and assembled database state
-  const [currentAccountId, setCurrentAccountId] = useState(DEFAULT_ACCOUNT_ID);
+  const [currentAccountId, setCurrentAccountId] = useState(() => activeOrg?.id || DEFAULT_ACCOUNT_ID);
   const [accountsList, setAccountsList] = useState(() => Object.values(ACCOUNTS_DATA));
+  const [hydratedWorkspaceId, setHydratedWorkspaceId] = useState(null);
   const [activeProjectId, setActiveProjectId] = useState('proj-c1');
   const [projectsList, setProjectsList] = useState(() => {
     try {
-      const saved = typeof window !== 'undefined' ? window.localStorage.getItem(`ecometric_projects_${DEFAULT_ACCOUNT_ID}`) : null;
+      const saved = typeof window !== 'undefined' && activeOrg
+        ? window.localStorage.getItem(`ecometric_projects_${activeOrg.id}`)
+        : null;
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {}
-    return ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.projects || [];
+    return activeOrg?.id === DEFAULT_ACCOUNT_ID ? ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.projects || [] : [];
   });
   const [epdsList, setEpdsList] = useState(() => {
     try {
-      const saved = typeof window !== 'undefined' ? window.localStorage.getItem(`ecometric_epds_${DEFAULT_ACCOUNT_ID}`) : null;
+      const saved = typeof window !== 'undefined' && activeOrg
+        ? window.localStorage.getItem(`ecometric_epds_${activeOrg.id}`)
+        : null;
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {}
-    return ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.epds || [];
+    return activeOrg?.id === DEFAULT_ACCOUNT_ID ? ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.epds || [] : [];
   });
 
-  // Persistent storage across all employee accounts and sessions
+  React.useEffect(() => {
+    if (!activeOrg?.id || activeOrg.id === currentAccountId && hydratedWorkspaceId === activeOrg.id) return;
+
+    const workspaceId = activeOrg.id;
+    const savedProjects = window.localStorage.getItem(`ecometric_projects_${workspaceId}`);
+    const savedEpds = window.localStorage.getItem(`ecometric_epds_${workspaceId}`);
+    const parsedProjects = savedProjects ? JSON.parse(savedProjects) : null;
+    const parsedEpds = savedEpds ? JSON.parse(savedEpds) : null;
+
+    setCurrentAccountId(workspaceId);
+    setProjectsList(Array.isArray(parsedProjects)
+      ? parsedProjects
+      : workspaceId === DEFAULT_ACCOUNT_ID ? ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.projects || [] : []);
+    setEpdsList(Array.isArray(parsedEpds)
+      ? parsedEpds
+      : workspaceId === DEFAULT_ACCOUNT_ID ? ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID]?.epds || [] : []);
+    setActiveProjectId(null);
+    setProductCategory(null);
+    setExtractedData(JSON.parse(JSON.stringify(EMPTY_STUDIO_STATE)));
+    setHydratedWorkspaceId(workspaceId);
+  }, [activeOrg?.id, currentAccountId, hydratedWorkspaceId]);
+
+  // Persistent storage is namespaced by workspace and only starts after hydration.
   React.useEffect(() => {
     try {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && hydratedWorkspaceId === currentAccountId) {
         window.localStorage.setItem(`ecometric_projects_${currentAccountId}`, JSON.stringify(projectsList));
       }
-    } catch (e) {}
-  }, [projectsList, currentAccountId]);
+    } catch (e) {
+      console.warn('[Studio] Could not persist workspace projects:', e);
+    }
+  }, [projectsList, currentAccountId, hydratedWorkspaceId]);
 
   React.useEffect(() => {
     try {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && hydratedWorkspaceId === currentAccountId) {
         window.localStorage.setItem(`ecometric_epds_${currentAccountId}`, JSON.stringify(epdsList));
       }
-    } catch (e) {}
-  }, [epdsList, currentAccountId]);
+    } catch (e) {
+      console.warn('[Studio] Could not persist workspace EPDs:', e);
+    }
+  }, [epdsList, currentAccountId, hydratedWorkspaceId]);
 
   const currentAccount = useMemo(() => {
-    return accountsList.find((a) => a.id === currentAccountId) || ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID];
-  }, [accountsList, currentAccountId]);
+    const existing = accountsList.find((a) => a.id === currentAccountId);
+    if (activeOrg) {
+      return {
+        ...(existing || {}),
+        id: activeOrg.id,
+        company_name: activeOrg.name,
+        user_name: user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'Workspace owner',
+        user_email: user?.email || '',
+        role: activeOrg.role || 'account_admin',
+      };
+    }
+    return ACCOUNTS_DATA[DEFAULT_ACCOUNT_ID];
+  }, [accountsList, currentAccountId, activeOrg, user]);
 
   const assembledDatabase = useMemo(() => {
     return currentAccount?.database_assembly;
@@ -190,7 +238,7 @@ export function StudioProvider({ children }) {
 
   // Sync accounts from backend if online
   React.useEffect(() => {
-    fetch(`${API_BASE}/accounts`)
+    apiFetch(`${API_BASE}/accounts`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -304,7 +352,7 @@ export function StudioProvider({ children }) {
 
   React.useEffect(() => {
     // Fetch initial report details from backend
-    fetch(`${API_BASE}/epd/report-details/current_project`)
+    apiFetch(`${API_BASE}/epd/report-details/current_project`)
       .then(r => r.json())
       .then(d => {
         if (d && d.company_name) {
@@ -505,7 +553,24 @@ export function StudioProvider({ children }) {
   }, [projectsList, currentAccount, selectedMethodology, activeProjectId, studioViewMode, showNotif]);
 
   // Create Project and Launch into Studio
-  const createProject = useCallback((newProj) => {
+  const createProject = useCallback(async (newProj) => {
+    if (!supabase || !activeOrg?.id) {
+      showNotif('Sign in to a workspace before creating an EPD.', 'EPD Creation Blocked');
+      return false;
+    }
+
+    const { error } = await supabase.rpc('reserve_epd_usage', {
+      target_org: activeOrg.id,
+      reservation_key: `project:${newProj.id}`,
+    });
+    if (error) {
+      const message = error.message?.includes('EPD quota exceeded')
+        ? 'This workspace has reached its monthly EPD limit.'
+        : error.message || 'This workspace cannot create another EPD right now.';
+      showNotif(message, 'EPD Creation Blocked');
+      return false;
+    }
+
     setProjectsList((prev) => [newProj, ...prev]);
     setActiveProjectId(newProj.id);
 
@@ -529,7 +594,8 @@ export function StudioProvider({ children }) {
     setStudioViewMode('workspace');
     setActivePhase('upload');
     showNotif(`Created "${newProj.name}" with ${currentAccount?.company_name} LCI assembly.`, 'Project Initialized');
-  }, [currentAccount, showNotif]);
+    return true;
+  }, [activeOrg?.id, currentAccount, showNotif]);
 
   // Duplicate Project
   const duplicateProject = useCallback((projectId) => {
@@ -599,7 +665,7 @@ export function StudioProvider({ children }) {
     let failure = 'Could not reach the EcoMetric backend on port 8000 (cd backend && python main.py).';
     for (const ep of endpoints) {
       try {
-        const res = await fetch(ep, {
+        const res = await apiFetch(ep, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -720,7 +786,7 @@ export function StudioProvider({ children }) {
         formData.append('files', sampleBlob, 'Chiller_BOM_Specification.json');
       }
 
-      const res = await fetch(`${API_BASE}/documents/upload`, {
+      const res = await apiFetch(`${API_BASE}/documents/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -772,7 +838,7 @@ export function StudioProvider({ children }) {
     setProductCategory('water_cooled_chiller');
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/documents/sample-bom`);
+      const res = await apiFetch(`${API_BASE}/documents/sample-bom`);
       let sample;
       if (res.ok) {
         sample = await res.json();
@@ -933,7 +999,7 @@ export function StudioProvider({ children }) {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/documents/load-sample/${encodeURIComponent(filename)}?product_category=water_cooled_chiller`, {
+      const res = await apiFetch(`${API_BASE}/documents/load-sample/${encodeURIComponent(filename)}?product_category=water_cooled_chiller`, {
         method: 'POST'
       });
       if (res.ok) {
@@ -1162,7 +1228,7 @@ export function StudioProvider({ children }) {
     lastMatchSignature.current = sentSignature;
     setIsMatchingProviders(true);
     try {
-      const res = await fetch(`${API_BASE}/documents/match-providers`, {
+      const res = await apiFetch(`${API_BASE}/documents/match-providers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1198,7 +1264,7 @@ export function StudioProvider({ children }) {
   const runValidation = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/validate`, {
+      const res = await apiFetch(`${API_BASE}/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1226,7 +1292,7 @@ export function StudioProvider({ children }) {
       ? resultsByMethod
       : (results?.epd_results ? { [selectedMethodology]: { epd_results: results.epd_results, epd_metadata: results.epd_metadata } } : {});
     try {
-      const res = await fetch(`${API_BASE}/pcr/results-audit`, {
+      const res = await apiFetch(`${API_BASE}/pcr/results-audit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1474,7 +1540,7 @@ export function StudioProvider({ children }) {
     let finalFilename = filename;
 
     try {
-      const res = await fetch(`${API_BASE}/seal/export/ilcd`, {
+      const res = await apiFetch(`${API_BASE}/seal/export/ilcd`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1530,7 +1596,7 @@ export function StudioProvider({ children }) {
   const generateDqrReport = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/epd/dqr-evaluation`, {
+      const res = await apiFetch(`${API_BASE}/epd/dqr-evaluation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1556,7 +1622,7 @@ export function StudioProvider({ children }) {
   const generateOpenEpdDocument = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/epd/openepd`, {
+      const res = await apiFetch(`${API_BASE}/epd/openepd`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1588,7 +1654,7 @@ export function StudioProvider({ children }) {
     let finalFilename = filename;
 
     try {
-      const res = await fetch(`${API_BASE}/seal/export/openepd`, {
+      const res = await apiFetch(`${API_BASE}/seal/export/openepd`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1645,7 +1711,7 @@ export function StudioProvider({ children }) {
     setIsLoading(true);
     showNotif('Packaging third-party verification bundle...', 'Generating Archive');
     try {
-      const res = await fetch(`${API_BASE}/epd/export-verification-bundle`, {
+      const res = await apiFetch(`${API_BASE}/epd/export-verification-bundle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1684,7 +1750,7 @@ export function StudioProvider({ children }) {
   const saveReportDetails = useCallback(async (detailsToSave) => {
     const details = detailsToSave || reportDetails;
     try {
-      const res = await fetch(`${API_BASE}/epd/report-details/current_project`, {
+      const res = await apiFetch(`${API_BASE}/epd/report-details/current_project`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(details)
@@ -1727,14 +1793,14 @@ export function StudioProvider({ children }) {
   }, [resultsByMethod, results, selectedMethodology, extractedData, reportDetails]);
 
   const fetchEpdReportOptions = useCallback(async () => {
-    const res = await fetch(`${API_BASE}/epd-reports/options`);
+    const res = await apiFetch(`${API_BASE}/epd-reports/options`);
     if (!res.ok) throw new Error('Could not load report options');
     return res.json();
   }, []);
 
   /** Returns {html, warnings, filename, meta}; throws an Error with `.errors` (structured) on 422. */
   const previewEpdReport = useCallback(async (selection, options, signal, detailsOverride) => {
-    const res = await fetch(`${API_BASE}/epd-reports/preview`, {
+    const res = await apiFetch(`${API_BASE}/epd-reports/preview`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(buildEpdReportRequest(selection, options, detailsOverride)),
@@ -1761,7 +1827,7 @@ export function StudioProvider({ children }) {
         adminUserId: 'admin-current',
         adminName: 'Account Administrator',
       };
-      res = await fetch(`${API_BASE}/epd-reports`, {
+      res = await apiFetch(`${API_BASE}/epd-reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reqPayload),

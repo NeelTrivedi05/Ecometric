@@ -13,6 +13,12 @@ import {
   LayersIcon,
 } from '../studio/Icons';
 
+function formatDateDDMMYYYY(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString('en-GB');
+}
+
 export default function TeamManagementPanel() {
   const { user } = useAuth();
   const { activeOrg, isAccountAdmin } = useTenant();
@@ -67,28 +73,17 @@ export default function TeamManagementPanel() {
       }
 
       try {
-        const { data: dbMembers, error: membersErr } = await supabase
-          .from('organization_members')
-          .select(`
-            id,
-            user_id,
-            role,
-            status,
-            created_at,
-            profiles:user_id (
-              full_name,
-              email,
-              avatar_url
-            )
-          `)
-          .eq('organization_id', activeOrg.id);
+        const { data: dbMembers, error: membersErr } = await supabase.rpc('get_organization_team', {
+          target_org: activeOrg.id,
+        });
+        if (membersErr) throw membersErr;
 
         if (dbMembers && dbMembers.length > 0) {
           setMembers(
             dbMembers.map((m) => {
               const isMe = m.user_id === user?.id;
-              const name = m.profiles?.full_name || (isMe ? displayName : 'Team Member');
-              const email = m.profiles?.email || (isMe ? user?.email : '');
+              const name = m.full_name || (isMe ? displayName : 'Team Member');
+              const email = m.email || (isMe ? user?.email : '');
               return {
                 id: m.id || m.user_id,
                 user_id: m.user_id,
@@ -102,9 +97,7 @@ export default function TeamManagementPanel() {
               };
             })
           );
-        } else {
-          setMembers(defaultCurrentMember);
-        }
+        } else setMembers(defaultCurrentMember);
 
         const { data: dbInvites } = await supabase
           .from('organization_invites')
@@ -543,7 +536,7 @@ export default function TeamManagementPanel() {
                     </td>
 
                     <td style={{ padding: '14px 24px', color: 'var(--text-muted, #5b6f62)', fontSize: '12px' }}>
-                      {new Date(member.created_at).toLocaleDateString()}
+                      {formatDateDDMMYYYY(member.created_at)}
                     </td>
 
                     <td style={{ padding: '14px 24px', textAlign: 'right' }}>
@@ -632,7 +625,7 @@ export default function TeamManagementPanel() {
                       </span>
                     </td>
                     <td style={{ padding: '14px 24px', color: 'var(--text-muted, #5b6f62)', fontSize: '12px' }}>
-                      {new Date(inv.expires_at).toLocaleDateString()}
+                      {formatDateDDMMYYYY(inv.expires_at)}
                     </td>
                     <td style={{ padding: '14px 24px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
@@ -791,4 +784,3 @@ export default function TeamManagementPanel() {
     </div>
   );
 }
-

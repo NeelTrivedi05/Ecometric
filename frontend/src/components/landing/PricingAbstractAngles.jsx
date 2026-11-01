@@ -14,8 +14,9 @@ const plans = [
   {
     name: 'Studio',
     description: 'For sustainability teams publishing EPDs at production scale.',
-    monthly: '$49',
-    annual: '$39',
+    monthly: 49,
+    annual: 540,
+    inrRate: 84,
     features: ['Unlimited product models', 'Full LCIA and PCR validation', 'ecoinvent v3.12 lineage', 'Verifier-ready PDF and ILCD export'],
     tone: 'featured',
   },
@@ -31,6 +32,8 @@ const plans = [
 
 export default function PricingAbstractAngles({ onLaunchApp }) {
   const [billingCycle, setBillingCycle] = useState('annual');
+  const studioPlan = plans.find((plan) => plan.name === 'Studio');
+  const annualSavings = Math.round(((studioPlan.monthly * 12 - studioPlan.annual) / (studioPlan.monthly * 12)) * 100);
 
   return (
     <section className="pricing-angles" aria-labelledby="pricing-angles-title">
@@ -60,7 +63,7 @@ export default function PricingAbstractAngles({ onLaunchApp }) {
           >
             <ButtonGroupItem id="monthly">Monthly</ButtonGroupItem>
             <ButtonGroupItem id="annual">
-              Yearly <em>Save 20%</em>
+              Yearly <em>Save {annualSavings}%</em>
             </ButtonGroupItem>
           </ButtonGroup>
         </div>
@@ -72,9 +75,14 @@ export default function PricingAbstractAngles({ onLaunchApp }) {
                 <h2>{plan.name}</h2>
                 <p>{plan.description}</p>
                 <div className="pricing-angles__price">
-                  {plan[billingCycle]}
-                  {plan.name !== 'Enterprise' && <small>/ seat / month</small>}
+                  {typeof plan[billingCycle] === 'number' ? `$${plan[billingCycle]}` : plan[billingCycle]}
+                  {plan.name !== 'Enterprise' && <small>{billingCycle === 'annual' ? '/ annum' : '/ month'}</small>}
                 </div>
+                {typeof plan[billingCycle] === 'number' && (
+                  <span className="pricing-angles__price-inr">
+                    Approx. ₹{(plan[billingCycle] * plan.inrRate).toLocaleString('en-IN')} {billingCycle === 'annual' ? '/ annum' : '/ month'}
+                  </span>
+                )}
                 {plan.name !== 'Enterprise' && <span className="pricing-angles__billing">Billed {billingCycle === 'annual' ? 'annually' : 'monthly'}.</span>}
               </div>
 

@@ -24,6 +24,7 @@ class Project(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     user_id = Column(String, ForeignKey("users.id"), nullable=True)
+    organization_id = Column(String, index=True, nullable=True)
     name = Column(String, nullable=False)
     product_category = Column(String, default="water_cooled_chiller")
     pcr_ref = Column(String, default="UL 10010-4 Part B v2.0 2018")
@@ -42,6 +43,7 @@ class TechnicalData(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     project_id = Column(String, ForeignKey("projects.id"), unique=True)
+    organization_id = Column(String, index=True, nullable=True)
     chilling_capacity_rt = Column(Float, default=500.0)
     chilling_capacity_kw = Column(Float, default=1758.4)
     refrigerant_type = Column(String, default="R134a")
@@ -56,6 +58,7 @@ class Result(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     project_id = Column(String, ForeignKey("projects.id"), nullable=False)
+    organization_id = Column(String, index=True, nullable=True)
     module = Column(String, nullable=False)  # A1-A3, A4, A5, B1...B7, C1-C4, Module D
     impact_category = Column(String, default="GWP-total")
     methodology = Column(String, default="TRACI 2.1")
@@ -70,6 +73,7 @@ class Report(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     project_id = Column(String, ForeignKey("projects.id"), nullable=False)
+    organization_id = Column(String, index=True, nullable=True)
     pdf_url = Column(String, nullable=False)
     version = Column(String, default="1.0")
     disclaimer_text_snapshot = Column(Text, nullable=True)
@@ -82,6 +86,7 @@ class ReportDetails(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     project_id = Column(String, ForeignKey("projects.id"), unique=True, nullable=False, index=True)
+    organization_id = Column(String, index=True, nullable=True)
     company_name = Column(String, nullable=True)
     company_address = Column(Text, nullable=True)
     company_logo = Column(Text, nullable=True)  # Base64 or URL

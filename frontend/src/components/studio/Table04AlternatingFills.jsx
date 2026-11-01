@@ -9,6 +9,12 @@ import { useStudio } from "@/context/StudioContext";
 import { PlusIcon, FileTextIcon, ShieldCheckIcon } from "./Icons";
 import EpdCertificateModal from "./EpdCertificateModal";
 
+const formatDateDDMMYYYY = (date) => {
+    const value = new Date(date);
+    if (Number.isNaN(value.getTime())) return '—';
+    return value.toLocaleDateString('en-GB');
+};
+
 export const Table04AlternatingFills = ({ onInspectEpd, searchQuery = '', typeFilter = 'all' }) => {
     const { currentAccount, assembledDatabase, showNotif, addEpd } = useStudio();
     const fileInputRef = useRef(null);
@@ -26,8 +32,8 @@ export const Table04AlternatingFills = ({ onInspectEpd, searchQuery = '', typeFi
             {
                 name: `${prefix}_EPD_Declaration.pdf`,
                 size: '2.4 MB',
-                uploadedAt: 'Apr 15, 2026',
-                updatedAt: 'Apr 15, 2031 (5-yr cycle)',
+                uploadedAt: '15/04/2026',
+                updatedAt: '15/04/2031 (5-yr cycle)',
                 uploadedBy: user,
                 type: 'pdf',
                 status: 'Verified & Published',
@@ -37,8 +43,8 @@ export const Table04AlternatingFills = ({ onInspectEpd, searchQuery = '', typeFi
             {
                 name: `${prefix}_${facility}_LCI_BOM.xlsx`,
                 size: '1.8 MB',
-                uploadedAt: 'Apr 12, 2026',
-                updatedAt: 'Apr 14, 2026',
+                uploadedAt: '12/04/2026',
+                updatedAt: '14/04/2026',
                 uploadedBy: user,
                 type: 'xlsx',
                 status: 'Primary Foreground LCI',
@@ -48,8 +54,8 @@ export const Table04AlternatingFills = ({ onInspectEpd, searchQuery = '', typeFi
             {
                 name: `EPD_${code}_2026_001_openEPD_Package.json`,
                 size: '340 KB',
-                uploadedAt: 'Apr 15, 2026',
-                updatedAt: 'Apr 15, 2026',
+                uploadedAt: '15/04/2026',
+                updatedAt: '15/04/2026',
                 uploadedBy: 'EcoMetric Core Engine',
                 type: 'json',
                 status: 'Digital Product Passport',
@@ -128,7 +134,7 @@ export const Table04AlternatingFills = ({ onInspectEpd, searchQuery = '', typeFi
         const newFileItem = {
             name: file.name,
             size: sizeStr,
-            uploadedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            uploadedAt: formatDateDDMMYYYY(new Date()),
             updatedAt: 'Just now (Foreground LCI)',
             uploadedBy: currentAccount?.user_name || 'Lead LCA Engineer',
             type: ext,
@@ -159,8 +165,8 @@ export const Table04AlternatingFills = ({ onInspectEpd, searchQuery = '', typeFi
             const newFile = {
                 name: fileName,
                 size: '2.6 MB',
-                uploadedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                updatedAt: `${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} (Valid 5 yrs)`,
+                uploadedAt: formatDateDDMMYYYY(new Date()),
+                updatedAt: `${formatDateDDMMYYYY(new Date())} (Valid 5 yrs)`,
                 uploadedBy: currentAccount?.user_name || 'Lead LCA Engineer',
                 type: 'pdf',
                 status: 'Verified & Generated',

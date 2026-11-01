@@ -913,6 +913,16 @@ html {
   letter-spacing: 0;
 }
 
+.landing-page-root .pricing-angles__price-inr {
+  display: block;
+  margin-top: 2px;
+  color: var(--apple-body-muted);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
 .landing-page-root .pricing-angles__plan--dark .pricing-angles__price small,
 .landing-page-root .pricing-angles__billing {
   color: var(--apple-body-muted);

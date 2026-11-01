@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SearchIcon, RefreshCwIcon, CheckIcon, ChevronRightIcon, AlertTriangleIcon } from './Icons';
 import { API_BASE } from '../../config/api';
+import { apiFetch } from '../../lib/apiFetch';
 
 export default function LciaExtractorSection() {
   const [productQuery, setProductQuery] = useState('');
@@ -27,7 +28,7 @@ export default function LciaExtractorSection() {
     setIsSearching(true);
     setErrorMsg('');
     try {
-      const res = await fetch(`${API_BASE}/processes/search-ecoinvent?q=${encodeURIComponent(q)}&limit=15`);
+      const res = await apiFetch(`${API_BASE}/processes/search-ecoinvent?q=${encodeURIComponent(q)}&limit=15`);
       if (!res.ok) throw new Error(`Search error ${res.status}`);
       const data = await res.json();
       setSearchResults(data.results || []);
@@ -61,7 +62,7 @@ export default function LciaExtractorSection() {
         methodology: selectedMethodology || null,
       };
 
-      const res = await fetch(`${API_BASE}/processes/calculate-lcia`, {
+      const res = await apiFetch(`${API_BASE}/processes/calculate-lcia`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

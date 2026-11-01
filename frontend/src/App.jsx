@@ -102,9 +102,12 @@ function ConsoleRedirect({ to = 'overview' }) {
 
   let storedSlug = window.localStorage.getItem('ecometric_active_org_slug');
   if (storedSlug === 'undefined' || storedSlug === 'null' || !storedSlug) {
-    storedSlug = 'carrier-hvac';
+    storedSlug = null;
   }
   const slug = activeOrg?.slug || storedSlug;
+  if (!slug) {
+    return <Navigate to="/login" replace />;
+  }
   return <Navigate to={`/console/${slug}/${to}`} replace />;
 }
 
@@ -149,6 +152,19 @@ export default function App() {
               <Route path="/projects/:projectId" element={<StudioWorkspace />} />
               <Route path="/projects/:projectId/:phase" element={<StudioWorkspace />} />
               <Route path="/verifier/:projectId" element={<VerifierPortal />} />
+
+              <Route path="/:workspaceSlug/app" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/app/projects" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/app/mine" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/app/shared" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/app/archived" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/app/epds" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/app/:folder" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/app/projects/:projectId" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/app/projects/:projectId/:phase" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/projects/:projectId" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/projects/:projectId/:phase" element={<StudioWorkspace />} />
+              <Route path="/:workspaceSlug/verifier/:projectId" element={<VerifierPortal />} />
             </Route>
           </Route>
 

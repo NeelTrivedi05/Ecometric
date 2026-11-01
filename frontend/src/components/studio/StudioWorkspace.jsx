@@ -79,7 +79,7 @@ class StudioErrorBoundary extends Component {
 }
 
 export default function StudioWorkspace() {
-  const { projectId, phase } = useParams();
+  const { projectId, phase, workspaceSlug } = useParams();
   const navigate = useNavigate();
   const syncingPhaseRef = useRef(false);
   const {
@@ -119,8 +119,9 @@ export default function StudioWorkspace() {
 
     if (!projectId || !activePhase || phase === activePhase) return;
 
-    navigate(`/app/projects/${projectId}/${activePhase}`, { replace: true });
-  }, [projectId, phase, activePhase, navigate]);
+    const basePath = workspaceSlug ? `/${workspaceSlug}` : '';
+    navigate(`${basePath}/app/projects/${projectId}/${activePhase}`, { replace: true });
+  }, [projectId, phase, activePhase, navigate, workspaceSlug]);
 
   // Smooth scroll back to top when phase switches
   useEffect(() => {
@@ -160,7 +161,7 @@ export default function StudioWorkspace() {
   if (!projectId) {
     return (
       <div className="studio-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <StudioErrorBoundary onReset={() => navigate('/app')}>
+        <StudioErrorBoundary onReset={() => navigate(workspaceSlug ? `/${workspaceSlug}/app` : '/app')}>
           <ProjectsConsole />
         </StudioErrorBoundary>
 

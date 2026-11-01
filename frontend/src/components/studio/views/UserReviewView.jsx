@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useStudio, STANDARD_DATABASE_PROVIDERS } from '../../../context/StudioContext';
 import { API_BASE } from '../../../config/api';
+import { apiFetch } from '../../../lib/apiFetch';
 import {
   MatchBadge, PROVIDER_KINDS, bomProvider, matchStatus, stageProvider, userBomPatch, userProviderPatch,
 } from '../providerMatch';
@@ -266,7 +267,7 @@ export default function UserReviewView() {
     }
     setIsSearchingDb(true);
     try {
-      const res = await fetch(searchUrl(q, 'kg'));
+      const res = await apiFetch(searchUrl(q, 'kg'));
       const data = await res.json();
       if (data.status === 'success' && data.results) {
         setLiveSearchResults(data.results);
@@ -312,7 +313,7 @@ export default function UserReviewView() {
     }
     setIsGenericSearching(true);
     try {
-      const res = await fetch(searchUrl(q, unit));
+      const res = await apiFetch(searchUrl(q, unit));
       const data = await res.json();
       if (data.status === 'success' && data.results) {
         setGenericSearchResults(data.results);

@@ -713,6 +713,8 @@ END;
 $$;
 
 -- Function to bootstrap an organization for an existing authenticated user if none exists
+DROP FUNCTION IF EXISTS public.bootstrap_current_user();
+
 CREATE OR REPLACE FUNCTION public.bootstrap_current_user()
 RETURNS UUID
 LANGUAGE plpgsql

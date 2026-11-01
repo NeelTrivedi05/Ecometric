@@ -359,7 +359,7 @@ export default function ProjectsConsole() {
       user?.user_metadata?.avatar_url ||
       user?.user_metadata?.picture ||
       currentAccount?.avatar_url ||
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+      ''
     );
   }, [user, currentAccount]);
 
@@ -563,11 +563,11 @@ export default function ProjectsConsole() {
   // Open project handler
   const handleOpenProject = (project) => {
     openProject(project.id);
-    navigate(`/app/projects/${project.id}`);
+    navigate(activeOrg?.slug ? `/${activeOrg.slug}/app/projects/${project.id}` : `/app/projects/${project.id}`);
   };
 
   // New project handler: creates a project with default metadata and opens it in Studio
-  const handleNewProject = () => {
+  const handleNewProject = async () => {
     const newProj = {
       id: `proj-${Date.now()}`,
       name: 'Untitled Project',
@@ -588,8 +588,10 @@ export default function ProjectsConsole() {
       facility: assembledDatabase?.facility_name || currentAccount?.facility_name || 'Primary Facility',
       epd_number: null,
     };
-    createProject(newProj);
-    navigate(`/app/projects/${newProj.id}`);
+    const created = await createProject(newProj);
+    if (created !== false) {
+      navigate(activeOrg?.slug ? `/${activeOrg.slug}/app/projects/${newProj.id}` : `/app/projects/${newProj.id}`);
+    }
   };
 
   // Batch delete / archive
