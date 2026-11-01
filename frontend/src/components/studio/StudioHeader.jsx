@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
 import BrandLogo from '../BrandLogo';
 import {
@@ -7,6 +8,7 @@ import {
 } from './Icons';
 
 export default function StudioHeader() {
+  const navigate = useNavigate();
   const {
     toggleSidebar,
     isLoading,
@@ -28,7 +30,14 @@ export default function StudioHeader() {
   return (
     <header className="studio-topbar" role="banner">
       <div className="topbar-left">
-        <BrandLogo theme="light" height={22} />
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          aria-label="Go to EcoMetric home"
+          style={{ display: 'inline-flex', padding: 0, border: 0, background: 'transparent', cursor: 'pointer' }}
+        >
+          <BrandLogo theme="light" height={22} />
+        </button>
         {activeProject?.name && (
           <>
             <span className="topbar-divider" aria-hidden="true" />

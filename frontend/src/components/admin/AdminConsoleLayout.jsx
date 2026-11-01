@@ -65,7 +65,8 @@ export default function AdminConsoleLayout() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           {/* Brand Mark */}
           <Link
-            to="/app"
+            to="/"
+            aria-label="Go to EcoMetric home"
             style={{
               display: 'flex',
               alignItems: 'center',

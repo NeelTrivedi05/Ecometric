@@ -1,7 +1,9 @@
 import React from 'react';
 import { ChevronRightIcon } from '../studio/Icons';
 
-const VIDEO_SOURCE = '/landing-bg.mp4';
+// Keep the hero on a regular Git-tracked asset; landing-bg.mp4 is stored through
+// Git LFS and is not available in Vercel's static deployment.
+const VIDEO_SOURCE = '/pipeline.mp4';
 
 export default function Hero9({ onLaunchApp }) {
   return (
