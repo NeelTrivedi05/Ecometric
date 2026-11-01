@@ -53,7 +53,8 @@ export default function OrganizationSettingsView() {
       setEmail(user.email || '');
       setAvatarUrl(
         user.user_metadata?.avatar_url ||
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+          user.user_metadata?.picture ||
+          ''
       );
       if (user.user_metadata?.role) setRole(user.user_metadata.role);
       if (user.user_metadata?.bio) setBio(user.user_metadata.bio);
@@ -61,7 +62,7 @@ export default function OrganizationSettingsView() {
       setFirstName('Dhruvil');
       setLastName('Patel');
       setEmail('dhruvil@ecometric.io');
-      setAvatarUrl('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80');
+      setAvatarUrl('');
     }
 
     if (activeOrg) {
@@ -170,7 +171,8 @@ export default function OrganizationSettingsView() {
       setEmail(user.email || '');
       setAvatarUrl(
         user.user_metadata?.avatar_url ||
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+          user.user_metadata?.picture ||
+          ''
       );
     }
     if (activeOrg) {

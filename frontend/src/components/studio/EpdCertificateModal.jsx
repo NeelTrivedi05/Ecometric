@@ -5,6 +5,12 @@ import { useStudio } from '../../context/StudioContext';
 import { apiFetch } from '../../lib/apiFetch';
 import { API_BASE } from '../../config/api';
 
+function formatDateDDMMYYYY(value, fallback) {
+  const date = new Date(value || fallback);
+  if (Number.isNaN(date.getTime())) return fallback;
+  return date.toLocaleDateString('en-GB');
+}
+
 export default function EpdCertificateModal({ epd, isOpen, onClose }) {
   const { downloadEpdReport } = useStudio();
   const [isDownloading, setIsDownloading] = useState(false);
@@ -270,7 +276,7 @@ export default function EpdCertificateModal({ epd, isOpen, onClose }) {
                 Publication & Validity
               </div>
               <div style={{ fontSize: '13px', fontWeight: 600, color: '#16231b', marginTop: '3px' }}>
-                {epd.publication_date || '2026-04-15'} to {epd.valid_until || '2031-04-15'} (5-year cycle)
+                {formatDateDDMMYYYY(epd.publication_date, '15/04/2026')} to {formatDateDDMMYYYY(epd.valid_until, '15/04/2031')} (5-year cycle)
               </div>
             </div>
 
