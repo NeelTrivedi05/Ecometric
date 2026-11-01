@@ -549,6 +549,10 @@ WITH CHECK (public.is_org_admin(organization_id));
 -- -------------------------------------------------------------------------
 -- 6. RPC & ONBOARDING TRIGGERS
 -- -------------------------------------------------------------------------
+CREATE UNIQUE INDEX IF NOT EXISTS uq_active_account_admin_one_organization
+ON public.organization_members (user_id)
+WHERE role = 'account_admin' AND status = 'active';
+
 CREATE OR REPLACE FUNCTION public.create_organization_with_admin(
     org_name TEXT,
     org_slug TEXT DEFAULT NULL
@@ -566,6 +570,18 @@ BEGIN
     caller_id := auth.uid();
     IF caller_id IS NULL THEN
         RAISE EXCEPTION 'Caller must be authenticated to provision an organization';
+    END IF;
+
+    PERFORM pg_advisory_xact_lock(hashtextextended(caller_id::text, 0));
+
+    IF EXISTS (
+        SELECT 1
+        FROM public.organization_members
+        WHERE user_id = caller_id
+          AND role = 'account_admin'
+          AND status = 'active'
+    ) THEN
+        RAISE EXCEPTION 'Each Account Admin can have only one organization';
     END IF;
 
     IF trim(coalesce(org_name, '')) = '' THEN

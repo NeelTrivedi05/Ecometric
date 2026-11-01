@@ -402,9 +402,6 @@ export default function UserReviewView() {
           <h1 className="view-title" style={{ margin: 0, fontFamily: 'var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif)', letterSpacing: '-0.022em' }}>
             Verify &amp; Refine Extracted Engineering Data
           </h1>
-          <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
-            Directly modify components, verify material classification order, and map ecoinvent v3.12 background activity providers.
-          </p>
         </div>
 
         <div className="apple-header-action-group">

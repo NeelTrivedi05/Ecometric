@@ -105,9 +105,6 @@ export default function ResultsView() {
           <h1 className="view-title" style={{ margin: 0, fontFamily: 'var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif)', letterSpacing: '-0.022em' }}>
             Life Cycle Impact Assessment Results
           </h1>
-          <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
-            Environmental indicators computed via ecoinvent v3.12 Cut-off model &amp; UL 10010-4 characterization rules.
-          </p>
         </div>
 
         <div className="apple-header-action-group">
@@ -533,4 +530,3 @@ export default function ResultsView() {
     </div>
   );
 }
-

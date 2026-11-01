@@ -269,6 +269,9 @@ export function TenantProvider({ children }) {
   const createOrganization = useCallback(
     async (name, customSlug = '') => {
       if (!name?.trim()) throw new Error('Organization name is required');
+      if (memberships.some((membership) => membership.role === 'account_admin' && membership.status === 'active')) {
+        throw new Error('Each Account Admin can have only one organization.');
+      }
       if (supabase && user?.id) {
         const { data: orgId, error: rpcErr } = await supabase.rpc('create_organization_with_admin', {
           org_name: name.trim(),
@@ -303,7 +306,7 @@ export function TenantProvider({ children }) {
         return newOrg.organizations.id;
       }
     },
-    [user?.id, loadTenantData, navigate]
+    [memberships, user?.id, loadTenantData, navigate]
   );
 
   const userRole = activeOrg?.role || 'member';
@@ -348,4 +351,3 @@ export function useTenant() {
   }
   return context;
 }
-

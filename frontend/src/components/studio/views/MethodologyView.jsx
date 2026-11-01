@@ -164,9 +164,6 @@ export default function MethodologyView() {
           <MethodologyIcon size={24} style={{ color: 'var(--accent)' }} />
           5. Select Methodology
         </h1>
-        <p className="view-subtitle">
-          In OpenLCA and EN 15804 standards, characterization factors convert raw Life Cycle Inventory (LCI) elementary flows into verified environmental impact indicators. Select from all 41 ecoinvent v3.12 Cut-off methodologies.
-        </p>
       </div>
 
       {/* Educational Note Box explaining LCIA mechanics */}

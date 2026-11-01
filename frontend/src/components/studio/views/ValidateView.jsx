@@ -64,10 +64,6 @@ export default function ValidateView() {
           <h1 className="view-title" style={{ margin: 0, fontFamily: 'var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif)', letterSpacing: '-0.022em' }}>
             Pre-Calculation Checks
           </h1>
-          <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
-            Checks the essential EPD requirements that apply to every product before the LCA is calculated
-            (product PCR: {validationResults.pcr_label || productProfile?.pcrLabel}). Results rules run in step 7.
-          </p>
         </div>
 
         <div className="apple-header-action-group">

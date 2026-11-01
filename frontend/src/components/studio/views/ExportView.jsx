@@ -435,7 +435,13 @@ export default function ExportView() {
             }}
           >
             <DownloadIcon className="w-4 h-4" />
-            <span>{isExportingPdf ? 'Sealing PDF...' : `Download PDF (${exportMode === 'sealed' ? '.ecmx' : 'Open'})`}</span>
+            <span>
+              {isExportingPdf
+                ? 'Sealing PDF...'
+                : exportMode === 'sealed'
+                  ? 'Download Sealed PDF (.ecmx)'
+                  : 'Download PDF'}
+            </span>
           </button>
         </div>
 

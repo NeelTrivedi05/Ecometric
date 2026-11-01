@@ -130,7 +130,7 @@ export const BENCHMARK_EXTRACTED_DATA = CARRIER_19DV_500RT_EPD11017;
 
 export function StudioProvider({ children }) {
   // Navigation
-  const [activePhase, setActivePhase] = useState('upload');
+  const [activePhase, setActivePhase] = useState('product');
   const [currentPresetId, setCurrentPresetId] = useState('aquaedge_500rt');
   // Product category chosen in step 1 (null until the user selects one)
   const [productCategory, setProductCategory] = useState(null);
