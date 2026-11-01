@@ -236,18 +236,6 @@ export function StudioProvider({ children }) {
     return currentAccount?.database_assembly;
   }, [currentAccount]);
 
-  // Sync accounts from backend if online
-  React.useEffect(() => {
-    apiFetch(`${API_BASE}/accounts`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setAccountsList(data);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
   // Upload state
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
