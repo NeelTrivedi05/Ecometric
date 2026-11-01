@@ -317,29 +317,11 @@ export function StudioProvider({ children }) {
   // UI state
   const [notification, setNotification] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    try {
-      const saved = localStorage.getItem('ecometric_sidebar_collapsed');
-      if (saved !== null) return saved === 'true';
-      return true; // Default to collapsed slim bar so hover-expand is active
-    } catch {
-      return true;
-    }
-  });
   const [isLoading, setIsLoading] = useState(false);
   // { title, durationMs, startedAt } while the full-screen progress bar is shown.
   const [progressTask, setProgressTask] = useState(null);
 
   const toggleSidebar = useCallback(() => setIsSidebarOpen(prev => !prev), []);
-  const toggleSidebarCollapsed = useCallback(() => {
-    setIsSidebarCollapsed(prev => {
-      const next = !prev;
-      try {
-        localStorage.setItem('ecometric_sidebar_collapsed', String(next));
-      } catch {}
-      return next;
-    });
-  }, []);
 
   const showNotif = useCallback((msg, title = 'Done') => {
     setNotification({ msg, title });
@@ -1970,9 +1952,6 @@ export function StudioProvider({ children }) {
         isSidebarOpen,
         setIsSidebarOpen,
         toggleSidebar,
-        isSidebarCollapsed,
-        setIsSidebarCollapsed,
-        toggleSidebarCollapsed,
         isLoading,
         progressTask,
         setProgressTask,
