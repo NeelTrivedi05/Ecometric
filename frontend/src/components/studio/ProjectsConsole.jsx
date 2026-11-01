@@ -565,7 +565,7 @@ export default function ProjectsConsole() {
   // Open project handler
   const handleOpenProject = (project) => {
     openProject(project.id);
-    navigate(`/app/projects/${project.id}`);
+    navigate(activeOrg?.slug ? `/${activeOrg.slug}/app/projects/${project.id}` : `/app/projects/${project.id}`);
   };
 
   // New project handler: opens creation modal to specify real project metadata
@@ -573,9 +573,11 @@ export default function ProjectsConsole() {
     setIsCreateModalOpen(true);
   };
 
-  const handleProjectCreated = (newProj) => {
-    createProject(newProj);
-    navigate(`/app/projects/${newProj.id}`);
+  const handleProjectCreated = async (newProj) => {
+    const created = await createProject(newProj);
+    if (created !== false) {
+      navigate(activeOrg?.slug ? `/${activeOrg.slug}/app/projects/${newProj.id}` : `/app/projects/${newProj.id}`);
+    }
   };
 
   // Batch delete / archive

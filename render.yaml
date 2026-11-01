@@ -25,6 +25,10 @@ services:
         value: sqlite:///./ecometric.db
       - key: ALLOWED_ORIGINS
         value: http://localhost:5173,https://ecometric-frontend.onrender.com
+      - key: SUPABASE_URL
+        value: https://icurerepycrpkaybfarw.supabase.co
+      - key: SUPABASE_JWT_AUDIENCE
+        value: authenticated
 
   # -------------------------------------------------------------
   # 2. EcoMetric React / Vite Frontend
@@ -50,4 +54,3 @@ services:
         value: https://icurerepycrpkaybfarw.supabase.co
       - key: VITE_SUPABASE_ANON_KEY
         value: sb_publishable_ClcHwn5beKTBkqG2D8ueEg_htT6wLkx
-

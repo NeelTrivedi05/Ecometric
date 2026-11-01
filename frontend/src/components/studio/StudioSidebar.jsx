@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStudio } from '../../context/StudioContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTenant } from '../../context/TenantContext';
 import {
   UploadIcon,
   ReviewIcon,
@@ -48,6 +49,7 @@ export default function StudioSidebar() {
     productCategory,
   } = useStudio();
   const { user } = useAuth();
+  const { activeOrg } = useTenant();
 
   const accountName =
     user?.user_metadata?.full_name ||
@@ -102,7 +104,7 @@ export default function StudioSidebar() {
       aria-label="Workflow Navigation"
     >
       <div className="sidebar-workspace-chrome">
-        <button type="button" className="sidebar-back-button" onClick={() => navigate('/app')}>
+        <button type="button" className="sidebar-back-button" onClick={() => navigate(activeOrg?.slug ? `/${activeOrg.slug}/app` : '/app')}>
           <ArrowLeftIcon size={15} />
           <span>Back to console</span>
         </button>

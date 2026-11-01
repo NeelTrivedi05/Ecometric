@@ -1,7 +1,12 @@
 -- Migration 002: Auto-Bootstrap Organizations & 24-Hour Session Presence Support
 -- Ensures every authenticated user is guaranteed an organization and account_admin membership in DB
 
--- 1. Create or replace public.bootstrap_current_user()
+-- The return type is part of a PostgreSQL function signature and cannot be
+-- changed by CREATE OR REPLACE. Drop the zero-argument function first so this
+-- migration also upgrades databases created from an older schema.
+DROP FUNCTION IF EXISTS public.bootstrap_current_user();
+
+-- 1. Create public.bootstrap_current_user()
 CREATE OR REPLACE FUNCTION public.bootstrap_current_user()
 RETURNS UUID
 LANGUAGE plpgsql
@@ -126,4 +131,3 @@ BEGIN
     RETURN new;
 END;
 $$;
-

@@ -11,9 +11,13 @@ export function TenantProvider({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Extract orgSlug from URL if in /console/:orgSlug/*
+  // Extract workspace slug from admin or Studio workspace URLs.
   const consoleMatch = location.pathname.match(/^\/console\/([^/]+)/);
-  const currentRouteSlug = consoleMatch && consoleMatch[1] !== 'undefined' ? consoleMatch[1] : null;
+  const workspaceMatch = location.pathname.match(/^\/([^/]+)\/(?:app|projects|verifier)(?:\/|$)/);
+  const currentRouteSlug = (consoleMatch?.[1] || workspaceMatch?.[1]) &&
+    (consoleMatch?.[1] || workspaceMatch?.[1]) !== 'undefined'
+    ? (consoleMatch?.[1] || workspaceMatch?.[1])
+    : null;
 
   const [memberships, setMemberships] = useState([]);
   const [activeOrg, setActiveOrg] = useState(null);
@@ -197,33 +201,17 @@ export function TenantProvider({ children }) {
         };
         setActiveOrg(enrichedOrg);
         window.localStorage.setItem('ecometric_active_org_slug', target.organizations.slug);
-      } else if (currentRouteSlug) {
-        const title = currentRouteSlug
-          .split(/[-_]/)
-          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-          .join(' ');
-        const fallbackOrg = {
-          id: currentRouteSlug,
-          name: title || 'EcoMetric Organization',
-          slug: currentRouteSlug,
-          logo_url: null,
-          role: 'account_admin',
-          settings: {
-            default_methodology: 'TRACI 2.1',
-            pcr_standard: 'UL 10010-4 Part B v2.0 & EN 15804+A2',
-            company_address: 'One Carrier Place, Farmington, CT 06032, USA',
-            company_website: `https://${currentRouteSlug}.com`,
-          },
-          created_at: new Date().toISOString(),
-        };
-        setActiveOrg(fallbackOrg);
-        window.localStorage.setItem('ecometric_active_org_slug', currentRouteSlug);
+      } else {
+        setActiveOrg(null);
+        if (currentRouteSlug) {
+          setError('Workspace not found');
+        }
       }
     } catch (err) {
       console.error('Failed to load tenant state:', err);
       setError(err.message);
-      setMemberships(mockMemberships);
-      setActiveOrg({ ...mockMemberships[0].organizations, role: mockMemberships[0].role });
+      setMemberships([]);
+      setActiveOrg(null);
     } finally {
       setLoading(false);
     }

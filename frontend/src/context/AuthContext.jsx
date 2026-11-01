@@ -52,19 +52,12 @@ export function AuthProvider({ children }) {
         .eq('status', 'active')
         .maybeSingle();
 
-      // 2. If no membership row found, auto-bootstrap organization in DB
+      // 2. Provision the caller's one workspace atomically when missing.
       if (!data && !error) {
-        const pendingName = window.sessionStorage.getItem('pending_organization_name');
-        const fallbackName =
-          pendingName ||
-          userObj?.user_metadata?.organization_name ||
-          userObj?.user_metadata?.full_name ||
-          (userObj?.email ? userObj.email.split('@')[0] + ' Org' : 'EcoMetric Organization');
-
-        // Attempt RPC bootstrap
-        const { data: bootstrappedOrgId, error: rpcError } = await supabase.rpc('bootstrap_current_user');
-        if (bootstrappedOrgId && !rpcError) {
-          window.sessionStorage.removeItem('pending_organization_name');
+        const { error: provisioningError } = await supabase.rpc('ensure_workspace');
+        if (provisioningError) {
+          console.error('[EcoMetric Auth] Workspace provisioning failed:', provisioningError);
+        } else {
           const refetch = await supabase
             .from('organization_members')
             .select('organization_id, role, status, organizations(id, name, slug)')
@@ -72,51 +65,13 @@ export function AuthProvider({ children }) {
             .eq('status', 'active')
             .maybeSingle();
           data = refetch.data;
-        } else {
-          // If bootstrap_current_user wasn't available, call create_organization_with_admin
-          const { data: newOrgId } = await supabase.rpc('create_organization_with_admin', {
-            org_name: fallbackName,
-          });
-          if (newOrgId) {
-            window.sessionStorage.removeItem('pending_organization_name');
-            const refetch = await supabase
-              .from('organization_members')
-              .select('organization_id, role, status, organizations(id, name, slug)')
-              .eq('user_id', userId)
-              .eq('status', 'active')
-              .maybeSingle();
-            data = refetch.data;
-          }
         }
-      }
-
-      // 3. Fallback safe membership so user is NEVER blocked by "Access pending"
-      if (!data) {
-        data = {
-          organization_id: 'custom-engineer',
-          role: 'account_admin',
-          status: 'active',
-          organizations: {
-            id: 'custom-engineer',
-            name: 'EcoMetric Sustainability Lab',
-            slug: 'custom-engineer',
-          },
-        };
       }
 
       setMembership(data);
     } catch (err) {
-      console.warn('[EcoMetric Auth] Membership lookup warning, using safe default:', err);
-      setMembership({
-        organization_id: 'custom-engineer',
-        role: 'account_admin',
-        status: 'active',
-        organizations: {
-          id: 'custom-engineer',
-          name: 'EcoMetric Sustainability Lab',
-          slug: 'custom-engineer',
-        },
-      });
+      console.error('[EcoMetric Auth] Membership lookup failed:', err);
+      setMembership(null);
     }
   }, []);
 

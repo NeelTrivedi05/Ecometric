@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { XIcon, ShieldCheckIcon, CheckIcon, BuildingIcon, FileTextIcon } from './Icons';
 import { Button } from '@/components/base/buttons/button';
 import { useStudio } from '../../context/StudioContext';
+import { apiFetch } from '../../lib/apiFetch';
 import { API_BASE } from '../../config/api';
 
 export default function EpdCertificateModal({ epd, isOpen, onClose }) {
@@ -29,7 +30,7 @@ export default function EpdCertificateModal({ epd, isOpen, onClose }) {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/epd-reports`, {
+      const res = await apiFetch(`${API_BASE}/epd-reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

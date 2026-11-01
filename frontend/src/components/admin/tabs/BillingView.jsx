@@ -1,178 +1,132 @@
-import React from 'react';
-import { CreditCard01 } from '@untitledui/icons';
+import React, { useEffect, useMemo, useState } from 'react';
+import { AlertTriangle, Package } from '@untitledui/icons';
+import { useTenant } from '../../../context/TenantContext';
+import { supabase } from '../../../lib/supabase';
 
-export default function BillingView() {
-  const invoices = [
-    { id: 'INV-2026-003', date: 'Oct 01, 2026', amount: '$1,250.00', status: 'Paid', pdf: 'epd-invoice-oct.pdf' },
-    { id: 'INV-2026-002', date: 'Sep 01, 2026', amount: '$1,250.00', status: 'Paid', pdf: 'epd-invoice-sep.pdf' },
-    { id: 'INV-2026-001', date: 'Aug 01, 2026', amount: '$1,250.00', status: 'Paid', pdf: 'epd-invoice-aug.pdf' },
-  ];
+const cardStyle = {
+  backgroundColor: 'var(--bg-card, #ffffff)',
+  borderRadius: '16px',
+  border: '1px solid var(--border, #dfe7dd)',
+  padding: '24px 28px',
+};
 
+function ProgressBar({ value, warning = false }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '880px' }}>
-      {/* Header */}
-      <div
-        style={{
-          backgroundColor: 'var(--bg-card, #ffffff)',
-          borderRadius: '16px',
-          border: '1px solid var(--border, #dfe7dd)',
-          padding: '24px 28px',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '11px',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            color: 'var(--accent, #1f7a4c)',
-          }}
-        >
-          Payment & Invoicing
-        </span>
-        <h1 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary, #16231b)', margin: '4px 0 0' }}>
-          Billing & Invoices
-        </h1>
-        <p style={{ fontSize: '13px', color: 'var(--text-muted, #5b6f62)', margin: '4px 0 0' }}>
-          Manage your organization payment methods, billing contact, and download calculation receipts.
-        </p>
-      </div>
-
-      {/* Payment Method Card */}
-      <div
-        style={{
-          backgroundColor: 'var(--bg-card, #ffffff)',
-          borderRadius: '16px',
-          border: '1px solid var(--border, #dfe7dd)',
-          padding: '24px 28px',
-        }}
-      >
-        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #16231b)', margin: '0 0 16px' }}>
-          Payment Method
-        </h2>
-
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 20px',
-            borderRadius: '12px',
-            backgroundColor: 'var(--bg-card2, #f8faf6)',
-            border: '1px solid var(--border, #dfe7dd)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <span
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(31, 122, 76, 0.08)',
-                color: 'var(--accent, #1f7a4c)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <CreditCard01 size={22} />
-            </span>
-            <div>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary, #16231b)' }}>
-                Corporate Mastercard ending in 4242
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted, #5b6f62)' }}>
-                Expires 12/2028 • Default payment card
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => alert('Update card flow modal')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
-              backgroundColor: 'var(--bg-card, #ffffff)',
-              border: '1px solid var(--border, #dfe7dd)',
-              fontSize: '12px',
-              fontWeight: 600,
-              color: 'var(--accent, #1f7a4c)',
-              cursor: 'pointer',
-            }}
-          >
-            Update
-          </button>
-        </div>
-      </div>
-
-      {/* Invoice History Table */}
-      <div
-        style={{
-          backgroundColor: 'var(--bg-card, #ffffff)',
-          borderRadius: '16px',
-          border: '1px solid var(--border, #dfe7dd)',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border, #dfe7dd)' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #16231b)', margin: 0 }}>
-            Past Invoices
-          </h2>
-        </div>
-
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
-          <thead>
-            <tr style={{ backgroundColor: 'var(--bg-card2, #f8faf6)', borderBottom: '1px solid var(--border, #dfe7dd)' }}>
-              <th style={{ padding: '12px 24px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)' }}>Invoice</th>
-              <th style={{ padding: '12px 24px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)' }}>Billing Date</th>
-              <th style={{ padding: '12px 24px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)' }}>Amount</th>
-              <th style={{ padding: '12px 24px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)' }}>Status</th>
-              <th style={{ padding: '12px 24px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)', textAlign: 'right' }}>Receipt</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoices.map((inv) => (
-              <tr key={inv.id} style={{ borderBottom: '1px solid var(--border, #dfe7dd)' }}>
-                <td style={{ padding: '14px 24px', fontWeight: 600, color: 'var(--text-primary, #16231b)' }}>{inv.id}</td>
-                <td style={{ padding: '14px 24px', color: 'var(--text-muted, #5b6f62)' }}>{inv.date}</td>
-                <td style={{ padding: '14px 24px', fontWeight: 600, color: 'var(--text-primary, #16231b)' }}>{inv.amount}</td>
-                <td style={{ padding: '14px 24px' }}>
-                  <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: '9999px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      backgroundColor: '#eaf7ee',
-                      color: 'var(--accent, #1f7a4c)',
-                    }}
-                  >
-                    {inv.status}
-                  </span>
-                </td>
-                <td style={{ padding: '14px 24px', textAlign: 'right' }}>
-                  <button
-                    type="button"
-                    onClick={() => alert(`Downloading ${inv.pdf}...`)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--accent, #1f7a4c)',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Download PDF
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div style={{ height: '8px', overflow: 'hidden', borderRadius: '9999px', background: '#edf2ec' }}>
+      <div style={{ width: `${Math.min(value, 100)}%`, height: '100%', background: warning ? '#d97706' : '#1f7a4c' }} />
     </div>
   );
 }
 
+export default function BillingView() {
+  const { activeOrg } = useTenant();
+  const [plan, setPlan] = useState(null);
+  const [subscription, setSubscription] = useState(null);
+  const [usage, setUsage] = useState([]);
+  const [state, setState] = useState('loading');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    async function loadBilling() {
+      if (!supabase || !activeOrg?.id) {
+        setState('ready');
+        return;
+      }
+
+      const periodStart = new Date();
+      periodStart.setDate(1);
+      const [planResult, subscriptionResult, usageResult] = await Promise.all([
+        supabase.from('plans').select('code, display_name, epd_quota').eq('active', true),
+        supabase.from('subscriptions').select('organization_id, plan_code, status, current_period_end, cancel_at_period_end').eq('organization_id', activeOrg.id).maybeSingle(),
+        supabase.from('usage_events').select('id, kind, status, period_start, created_at').eq('organization_id', activeOrg.id).gte('period_start', periodStart.toISOString().slice(0, 10)),
+      ]);
+
+      if (!active) return;
+      const failure = planResult.error || subscriptionResult.error || usageResult.error;
+      if (failure) {
+        setError(failure.message);
+        setState('error');
+        return;
+      }
+      const currentSubscription = subscriptionResult.data;
+      setPlan((planResult.data || []).find((item) => item.code === currentSubscription?.plan_code) || null);
+      setSubscription(currentSubscription);
+      setUsage(usageResult.data || []);
+      setState('ready');
+    }
+    loadBilling();
+    return () => { active = false; };
+  }, [activeOrg?.id]);
+
+  const used = useMemo(
+    () => usage.filter((event) => ['reserved', 'committed'].includes(event.status)).length,
+    [usage]
+  );
+  const quota = plan?.epd_quota || 0;
+  const usagePercent = quota ? (used / quota) * 100 : 0;
+  const planName = plan?.display_name || 'Workspace plan';
+
+  if (state === 'loading') return <div style={{ color: 'var(--text-muted)' }}>Loading billing and usage…</div>;
+  if (state === 'error') return <div style={{ ...cardStyle, color: '#b45309' }}>Could not load billing data: {error}</div>;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '880px' }}>
+      <div style={cardStyle}>
+        <span style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--accent, #1f7a4c)' }}>
+          Payment & usage
+        </span>
+        <h1 style={{ fontSize: '20px', fontWeight: 600, margin: '4px 0 0' }}>Billing & workspace limits</h1>
+        <p style={{ fontSize: '13px', color: 'var(--text-muted, #5b6f62)', margin: '4px 0 0' }}>
+          View the plan and monthly EPD capacity for {activeOrg?.name || 'this workspace'}.
+        </p>
+      </div>
+
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+            <span style={{ display: 'grid', placeItems: 'center', width: '40px', height: '40px', borderRadius: '8px', color: '#1f7a4c', background: 'rgba(31, 122, 76, 0.08)' }}>
+              <Package size={22} />
+            </span>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '17px' }}>{planName}</h2>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
+                {subscription?.status === 'active' ? 'Active subscription' : 'Subscription requires attention'}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: '22px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
+            <strong>EPD creation usage</strong>
+            <span>{used} / {quota || '—'} this month</span>
+          </div>
+          <ProgressBar value={usagePercent} warning={usagePercent >= 80} />
+          {usagePercent >= 80 && (
+            <p style={{ display: 'flex', gap: '7px', alignItems: 'center', margin: '12px 0 0', color: '#b45309', fontSize: '12px' }}>
+              <AlertTriangle size={15} /> This workspace is approaching its monthly EPD limit.
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div style={cardStyle}>
+        <h2 style={{ margin: 0, fontSize: '16px' }}>Budget and alerts</h2>
+        <p style={{ margin: '4px 0 16px', color: 'var(--text-muted)', fontSize: '13px' }}>
+          Track EPD capacity and decide when the workspace should be warned.
+        </p>
+        <div style={{ padding: '16px', border: '1px solid var(--border)', borderRadius: '12px', background: 'var(--bg-card2, #f8faf6)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+            <span style={{ color: 'var(--text-muted)' }}>This month</span>
+            <strong>{used} of {quota || '—'} EPDs</strong>
+          </div>
+          <ProgressBar value={usagePercent} warning={usagePercent >= 80} />
+          <p style={{ margin: '12px 0 0', color: 'var(--text-muted)', fontSize: '12px' }}>
+            New EPD creation is blocked automatically when the quota is reached.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  );
+}
