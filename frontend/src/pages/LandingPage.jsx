@@ -9,7 +9,6 @@ import Pricing11 from '../components/landing/Pricing11';
 import PricingAbstractAngles from '../components/landing/PricingAbstractAngles';
 import TrustProof from '../components/landing/TrustProof';
 import TheProblem from '../components/landing/TheProblem';
-import TheSolution from '../components/landing/TheSolution';
 import LifeCycleRibbon from '../components/landing/LifeCycleRibbon';
 import HowItWorks from '../components/landing/HowItWorks';
 import Features from '../components/landing/Features';
@@ -59,8 +58,6 @@ export default function LandingPage() {
 
   const renderPageContent = () => {
     switch (page) {
-      case 'pipeline':
-        return <TheSolution />;
       case 'modules':
         return <LifeCycleRibbon />;
       case 'how-it-works':

@@ -116,7 +116,6 @@ export default function App() {
           {/* Marketing / Landing Page at Root */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/overview" element={<LandingPage />} />
-          <Route path="/pipeline" element={<LandingPage />} />
           <Route path="/modules" element={<LandingPage />} />
           <Route path="/how-it-works" element={<LandingPage />} />
           <Route path="/capabilities" element={<LandingPage />} />
