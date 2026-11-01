@@ -38,7 +38,8 @@ def _resolve(payload: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Dict[str, An
         return payload["input"], [], options
     results_by_method = payload.get("resultsByMethod")
     extracted_data = payload.get("extractedData")
-    if not results_by_method:
+    has_explicit_extracted_data = "extractedData" in payload
+    if not results_by_method and not has_explicit_extracted_data:
         fallback_file = REPO_ROOT / "results" / "epd_results.json"
         if fallback_file.exists():
             try:
@@ -47,7 +48,7 @@ def _resolve(payload: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Dict[str, An
                 results_by_method = {method_key: calc_json}
             except Exception:
                 pass
-        if not extracted_data:
+        if not extracted_data and not has_explicit_extracted_data:
             input_file = REPO_ROOT / "results" / "epd_calculation_input.json"
             if input_file.exists():
                 try:

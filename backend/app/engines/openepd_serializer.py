@@ -6,7 +6,7 @@ into 100% compliant openEPD v2.0 JSON format (BuildingTransparency / openEPD sta
 and ECO Platform / ILCD+EPD JSON package.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional
 import hashlib
 import json
@@ -40,11 +40,11 @@ def serialize_openepd_json(
         "mass": total_mass_kg,
         "capacity": capacity_rt,
         "methodology": methodology,
-        "generated_at": datetime.utcnow().strftime("%Y-%m-%d")
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d")
     }
     verification_hash = f"SHA256:{hashlib.sha256(json.dumps(hash_payload, sort_keys=True).encode()).hexdigest()}"
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     issue_date = now.strftime("%Y-%m-%d")
     valid_until = (now + timedelta(days=365 * 5)).strftime("%Y-%m-%d")
     dec_num = f"EPD-{now.strftime('%Y%m%d')}-{abs(hash(product_name)) % 100000:05d}"

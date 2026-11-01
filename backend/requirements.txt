@@ -23,4 +23,5 @@ slowapi>=0.1.9
 certifi
 # Tests
 pytest>=8.0
+httpx2>=2.16.0
 pypdf>=4.0

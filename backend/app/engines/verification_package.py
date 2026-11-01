@@ -11,7 +11,7 @@ import io
 import zipfile
 import json
 import hashlib
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Tuple
 from .dqr_engine import DqrEngine
 from .openepd_serializer import serialize_openepd_json
@@ -44,7 +44,7 @@ def build_verification_bundle(
     Builds an audited ZIP archive in memory and returns:
     (zip_bytes, filename, manifest_metadata)
     """
-    now_str = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    now_str = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     proj_name = extracted_data.get("project_info", {}).get("product_name", "Chiller_EPD")
     sanitized_name = "".join(c if c.isalnum() else "_" for c in proj_name).strip("_")
     zip_filename = f"EcoMetric_Verification_Bundle_{sanitized_name}_{now_str}.zip"

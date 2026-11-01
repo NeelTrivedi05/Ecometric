@@ -17,14 +17,46 @@ export default function ResetPasswordPage() {
       setError('Supabase is not configured.');
       return undefined;
     }
-    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') setReady(true);
+    let active = true;
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (active && (event === 'PASSWORD_RECOVERY' || session)) setReady(true);
     });
-    supabase.auth.getSession().then(({ data, error: sessionError }) => {
-      if (sessionError) setError(sessionError.message);
-      setReady(Boolean(data.session));
-    });
-    return () => listener.subscription.unsubscribe();
+
+    async function initializeRecoverySession() {
+      const hashParams = new URLSearchParams(window.location.hash.slice(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+      const hashError = hashParams.get('error_description');
+
+      if (hashError) {
+        setError(decodeURIComponent(hashError.replace(/\+/g, ' ')));
+        return;
+      }
+
+      try {
+        let sessionResult = await supabase.auth.getSession();
+        if (!sessionResult.data.session && accessToken && refreshToken) {
+          sessionResult = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+        }
+        if (!active) return;
+        if (sessionResult.error) {
+          setError(sessionResult.error.message);
+        } else {
+          setReady(Boolean(sessionResult.data.session));
+        }
+      } catch (sessionError) {
+        if (active) setError(sessionError.message || 'Unable to validate the reset link.');
+      }
+    }
+
+    initializeRecoverySession();
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   async function submit(event) {
