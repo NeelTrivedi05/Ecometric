@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
+from app.engines import lca_store
 from app.engines.material_matcher import database_available
 from app.products import PRODUCTS, list_products, project_info_defaults
 
@@ -9,7 +10,8 @@ router = APIRouter(prefix="/api/products", tags=["Products"])
 @router.get("")
 def get_products():
     """Product categories the studio supports, with their PCR, functional unit and defaults."""
-    return {"products": list_products(), "ecoinvent_database_available": database_available()}
+    return {"products": list_products(), "ecoinvent_database_available": database_available(),
+            "ecoinvent_database_status": lca_store.status()}
 
 
 @router.get("/{product_id}")

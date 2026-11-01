@@ -26,6 +26,7 @@ _lock = threading.Lock()
 _activities: Optional[pd.DataFrame] = None
 _indicators: Optional[List[Tuple[str, str, str, str, str]]] = None
 _failed_at = 0.0
+_last_error: Optional[str] = None
 
 
 def configured() -> bool:
@@ -38,7 +39,7 @@ def _connect():
 
 
 def _load():
-    global _activities, _indicators, _failed_at
+    global _activities, _indicators, _failed_at, _last_error
     try:
         with _connect() as conn:
             rows = conn.execute(
@@ -51,6 +52,7 @@ def _load():
             ).fetchall()
     except Exception as e:
         _failed_at = time.monotonic()
+        _last_error = type(e).__name__
         print(f"[lca_store] Could not load ecoinvent data from Supabase: {e}")
         return
     meta = pd.DataFrame(rows, columns=["row", "activity", "geo", "product", "unit"]).set_index("row").sort_index()
@@ -71,6 +73,15 @@ def activities() -> Optional[pd.DataFrame]:
             if _activities is None:
                 _load()
     return _activities
+
+
+def status() -> Dict[str, Optional[str]]:
+    """Why the data is or isn't available, for diagnosing deployments (never includes the URL)."""
+    if activities() is not None:
+        return {"state": "connected", "error": None}
+    if not configured():
+        return {"state": "not_configured", "error": None}
+    return {"state": "connection_failed", "error": _last_error}
 
 
 def indicators() -> List[Tuple[str, str, str, str, str]]:
