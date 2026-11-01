@@ -6,11 +6,12 @@ load_dotenv()
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from app.database import engine, Base
+from app.database import engine, Base, add_missing_columns
 from app.routers import auth_routes, epd, epd_reports, submissions, documents, processes, products, invitations, verify as verify_router, seal_export
 
 # Initialize DB tables
 Base.metadata.create_all(bind=engine)
+add_missing_columns()
 
 # File Sealing: ensure seal tables exist (idempotent)
 try:
@@ -31,15 +32,6 @@ allowed_origins_str = os.getenv(
     "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174"
 )
 origins = [o.strip() for o in allowed_origins_str.split(",") if o.strip()]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_origin_regex=r"^https:\/\/.*(\.vercel\.app|\.onrender\.com)$",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 PUBLIC_API_PREFIXES = (
     "/api/health",
@@ -70,6 +62,17 @@ async def require_authenticated_api_requests(request: Request, call_next):
     except HTTPException as exc:
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
     return await call_next(request)
+
+# Registered after the auth middleware so CORS is outermost and auth rejections
+# (401/503) still carry CORS headers instead of surfacing as network errors.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_origin_regex=r"^https:\/\/.*(\.vercel\.app|\.onrender\.com)$",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include Routers
 app.include_router(auth_routes.router)

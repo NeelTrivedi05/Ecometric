@@ -14,19 +14,17 @@ import {
   CheckIcon,
   ShieldCheckIcon,
   ArrowLeftIcon,
-  LayersIcon,
 } from './Icons';
 
 const PHASES = [
-  { id: 'product', step: '1', label: 'Product Setup', sub: 'Select product and benchmark', icon: LayersIcon },
-  { id: 'upload', step: '2', label: 'Upload Documents', sub: 'XLSX, CSV, PDF Ingestion', icon: UploadIcon },
-  { id: 'extract', step: '3', label: 'Extracted Inventory', sub: 'Modules A1–D Coverage', icon: ReviewIcon },
-  { id: 'user_review', step: '4', label: 'Review & Mapping', sub: 'BOM & ecoinvent Providers', icon: EditIcon },
-  { id: 'validate', step: '5', label: 'Pre-Calculation Checks', sub: 'Checked before calculation', icon: ValidateIcon },
-  { id: 'methodology', step: '6', label: 'LCIA Methodology', sub: 'EF v3.1, TRACI, CML-IA', icon: MethodologyIcon },
-  { id: 'results', step: '7', label: 'LCIA Results', sub: '25 Indicators × 16 Stages', icon: ResultsIcon },
-  { id: 'audit', step: '8', label: 'Pre-Audit Verification', sub: 'PCR results rules', icon: ShieldCheckIcon },
-  { id: 'export', step: '9', label: 'Export EPD', sub: 'Publication PDF & openEPD', icon: ExportIcon },
+  { id: 'upload', step: '1', label: 'Product Setup & Upload', sub: 'Select product, upload XLSX, CSV, PDF', icon: UploadIcon },
+  { id: 'extract', step: '2', label: 'Extracted Inventory', sub: 'Modules A1–D Coverage', icon: ReviewIcon },
+  { id: 'user_review', step: '3', label: 'Review & Mapping', sub: 'BOM & ecoinvent Providers', icon: EditIcon },
+  { id: 'validate', step: '4', label: 'Pre-Calculation Checks', sub: 'Checked before calculation', icon: ValidateIcon },
+  { id: 'methodology', step: '5', label: 'LCIA Methodology', sub: 'EF v3.1, TRACI, CML-IA', icon: MethodologyIcon },
+  { id: 'results', step: '6', label: 'LCIA Results', sub: '25 Indicators × 16 Stages', icon: ResultsIcon },
+  { id: 'audit', step: '7', label: 'Pre-Audit Verification', sub: 'PCR results rules', icon: ShieldCheckIcon },
+  { id: 'export', step: '8', label: 'Export EPD', sub: 'Publication PDF & openEPD', icon: ExportIcon },
 ];
 
 export default function StudioSidebar() {
@@ -46,7 +44,6 @@ export default function StudioSidebar() {
     results,
     lca,
     currentAccount,
-    productCategory,
   } = useStudio();
   const { user } = useAuth();
   const { activeOrg } = useTenant();
@@ -68,8 +65,6 @@ export default function StudioSidebar() {
 
   const getPhaseStatus = (phaseId) => {
     switch (phaseId) {
-      case 'product':
-        return productCategory ? 'done' : '';
       case 'upload':
         return uploadedFiles.length > 0 ? 'done' : '';
       case 'extract':
