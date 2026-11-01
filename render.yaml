@@ -29,6 +29,10 @@ services:
         value: https://icurerepycrpkaybfarw.supabase.co
       - key: SUPABASE_JWT_AUDIENCE
         value: authenticated
+      # Set this in the Render dashboard to the Supabase Session pooler URI.
+      # It must remain backend-only; never expose it as a VITE_ variable.
+      - key: SUPABASE_DB_URL
+        sync: false
 
   # -------------------------------------------------------------
   # 2. EcoMetric React / Vite Frontend

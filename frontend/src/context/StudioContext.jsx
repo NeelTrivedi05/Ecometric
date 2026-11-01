@@ -797,12 +797,13 @@ export function StudioProvider({ children }) {
         );
       } else {
         targetFiles.forEach(f => updateFileStatus(f.id, 'error'));
-        showNotif('Server returned an error during extraction', 'Extraction Warning');
+        const body = await res.json().catch(() => ({}));
+        const detail = typeof body.detail === 'string' ? body.detail : 'Server returned an error during extraction.';
+        showNotif(detail, 'Extraction Failed');
       }
     } catch (err) {
-      // Backend offline fallback
-      targetFiles.forEach(f => updateFileStatus(f.id, 'done'));
-      showNotif('Loaded extraction in offline mode', 'Offline Mode');
+      targetFiles.forEach(f => updateFileStatus(f.id, 'error'));
+      showNotif(err.message || 'Could not reach the document extraction service.', 'Extraction Failed');
     }
 
     setIsLoading(false);
