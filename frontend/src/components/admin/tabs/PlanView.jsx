@@ -26,11 +26,11 @@ export default function PlanView() {
       }
       const { data, error } = await supabase
         .from('plans')
-        .select('code, display_name, epd_quota')
+        .select('code, display_name')
         .eq('code', subscription?.plan_code || 'free')
         .maybeSingle();
       if (active) {
-        setPlan({ ...(data || { code: 'free', display_name: 'Free', epd_quota: 1 }), subscription });
+        setPlan({ ...(data || { code: 'free', display_name: 'Free' }), subscription });
         setStatus(error ? 'error' : 'ready');
       }
     }
@@ -42,9 +42,8 @@ export default function PlanView() {
   if (status === 'error') return <div style={{ color: '#b45309' }}>Could not load the workspace plan.</div>;
 
   const planName = plan?.display_name || 'Free';
-  const quota = plan?.epd_quota || 1;
   const features = [
-    `${quota} EPD${quota === 1 ? '' : 's'} per month`,
+    'Unlimited EPD creation',
     'BOM and document ingestion',
     'PCR validation and LCIA calculations',
     'Workspace-scoped project data',
@@ -59,7 +58,7 @@ export default function PlanView() {
         </span>
         <h1 style={{ fontSize: '20px', fontWeight: 600, margin: '4px 0 0' }}>Workspace plan</h1>
         <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>
-          Your plan controls how many EPDs this workspace can create each month.
+          EPD creation is currently unlimited for this workspace.
         </p>
       </div>
 
@@ -86,7 +85,7 @@ export default function PlanView() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
           <span style={{ padding: '4px 12px', borderRadius: '9999px', background: '#eaf7ee', color: '#1f7a4c', border: '1px solid #c3e8cd', fontSize: '12px', fontWeight: 600 }}>
-            {quota} EPD{quota === 1 ? '' : 's'} / month
+            Unlimited EPDs
           </span>
           <button type="button" disabled style={{ padding: '9px 16px', borderRadius: '8px', background: '#fff', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '13px', cursor: 'not-allowed' }}>
             Upgrade via Stripe

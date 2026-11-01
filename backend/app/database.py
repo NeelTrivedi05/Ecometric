@@ -20,6 +20,11 @@ Base = declarative_base()
 
 
 def add_missing_columns() -> None:
+    """Keep deployment startup compatible with legacy database initialization."""
+    Base.metadata.create_all(bind=engine)
+
+
+def add_missing_columns() -> None:
     """Keep legacy startup code compatible while creating any missing tables."""
     Base.metadata.create_all(bind=engine)
 
