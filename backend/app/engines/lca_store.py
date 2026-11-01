@@ -16,6 +16,7 @@ Connection: SUPABASE_DB_URL (Session pooler URI, backend only - never the fronte
 import os
 import threading
 import time
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import pandas as pd
@@ -29,12 +30,23 @@ _failed_at = 0.0
 
 
 def configured() -> bool:
-    return bool(os.getenv("SUPABASE_DB_URL"))
+    return bool(os.getenv("SUPABASE_DB_URL", "").strip())
 
 
 def _connect():
     import psycopg
-    return psycopg.connect(os.environ["SUPABASE_DB_URL"], connect_timeout=10)
+    raw_url = os.environ["SUPABASE_DB_URL"].strip()
+    parsed = urlsplit(raw_url)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query.setdefault("sslmode", "require")
+    connection_url = urlunsplit((
+        parsed.scheme,
+        parsed.netloc,
+        parsed.path,
+        urlencode(query),
+        parsed.fragment,
+    ))
+    return psycopg.connect(connection_url, connect_timeout=10)
 
 
 def _load():
@@ -53,6 +65,11 @@ def _load():
         _failed_at = time.monotonic()
         print(f"[lca_store] Could not load ecoinvent data from Supabase: {e}")
         return
+    if not rows or not indicators:
+        _failed_at = time.monotonic()
+        print("[lca_store] Supabase reference tables are empty")
+        return
+
     meta = pd.DataFrame(rows, columns=["row", "activity", "geo", "product", "unit"]).set_index("row").sort_index()
     meta = meta.astype(str)
     meta["activity_l"] = meta["activity"].str.lower()
