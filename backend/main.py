@@ -48,20 +48,24 @@ PUBLIC_API_PREFIXES = (
 
 @app.middleware("http")
 async def require_authenticated_api_requests(request: Request, call_next):
-    if (
+    if not (
         request.method == "OPTIONS"
         or not request.url.path.startswith("/api/")
         or request.url.path.startswith(PUBLIC_API_PREFIXES)
     ):
-        return await call_next(request)
+        from app.auth import authenticate_token
 
-    from app.auth import authenticate_token
-
+        try:
+            authenticate_token(request.headers.get("authorization"))
+        except HTTPException as exc:
+            return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    # Unhandled errors would otherwise be answered outside CORSMiddleware and show up in the
+    # browser as a CORS failure instead of a 500.
     try:
-        authenticate_token(request.headers.get("authorization"))
-    except HTTPException as exc:
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
-    return await call_next(request)
+        return await call_next(request)
+    except Exception as exc:
+        print(f"[API] Unhandled error on {request.method} {request.url.path}: {exc!r}")
+        return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 # Registered after the auth middleware so CORS is outermost and auth rejections
 # (401/503) still carry CORS headers instead of surfacing as network errors.

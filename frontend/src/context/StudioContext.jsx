@@ -18,6 +18,11 @@ const PDF_EXPORT_MIN_MS = 28000;
 export const waitUntil = (timestamp) =>
   new Promise(resolve => setTimeout(resolve, Math.max(0, timestamp - Date.now())));
 
+// Dataset matching retries while the backend cannot reach the ecoinvent database
+// (the backend itself waits 60 s before reconnecting after a failed load)
+const MATCH_RETRY_DELAY_MS = 60000;
+const MATCH_RETRY_LIMIT = 5;
+
 // Dataset fields of a BOM line, dropped when a renamed line has to be matched again
 const BOM_DATASET_KEYS = ['provider_id', 'ecoinvent_id', 'ecoinvent_row', 'dataset', 'reference_product_name',
   'reference_unit', 'ecoinvent_geography', 'ecoinvent_matched', 'match_method', 'match_query'];
@@ -1209,12 +1214,30 @@ export function StudioProvider({ children }) {
   extractedRef.current = extractedData;
   const lastMatchSignature = React.useRef(null);
   const [isMatchingProviders, setIsMatchingProviders] = useState(false);
+  // While the ecoinvent database is unreachable (e.g. backend cold start), matching is retried
+  // automatically instead of leaving lines as "Not matched".
+  const matchRetryTimer = React.useRef(null);
+  const matchRetryCount = React.useRef(0);
+  const [matchRetryTick, setMatchRetryTick] = useState(0);
+
+  const scheduleMatchRetry = useCallback(() => {
+    clearTimeout(matchRetryTimer.current);
+    if (matchRetryCount.current >= MATCH_RETRY_LIMIT) return;
+    matchRetryTimer.current = setTimeout(() => {
+      matchRetryCount.current += 1;
+      lastMatchSignature.current = null;
+      setMatchRetryTick(t => t + 1);
+    }, MATCH_RETRY_DELAY_MS);
+  }, []);
+
+  React.useEffect(() => () => clearTimeout(matchRetryTimer.current), []);
 
   // refresh: also re-run earlier automatic picks (e.g. after changing the project region)
   const matchProviders = useCallback(async ({ refresh = false } = {}) => {
     const sent = extractedRef.current;
     const sentSignature = signatureOf(sent);
     lastMatchSignature.current = sentSignature;
+    clearTimeout(matchRetryTimer.current);
     setIsMatchingProviders(true);
     try {
       const res = await apiFetch(`${API_BASE}/documents/match-providers`, {
@@ -1232,14 +1255,17 @@ export function StudioProvider({ children }) {
       if (signatureOf(extractedRef.current) !== sentSignature) return null;
       setExtractedData(data.extracted);
       lastMatchSignature.current = signatureOf(data.extracted);
+      if (data.provider_matching?.database_available === false) scheduleMatchRetry();
+      else matchRetryCount.current = 0;
       return data.provider_matching;
     } catch (err) {
       console.warn('[StudioContext] Dataset matching failed:', err);
+      scheduleMatchRetry();
       return null;
     } finally {
       setIsMatchingProviders(false);
     }
-  }, [productCategory]);
+  }, [productCategory, scheduleMatchRetry]);
 
   // New, renamed or unassigned lines get their dataset shortly after the edit, on any screen
   React.useEffect(() => {
@@ -1247,7 +1273,7 @@ export function StudioProvider({ children }) {
     if (lastMatchSignature.current === signatureOf(extractedData)) return undefined;
     const timer = setTimeout(() => matchProviders(), 600);
     return () => clearTimeout(timer);
-  }, [extractedData, matchProviders]);
+  }, [extractedData, matchProviders, matchRetryTick]);
 
   // ─── STEP 4: PCR INPUT RULES (before calculation) ───
   const runValidation = useCallback(async () => {

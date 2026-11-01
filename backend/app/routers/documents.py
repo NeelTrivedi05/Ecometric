@@ -808,8 +808,8 @@ def search_lcia_products(query: str = "", limit: int = 200, unit: Optional[str] 
         } for n, h in enumerate(hits)]
         return {"status": "success", "query": query, "count": len(results), "results": results}
 
-    if not lcia_extractor:
-        raise HTTPException(status_code=500, detail="lcia_extractor module not available")
+    if not lcia_extractor or not os.path.exists(lcia_extractor.FILE_PATH):
+        raise HTTPException(status_code=503, detail="ecoinvent database unavailable: set SUPABASE_DB_URL on the backend")
     data = lcia_extractor.get_lcia_data()
     matches = lcia_extractor.search_product(data, query.strip())
     unit_col = ("META", "META", "META", "Reference Product Unit")

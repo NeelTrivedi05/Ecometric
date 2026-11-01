@@ -29,6 +29,9 @@ services:
         value: https://icurerepycrpkaybfarw.supabase.co
       - key: SUPABASE_JWT_AUDIENCE
         value: authenticated
+      # ecoinvent LCIA data (Session pooler URI); set in the Render dashboard, never committed
+      - key: SUPABASE_DB_URL
+        sync: false
 
   # -------------------------------------------------------------
   # 2. EcoMetric React / Vite Frontend
