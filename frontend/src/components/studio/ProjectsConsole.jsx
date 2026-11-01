@@ -397,15 +397,16 @@ export default function ProjectsConsole() {
   }, [isAccountDropdownOpen]);
 
   const activeSlug = activeOrg?.slug || currentAccount?.id || 'carrier-hvac';
+  const accountConsolePath = (section) => `/console/${encodeURIComponent(activeSlug)}/${section}`;
 
   const handleViewProfile = () => {
     setIsAccountDropdownOpen(false);
-    navigate('/console/' + activeSlug + '/overview');
+    navigate(accountConsolePath('overview'));
   };
 
   const handleAccountSettings = () => {
     setIsAccountDropdownOpen(false);
-    navigate('/console/' + activeSlug + '/settings');
+    navigate(accountConsolePath('settings'));
   };
 
   const handleDocumentation = () => {
@@ -430,7 +431,7 @@ export default function ProjectsConsole() {
     function handleKeyDown(e) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        navigate('/console/' + activeSlug + '/settings');
+        navigate(accountConsolePath('settings'));
         setIsAccountDropdownOpen(false);
       }
       if (e.altKey && e.shiftKey && e.key.toLowerCase() === 'q') {
@@ -888,7 +889,7 @@ export default function ProjectsConsole() {
               justifyContent: 'space-between',
               cursor: 'pointer',
             }}
-            onClick={() => navigate(`/console/${activeSlug}/domain-data`)}
+            onClick={() => navigate(accountConsolePath('domain-data'))}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BuildingIcon size={15} style={{ color: '#829589' }} />

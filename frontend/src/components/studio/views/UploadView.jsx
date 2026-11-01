@@ -18,7 +18,7 @@ import {
 import ProcessFlowModal from '../ProcessFlowModal';
 import { PRODUCT_LIST } from '../../../data/products';
 
-export default function UploadView() {
+export default function UploadView({ uploadOnly = false }) {
   const {
     uploadedFiles,
     addFiles,
@@ -100,6 +100,8 @@ export default function UploadView() {
 
   return (
     <div className="view-container">
+      {!uploadOnly && (
+      <>
       {/* Header & Quick Action Row */}
       <div className="apple-view-header">
         <div>
@@ -107,11 +109,6 @@ export default function UploadView() {
           <h1 className="view-title">
             {product ? `Upload & Ingest ${product.name} Documents` : 'Select Your Product, Then Upload Documents'}
           </h1>
-          <p className="view-subtitle">
-            Choose the product first so the right PCR, functional unit and life-cycle rules are applied. Then upload raw files
-            (BOM spreadsheets, freight manifests, plant utility data, specification sheets). The engine reads component masses,
-            matches each material to the best ecoinvent v3.12 dataset by name, and audits {product ? product.pcrShort : 'PCR'} completeness.
-          </p>
         </div>
 
         <div className="apple-header-action-group">
@@ -165,7 +162,7 @@ export default function UploadView() {
                 </div>
                 <div className="card-title">{item.name}</div>
                 <div className="card-subtitle">{item.examples}</div>
-                <div className="card-specs-row">
+                <div className="card-specs-row product-specs-row">
                   <div className="card-spec-item">
                     <span className="spec-label">Unit</span>
                     <span className="spec-value">{item.fuShort}</span>
@@ -291,7 +288,11 @@ export default function UploadView() {
         </div>
       </div>
       )}
+      </>
+      )}
 
+      {uploadOnly && (
+      <>
       {/* Upload Dropzone (enabled once a product is selected) */}
       <div
         className={`apple-upload-zone ${isDragOver ? 'drag-over' : ''}`}
@@ -446,6 +447,8 @@ export default function UploadView() {
             </button>
           </div>
         </div>
+      )}
+      </>
       )}
 
       {/* PCR Completeness Gap Audit Banner if gaps detected */}

@@ -128,9 +128,6 @@ export default function ReviewView() {
           <h1 className="view-title" style={{ margin: 0, fontFamily: 'var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif)', letterSpacing: '-0.022em' }}>
             Extracted Lifecycle Inventory (Modules A–D)
           </h1>
-          <p className="view-subtitle" style={{ marginTop: '4px', marginBottom: 0, color: 'var(--text-secondary, #86868b)' }}>
-            {productProfile?.name}: data coverage for {productProfile?.pcrLabel}, normalized per {productProfile?.functionalUnit}.
-          </p>
         </div>
 
         <div className="apple-header-action-group">

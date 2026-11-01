@@ -11,6 +11,7 @@ export default function StudioHeader() {
     toggleSidebar,
     isLoading,
     activePhase,
+    activeProject,
     exportEpdPdf,
     reportDetails,
     showNotif,
@@ -28,6 +29,15 @@ export default function StudioHeader() {
     <header className="studio-topbar" role="banner">
       <div className="topbar-left">
         <BrandLogo theme="light" height={22} />
+        {activeProject?.name && (
+          <>
+            <span className="topbar-divider" aria-hidden="true" />
+            <div className="project-breadcrumbs" title={activeProject.name}>
+              <span className="project-breadcrumb-label">Project</span>
+              <strong>{activeProject.name}</strong>
+            </div>
+          </>
+        )}
 
         <button
           type="button"
