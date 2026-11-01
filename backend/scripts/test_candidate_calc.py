@@ -24,10 +24,8 @@ circ["virgin_material_provider_id"] = "ecoinvent_row_15528" # market for steel, 
 circ["recycled_process_provider_id"] = "ecoinvent_row_15529" # market for steel, structural, 100% scrap [kg]
 circ["recycled_process_provider_id_reference_unit"] = "kg"
 
-excel_path = REPO_ROOT / "Ecoinvent database" / "ecoinvent 3.12_cut-off_cumulative_lcia_xlsx" / "Cut-off Cumulative LCIA v3.12.xlsx"
-
 print("Extracting EF values...")
-ef_lookup = extract_ef_for_payload(payload, excel_path, "ef_v3_1")
+ef_lookup = extract_ef_for_payload(payload, "ef_v3_1")
 print(f"Extracted {len(ef_lookup)} providers.")
 
 print("Calculating EPD...")

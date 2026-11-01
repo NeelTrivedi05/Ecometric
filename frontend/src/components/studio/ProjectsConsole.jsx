@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import CreateProjectModal from './CreateProjectModal';
 import BrandLogo from '../BrandLogo';
 import { useStudio } from '../../context/StudioContext';
 import { useAuth } from '../../context/AuthContext';
@@ -304,7 +303,6 @@ export default function ProjectsConsole() {
   const navigate = useNavigate();
   const location = useLocation();
   const { folder } = useParams();
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Navigation sidebar selection
   const [activeFolder, setActiveFolder] = useState('all'); // 'all', 'mine', 'shared', 'archived', 'epds'
@@ -568,12 +566,28 @@ export default function ProjectsConsole() {
     navigate(`/app/projects/${project.id}`);
   };
 
-  // New project handler: opens creation modal to specify real project metadata
+  // New project handler: creates a project with default metadata and opens it in Studio
   const handleNewProject = () => {
-    setIsCreateModalOpen(true);
-  };
-
-  const handleProjectCreated = (newProj) => {
+    const newProj = {
+      id: `proj-${Date.now()}`,
+      name: 'Untitled Project',
+      product_model: 'UNTITLED-500RT',
+      capacity_rt: 500,
+      refrigerant: assembledDatabase?.default_refrigerant || 'R1233zd',
+      refrigerant_charge_kg: 320,
+      gwp_total: Math.round(500 * 76.8),
+      status: 'In Calculation',
+      standard: assembledDatabase?.pcr_standard || 'UL 10010-4 Part B v2.0 & EN 15804+A2',
+      owner: 'You',
+      last_modified: 'Just now by You',
+      created_at: new Date().toISOString().split('T')[0],
+      tags: ['Chillers', 'Primary Facility LCI'],
+      preset_key: 'carrier_19dv_benchmark',
+      functional_unit: '1 ton chilling capacity over 25 years reference service life',
+      declared_unit: '1 complete chiller unit (500 RT)',
+      facility: assembledDatabase?.facility_name || currentAccount?.facility_name || 'Primary Facility',
+      epd_number: null,
+    };
     createProject(newProj);
     navigate(`/app/projects/${newProj.id}`);
   };
@@ -1781,18 +1795,12 @@ export default function ProjectsConsole() {
         </div>
       )}
 
-      {/* -------------------- MODALS -------------------- */}
       <EpdCertificateModal
         epd={selectedEpdForCert}
         isOpen={Boolean(selectedEpdForCert)}
         onClose={() => setSelectedEpdForCert(null)}
       />
 
-      <CreateProjectModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onProjectCreated={handleProjectCreated}
-      />
     </div>
   );
 }

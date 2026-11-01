@@ -1,9 +1,9 @@
 """
 Assigns ecoinvent datasets to BOM lines and stage defaults by name.
 
-Read-only: loads the parsed LCIA cache (.cache.pkl next to the ecoinvent
-"Cut-off Cumulative LCIA" workbook) and never writes to that folder. When the
-cache is not available, items are left unmatched so the existing seed fallback
+Read-only: searches the ecoinvent "Cut-off Cumulative LCIA" activities stored in
+Supabase (engines/lca_store.py, loaded once into memory). When Supabase is not
+configured or reachable, items are left unmatched so the existing seed fallback
 in extract_ef_values still applies.
 
 Matching order for a BOM line:
@@ -13,23 +13,12 @@ Matching order for a BOM line:
   3. ranked free-text search on the line's material / name (kg datasets only)
 """
 
-import os
 import re
-from functools import lru_cache
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from app.engines import lca_store
 from app.products import ENERGY_DATASETS, get_product, is_chiller, material_rules
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-WORKBOOK_CANDIDATES = [
-    REPO_ROOT / "Ecoinvent database" / "ecoinvent 3.12_cut-off_cumulative_lcia_xlsx" / "Cut-off Cumulative LCIA v3.12.xlsx",
-    REPO_ROOT / "Cut-off Cumulative LCIA v3.12.xlsx",
-    Path("/Users/parth/Desktop/final year project/Cut-off Cumulative LCIA v3.12.xlsx"),
-    Path("/Users/parth/Desktop/Ecometric/Cut-off Cumulative LCIA v3.12.xlsx"),
-]
-
-META = ("META", "META", "META")
 EUROPE = {"RER", "DE", "FR", "GB", "IT", "ES", "NL", "AT", "BE", "PL", "SE", "DK", "FI", "NO", "PT", "IE", "CZ"}
 ROW_ID_RE = re.compile(r"^ecoinvent_row_(\d+)$")
 
@@ -53,32 +42,9 @@ REGION_ALIASES = {
 }
 
 
-@lru_cache(maxsize=1)
 def _load_table():
     """Returns a compact metadata DataFrame (row index = ecoinvent row) or None."""
-    try:
-        import pandas as pd
-    except ImportError:
-        return None
-    env_path = os.getenv("ECOINVENT_LCIA_XLSX")
-    candidates = ([Path(env_path)] if env_path else []) + WORKBOOK_CANDIDATES
-    for wb in candidates:
-        cache = Path(str(wb) + ".cache.pkl")
-        if cache.exists():
-            try:
-                data = pd.read_pickle(cache)
-            except Exception:
-                continue
-            meta = pd.DataFrame({
-                "activity": data[META + ("Activity Name",)].astype(str),
-                "geo": data[META + ("Geography",)].astype(str),
-                "product": data[META + ("Reference Product Name",)].astype(str),
-                "unit": data[META + ("Reference Product Unit",)].astype(str),
-            }, index=data.index)
-            meta["activity_l"] = meta["activity"].str.lower()
-            meta["product_l"] = meta["product"].str.lower()
-            return meta
-    return None
+    return lca_store.activities()
 
 
 def database_available() -> bool:

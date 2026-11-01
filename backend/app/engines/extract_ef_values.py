@@ -4,9 +4,11 @@ extract_ef_values.py
 Purpose
 -------
 Reads your EPD calculation input JSON (e.g. epd_calculation_input.json)
-and your ecoinvent "LCIA Implementation" Excel file, and extracts the
-emission factor (EF) value for every provider referenced in the JSON,
-across EVERY impact category in the Excel (not just one).
+and extracts the emission factor (EF) value for every provider referenced
+in the JSON from the ecoinvent Cut-off Cumulative LCIA data stored in
+Supabase (engines/lca_store.py), across every impact category of the
+selected methodology. load_headers_and_data still reads the workbook
+directly for the offline analysis scripts in backend/scripts.
 """
 
 import argparse
@@ -598,11 +600,51 @@ def extract_ef_from_seed(payload: dict, target_methodology: str | None = None) -
     return results
 
 
-def extract_ef_for_payload(payload: dict, excel_path: str | Path | None = None, target_methodology: str | None = None) -> dict:
+def extract_ef_from_supabase(payload: dict, target_methodology: str | None = None) -> dict:
     """
-    Extracts emission factor values from LCIA Excel for all providers in payload.
-    If the Excel file is missing, does not contain the activity LCIA sheet, or fails,
-    it automatically falls back to the high-fidelity ecoinvent v3.12 industrial seed database.
+    Matches every provider in payload to an ecoinvent row (same rules as the workbook:
+    find_best_match) and fetches the matched rows' values for target_methodology from
+    Supabase in one query. Returns {} when Supabase is not configured or reachable.
+    """
+    from app.engines import lca_store
+
+    meta = lca_store.activities()
+    if meta is None:
+        return {}
+    labels = {
+        code: f"{method} | {category} | {indicator} [{unit}]"
+        for code, method, category, indicator, unit in lca_store.indicators()
+        if indicator is not None and is_methodology_match(str(method), target_methodology)
+    }
+    # find_best_match reads positional columns named by metadata_names (the workbook layout)
+    metadata_names = ["Activity Name", "Geography", "Reference Product Unit"]
+    data = meta[["activity", "geo", "unit"]].set_axis(range(3), axis=1)
+
+    matches = {}
+    for provider_id, context_strings in sorted(collect_provider_contexts(payload).items()):
+        match = find_best_match(provider_id, context_strings, data, metadata_names)
+        if match is not None:
+            matches[provider_id] = match
+
+    values_by_row = lca_store.impact_values((m["row"].name for m in matches.values()), list(labels))
+    results = {}
+    for provider_id, match in matches.items():
+        row_values = values_by_row.get(int(match["row"].name), {})
+        results[provider_id] = {
+            "matched_activity_name": match["matched_activity_name"],
+            "matched_geography": match["matched_geography"],
+            "match_confidence": match["match_confidence"],
+            "selected_methodology": target_methodology,
+            "values": {label: row_values[code] for code, label in labels.items() if code in row_values},
+        }
+    return results
+
+
+def extract_ef_for_payload(payload: dict, target_methodology: str | None = None) -> dict:
+    """
+    Extracts emission factor values from the ecoinvent LCIA data in Supabase for all providers
+    in payload. If Supabase is not configured, unreachable, or matches nothing, it automatically
+    falls back to the high-fidelity ecoinvent v3.12 industrial seed database.
     """
     if not target_methodology:
         meta = payload.get("metadata", {})
@@ -614,38 +656,12 @@ def extract_ef_for_payload(payload: dict, excel_path: str | Path | None = None, 
             "EF v3.1"
         )
 
-    # If excel_path is provided, exists, and is a cumulative LCIA dataset, attempt Excel extraction first
-    if excel_path:
-        p = Path(excel_path)
-        if p.exists() and "implementation" not in p.name.lower():
-            try:
-                metadata_names, indicator_labels, data = load_headers_and_data(str(p), target_methodology)
-                if "Activity Name" in metadata_names and "Geography" in metadata_names:
-                    contexts = collect_provider_contexts(payload)
-                    results = {}
-                    for provider_id, context_strings in sorted(contexts.items()):
-                        match = find_best_match(provider_id, context_strings, data, metadata_names)
-                        if match is None:
-                            continue
-
-                        row = match["row"]
-                        values = {}
-                        for col_idx, label in indicator_labels.items():
-                            val = row[col_idx]
-                            if pd.notna(val):
-                                values[label] = val
-
-                        results[provider_id] = {
-                            "matched_activity_name": match["matched_activity_name"],
-                            "matched_geography": match["matched_geography"],
-                            "match_confidence": match["match_confidence"],
-                            "selected_methodology": target_methodology,
-                            "values": values,
-                        }
-                    if results:
-                        return results
-            except Exception as e:
-                print(f"[extract_ef_values] Notice: Excel extraction fallback ({e}). Using verified ecoinvent v3.12 seed.")
+    try:
+        results = extract_ef_from_supabase(payload, target_methodology)
+        if results:
+            return results
+    except Exception as e:
+        print(f"[extract_ef_values] Notice: Supabase extraction fallback ({e}). Using verified ecoinvent v3.12 seed.")
 
     # Fallback to high-performance verified seed dataset
     return extract_ef_from_seed(payload, target_methodology)
@@ -654,18 +670,13 @@ def extract_ef_for_payload(payload: dict, excel_path: str | Path | None = None, 
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                       formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--excel", required=True, help="Path to LCIA Implementation Excel file.")
     parser.add_argument("--payload", required=True, help="Path to the EPD calculation input JSON.")
     parser.add_argument("--methodology", help="Target LCIA methodology to extract (e.g. 'ipcc_2021', 'TRACI v2.1').")
     parser.add_argument("--out", default="ef_values.json", help="Output JSON path.")
     args = parser.parse_args()
 
-    excel_path = Path(args.excel)
     payload_path = Path(args.payload)
 
-    if not excel_path.exists():
-        print(f"Excel file not found: {excel_path}", file=sys.stderr)
-        sys.exit(1)
     if not payload_path.exists():
         print(f"Payload JSON not found: {payload_path}", file=sys.stderr)
         sys.exit(1)
@@ -673,7 +684,7 @@ def main():
     with open(payload_path, "r") as f:
         payload = json.load(f)
 
-    results = extract_ef_for_payload(payload, excel_path, args.methodology)
+    results = extract_ef_for_payload(payload, args.methodology)
 
     with open(args.out, "w") as f:
         json.dump(results, f, indent=2, default=str)

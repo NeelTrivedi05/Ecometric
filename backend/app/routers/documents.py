@@ -412,9 +412,9 @@ def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str],
             "module": "A1",
             "category": "Emission Factors",
             "severity": "high",
-            "title": "ecoinvent LCIA database not found",
-            "message": "The Cut-off Cumulative LCIA workbook cache is not available on this server, so materials could not be matched by name.",
-            "action": "Place 'Cut-off Cumulative LCIA v3.12.xlsx' (and its .cache.pkl) in a configured location or set ECOINVENT_LCIA_XLSX."
+            "title": "ecoinvent LCIA database not reachable",
+            "message": "The ecoinvent database in Supabase could not be reached, so materials could not be matched by name.",
+            "action": "Set SUPABASE_DB_URL (Supabase Session pooler connection string) for the backend and restart it."
         })
 
     # Gap 3: Inbound transport distance (A2)

@@ -432,16 +432,9 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
     except Exception as e:
         print(f"[EPD Router] Warning cleaning up old results files: {e}")
 
-    # Extract EF values directly in-process and embed into calculation_record
+    # Extract EF values (ecoinvent data in Supabase) and embed into calculation_record
     try:
-        candidate_excel_paths = [
-            REPO_ROOT / "Ecoinvent database" / "ecoinvent 3.12_cut-off_cumulative_lcia_xlsx" / "Cut-off Cumulative LCIA v3.12.xlsx",
-            REPO_ROOT / "Cut-off Cumulative LCIA v3.12.xlsx",
-            Path("/Users/parth/Desktop/final year project/Cut-off Cumulative LCIA v3.12.xlsx"),
-            Path("/Users/parth/Desktop/Ecometric/Cut-off Cumulative LCIA v3.12.xlsx"),
-        ]
-        excel_path = next((p for p in candidate_excel_paths if p.exists()), None)
-        ef_results = extract_ef_for_payload(calculation_record, str(excel_path) if excel_path else None, methodology)
+        ef_results = extract_ef_for_payload(calculation_record, methodology)
         calculation_record["extracted_ef_values"] = ef_results
         print(f"[EPD Router] Extracted EF values for {len(ef_results)} providers ({methodology})")
     except Exception as e:
