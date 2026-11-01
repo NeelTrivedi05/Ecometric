@@ -12,6 +12,7 @@ export default function Hero9({ onLaunchApp }) {
         loop
         muted
         playsInline
+        preload="auto"
         poster="/favicon.svg"
         aria-hidden="true"
       >

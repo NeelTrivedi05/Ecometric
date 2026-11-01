@@ -1,8 +1,11 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, String, Float, Integer, ForeignKey, Text, DateTime, JSON, Boolean
 from sqlalchemy.orm import relationship
 from .database import Base
+
+def utcnow():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 def generate_uuid():
     return str(uuid.uuid4())
@@ -15,7 +18,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     full_name = Column(String, nullable=True)
     role = Column(String, default="engineer")  # engineer, guide, reviewer
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     projects = relationship("Project", back_populates="owner")
 
@@ -29,8 +32,8 @@ class Project(Base):
     product_category = Column(String, default="water_cooled_chiller")
     pcr_ref = Column(String, default="UL 10010-4 Part B v2.0 2018")
     status = Column(String, default="DRAFT")  # DRAFT, CALCULATED, REPORTED
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
 
     owner = relationship("User", back_populates="projects")
     technical_data = relationship("TechnicalData", back_populates="project", uselist=False)
@@ -64,7 +67,7 @@ class Result(Base):
     methodology = Column(String, default="TRACI 2.1")
     unit = Column(String, default="kg CO2e")
     value = Column(Float, nullable=False)
-    calculated_at = Column(DateTime, default=datetime.utcnow)
+    calculated_at = Column(DateTime, default=utcnow)
 
     project = relationship("Project", back_populates="results")
 
@@ -77,7 +80,7 @@ class Report(Base):
     pdf_url = Column(String, nullable=False)
     version = Column(String, default="1.0")
     disclaimer_text_snapshot = Column(Text, nullable=True)
-    generated_at = Column(DateTime, default=datetime.utcnow)
+    generated_at = Column(DateTime, default=utcnow)
 
     project = relationship("Project", back_populates="reports")
 
@@ -125,8 +128,8 @@ class ReportDetails(Base):
     data_quality_text = Column(Text, nullable=True)
     extra_references = Column(JSON, default=list)
     save_as_company_defaults = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
 
     project = relationship("Project", back_populates="report_details")
 
@@ -143,8 +146,8 @@ class CompanyDefaults(Base):
     lca_practitioner_org = Column(String, nullable=True)
     limitations_text = Column(Text, nullable=True)
     assumptions_limitations_text = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
 
 
 class LCIAIndicator(Base):
@@ -162,7 +165,7 @@ class LCIAIndicator(Base):
     acronyms = Column(JSON, default=list)
     synonyms = Column(JSON, default=list)
     search_tokens = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
 
 class ProcessMetadata(Base):
@@ -178,7 +181,7 @@ class ProcessMetadata(Base):
     database_version = Column(String(20), default="3.12")
     system_model = Column(String(50), default="cut-off")
     search_text = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
 
 # =========================================================================
@@ -195,7 +198,7 @@ class EcoinventDatabase(Base):
     file_reference = Column(Text, nullable=False)
     file_hash = Column(String(64), nullable=True)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     nodes = relationship("ProcessNode", back_populates="database")
 
@@ -214,7 +217,7 @@ class ProcessNode(Base):
     system_boundaries = Column(String(100), default="cradle-to-gate")
     sector = Column(String(100), nullable=True, index=True)
     tier_level = Column(Integer, default=1)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     database = relationship("EcoinventDatabase", back_populates="nodes")
     child_edges = relationship(
@@ -242,7 +245,7 @@ class ProcessEntanglementEdge(Base):
     relationship_type = Column(String(50), nullable=False, index=True)  # upstream_manufacturing, downstream_processing, energy_carrier, transport_link
     allocation_factor = Column(Float, default=1.0)
     loss_rate = Column(Float, default=0.0)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     parent_process = relationship("ProcessNode", foreign_keys=[parent_process_id], back_populates="child_edges")
     child_process = relationship("ProcessNode", foreign_keys=[child_process_id], back_populates="parent_edges")
@@ -260,4 +263,4 @@ class PcrGpiIndicatorRule(Base):
     optional_indicators = Column(JSON, default=list)
     cut_off_criteria = Column(String(255), default="1% mass / 1% energy cumulative 95%")
     is_default = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)

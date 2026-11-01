@@ -9,7 +9,7 @@ Three tables (matching migration 004_file_sealing.sql):
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Boolean,
@@ -23,6 +23,9 @@ from sqlalchemy import (
 
 from app.database import Base
 
+def utcnow():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 
 class SealKey(Base):
     __tablename__ = "seal_keys"
@@ -31,7 +34,7 @@ class SealKey(Base):
     purpose        = Column(String, nullable=False)          # "signing" | "kek"
     public_key_b64 = Column(Text, nullable=True)             # Ed25519 raw public key, base64url
     status         = Column(String, nullable=False, default="active")
-    created_at     = Column(DateTime, default=datetime.utcnow)
+    created_at     = Column(DateTime, default=utcnow)
     retired_at     = Column(DateTime, nullable=True)
 
 
@@ -51,16 +54,15 @@ class FileSeal(Base):
     revoked_by       = Column(String, nullable=True)          # user id string
     revoke_reason    = Column(Text, nullable=True)
     superseded_by    = Column(String, ForeignKey("file_seals.certificate_id"), nullable=True)
-    created_at       = Column(DateTime, default=datetime.utcnow)
+    created_at       = Column(DateTime, default=utcnow)
 
 
 class SealVerificationLog(Base):
     __tablename__ = "seal_verification_log"
 
     id             = Column(String, primary_key=True)
-    verified_at    = Column(DateTime, default=datetime.utcnow, index=True)
+    verified_at    = Column(DateTime, default=utcnow, index=True)
     result         = Column(String, nullable=False)
     certificate_id = Column(String, nullable=True, index=True)
     ip_hash        = Column(String, nullable=True)
     user_agent_fam = Column(String, nullable=True)
-

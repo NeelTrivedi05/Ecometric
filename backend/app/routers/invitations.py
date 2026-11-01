@@ -1,7 +1,7 @@
 import os
 import secrets
 import smtplib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Optional, Dict, Any
@@ -250,7 +250,7 @@ def send_invitation(req: InviteRequest, request: Request):
     the organization and EcoMetric.
     """
     token = secrets.token_urlsafe(24)
-    expires_at = datetime.utcnow() + timedelta(days=7)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
 
     # Determine front-end application URL
     origin = request.headers.get("origin") or request.headers.get("referer") or os.getenv("FRONTEND_URL", "http://localhost:5173")
@@ -294,7 +294,7 @@ def send_invitation(req: InviteRequest, request: Request):
         "organization_slug": org_slug,
         "inviter_name": req.inviter_name,
         "expires_at": expires_at.isoformat(),
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
         "accepted": False,
     }
 
@@ -344,7 +344,7 @@ def accept_invitation(req: AcceptInviteRequest):
     inv = _IN_MEMORY_INVITES.get(req.token)
     if inv:
         inv["accepted"] = True
-        inv["accepted_at"] = datetime.utcnow().isoformat()
+        inv["accepted_at"] = datetime.now(timezone.utc).isoformat()
         inv["accepted_user_id"] = req.user_id
 
     return {

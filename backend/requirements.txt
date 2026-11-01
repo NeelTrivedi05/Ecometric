@@ -21,4 +21,5 @@ cryptography>=42.0.0
 slowapi>=0.1.9
 # Tests
 pytest>=8.0
+httpx2>=2.16.0
 pypdf>=4.0
