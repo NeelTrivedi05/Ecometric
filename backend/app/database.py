@@ -18,15 +18,23 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-
-def add_missing_columns() -> None:
-    """Keep deployment startup compatible with legacy database initialization."""
-    Base.metadata.create_all(bind=engine)
-
-
-def add_missing_columns() -> None:
-    """Keep legacy startup code compatible while creating any missing tables."""
-    Base.metadata.create_all(bind=engine)
+def add_missing_columns():
+    """
+    create_all() never alters existing tables, so columns added to models after a database was
+    created are added here (nullable, no backfill).
+    """
+    from sqlalchemy import inspect, text
+    inspector = inspect(engine)
+    existing_tables = set(inspector.get_table_names())
+    with engine.begin() as conn:
+        for table in Base.metadata.sorted_tables:
+            if table.name not in existing_tables:
+                continue
+            present = {c["name"] for c in inspector.get_columns(table.name)}
+            for column in table.columns:
+                if column.name not in present:
+                    col_type = column.type.compile(dialect=engine.dialect)
+                    conn.execute(text(f'ALTER TABLE "{table.name}" ADD COLUMN "{column.name}" {col_type}'))
 
 
 def get_db():
