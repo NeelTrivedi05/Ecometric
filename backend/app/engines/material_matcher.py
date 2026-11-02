@@ -22,6 +22,43 @@ from app.products import ENERGY_DATASETS, get_product, is_chiller, material_rule
 EUROPE = {"RER", "DE", "FR", "GB", "IT", "ES", "NL", "AT", "BE", "PL", "SE", "DK", "FI", "NO", "PT", "IE", "CZ"}
 ROW_ID_RE = re.compile(r"^ecoinvent_row_(\d+)$")
 
+# Stable seed-provider ids used when the Supabase reference store is temporarily
+# unavailable. These ids are understood by the seed LCIA fallback as well.
+FALLBACK_PROVIDERS = {
+    "electricity": ("ecoinvent_elec_mv_us", "market for electricity, medium voltage", "US", "kWh"),
+    "natural_gas": ("ecoinvent_gas_burned_boiler_glo", "heat production, natural gas, at boiler industrial >100kW", "GLO", "MJ"),
+    "water": ("ecoinvent_water_deionised_glo", "deionised water production", "GLO", "m3"),
+    "diesel_machine": ("ecoinvent_diesel_burned_building_machine_glo", "diesel, burned in building machine", "GLO", "MJ"),
+    "lorry": ("ecoinvent_transport_lorry_32t_rer", "transport, freight, lorry >32 metric ton, EURO 6", "RER", "tkm"),
+    "lorry_16_32": ("ecoinvent_transport_lorry_16_32t_rer", "transport, freight, lorry 16-32 metric ton", "RER", "tkm"),
+    "ship": ("ecoinvent_transport_container_ship_glo", "transport, freight, sea, container ship", "GLO", "tkm"),
+    "train": ("ecoinvent_transport_freight_train_rer", "transport, freight train", "RER", "tkm"),
+    "lubricating_oil": ("ecoinvent_lubricating_oil_glo", "lubricating oil production", "GLO", "kg"),
+}
+FALLBACK_PRODUCT_PROVIDERS = {
+    "recycling": ("ecoinvent_row_20713", "sorting and pressing of iron scrap", "RoW", "kg"),
+    "incineration": ("ecoinvent_row_22918", "treatment of municipal solid waste, municipal incineration", "RoW", "kg"),
+    "landfill": ("ecoinvent_row_14191", "market for process-specific burdens, sanitary landfill", "RoW", "kg"),
+    "virgin": ("ecoinvent_row_15528", "market for steel, low-alloyed, hot rolled", "GLO", "kg"),
+    "recycled": ("ecoinvent_row_15529", "market for steel, structural, 100% scrap", "GLO", "kg"),
+}
+
+
+def fallback_provider(kind: str, query: str = "") -> Optional[Dict[str, Any]]:
+    spec = FALLBACK_PROVIDERS.get(kind) or FALLBACK_PRODUCT_PROVIDERS.get(kind)
+    if not spec:
+        return None
+    provider_id, activity, geography, unit = spec
+    return {
+        "provider_id": provider_id,
+        "activity_name": activity,
+        "geography": geography,
+        "reference_product_name": activity,
+        "reference_unit": unit,
+        "match_method": AUTO_DEFAULT,
+        "match_query": query or kind,
+    }
+
 # match_method values. A user's choice is never replaced; automatic picks are refreshed on request.
 USER_SELECTED = "user_selected"
 AUTO_DEFAULT = "auto_default"                      # stage default (energy, water, transport, EOL, D)
@@ -235,7 +272,31 @@ def assign_bom_providers(bom: List[Dict[str, Any]], product_id: Optional[str], r
     """Mutates BOM items in place. Returns counts of matched / kept / unmatched."""
     stats = {"matched": 0, "kept": 0, "unmatched": 0}
     if not database_available():
-        stats["unmatched"] = len(bom)
+        for item in bom:
+            if _bom_line_locked(item, overwrite):
+                stats["kept"] += 1
+                continue
+            text = f"{item.get('name', '')} {item.get('material', '')}".lower()
+            kind = next((k for k, words in (
+                ("electricity", ("electric", "motor", "vfd", "electronic")),
+                ("water", ("water",)),
+                ("lubricating_oil", ("oil", "lubricant")),
+            ) if any(word in text for word in words)), None)
+            if not kind:
+                kind = "virgin" if any(word in text for word in ("steel", "iron", "aluminium", "aluminum", "copper")) else "recycled"
+            hit = fallback_provider(kind or "natural_gas", text)
+            item.update({
+                "provider_id": hit["provider_id"],
+                "ecoinvent_id": hit["provider_id"],
+                "dataset": f"{hit['activity_name']} [{hit['geography']}]",
+                "reference_product_name": hit["reference_product_name"],
+                "reference_unit": hit["reference_unit"],
+                "ecoinvent_geography": hit["geography"],
+                "ecoinvent_matched": True,
+                "match_method": AUTO_DEFAULT,
+                "match_query": text,
+            })
+            stats["matched"] += 1
         return stats
     for item in bom:
         if _bom_line_locked(item, overwrite):
@@ -392,8 +453,7 @@ def assign_stage_providers(extracted: Dict[str, Any], product_id: Optional[str],
     never replaced; overwrite=True refreshes earlier automatic picks (e.g. after a region change).
     """
     stats = {"matched": 0, "kept": 0, "unmatched": 0}
-    if not database_available():
-        return stats
+    has_database = database_available()
     region = region or project_region(extracted)
     product = get_product(product_id)
     chiller = is_chiller(product_id)
@@ -401,20 +461,28 @@ def assign_stage_providers(extracted: Dict[str, Any], product_id: Optional[str],
     for leg in extracted.get("transport") or []:
         if not leg.get("provider_id") and leg.get("ecoinvent_id"):
             leg["provider_id"] = leg["ecoinvent_id"]
-        _assign(leg, "provider_id", lambda leg=leg: default_provider(transport_kind(leg.get("mode")), region),
+        _assign(leg, "provider_id", lambda leg=leg: (
+            default_provider(transport_kind(leg.get("mode")), region) if has_database
+            else fallback_provider(transport_kind(leg.get("mode")))
+        ),
                 overwrite, stats)
 
     waste_kind = "lorry" if product["pcr"]["program_operator"] == "UL Environment" else "lorry_16_32"
     for block_key, field, kind in STAGE_DEFAULT_FIELDS:
         block = extracted.setdefault(block_key, {})
         k = waste_kind if kind == "waste_lorry" else kind
-        _assign(block, field, lambda k=k: default_provider(k, region), overwrite, stats)
+        _assign(block, field, lambda k=k: (
+            default_provider(k, region) if has_database else fallback_provider(k)
+        ), overwrite, stats)
 
     for block_key, field, group, key in STAGE_PRODUCT_FIELDS:
         if not (product.get(group) or {}).get(key):
             continue   # e.g. products without a module D scenario
         block = extracted.setdefault(block_key, {})
-        _assign(block, field, lambda g=group, k=key: product_dataset(product_id, g, k, region), overwrite, stats)
+        _assign(block, field, lambda g=group, k=key: (
+            product_dataset(product_id, g, k, region) if has_database
+            else fallback_provider(k)
+        ), overwrite, stats)
 
     for block_key, name_fields, chiller_default in STAGE_NAMED_FIELDS:
         block = extracted.get(block_key)
@@ -424,11 +492,19 @@ def assign_stage_providers(extracted: Dict[str, Any], product_id: Optional[str],
             block = extracted.setdefault(block_key, {})
         label = " ".join(str(block.get(f) or "") for f in name_fields).strip()
         if label:
-            resolve = lambda label=label, b=block: match_material(label, b.get("material_type", ""), product_id, region)
+            resolve = lambda label=label, b=block: (
+                match_material(label, b.get("material_type", ""), product_id, region)
+                if has_database else fallback_provider("lubricating_oil", label)
+            )
         elif chiller and chiller_default[0] == "kind":
-            resolve = lambda k=chiller_default[1]: default_provider(k, region)
+            resolve = lambda k=chiller_default[1]: (
+                default_provider(k, region) if has_database else fallback_provider(k)
+            )
         elif chiller:
-            resolve = lambda t=chiller_default[1]: match_material(t, "", product_id, region)
+            resolve = lambda t=chiller_default[1]: (
+                match_material(t, "", product_id, region)
+                if has_database else fallback_provider("lubricating_oil", t)
+            )
         else:
             continue
         _assign(block, "provider_id", resolve, overwrite, stats)

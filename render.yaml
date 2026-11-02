@@ -29,7 +29,8 @@ services:
         value: https://icurerepycrpkaybfarw.supabase.co
       - key: SUPABASE_JWT_AUDIENCE
         value: authenticated
-      # ecoinvent LCIA data (Session pooler URI); set in the Render dashboard, never committed
+      # Set this in the Render dashboard to the Supabase Session pooler URI.
+      # It must remain backend-only; never expose it as a VITE_ variable.
       - key: SUPABASE_DB_URL
         sync: false
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronRightIcon } from '../studio/Icons';
 
-const VIDEO_SOURCE = '/landing-bg.mp4';
+const VIDEO_SOURCE = '/hero-background-web.mp4';
 
 export default function Hero9({ onLaunchApp }) {
   return (
@@ -12,8 +12,8 @@ export default function Hero9({ onLaunchApp }) {
         loop
         muted
         playsInline
-        preload="auto"
-        poster="/favicon.svg"
+        preload="metadata"
+        poster="/hero-background-poster.jpg"
         aria-hidden="true"
       >
         <source src={VIDEO_SOURCE} type="video/mp4" />

@@ -37,7 +37,12 @@ const STAGE_DEFAULT_FIELDS = {
 
 // True when a loaded inventory has a line or stage input without a dataset (or without its dataset name)
 function needsDatasetMatching(data) {
-  if (!data || !((data.bom || []).length || (data.transport || []).length)) return false;
+  if (!data) return false;
+  const hasBomOrTransport = (data.bom || []).length || (data.transport || []).length;
+  const hasStageInputs = Object.entries(STAGE_DEFAULT_FIELDS).some(([block, fields]) =>
+    data[block] && fields.some(field => Object.prototype.hasOwnProperty.call(data[block], field))
+  );
+  if (!hasBomOrTransport && !hasStageInputs) return false;
   if ((data.bom || []).some(i => !(i.provider_id || i.ecoinvent_id) && i.ecoinvent_matched === undefined)) return true;
   if ((data.transport || []).some(l => !(l.provider_id || l.ecoinvent_id) || !l.dataset)) return true;
   return Object.entries(STAGE_DEFAULT_FIELDS).some(([block, fields]) =>
@@ -802,12 +807,13 @@ export function StudioProvider({ children }) {
         );
       } else {
         targetFiles.forEach(f => updateFileStatus(f.id, 'error'));
-        showNotif('Server returned an error during extraction', 'Extraction Warning');
+        const body = await res.json().catch(() => ({}));
+        const detail = typeof body.detail === 'string' ? body.detail : 'Server returned an error during extraction.';
+        showNotif(detail, 'Extraction Failed');
       }
     } catch (err) {
-      // Backend offline fallback
-      targetFiles.forEach(f => updateFileStatus(f.id, 'done'));
-      showNotif('Loaded extraction in offline mode', 'Offline Mode');
+      targetFiles.forEach(f => updateFileStatus(f.id, 'error'));
+      showNotif(err.message || 'Could not reach the document extraction service.', 'Extraction Failed');
     }
 
     setIsLoading(false);
