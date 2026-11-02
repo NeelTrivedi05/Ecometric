@@ -16,7 +16,8 @@ class PdfRenderer:
 
         html = html or render_html(doc, mode="print")
         with sync_playwright() as p:
-            browser = p.chromium.launch()
+            # Container-safe flags: Render's /dev/shm is tiny and the process runs as root.
+            browser = p.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"])
             try:
                 page = browser.new_page()
                 # No CDN / network access during rendering: only inline data is allowed.
