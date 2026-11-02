@@ -1,79 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowRight, LayersTwo01, Lock01, Mail01 } from '@untitledui/icons';
+import { ArrowRight, Lock01, Mail01 } from '@untitledui/icons';
 import { supabase } from '../../lib/supabase';
 import Input from '../base/input/input';
 import BrandLogo from '../BrandLogo';
-
-// Process invitation acceptance for employee joining organization
-async function processInviteAcceptance(userId, email, token, orgSlug) {
-  if (!supabase || !userId) return;
-  try {
-    // 1. Try Supabase RPC function (runs with SECURITY DEFINER in PostgreSQL)
-    if (token) {
-      const { data: rpcRes, error: rpcErr } = await supabase.rpc('accept_organization_invite', { p_token: token });
-      if (!rpcErr && rpcRes?.success) {
-        return;
-      }
-    }
-
-    // 2. Direct Supabase table upsert fallback
-    const normalizedEmail = (email || '').trim().toLowerCase();
-    const { data: invRows } = await supabase
-      .from('organization_invites')
-      .select('id, organization_id, role')
-      .eq('email', normalizedEmail)
-      .is('accepted_at', null);
-
-    if (invRows && invRows.length > 0) {
-      for (const inv of invRows) {
-        await supabase.from('organization_members').upsert({
-          organization_id: inv.organization_id,
-          user_id: userId,
-          role: 'member', // Employee role
-          status: 'active',
-        }, { onConflict: 'organization_id,user_id' });
-
-        await supabase
-          .from('organization_invites')
-          .update({ accepted_at: new Date().toISOString() })
-          .eq('id', inv.id);
-
-        await supabase
-          .from('profiles')
-          .update({ default_org_id: inv.organization_id })
-          .eq('id', userId);
-      }
-    }
-  } catch (err) {
-    console.warn('Error accepting invitation in Supabase:', err);
-  }
-}
-
-function formatAuthError(error) {
-  const message = error?.message || 'Something went wrong. Please try again.';
-  if (/password should|password must|password.*character/i.test(message)) {
-    return 'Password must be at least 8 characters and include a lowercase letter, an uppercase letter, a number, and a special character.';
-  }
-  return message;
-}
-
-// Resolve active organization slug from Supabase
-async function resolveUserOrgSlug(userId) {
-  if (!supabase || !userId) return null;
-  try {
-    const { data } = await supabase
-      .from('organization_members')
-      .select('organizations(slug)')
-      .eq('user_id', userId)
-      .eq('status', 'active')
-      .maybeSingle();
-    return data?.organizations?.slug || null;
-  } catch (err) {
-    console.warn('resolveUserOrgSlug note:', err);
-    return null;
-  }
-}
+import {
+  getAuthRedirectUrl,
+  processInviteAcceptance,
+  formatAuthError,
+  resolveUserOrgSlug,
+} from '../../lib/authRedirect';
 
 export default function Auth3({ initialMode = 'signin' }) {
   const navigate = useNavigate();
@@ -181,27 +117,15 @@ export default function Auth3({ initialMode = 'signin' }) {
     // If account not found in DB
     if (mode === 'signin' && accountExists === false) {
       if (inviteToken) {
-        // Automatically create account for invited employee with entered password
-        const signUpRes = await supabase.auth.signUp({
-          email: normalizedEmail,
-          password: form.password,
-          options: {
-            data: {
-              full_name: normalizedEmail.split('@')[0],
-              role: 'member',
-            },
+        // Redirect invited employee to complete registration
+        setBusy(false);
+        navigate(`/signup${location.search}`, {
+          replace: true,
+          state: {
+            email: normalizedEmail,
+            message: 'Please complete your account registration to join your team.',
           },
         });
-        if (signUpRes.error) {
-          setBusy(false);
-          setError(formatAuthError(signUpRes.error));
-          return;
-        }
-        await processInviteAcceptance(signUpRes.data?.user?.id, normalizedEmail, inviteToken, invitedOrgSlug);
-        window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
-        if (invitedOrgSlug) window.localStorage.setItem('ecometric_active_org_slug', invitedOrgSlug);
-        setBusy(false);
-        await performPostAuthRedirect(signUpRes.data?.user?.id, invitedOrgSlug);
         return;
       }
 
@@ -215,45 +139,20 @@ export default function Auth3({ initialMode = 'signin' }) {
       setBusy(false);
       navigate(`/login${location.search}`, {
         replace: true,
-        state: { email: normalizedEmail, message: 'This account already exists. Log in or reset your password.' },
+        state: { email: normalizedEmail, message: 'This account already exists. Log in with your email code.' },
       });
       return;
     }
 
-    // 2. Sign In Execution: if account exists in DB, directly authenticate and redirect to main console
+    // 2. Sign In Execution: Always authenticate via email OTP
     if (mode === 'signin') {
-      // If user typed a password, sign in immediately with password
-      if (form.password && form.password.trim()) {
-        const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
-          email: normalizedEmail,
-          password: form.password,
-        });
-
-        if (signInError) {
-          setBusy(false);
-          setError(formatAuthError(signInError));
-          return;
-        }
-
-        // Accept pending invitation if present
-        if (inviteToken || invitedOrgSlug) {
-          await processInviteAcceptance(authData.user.id, normalizedEmail, inviteToken, invitedOrgSlug);
-          if (invitedOrgSlug) window.localStorage.setItem('ecometric_active_org_slug', invitedOrgSlug);
-        }
-
-        // Stamp 24-hr presence timestamp
-        window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
-        setBusy(false);
-
-        // Directly redirect to main console
-        await performPostAuthRedirect(authData.user.id, invitedOrgSlug);
-        return;
-      }
-
-      // Password omitted -> send OTP code
+      const redirectUrl = getAuthRedirectUrl('/console');
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: normalizedEmail,
-        options: { shouldCreateUser: false },
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: redirectUrl,
+        },
       });
       setBusy(false);
       if (otpError) {
@@ -261,18 +160,23 @@ export default function Auth3({ initialMode = 'signin' }) {
         return;
       }
       window.sessionStorage.setItem('pending_otp_email', normalizedEmail);
+      if (inviteToken) window.sessionStorage.setItem('pending_invite_token', inviteToken);
+      if (invitedOrgSlug) window.sessionStorage.setItem('pending_invite_org', invitedOrgSlug);
       navigate('/verify-otp');
       return;
     }
 
-    // 3. Sign Up Execution
+    // 3. Sign Up Execution: Create account with password and email verification redirecting to console
+    const redirectUrl = getAuthRedirectUrl('/console');
     const result = await supabase.auth.signUp({
       email: normalizedEmail,
       password: form.password,
       options: {
+        emailRedirectTo: redirectUrl,
         data: {
           full_name: form.email.split('@')[0],
-          organization_name: form.organizationName || 'EcoMetric Organization',
+          organization_name: form.organizationName || (invitedOrgSlug ? invitedOrgSlug.replace(/-/g, ' ') : 'EcoMetric Organization'),
+          role: inviteToken ? 'member' : 'account_admin',
         },
       },
     });
@@ -281,7 +185,7 @@ export default function Auth3({ initialMode = 'signin' }) {
       if (mode === 'signup' && /already registered|already exists/i.test(result.error.message)) {
         navigate(`/login${location.search}`, {
           replace: true,
-          state: { email: form.email, message: 'This email is already registered. Sign in or reset your password.' },
+          state: { email: form.email, message: 'This email is already registered. Sign in with email code.' },
         });
         return;
       }
@@ -291,7 +195,7 @@ export default function Auth3({ initialMode = 'signin' }) {
     if (mode === 'signup' && result.data.user && result.data.user.identities?.length === 0) {
       navigate(`/login${location.search}`, {
         replace: true,
-        state: { email: form.email, message: 'This email is already registered. Sign in or reset your password.' },
+        state: { email: form.email, message: 'This email is already registered. Sign in with email code.' },
       });
       return;
     }
@@ -309,7 +213,7 @@ export default function Auth3({ initialMode = 'signin' }) {
     }
 
     if (mode === 'signup') {
-      setMessage('Check your email to confirm your account. Your organization will be ready upon verification.');
+      setMessage('Check your email to confirm your account. You will be redirected to your console upon verification.');
     }
   }
 
@@ -356,7 +260,7 @@ export default function Auth3({ initialMode = 'signin' }) {
           {mode === 'signin' && <p>Continue your environmental product declaration work.</p>}
         </div>
         <form className="auth-form" onSubmit={submit}>
-          {mode === 'signup' && (
+          {mode === 'signup' && !inviteToken && (
             <Input
               id="organizationName"
               label="Organization name"
@@ -374,24 +278,25 @@ export default function Auth3({ initialMode = 'signin' }) {
             value={form.email}
             onChange={update('email')}
             leadingIcon={Mail01}
+            hint={mode === 'signin' ? "We'll send a 6-digit one-time passcode to your email." : undefined}
           />
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-            isRequired={mode === 'signup'}
-            value={form.password}
-            onChange={update('password')}
-            leadingIcon={Lock01}
-            hint={
-              mode === 'signin'
-                ? 'Enter password for direct login, or leave blank to receive an email code'
-                : 'Use at least 8 characters with lowercase, uppercase, number, and special character.'
-            }
-          />
+          {mode === 'signup' && (
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              autoComplete="new-password"
+              isRequired
+              value={form.password}
+              onChange={update('password')}
+              leadingIcon={Lock01}
+              hint="Use at least 8 characters with lowercase, uppercase, number, and special character."
+            />
+          )}
           <button className="auth3-submit" type="submit" disabled={busy}>
-            {busy ? 'Please wait…' : mode === 'signin' ? (form.password ? 'Log in & Open Console' : 'Continue with Email Code') : 'Create account'}{' '}
+            {busy
+              ? (mode === 'signin' ? 'Sending code…' : 'Creating account…')
+              : (mode === 'signin' ? 'Continue with Email Code' : 'Create account')}{' '}
             <ArrowRight size={17} />
           </button>
         </form>

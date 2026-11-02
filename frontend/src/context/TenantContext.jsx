@@ -7,7 +7,7 @@ import { ACCOUNTS_DATA } from '../data/accountsData';
 const TenantContext = createContext(null);
 
 export function TenantProvider({ children }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -52,6 +52,11 @@ export function TenantProvider({ children }) {
     let storedSlug = window.localStorage.getItem('ecometric_active_org_slug');
     if (storedSlug === 'undefined' || storedSlug === 'null' || !storedSlug) {
       storedSlug = 'carrier-hvac';
+    }
+
+    if (authLoading) {
+      setLoading(true);
+      return;
     }
 
     if (!user?.id) {
@@ -215,11 +220,13 @@ export function TenantProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [user?.id, currentRouteSlug, mockMemberships]);
+  }, [user?.id, authLoading, currentRouteSlug, mockMemberships]);
 
   useEffect(() => {
-    loadTenantData();
-  }, [loadTenantData]);
+    if (!authLoading) {
+      loadTenantData();
+    }
+  }, [authLoading, loadTenantData]);
 
   // Synchronize when route currentRouteSlug changes
   useEffect(() => {

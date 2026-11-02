@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import { supabase } from '../../lib/supabase';
+import { getRedirectBaseUrl } from '../../lib/authRedirect';
 import { Button } from '../base/buttons/button';
 import {
   PlusIcon,
@@ -181,7 +182,7 @@ export default function TeamManagementPanel() {
 
           // Fallback if Edge function is not deployed: dispatch Supabase Auth Magic Link directly
           if (fnErr) {
-            const redirectUrl = `${window.location.origin}/login?invite=${generatedToken}&org=${activeOrg.slug || ''}&email=${encodeURIComponent(targetEmail)}`;
+            const redirectUrl = `${getRedirectBaseUrl()}/login?invite=${generatedToken}&org=${activeOrg.slug || ''}&email=${encodeURIComponent(targetEmail)}`;
             await supabase.auth.signInWithOtp({
               email: targetEmail,
               options: {
@@ -287,7 +288,7 @@ export default function TeamManagementPanel() {
   };
 
   const copyInviteLink = (token) => {
-    const inviteUrl = `${window.location.origin}/signup?token=${token}&org=${activeOrg?.slug || ''}`;
+    const inviteUrl = `${getRedirectBaseUrl()}/signup?token=${token}&org=${activeOrg?.slug || ''}`;
     navigator.clipboard.writeText(inviteUrl);
     setCopiedToken(token);
     setTimeout(() => setCopiedToken(null), 2000);
