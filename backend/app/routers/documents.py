@@ -738,16 +738,10 @@ def match_providers(payload: Dict[str, Any] = Body(default_factory=dict)):
     region = project_region(extracted)
     bom = extracted.setdefault("bom", [])
 
-    if not database_available():
-        # Flag lines still waiting for a match so the studio stops asking
-        for item in bom:
-            if not (item.get("provider_id") or item.get("ecoinvent_id")) and "ecoinvent_matched" not in item:
-                item["ecoinvent_matched"] = False
-        bom_stats = {"matched": 0, "kept": 0, "unmatched": len(bom)}
-        stage_stats = {"matched": 0, "kept": 0, "unmatched": 0}
-    else:
-        bom_stats = assign_bom_providers(bom, pid, region, overwrite=refresh)
-        stage_stats = assign_stage_providers(extracted, pid, region, overwrite=refresh)
+    # The matcher supplies seed-backed automatic defaults when the remote LCIA
+    # metadata is unavailable, so users are never forced into manual selection.
+    bom_stats = assign_bom_providers(bom, pid, region, overwrite=refresh)
+    stage_stats = assign_stage_providers(extracted, pid, region, overwrite=refresh)
 
     return {
         "status": "success",
@@ -810,8 +804,18 @@ def search_lcia_products(query: str = "", limit: int = 200, unit: Optional[str] 
 
     if not lcia_extractor or not os.path.exists(lcia_extractor.FILE_PATH):
         raise HTTPException(status_code=503, detail="ecoinvent database unavailable: set SUPABASE_DB_URL on the backend")
-    data = lcia_extractor.get_lcia_data()
-    matches = lcia_extractor.search_product(data, query.strip())
+    try:
+        data = lcia_extractor.get_lcia_data()
+        matches = lcia_extractor.search_product(data, query.strip())
+    except Exception as exc:
+        # The repository's small implementation workbook is not a searchable LCIA export.
+        # Do not expose its pandas/openpyxl error as an API 500; the Supabase reference store
+        # is the supported provider-search source in deployed environments.
+        print(f"[documents] LCIA provider search unavailable: {exc}")
+        raise HTTPException(
+            status_code=503,
+            detail="ecoinvent provider search unavailable: configure SUPABASE_DB_URL and load the LCIA reference tables",
+        ) from exc
     unit_col = ("META", "META", "META", "Reference Product Unit")
     results = [{
         "option_number": idx,
@@ -845,4 +849,3 @@ def calculate_lcia_epd(payload: Dict[str, Any]):
         "status": "success",
         "result": res
     }
-

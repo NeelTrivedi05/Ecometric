@@ -241,8 +241,8 @@ export default function UserReviewView() {
     const stats = await matchProviders({ refresh: true });
     if (!stats) {
       showNotif?.('Dataset matching is unavailable - check that the backend is running', 'Auto-Match');
-    } else if (!stats.database_available) {
-      showNotif?.('The ecoinvent database is not available on the server, so nothing could be matched', 'Auto-Match');
+    } else if (!stats.database_available && (stats.matched || stats.stages?.matched)) {
+      showNotif?.('Automatic seed-backed providers were applied. Supabase LCIA metadata will refine them when available.', 'Auto-Match Complete');
     } else {
       const matched = stats.matched + (stats.stages?.matched || 0);
       const kept = stats.kept + (stats.stages?.kept || 0);
@@ -260,7 +260,7 @@ export default function UserReviewView() {
   // Debounced provider search execution
   const executeSearch = async (queryText) => {
     const q = (queryText || '').trim();
-    if (!q) {
+    if (q.length < 2) {
       setLiveSearchResults([]);
       setIsSearchingDb(false);
       return;
@@ -269,11 +269,13 @@ export default function UserReviewView() {
     try {
       const res = await apiFetch(searchUrl(q, 'kg'));
       const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || `Provider search failed (HTTP ${res.status})`);
       if (data.status === 'success' && data.results) {
         setLiveSearchResults(data.results);
       }
-    } catch {
-      // Offline fallback
+    } catch (err) {
+      setLiveSearchResults([]);
+      showNotif?.(err.message || 'Provider search is unavailable', 'Provider Search');
     } finally {
       setIsSearchingDb(false);
     }
@@ -306,7 +308,7 @@ export default function UserReviewView() {
   // ── Generic Provider Search (for all module provider fields) ──
   const executeGenericSearch = async (queryText, unit) => {
     const q = (queryText || '').trim();
-    if (!q) {
+    if (q.length < 2) {
       setGenericSearchResults([]);
       setIsGenericSearching(false);
       return;
@@ -315,11 +317,13 @@ export default function UserReviewView() {
     try {
       const res = await apiFetch(searchUrl(q, unit));
       const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || `Provider search failed (HTTP ${res.status})`);
       if (data.status === 'success' && data.results) {
         setGenericSearchResults(data.results);
       }
-    } catch {
-      // Offline fallback
+    } catch (err) {
+      setGenericSearchResults([]);
+      showNotif?.(err.message || 'Provider search is unavailable', 'Provider Search');
     } finally {
       setIsGenericSearching(false);
     }
