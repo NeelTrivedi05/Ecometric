@@ -1573,9 +1573,9 @@ html {
 }
 
 .landing-page-root .btn-apple-secondary-on-dark:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  border-color: #ffffff;
-  color: #ffffff;
+  background-color: var(--apple-primary);
+  border-color: var(--apple-primary);
+  color: var(--apple-on-primary);
   transform: translateY(-1.5px);
 }
 
@@ -1964,7 +1964,7 @@ html {
   color: var(--apple-ink-muted-48);
 }
 
-/* Footer 8 — centered brand, social icons, and a compact resource nav. */
+/* Footer 8 — centered brand and a compact resource nav. */
 .landing-page-root .footer-8 {
   padding: 88px 24px 34px;
   background: var(--apple-canvas-parchment);
@@ -2003,37 +2003,6 @@ html {
   margin: 18px auto 26px;
   color: var(--apple-body-muted);
   font-size: 15px;
-}
-
-.landing-page-root .footer-8__socials {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.landing-page-root .footer-8__socials a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid var(--apple-hairline);
-  border-radius: 50%;
-  color: var(--apple-body-muted);
-  background: var(--apple-canvas);
-  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-
-.landing-page-root .footer-8__socials a:hover {
-  border-color: var(--apple-primary);
-  color: var(--apple-primary);
-  transform: translateY(-2px);
-}
-
-.landing-page-root .footer-8__socials svg {
-  width: 17px;
-  height: 17px;
-  fill: currentColor;
 }
 
 .landing-page-root .footer-8__links {
@@ -2138,38 +2107,6 @@ html {
 .landing-page-root .footer-8__column a:hover,
 .landing-page-root .footer-8__column button:hover {
   color: #f4f4f0;
-}
-
-.landing-page-root .footer-8__socials {
-  display: flex;
-  justify-content: flex-start;
-  gap: 9px;
-  margin-top: 25px;
-}
-
-.landing-page-root .footer-8__socials a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid #3a3a3a;
-  border-radius: 11px;
-  color: #d4d4d0;
-  background: #080808;
-  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.landing-page-root .footer-8__socials a:hover {
-  border-color: #7bb992;
-  color: #b8ddc5;
-  transform: translateY(-2px);
-}
-
-.landing-page-root .footer-8__socials svg {
-  width: 17px;
-  height: 17px;
-  fill: currentColor;
 }
 
 .landing-page-root .footer-8__badge {

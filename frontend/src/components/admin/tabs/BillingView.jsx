@@ -94,6 +94,30 @@ export default function BillingView() {
         </div>
       </div>
 
+      <div style={{ ...cardStyle, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '16px' }}>Compare EcoMetric plans</h2>
+          <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '13px' }}>
+            Review the plans and capabilities available for your workspace.
+          </p>
+        </div>
+        <a
+          href="/pricing"
+          style={{
+            padding: '9px 16px',
+            borderRadius: '8px',
+            background: '#1f7a4c',
+            border: '1px solid #1f7a4c',
+            color: '#fff',
+            fontSize: '13px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+        >
+          View pricing
+        </a>
+      </div>
+
     </div>
   );
 }

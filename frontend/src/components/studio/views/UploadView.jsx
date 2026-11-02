@@ -42,12 +42,7 @@ export default function UploadView() {
   const product = hasProduct ? productProfile : null;
   const selectedProductIndex = PRODUCT_LIST.findIndex((item) => item.id === productCategory);
   const [showAllProducts, setShowAllProducts] = useState(selectedProductIndex >= INITIAL_PRODUCT_COUNT);
-  const [projectNameDraft, setProjectNameDraft] = useState(activeProject?.name || '');
   const visibleProducts = showAllProducts ? PRODUCT_LIST : PRODUCT_LIST.slice(0, INITIAL_PRODUCT_COUNT);
-
-  React.useEffect(() => {
-    setProjectNameDraft(activeProject?.name || '');
-  }, [activeProject?.name]);
 
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -126,15 +121,13 @@ export default function UploadView() {
             type="text"
             className="form-input"
             style={{ maxWidth: 520, marginTop: '8px' }}
-            value={projectNameDraft}
+            value={activeProject.name}
             onChange={(e) => {
-              setProjectNameDraft(e.target.value);
               renameProject(activeProject.id, e.target.value);
             }}
             onFocus={(e) => { if (e.target.value === 'Untitled project') e.target.select(); }}
-            onBlur={async () => {
-              const nextName = projectNameDraft.trim() || 'Untitled project';
-              setProjectNameDraft(nextName);
+            onBlur={async (e) => {
+              const nextName = e.target.value.trim() || 'Untitled project';
               renameProject(activeProject.id, nextName);
               try {
                 await saveProjectName(activeProject.id, nextName);

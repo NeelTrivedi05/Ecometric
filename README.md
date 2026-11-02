@@ -199,16 +199,33 @@ Production secrets must be supplied by the deployment platform's secret manager.
 
 The account/workspace brief also defines a future Google Cloud deployment with separate frontend and backend Cloud Run services. That migration is not complete in the current repository; do not treat Cloud Run or Stripe billing as implemented until their infrastructure, webhook processing, quota functions, and tests are present.
 
-## Account, billing, and quota roadmap
+## Account and billing
 
-The workspace model is the foundation for the planned SaaS billing model:
+EcoMetric uses an organization-based workspace model. Each workspace owns its projects,
+calculations, reports, exports, and billing state:
 
 - One organization represents one customer workspace.
-- The organization, not an individual user, will own billing.
-- Workspace slugs are intended to identify account-scoped URLs.
-- All user data must remain organization-scoped and protected by RLS.
+- The organization, not an individual user, is the billing entity.
+- Workspace membership and RLS policies isolate tenant data.
+- Organization administrators can open the **Billing** tab from the admin console.
+- The current Billing screen reads the active plan and subscription state from Supabase.
+- The current application displays unlimited EPD creation while quota enforcement is disabled.
 
-Stripe subscription plans, server-side EPD quota reservation, webhook synchronization, and the Settings billing experience are planned work. When implemented, quota enforcement must be atomic and server-side; frontend usage meters must remain advisory and must never be the security boundary.
+The planned subscription model is designed around:
+
+- Free, Pro, and Business plans stored in a database `plans` table.
+- One subscription row per organization.
+- Stripe Checkout for new subscriptions and the Stripe Customer Portal for plan,
+  payment-method, invoice, and cancellation management.
+- Stripe webhook synchronization for subscription status and billing periods.
+- Atomic server-side EPD credit reservation, commit, and release operations.
+- Idempotency keys so retries and duplicate generation requests cannot consume credits twice.
+- Structured `QUOTA_EXCEEDED` responses containing the plan, usage, limit, and reset time.
+
+Stripe checkout, webhook synchronization, and server-enforced quota reservations are
+not enabled in the current deployment. The Billing screen must not be treated as a
+security boundary until those backend and database functions are implemented. Frontend
+usage meters remain advisory; the backend must enforce all future entitlements.
 
 ## Development conventions
 

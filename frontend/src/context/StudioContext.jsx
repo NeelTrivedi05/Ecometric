@@ -629,6 +629,15 @@ export function StudioProvider({ children }) {
     if (!normalizedName) {
       throw new Error('Project name cannot be empty.');
     }
+
+    // Seeded and locally created demo projects use client-only IDs, so their
+    // workspace-scoped local state is the persistence source until a DB row exists.
+    const isDatabaseId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(projectId);
+    if (!isDatabaseId) {
+      renameProject(projectId, normalizedName);
+      showNotif('Project name saved.', 'Project Updated');
+      return { id: projectId, name: normalizedName };
+    }
     if (!supabase || !activeOrg?.id) {
       throw new Error('Sign in to a workspace before saving the project name.');
     }

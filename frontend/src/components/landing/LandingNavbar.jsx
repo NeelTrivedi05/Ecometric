@@ -15,6 +15,7 @@ export default function LandingNavbar({ onLaunchApp }) {
           <NavLink to="/overview" className="apple-subnav-link">Overview</NavLink>
           <NavLink to="/how-it-works" className="apple-subnav-link">How it works</NavLink>
           <NavLink to="/capabilities" className="apple-subnav-link">Capabilities</NavLink>
+          <NavLink to="/pricing" className="apple-subnav-link">Pricing</NavLink>
           <NavLink to="/faq" className="apple-subnav-link">FAQ</NavLink>
           <NavLink to="/verify" className="apple-subnav-link">Verify Authenticity</NavLink>
         </nav>
