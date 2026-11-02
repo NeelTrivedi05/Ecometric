@@ -803,19 +803,25 @@ def search_lcia_products(query: str = "", limit: int = 200, unit: Optional[str] 
         return {"status": "success", "query": query, "count": len(results), "results": results}
 
     if not lcia_extractor or not os.path.exists(lcia_extractor.FILE_PATH):
-        raise HTTPException(status_code=503, detail="ecoinvent database unavailable: backend/database files are missing")
+<<<<<<< Updated upstream
+        raise HTTPException(status_code=503, detail="ecoinvent database unavailable: set SUPABASE_DB_URL on the backend")
     try:
         data = lcia_extractor.get_lcia_data()
         matches = lcia_extractor.search_product(data, query.strip())
     except Exception as exc:
         # The repository's small implementation workbook is not a searchable LCIA export.
-        # Do not expose its pandas/openpyxl error as an API 500; the files in backend/database
-        # are the supported provider-search source in deployed environments.
+        # Do not expose its pandas/openpyxl error as an API 500; the Supabase reference store
+        # is the supported provider-search source in deployed environments.
         print(f"[documents] LCIA provider search unavailable: {exc}")
         raise HTTPException(
             status_code=503,
-            detail="ecoinvent provider search unavailable: backend/database files are missing",
+            detail="ecoinvent provider search unavailable: configure SUPABASE_DB_URL and load the LCIA reference tables",
         ) from exc
+=======
+        raise HTTPException(status_code=503, detail="ecoinvent database unavailable: backend/database files are missing")
+    data = lcia_extractor.get_lcia_data()
+    matches = lcia_extractor.search_product(data, query.strip())
+>>>>>>> Stashed changes
     unit_col = ("META", "META", "META", "Reference Product Unit")
     results = [{
         "option_number": idx,
