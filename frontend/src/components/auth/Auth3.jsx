@@ -50,6 +50,14 @@ async function processInviteAcceptance(userId, email, token, orgSlug) {
   }
 }
 
+function formatAuthError(error) {
+  const message = error?.message || 'Something went wrong. Please try again.';
+  if (/password should|password must|password.*character/i.test(message)) {
+    return 'Password must be at least 8 characters and include a lowercase letter, an uppercase letter, a number, and a special character.';
+  }
+  return message;
+}
+
 // Resolve active organization slug from Supabase
 async function resolveUserOrgSlug(userId) {
   if (!supabase || !userId) return null;
@@ -186,7 +194,7 @@ export default function Auth3({ initialMode = 'signin' }) {
         });
         if (signUpRes.error) {
           setBusy(false);
-          setError(signUpRes.error.message);
+          setError(formatAuthError(signUpRes.error));
           return;
         }
         await processInviteAcceptance(signUpRes.data?.user?.id, normalizedEmail, inviteToken, invitedOrgSlug);
@@ -223,7 +231,7 @@ export default function Auth3({ initialMode = 'signin' }) {
 
         if (signInError) {
           setBusy(false);
-          setError(signInError.message);
+          setError(formatAuthError(signInError));
           return;
         }
 
@@ -249,7 +257,7 @@ export default function Auth3({ initialMode = 'signin' }) {
       });
       setBusy(false);
       if (otpError) {
-        setError(otpError.message);
+        setError(formatAuthError(otpError));
         return;
       }
       window.sessionStorage.setItem('pending_otp_email', normalizedEmail);
@@ -277,7 +285,7 @@ export default function Auth3({ initialMode = 'signin' }) {
         });
         return;
       }
-      setError(result.error.message);
+      setError(formatAuthError(result.error));
       return;
     }
     if (mode === 'signup' && result.data.user && result.data.user.identities?.length === 0) {
@@ -376,7 +384,11 @@ export default function Auth3({ initialMode = 'signin' }) {
             value={form.password}
             onChange={update('password')}
             leadingIcon={Lock01}
-            hint={mode === 'signin' ? 'Enter password for direct login, or leave blank to receive an email code' : undefined}
+            hint={
+              mode === 'signin'
+                ? 'Enter password for direct login, or leave blank to receive an email code'
+                : 'Use at least 8 characters with lowercase, uppercase, number, and special character.'
+            }
           />
           <button className="auth3-submit" type="submit" disabled={busy}>
             {busy ? 'Please wait…' : mode === 'signin' ? (form.password ? 'Log in & Open Console' : 'Continue with Email Code') : 'Create account'}{' '}

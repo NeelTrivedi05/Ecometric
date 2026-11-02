@@ -10,6 +10,7 @@ import { apiFetch } from '../lib/apiFetch';
 import { useAuth } from './AuthContext';
 import { useTenant } from './TenantContext';
 import { supabase } from '../lib/supabase';
+import { subscribeToScopedTable } from '../lib/tenantScopedClient';
 
 // Minimum time the progress bar stays up for a PDF export, even when the server is faster.
 const PDF_EXPORT_MIN_MS = 28000;
@@ -227,6 +228,45 @@ export function StudioProvider({ children }) {
     }
   }, [epdsList, currentAccountId, hydratedWorkspaceId]);
 
+  React.useEffect(() => {
+    if (!activeOrg?.id || !supabase) return undefined;
+
+    const channel = subscribeToScopedTable('projects', activeOrg.id, (payload) => {
+      if (!payload.new?.id && !payload.old?.id) return;
+
+      if (payload.eventType === 'INSERT') {
+        setProjectsList((prev) => (
+          prev.some((project) => project.id === payload.new.id)
+            ? prev
+            : [payload.new, ...prev]
+        ));
+      } else if (payload.eventType === 'UPDATE') {
+        setProjectsList((prev) => prev.map((project) => (
+          project.id === payload.new.id
+            ? {
+                ...project,
+                ...payload.new,
+                last_modified: 'Just now by Workspace',
+              }
+            : project
+        )));
+      } else if (payload.eventType === 'DELETE') {
+        setProjectsList((prev) => prev.filter((project) => project.id !== payload.old.id));
+      }
+
+      if (payload.eventType !== 'DELETE' && payload.new.id === activeProjectId && payload.new.name) {
+        setExtractedData((prev) => ({
+          ...prev,
+          project_info: { ...prev.project_info, product_name: payload.new.name },
+        }));
+      }
+    });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [activeOrg?.id, activeProjectId]);
+
   const currentAccount = useMemo(() => {
     const existing = accountsList.find((a) => a.id === currentAccountId);
     if (activeOrg) {
@@ -373,6 +413,84 @@ export function StudioProvider({ children }) {
     setNotification({ msg, title });
     setTimeout(() => setNotification(null), 3500);
   }, []);
+
+  React.useEffect(() => {
+    if (!activeOrg?.id || !supabase || !user?.id) return undefined;
+
+    let active = true;
+    const loadWorkspaceProjects = async () => {
+      let localProjects = [];
+      try {
+        const savedProjects = window.localStorage.getItem(`ecometric_projects_${activeOrg.id}`);
+        const parsedProjects = savedProjects ? JSON.parse(savedProjects) : [];
+        localProjects = Array.isArray(parsedProjects) ? parsedProjects : [];
+      } catch (storageError) {
+        console.warn('[Studio] Could not read local workspace projects for migration:', storageError);
+      }
+
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, organization_id, user_id, name, product_category, product_model, pcr_ref, status, capacity_rt, refrigerant, refrigerant_charge_kg, functional_unit, declared_unit, facility, epd_number, gwp_total, tags, created_at, updated_at')
+        .eq('organization_id', activeOrg.id)
+        .order('updated_at', { ascending: false });
+
+      if (!active) return;
+      if (error) {
+        showNotif(`Could not load workspace projects: ${error.message}`, 'Project Sync Error');
+        return;
+      }
+
+      const databaseIds = new Set((data || []).map((project) => project.id));
+      const localOnlyProjects = localProjects.filter((project) => (
+        project.id &&
+        !databaseIds.has(project.id) &&
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(project.id)
+      ));
+
+      let syncedProjects = data || [];
+      if (localOnlyProjects.length > 0) {
+        const { data: migratedProjects, error: migrationError } = await supabase
+          .from('projects')
+          .insert(localOnlyProjects.map((project) => ({
+            organization_id: activeOrg.id,
+            user_id: user.id,
+            name: project.name || 'Untitled project',
+            product_category: project.product_category || DEFAULT_PRODUCT_ID,
+            product_model: project.product_model || null,
+            pcr_ref: project.standard || project.pcr_ref || 'UL 10010-4 Part B v2.0 2018',
+            status: ['DRAFT', 'CALCULATED', 'REPORTED', 'VERIFIED'].includes(project.status)
+              ? project.status
+              : 'DRAFT',
+            capacity_rt: project.capacity_rt || 500,
+            refrigerant: project.refrigerant || 'R1233zd',
+            refrigerant_charge_kg: project.refrigerant_charge_kg || 320,
+            functional_unit: project.functional_unit || null,
+            declared_unit: project.declared_unit || null,
+            facility: project.facility || null,
+            epd_number: project.epd_number || null,
+            gwp_total: project.gwp_total || 0,
+            tags: project.tags || [],
+          })))
+          .select();
+
+        if (migrationError) {
+          showNotif(`Could not sync local projects: ${migrationError.message}`, 'Project Sync Error');
+        } else if (Array.isArray(migratedProjects)) {
+          syncedProjects = [...syncedProjects, ...migratedProjects];
+        }
+      }
+
+      if (Array.isArray(syncedProjects)) {
+        setProjectsList(syncedProjects);
+        setHydratedWorkspaceId(activeOrg.id);
+      }
+    };
+
+    loadWorkspaceProjects();
+    return () => {
+      active = false;
+    };
+  }, [activeOrg?.id, user?.id, showNotif]);
 
   // Multi-tenant Account & Database Assembly Switching
   const switchAccount = useCallback((newAccountId) => {
@@ -557,31 +675,64 @@ export function StudioProvider({ children }) {
       return false;
     }
 
-    setProjectsList((prev) => [newProj, ...prev]);
-    setActiveProjectId(newProj.id);
+    const { data: savedProject, error } = await supabase
+      .from('projects')
+      .insert({
+        organization_id: activeOrg.id,
+        user_id: user?.id || null,
+        name: newProj.name,
+        product_category: newProj.product_category || DEFAULT_PRODUCT_ID,
+        product_model: newProj.product_model,
+        pcr_ref: newProj.standard,
+        status: 'DRAFT',
+        capacity_rt: newProj.capacity_rt,
+        refrigerant: newProj.refrigerant,
+        refrigerant_charge_kg: newProj.refrigerant_charge_kg,
+        functional_unit: newProj.functional_unit,
+        declared_unit: newProj.declared_unit,
+        facility: newProj.facility,
+        epd_number: newProj.epd_number,
+        gwp_total: newProj.gwp_total || 0,
+        tags: newProj.tags || [],
+      })
+      .select()
+      .single();
+
+    if (error || !savedProject) {
+      showNotif(`Could not create project: ${error?.message || 'No project was returned.'}`, 'Project Creation Error');
+      return false;
+    }
+
+    const persistedProject = {
+      ...newProj,
+      ...savedProject,
+      status: newProj.status,
+    };
+    setProjectsList((prev) => [persistedProject, ...prev.filter((project) => project.id !== persistedProject.id)]);
+    setActiveProjectId(persistedProject.id);
 
     setExtractedData((prev) => ({
       ...prev,
       project_info: {
         ...prev.project_info,
-        product_name: newProj.name,
+        product_name: persistedProject.name,
         manufacturer_name: currentAccount?.company_name || 'Manufacturer',
-        functional_unit: newProj.functional_unit,
-        pcr_ref: newProj.standard,
+        functional_unit: persistedProject.functional_unit,
+        pcr_ref: persistedProject.standard || persistedProject.pcr_ref,
       },
       operational: {
         ...prev.operational,
-        capacity_rt: newProj.capacity_rt,
-        refrigerant_type: newProj.refrigerant,
-        refrigerant_charge_kg: newProj.refrigerant_charge_kg,
+        capacity_rt: persistedProject.capacity_rt,
+        refrigerant_type: persistedProject.refrigerant,
+        refrigerant_charge_kg: persistedProject.refrigerant_charge_kg,
       },
     }));
 
     setStudioViewMode('workspace');
     setActivePhase('upload');
-    showNotif(`Created "${newProj.name}" with ${currentAccount?.company_name} LCI assembly.`, 'Project Initialized');
-    return true;
-  }, [activeOrg?.id, currentAccount, showNotif]);
+    showNotif(`Created "${persistedProject.name}" with ${currentAccount?.company_name} LCI assembly.`, 'Project Initialized');
+    return persistedProject;
+  }, [activeOrg?.id, currentAccount, showNotif, user?.id]);
 
   // Rename Project (also syncs the EPD product name for the active project)
   const renameProject = useCallback((projectId, name) => {
@@ -592,6 +743,44 @@ export function StudioProvider({ children }) {
       setExtractedData((prev) => ({ ...prev, project_info: { ...prev.project_info, product_name: name } }));
     }
   }, [activeProjectId]);
+
+  const saveProjectName = useCallback(async (projectId, name) => {
+    const normalizedName = name.trim();
+    if (!normalizedName) {
+      throw new Error('Project name cannot be empty.');
+    }
+
+    // Seeded and locally created demo projects use client-only IDs, so their
+    // workspace-scoped local state is the persistence source until a DB row exists.
+    const isDatabaseId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(projectId);
+    if (!isDatabaseId) {
+      renameProject(projectId, normalizedName);
+      showNotif('Project name saved.', 'Project Updated');
+      return { id: projectId, name: normalizedName };
+    }
+    if (!supabase || !activeOrg?.id) {
+      throw new Error('Sign in to a workspace before saving the project name.');
+    }
+
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ name: normalizedName, updated_at: new Date().toISOString() })
+      .eq('id', projectId)
+      .eq('organization_id', activeOrg.id)
+      .select('id, name')
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Could not save project name: ${error.message}`);
+    }
+    if (!data) {
+      throw new Error('Could not save project name: project not found in this workspace.');
+    }
+
+    renameProject(projectId, normalizedName);
+    showNotif('Project name saved across the workspace.', 'Project Updated');
+    return data;
+  }, [activeOrg?.id, renameProject, showNotif]);
 
   // Duplicate Project
   const duplicateProject = useCallback((projectId) => {
@@ -1999,6 +2188,7 @@ export function StudioProvider({ children }) {
         openProject,
         createProject,
         renameProject,
+        saveProjectName,
         duplicateProject,
         deleteProject,
         closeToProjectsHub,

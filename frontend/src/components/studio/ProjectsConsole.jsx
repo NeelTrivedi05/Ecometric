@@ -589,7 +589,7 @@ export default function ProjectsConsole() {
     };
     const created = await createProject(newProj);
     if (created !== false) {
-      navigate(activeOrg?.slug ? `/${activeOrg.slug}/app/projects/${newProj.id}` : `/app/projects/${newProj.id}`);
+      navigate(activeOrg?.slug ? `/${activeOrg.slug}/app/projects/${created.id}` : `/app/projects/${created.id}`);
     }
   };
 

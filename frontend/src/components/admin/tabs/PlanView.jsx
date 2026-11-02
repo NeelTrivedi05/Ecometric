@@ -87,9 +87,21 @@ export default function PlanView() {
           <span style={{ padding: '4px 12px', borderRadius: '9999px', background: '#eaf7ee', color: '#1f7a4c', border: '1px solid #c3e8cd', fontSize: '12px', fontWeight: 600 }}>
             Unlimited EPDs
           </span>
-          <button type="button" disabled style={{ padding: '9px 16px', borderRadius: '8px', background: '#fff', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '13px', cursor: 'not-allowed' }}>
-            Upgrade via Stripe
-          </button>
+          <a
+            href="/pricing"
+            style={{
+              padding: '9px 16px',
+              borderRadius: '8px',
+              background: '#1f7a4c',
+              border: '1px solid #1f7a4c',
+              color: '#fff',
+              fontSize: '13px',
+              fontWeight: 600,
+              textDecoration: 'none',
+            }}
+          >
+            View pricing
+          </a>
         </div>
       </div>
     </div>

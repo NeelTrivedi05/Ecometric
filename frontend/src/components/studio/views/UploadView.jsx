@@ -35,6 +35,8 @@ export default function UploadView() {
     productProfile,
     activeProject,
     renameProject,
+    saveProjectName,
+    showNotif,
   } = useStudio();
   const hasProduct = Boolean(productCategory);
   const product = hasProduct ? productProfile : null;
@@ -120,9 +122,19 @@ export default function UploadView() {
             className="form-input"
             style={{ maxWidth: 520, marginTop: '8px' }}
             value={activeProject.name}
-            onChange={(e) => renameProject(activeProject.id, e.target.value)}
+            onChange={(e) => {
+              renameProject(activeProject.id, e.target.value);
+            }}
             onFocus={(e) => { if (e.target.value === 'Untitled project') e.target.select(); }}
-            onBlur={(e) => { if (!e.target.value.trim()) renameProject(activeProject.id, 'Untitled project'); }}
+            onBlur={async (e) => {
+              const nextName = e.target.value.trim() || 'Untitled project';
+              renameProject(activeProject.id, nextName);
+              try {
+                await saveProjectName(activeProject.id, nextName);
+              } catch (err) {
+                showNotif(err.message || 'Could not save project name.', 'Project Name Error');
+              }
+            }}
           />
         </div>
       )}

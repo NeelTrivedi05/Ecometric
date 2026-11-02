@@ -15,6 +15,8 @@ import DashboardPreview from '../components/landing/DashboardPreview';
 import WhoItsFor from '../components/landing/WhoItsFor';
 import Faq from '../components/landing/Faq';
 import CtaBanner from '../components/landing/CtaBanner';
+import Pricing11 from '../components/landing/Pricing11';
+import PricingAbstractAngles from '../components/landing/PricingAbstractAngles';
 import LandingFooter from '../components/landing/LandingFooter';
 import '../styles/LandingPage.css';
 
@@ -76,6 +78,13 @@ export default function LandingPage() {
             <CtaBanner onLaunchApp={handleLaunchApp} />
           </>
         );
+      case 'pricing':
+        return (
+          <>
+            <PricingAbstractAngles onLaunchApp={handleLaunchApp} />
+            <CtaBanner onLaunchApp={handleLaunchApp} />
+          </>
+        );
       case 'overview':
       default:
         return (
@@ -86,6 +95,7 @@ export default function LandingPage() {
             <WhoNeedsEpd />
             <TrustProof />
             <TheProblem />
+            <Pricing11 onLaunchApp={handleLaunchApp} />
           </>
         );
     }

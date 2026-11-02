@@ -1,140 +1,241 @@
-# 🌿 EcoMetric — Monorepo Platform
+# EcoMetric
 
-> **Industrial Environmental Product Declaration (EPD) & Life-Cycle Assessment (LCA) System for HVAC Chillers**  
-> Compliant with **UL 10010-4 Part B v2.0 (2018)**, **EN 15804+A2**, **ISO 14025**, and powered by **ecoinvent v3.12 LCIA** data.
+**[Live Demo →](https://ecometric-in.vercel.app/)**
 
----
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL_+_Auth-3FCF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Ecoinvent](https://img.shields.io/badge/LCIA-Ecoinvent_v3.12-2E7D32?style=flat-square)](https://ecoinvent.org/)
 
-## 📂 Top-Level Architecture Overview
+EcoMetric is a multi-tenant environmental product declaration (EPD) and life-cycle assessment (LCA) platform for HVAC equipment. It turns product documents and bills of materials into traceable LCA calculations, validation results, EPD reports, and verifiable exports.
 
-EcoMetric is organized into three clean, modular top-level directories:
+The application supports the EPD workflow for water-cooled chillers and related HVAC products, including:
 
-- **`frontend/`**: A modern Next.js 15 App Router web application providing an interactive 3D scrollytelling showcase, a 6-step guided EPD creation wizard, and a real-time LCIA results dashboard with B6-dominance visualization.
-- **`backend/`**: A high-performance Python FastAPI service housing pure computational LCA engines (`calc_engine.py`, `pcr_validation.py`, `report_gen.py`, `ecoinvent_lookup.py`), versioned JSON reference datasets in `backend/data/`, and stateless API router handlers.
-- **`database/`**: The canonical database layer containing Alembic database migrations (`database/migrations/`), automated seed scripts for PCR rules and 50-city weather bin hours (`database/seed/`), and the canonical DDL SQL schema (`database/schema.sql`).
+- Project and workspace management
+- Document and BOM ingestion
+- Material, logistics, manufacturing, use, and end-of-life data
+- Ecoinvent-based provider matching
+- PCR validation and data-quality review
+- LCIA calculations and module results
+- EPD PDF, ILCD, and openEPD exports
+- Cryptographic sealing and public declaration verification
 
----
+## Architecture
 
-## 🚀 How to Run Each Folder Independently
+```text
+frontend/        React 18 + Vite single-page application
+backend/         Python 3.12 + FastAPI API and calculation services
+supabase/        PostgreSQL schema, RLS policies, auth, storage, and tenant data
+database/        Local/SQLAlchemy schema, migrations, and reference database assets
+backend/data/    PCR rules, emission factors, LCIA indexes, and sample datasets
+results/         Generated calculation and report artifacts
+```
 
-### 1. Frontend (`frontend/`)
-The Next.js frontend can be started independently:
-```bash
+### Frontend
+
+The frontend is a React/Vite application, not Next.js. It provides:
+
+- Email/password authentication through Supabase Auth
+- Organization/workspace-aware navigation
+- A projects console and guided Studio workspace
+- Upload, extraction, review, validation, methodology, results, audit, and export phases
+- Workspace-scoped project persistence and realtime project updates
+- Inline project-name editing from the Studio top bar
+
+Project names are saved to the tenant's `projects` row and are reflected in the project console, Studio header, product name used by the EPD flow, and other open clients subscribed to the workspace.
+
+### Backend
+
+The FastAPI service provides:
+
+- LCA calculation and validation endpoints
+- Document extraction and provider matching
+- EPD report preview and PDF generation
+- ILCD/openEPD serialization
+- Submission and report APIs
+- Cryptographic seal creation and public verification
+
+The backend uses SQLAlchemy models for the local application database and Supabase-compatible tenant fields for organization-scoped data.
+
+### Supabase and tenancy
+
+Supabase provides authentication, PostgreSQL, row-level security, storage, and realtime events. Workspace data is identified by `organization_id`. Client-side queries and realtime subscriptions must be scoped to the active organization; private storage objects use an organization-prefixed path.
+
+The current schema includes organizations, organization members, invitations, projects, technical data, results, reports, report details, and facility LCI assemblies. New user-data tables must follow the same tenant-scoping and RLS conventions.
+
+## Local development
+
+### Prerequisites
+
+- Node.js and npm
+- Python 3.12
+- A Supabase project for authenticated frontend features
+- SQLite for the default local backend database
+
+### Configure the frontend
+
+Create `frontend/.env.local`:
+
+```env
+VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+VITE_API_URL=http://localhost:8000/api
+```
+
+Only public Supabase values belong in frontend environment variables. Never expose a service-role key, database password, JWT secret, or Stripe secret to Vite.
+
+### Run the frontend
+
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To verify a production build:
-```bash
+The Vite development server runs at [http://localhost:5173](http://localhost:5173).
+
+Build the production bundle:
+
+```powershell
 cd frontend
 npm run build
 ```
 
----
+### Run the backend
 
-### 2. Backend Service (`backend/`)
-The FastAPI backend service manages LCA computations and API route handling:
-```bash
+```powershell
 cd backend
 python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On Linux/macOS:
-# source venv/bin/activate
-
+.\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python main.py
 ```
-The backend API will run at [http://localhost:8000](http://localhost:8000). Interactive OpenAPI documentation is available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
----
+The API runs at [http://localhost:8000](http://localhost:8000). OpenAPI documentation is available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-### 3. Database & Migrations (`database/`)
-Database schema migrations and seed scripts are managed using Alembic and Python:
-```bash
-# Seed database with PCR rules & 50-city weather bin hours
-python database/seed/seed_pcr_rules.py
+The backend can also be started with Uvicorn:
 
-# Run Alembic migrations (from database/migrations directory)
-cd database/migrations
-alembic upgrade head
+```powershell
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
----
+### Apply the Supabase schema
 
-## 📋 Pre-Flight Checklist Summary
+Run `supabase/schema.sql` in the Supabase SQL editor or through the Supabase CLI. Review migrations and RLS policies before applying schema changes to a shared environment.
 
-1. **DB ORM**: SQLAlchemy (`backend/app/models.py`) and Alembic migrations (`database/migrations/`) are the single source of truth for the database schema.
-2. **Ecoinvent Version**: Pinned to version `"3.12"` in `backend/data/emission_factors.json` metadata.
-3. **Build Patch**: Includes `frontend/patch-node25.js` preloader in `frontend/package.json` for Node v25 Windows compatibility.
-4. **16-Module Count**: Full support for 15 mandatory modules (`A1-A3`, `A4`, `A5`, `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `C1`, `C2`, `C3`, `C4`, `C1-C4`) + `Module D` (Beyond System Boundary, displayed separately).
+## Main application flow
 
+1. Sign up or sign in with Supabase Auth.
+2. Select or load the active organization workspace.
+3. Open the Projects console.
+4. Create or open an LCA project.
+5. Upload source documents or load a supported sample.
+6. Review extracted product, BOM, logistics, manufacturing, use, and end-of-life data.
+7. Match providers and resolve PCR/data-quality gaps.
+8. Run validation and choose an LCIA methodology.
+9. Run the calculation and inspect module-level results.
+10. Review the audit trail and export the EPD package.
+11. Verify signed declarations through the public verification page.
 
----
+## Supported EPD and LCA capabilities
 
-## File Sealing & Cryptographic Provenance
+EcoMetric includes support for:
 
-EcoMetric provides end-to-end cryptographic integrity and origin attestation for all exported Environmental Product Declarations (PDF, ILCD+EPD JSON, and openEPD v2.0 JSON).
+- Product-specific PCR profiles
+- Ecoinvent 3.12 LCIA and activity data
+- Modules A1-A3, A4, A5, B1-B7, C1-C4, and Module D
+- TRACI 2.1, EN 15804+A2, and other configured methodologies
+- BOM and stage-level provider matching
+- Data-quality reporting and traceability
+- PDF report generation with charts and narrative sections
+- ILCD and openEPD JSON exports
 
-### 1. Cryptographic Architecture
+Reference datasets are stored under [`backend/data/`](backend/data/), while calculation and report artifacts are written to [`results/`](results/).
 
-| Guarantee | Mechanism | What it proves |
-|---|---|---|
-| **Authenticity and integrity** | Ed25519 digital signature over canonical manifest, plus database registry entry | The file was produced by EcoMetric, for the registered organization, at the recorded UTC timestamp, and has not been altered by even one byte. |
-| **Confidentiality** | AES-256-GCM envelope encryption container (`.ecmx`) | A random 256-bit data encryption key (DEK) encrypts the document; the DEK is wrapped using an AES Key Encryption Key (KEK). |
+## API areas
 
-### 2. Export Modes
+The backend exposes route groups for:
 
-* **Sealed Container (`<filename>.<ext>.ecmx`)**: Encrypted using AES-256-GCM with associated authenticated data (AAD) binding header metadata. Can only be decrypted within the authenticated EcoMetric console.
-* **Signed Open Document**: The standard PDF or JSON file with an embedded certificate identifier (`ECM-XXXX-XXXX-XXXX-XXXX`). Opens in any standard viewer (Adobe Acrobat, browser, JSON parser) while remaining fully verifiable against the public registry.
+- `/api/auth` - authentication-related backend operations
+- `/api/epd` - project creation and calculation
+- `/api/epd-reports` - report preview and PDF generation
+- `/api/documents` - extraction and document processing
+- `/api/products` - product profiles and defaults
+- `/api/submissions` - authenticated project submissions
+- `/api/seal` and `/api/verify` - sealing and public verification
 
-### 3. Public Verification
+Use `/docs` for the current endpoint contracts and request schemas.
 
-Anyone can verify an exported EPD without logging in:
-* **Web UI**: Navigate to `/verify` (e.g., `https://app.ecometric.io/verify`). Upload the file or enter the Certificate ID.
-* **API Endpoints**:
-  * `POST /api/verify`: Upload file (multipart, max 64MB) to check SHA-256 checksum against registered declarations.
-  * `GET /api/verify/{certificate_id}`: Query declaration status (`authentic`, `modified`, `revoked`, or `superseded`).
-  * `GET /.well-known/ecometric-seal-keys.json`: Download public Ed25519 keys for independent third-party verification without connecting to EcoMetric.
+## Cryptographic sealing and verification
 
-### 4. Downstream Schema Note (`_ecometric_seal`)
+EcoMetric can create signed open exports and encrypted sealed containers.
 
-Signed open JSON exports (ILCD and openEPD) contain a non-intrusive top-level seal object:
-```json
-{
-  "_ecometric_seal": {
-    "certificate_id": "ECM-7K3Q-9XPD-2M4T-H8VN",
-    "verify_url": "https://app.ecometric.io/verify?c=ECM-7K3Q-9XPD-2M4T-H8VN"
-  }
-}
+- Ed25519 signatures authenticate the manifest and protect integrity.
+- AES-256-GCM sealed containers protect exported documents at rest.
+- Signed exports include a certificate identifier and verification URL.
+- The public verification page can validate declaration authenticity without exposing tenant data.
+
+Public verification endpoints include:
+
+```text
+POST /api/verify
+GET  /api/verify/{certificate_id}
+GET  /.well-known/ecometric-seal-keys.json
 ```
-Downstream consumers and automated ingestion pipelines should ignore keys prefixed with `_` or specifically ignore `_ecometric_seal`.
 
-### 5. Key Rotation Procedure
+The seal proves file integrity, issuing organization identity, software/database metadata, and issuance time. It does not prove the physical accuracy of measurements before they were uploaded.
 
-Keys are referenced by unique identifiers (`key_id`), allowing key rotation without invalidating existing declarations:
-1. Generate a new Ed25519 keypair:
-   ```bash
-   python backend/scripts/seal_key_rotate.py --generate-signing k2
-   ```
-2. Update environment variables in production:
-   ```bash
-   SEAL_SIGNING_KEY_k2=<new_private_key_base64>
-   SEAL_ACTIVE_SIGNING_KEY_ID=k2
-   ```
-3. Retire the previous key once transitioned:
-   ```bash
-   python backend/scripts/seal_key_rotate.py --retire k1
-   ```
-Retired keys remain published in `/.well-known/ecometric-seal-keys.json` so existing documents remain verifiable.
+## Deployment
 
-### 6. Contributor Privacy Settings
+The repository currently includes:
 
-Organization Administrators can configure whether individual engineer names are included in public verification metadata under **Organization Settings → Public Contributor Privacy**. The organization name is always displayed.
+- [`render.yaml`](render.yaml) for a Docker-based FastAPI service and static Vite frontend on Render
+- [`backend/Dockerfile`](backend/Dockerfile) for the API container
+- [`vercel.json`](vercel.json) for frontend-compatible deployment configuration
 
-### 7. What the Seal Proves (and What it Does Not)
+Production secrets must be supplied by the deployment platform's secret manager. Keep Supabase service-role credentials, database URLs, signing keys, and backend secrets server-side.
 
-* **Proves**: File integrity, publishing organization identity, software engine version, LCI database version, and issuance timestamp.
-* **Does Not Prove**: The physical accuracy of raw supplier BOM measurements before they were uploaded to EcoMetric.
+The account/workspace brief also defines a future Google Cloud deployment with separate frontend and backend Cloud Run services. That migration is not complete in the current repository; do not treat Cloud Run or Stripe billing as implemented until their infrastructure, webhook processing, quota functions, and tests are present.
+
+## Account and billing
+
+EcoMetric uses an organization-based workspace model. Each workspace owns its projects,
+calculations, reports, exports, and billing state:
+
+- One organization represents one customer workspace.
+- The organization, not an individual user, is the billing entity.
+- Workspace membership and RLS policies isolate tenant data.
+- Organization administrators can open the **Billing** tab from the admin console.
+- The current Billing screen reads the active plan and subscription state from Supabase.
+- The current application displays unlimited EPD creation while quota enforcement is disabled.
+
+The planned subscription model is designed around:
+
+- Free, Pro, and Business plans stored in a database `plans` table.
+- One subscription row per organization.
+- Stripe Checkout for new subscriptions and the Stripe Customer Portal for plan,
+  payment-method, invoice, and cancellation management.
+- Stripe webhook synchronization for subscription status and billing periods.
+- Atomic server-side EPD credit reservation, commit, and release operations.
+- Idempotency keys so retries and duplicate generation requests cannot consume credits twice.
+- Structured `QUOTA_EXCEEDED` responses containing the plan, usage, limit, and reset time.
+
+Stripe checkout, webhook synchronization, and server-enforced quota reservations are
+not enabled in the current deployment. The Billing screen must not be treated as a
+security boundary until those backend and database functions are implemented. Frontend
+usage meters remain advisory; the backend must enforce all future entitlements.
+
+## Development conventions
+
+- Read [`DESIGN.md`](DESIGN.md) before changing UI.
+- Keep tenant filters on every organization-owned read, write, and realtime subscription.
+- Use explicit error handling; do not silently fall back to another tenant or project.
+- Preserve the existing calculation/report data contracts.
+- Add or update tests for backend behavior and tenant isolation.
+- Do not commit credentials, private keys, generated secrets, or production database URLs.
+
+## License and data
+
+EcoMetric uses project-specific reference datasets and rules. Confirm the applicable license and redistribution terms before publishing or distributing any bundled dataset outside the project.
