@@ -35,12 +35,19 @@ export default function UploadView() {
     productProfile,
     activeProject,
     renameProject,
+    saveProjectName,
+    showNotif,
   } = useStudio();
   const hasProduct = Boolean(productCategory);
   const product = hasProduct ? productProfile : null;
   const selectedProductIndex = PRODUCT_LIST.findIndex((item) => item.id === productCategory);
   const [showAllProducts, setShowAllProducts] = useState(selectedProductIndex >= INITIAL_PRODUCT_COUNT);
+  const [projectNameDraft, setProjectNameDraft] = useState(activeProject?.name || '');
   const visibleProducts = showAllProducts ? PRODUCT_LIST : PRODUCT_LIST.slice(0, INITIAL_PRODUCT_COUNT);
+
+  React.useEffect(() => {
+    setProjectNameDraft(activeProject?.name || '');
+  }, [activeProject?.name]);
 
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -119,10 +126,22 @@ export default function UploadView() {
             type="text"
             className="form-input"
             style={{ maxWidth: 520, marginTop: '8px' }}
-            value={activeProject.name}
-            onChange={(e) => renameProject(activeProject.id, e.target.value)}
+            value={projectNameDraft}
+            onChange={(e) => {
+              setProjectNameDraft(e.target.value);
+              renameProject(activeProject.id, e.target.value);
+            }}
             onFocus={(e) => { if (e.target.value === 'Untitled project') e.target.select(); }}
-            onBlur={(e) => { if (!e.target.value.trim()) renameProject(activeProject.id, 'Untitled project'); }}
+            onBlur={async () => {
+              const nextName = projectNameDraft.trim() || 'Untitled project';
+              setProjectNameDraft(nextName);
+              renameProject(activeProject.id, nextName);
+              try {
+                await saveProjectName(activeProject.id, nextName);
+              } catch (err) {
+                showNotif(err.message || 'Could not save project name.', 'Project Name Error');
+              }
+            }}
           />
         </div>
       )}

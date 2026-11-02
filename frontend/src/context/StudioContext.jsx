@@ -10,6 +10,7 @@ import { apiFetch } from '../lib/apiFetch';
 import { useAuth } from './AuthContext';
 import { useTenant } from './TenantContext';
 import { supabase } from '../lib/supabase';
+import { subscribeToScopedTable } from '../lib/tenantScopedClient';
 
 // Minimum time the progress bar stays up for a PDF export, even when the server is faster.
 const PDF_EXPORT_MIN_MS = 28000;
@@ -226,6 +227,36 @@ export function StudioProvider({ children }) {
       console.warn('[Studio] Could not persist workspace EPDs:', e);
     }
   }, [epdsList, currentAccountId, hydratedWorkspaceId]);
+
+  React.useEffect(() => {
+    if (!activeOrg?.id || !supabase) return undefined;
+
+    const channel = subscribeToScopedTable('projects', activeOrg.id, (payload) => {
+      if (payload.eventType !== 'UPDATE' || !payload.new?.id) return;
+
+      setProjectsList((prev) => prev.map((project) => (
+        project.id === payload.new.id
+          ? {
+              ...project,
+              name: payload.new.name || project.name,
+              updated_at: payload.new.updated_at || project.updated_at,
+              last_modified: 'Just now by Workspace',
+            }
+          : project
+      )));
+
+      if (payload.new.id === activeProjectId && payload.new.name) {
+        setExtractedData((prev) => ({
+          ...prev,
+          project_info: { ...prev.project_info, product_name: payload.new.name },
+        }));
+      }
+    });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [activeOrg?.id, activeProjectId]);
 
   const currentAccount = useMemo(() => {
     const existing = accountsList.find((a) => a.id === currentAccountId);
@@ -592,6 +623,35 @@ export function StudioProvider({ children }) {
       setExtractedData((prev) => ({ ...prev, project_info: { ...prev.project_info, product_name: name } }));
     }
   }, [activeProjectId]);
+
+  const saveProjectName = useCallback(async (projectId, name) => {
+    const normalizedName = name.trim();
+    if (!normalizedName) {
+      throw new Error('Project name cannot be empty.');
+    }
+    if (!supabase || !activeOrg?.id) {
+      throw new Error('Sign in to a workspace before saving the project name.');
+    }
+
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ name: normalizedName, updated_at: new Date().toISOString() })
+      .eq('id', projectId)
+      .eq('organization_id', activeOrg.id)
+      .select('id, name')
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Could not save project name: ${error.message}`);
+    }
+    if (!data) {
+      throw new Error('Could not save project name: project not found in this workspace.');
+    }
+
+    renameProject(projectId, normalizedName);
+    showNotif('Project name saved across the workspace.', 'Project Updated');
+    return data;
+  }, [activeOrg?.id, renameProject, showNotif]);
 
   // Duplicate Project
   const duplicateProject = useCallback((projectId) => {
@@ -1999,6 +2059,7 @@ export function StudioProvider({ children }) {
         openProject,
         createProject,
         renameProject,
+        saveProjectName,
         duplicateProject,
         deleteProject,
         closeToProjectsHub,
