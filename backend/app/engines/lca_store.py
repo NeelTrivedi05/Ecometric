@@ -1,79 +1,54 @@
 """
-ecoinvent v3.12 Cut-off Cumulative LCIA data, read from Supabase Postgres.
+ecoinvent v3.12 Cut-off Cumulative LCIA data, read from the files in backend/database.
 
-Tables (supabase/migrations/005_lca_reference_data.sql, filled by
-scripts/upload_lca_data.py):
-  lca_activities     one row per activity / product. row_index is the row's position
-                     in the workbook's LCIA sheet, so provider ids stay "ecoinvent_row_<n>"
-  impact_indicators  method / category / indicator / unit of each impact column
+Files (written by scripts/build_lca_files.py from the workbook):
+  lca_activities_*.parquet   one row per activity / product, split in two to stay under
+                             GitHub's file size limit. `row` is the row's position in the
+                             workbook's LCIA sheet, so provider ids stay "ecoinvent_row_<n>"
+  impact_indicators.json     method / category / indicator / unit of each impact column
 
 Dataset search runs in memory on the activity names (loaded once, ~3 MB); impact values
-are fetched per calculation, only for the rows and indicators it uses.
-
-Connection: SUPABASE_DB_URL (Session pooler URI, backend only - never the frontend).
+are read per calculation, only for the rows and indicators it uses.
 """
 
-import os
+import json
 import threading
-import time
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import pandas as pd
 
-RETRY_AFTER_S = 60       # after a failed load, don't retry (and wait on timeouts) on every call
+DATABASE_DIR = Path(__file__).resolve().parents[2] / "database"
+INDICATORS_PATH = DATABASE_DIR / "impact_indicators.json"
 
 _lock = threading.Lock()
 _activities: Optional[pd.DataFrame] = None
 _indicators: Optional[List[Tuple[str, str, str, str, str]]] = None
-_failed_at = 0.0
+_load_attempted = False
 _last_error: Optional[str] = None
 
 
+def _activity_files() -> List[Path]:
+    return sorted(DATABASE_DIR.glob("lca_activities_*.parquet"))
+
+
 def configured() -> bool:
-    return bool(os.getenv("SUPABASE_DB_URL", "").strip())
-
-
-def _connect():
-    import psycopg
-    raw_url = os.environ["SUPABASE_DB_URL"].strip()
-    parsed = urlsplit(raw_url)
-    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
-    query.setdefault("sslmode", "require")
-    connection_url = urlunsplit((
-        parsed.scheme,
-        parsed.netloc,
-        parsed.path,
-        urlencode(query),
-        parsed.fragment,
-    ))
-    return psycopg.connect(connection_url, connect_timeout=10)
+    return bool(_activity_files()) and INDICATORS_PATH.exists()
 
 
 def _load():
-    global _activities, _indicators, _failed_at, _last_error
+    global _activities, _indicators, _last_error
     try:
-        with _connect() as conn:
-            rows = conn.execute(
-                "SELECT row_index, activity_name, geography, reference_product_name, reference_product_unit "
-                "FROM lca_activities WHERE row_index IS NOT NULL"
-            ).fetchall()
-            indicators = conn.execute(
-                "SELECT indicator_code, method, category, indicator, unit "
-                "FROM impact_indicators ORDER BY excel_column_number"
-            ).fetchall()
+        meta = pd.concat(
+            pd.read_parquet(path, columns=["row", "activity", "geo", "product", "unit"])
+            for path in _activity_files()
+        )
+        indicators = [tuple(i) for i in json.loads(INDICATORS_PATH.read_text(encoding="utf-8"))]
     except Exception as e:
-        _failed_at = time.monotonic()
         _last_error = type(e).__name__
-        print(f"[lca_store] Could not load ecoinvent data from Supabase: {e}")
+        print(f"[lca_store] Could not load ecoinvent data from {DATABASE_DIR}: {e}")
         return
-    if not rows or not indicators:
-        _failed_at = time.monotonic()
-        print("[lca_store] Supabase reference tables are empty")
-        return
-
-    meta = pd.DataFrame(rows, columns=["row", "activity", "geo", "product", "unit"]).set_index("row").sort_index()
-    meta = meta.astype(str)
+    meta = meta.set_index("row").sort_index().astype(str)
     meta["activity_l"] = meta["activity"].str.lower()
     meta["product_l"] = meta["product"].str.lower()
     _indicators = indicators
@@ -83,22 +58,24 @@ def _load():
 def activities() -> Optional[pd.DataFrame]:
     """
     Activity metadata indexed by ecoinvent row (columns activity, geo, product, unit and
-    lower-cased activity_l / product_l), or None when Supabase is not configured / reachable.
+    lower-cased activity_l / product_l), or None when the database files are missing or unreadable.
     """
-    if _activities is None and configured() and time.monotonic() - _failed_at > RETRY_AFTER_S:
+    global _load_attempted
+    if _activities is None and not _load_attempted and configured():
         with _lock:
-            if _activities is None:
+            if _activities is None and not _load_attempted:
                 _load()
+                _load_attempted = True
     return _activities
 
 
 def status() -> Dict[str, Optional[str]]:
-    """Why the data is or isn't available, for diagnosing deployments (never includes the URL)."""
+    """Why the data is or isn't available, for diagnosing deployments."""
     if activities() is not None:
-        return {"state": "connected", "error": None}
+        return {"state": "loaded", "error": None}
     if not configured():
-        return {"state": "not_configured", "error": None}
-    return {"state": "connection_failed", "error": _last_error}
+        return {"state": "files_missing", "error": None}
+    return {"state": "load_failed", "error": _last_error}
 
 
 def indicators() -> List[Tuple[str, str, str, str, str]]:
@@ -108,15 +85,14 @@ def indicators() -> List[Tuple[str, str, str, str, str]]:
 
 
 def impact_values(rows: Iterable[int], codes: List[str]) -> Dict[int, Dict[str, float]]:
-    """{row: {indicator_code: value}} for the given ecoinvent rows, limited to `codes` - one query."""
+    """{row: {indicator_code: value}} for the given ecoinvent rows, limited to `codes`."""
     rows = sorted({int(r) for r in rows})
     if not rows or not codes:
         return {}
-    with _connect() as conn:
-        result = conn.execute(
-            "SELECT row_index, (SELECT jsonb_object_agg(k, impact_values -> k) "
-            "                   FROM unnest(%s::text[]) AS k WHERE impact_values ? k) "
-            "FROM lca_activities WHERE row_index = ANY(%s)",
-            (codes, rows),
-        ).fetchall()
-    return {row: values or {} for row, values in result}
+    result = {}
+    for path in _activity_files():
+        df = pd.read_parquet(path, columns=["row", *codes], filters=[("row", "in", rows)])
+        for record in df.to_dict("records"):
+            row = int(record.pop("row"))
+            result[row] = {code: float(v) for code, v in record.items() if pd.notna(v)}
+    return result

@@ -6,7 +6,7 @@ Purpose
 Reads your EPD calculation input JSON (e.g. epd_calculation_input.json)
 and extracts the emission factor (EF) value for every provider referenced
 in the JSON from the ecoinvent Cut-off Cumulative LCIA data stored in
-Supabase (engines/lca_store.py), across every impact category of the
+backend/database (engines/lca_store.py), across every impact category of the
 selected methodology. load_headers_and_data still reads the workbook
 directly for the offline analysis scripts in backend/scripts.
 """
@@ -600,11 +600,11 @@ def extract_ef_from_seed(payload: dict, target_methodology: str | None = None) -
     return results
 
 
-def extract_ef_from_supabase(payload: dict, target_methodology: str | None = None) -> dict:
+def extract_ef_from_lca_store(payload: dict, target_methodology: str | None = None) -> dict:
     """
     Matches every provider in payload to an ecoinvent row (same rules as the workbook:
-    find_best_match) and fetches the matched rows' values for target_methodology from
-    Supabase in one query. Returns {} when Supabase is not configured or reachable.
+    find_best_match) and reads the matched rows' values for target_methodology from
+    backend/database. Returns {} when those files are missing or unreadable.
     """
     from app.engines import lca_store
 
@@ -642,8 +642,8 @@ def extract_ef_from_supabase(payload: dict, target_methodology: str | None = Non
 
 def extract_ef_for_payload(payload: dict, target_methodology: str | None = None) -> dict:
     """
-    Extracts emission factor values from the ecoinvent LCIA data in Supabase for all providers
-    in payload. If Supabase is not configured, unreachable, or matches nothing, it automatically
+    Extracts emission factor values from the ecoinvent LCIA data in backend/database for all providers
+    in payload. If those files are missing, unreadable, or match nothing, it automatically
     falls back to the high-fidelity ecoinvent v3.12 industrial seed database.
     """
     if not target_methodology:
@@ -657,11 +657,11 @@ def extract_ef_for_payload(payload: dict, target_methodology: str | None = None)
         )
 
     try:
-        results = extract_ef_from_supabase(payload, target_methodology)
+        results = extract_ef_from_lca_store(payload, target_methodology)
         if results:
             return results
     except Exception as e:
-        print(f"[extract_ef_values] Notice: Supabase extraction fallback ({e}). Using verified ecoinvent v3.12 seed.")
+        print(f"[extract_ef_values] Notice: ecoinvent database extraction fallback ({e}). Using verified ecoinvent v3.12 seed.")
 
     # Fallback to high-performance verified seed dataset
     return extract_ef_from_seed(payload, target_methodology)
