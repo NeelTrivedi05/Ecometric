@@ -6,59 +6,6 @@ from app.engines.ecoinvent_lookup import get_activity_lcia, search_ecoinvent_act
 
 logger = logging.getLogger(__name__)
 
-# Base representative default LCIA characterization factors for typical processes
-FALLBACK_LCIA_FACTORS: Dict[str, Dict[str, Dict[str, float]]] = {
-    "proc-steel-converter-parent": {
-        "traci21": {"global warming potential": 2.45, "acidification potential": 0.012, "eutrophication potential": 0.003, "smog formation potential": 0.085, "ozone depletion potential": 1.2e-8},
-        "ef31": {"climate change - total": 2.48, "acidification": 0.0118, "eutrophication, freshwater": 0.00045, "photochemical ozone formation": 0.0062, "ozone depletion": 1.1e-8}
-    },
-    "proc-iron-ore-beneficiation": {
-        "traci21": {"global warming potential": 0.18, "acidification potential": 0.0018, "eutrophication potential": 0.0004, "smog formation potential": 0.009, "ozone depletion potential": 8.0e-10},
-        "ef31": {"climate change - total": 0.185, "acidification": 0.0017, "eutrophication, freshwater": 0.00008, "photochemical ozone formation": 0.0007, "ozone depletion": 7.5e-10}
-    },
-    "proc-coke-production": {
-        "traci21": {"global warming potential": 0.65, "acidification potential": 0.0045, "eutrophication potential": 0.0009, "smog formation potential": 0.022, "ozone depletion potential": 1.5e-9},
-        "ef31": {"climate change - total": 0.67, "acidification": 0.0042, "eutrophication, freshwater": 0.00015, "photochemical ozone formation": 0.0021, "ozone depletion": 1.4e-9}
-    },
-    "proc-sinter-production": {
-        "traci21": {"global warming potential": 0.42, "acidification potential": 0.0032, "eutrophication potential": 0.0006, "smog formation potential": 0.016, "ozone depletion potential": 1.1e-9},
-        "ef31": {"climate change - total": 0.43, "acidification": 0.0031, "eutrophication, freshwater": 0.00010, "photochemical ozone formation": 0.0014, "ozone depletion": 1.0e-9}
-    },
-    "proc-blast-furnace-pig-iron": {
-        "traci21": {"global warming potential": 1.25, "acidification potential": 0.0068, "eutrophication potential": 0.0014, "smog formation potential": 0.038, "ozone depletion potential": 4.5e-9},
-        "ef31": {"climate change - total": 1.28, "acidification": 0.0065, "eutrophication, freshwater": 0.00022, "photochemical ozone formation": 0.0035, "ozone depletion": 4.2e-9}
-    },
-    "proc-basic-oxygen-furnace": {
-        "traci21": {"global warming potential": 0.35, "acidification potential": 0.0015, "eutrophication potential": 0.0003, "smog formation potential": 0.011, "ozone depletion potential": 1.2e-9},
-        "ef31": {"climate change - total": 0.36, "acidification": 0.0014, "eutrophication, freshwater": 0.00007, "photochemical ozone formation": 0.0010, "ozone depletion": 1.1e-9}
-    },
-    "proc-continuous-casting": {
-        "traci21": {"global warming potential": 0.08, "acidification potential": 0.0005, "eutrophication potential": 0.0001, "smog formation potential": 0.003, "ozone depletion potential": 3.0e-10},
-        "ef31": {"climate change - total": 0.082, "acidification": 0.00048, "eutrophication, freshwater": 0.00002, "photochemical ozone formation": 0.00025, "ozone depletion": 2.8e-10}
-    },
-    "proc-hot-rolling-plate": {
-        "traci21": {"global warming potential": 0.15, "acidification potential": 0.0009, "eutrophication potential": 0.0002, "smog formation potential": 0.005, "ozone depletion potential": 5.0e-10},
-        "ef31": {"climate change - total": 0.155, "acidification": 0.00085, "eutrophication, freshwater": 0.00003, "photochemical ozone formation": 0.00045, "ozone depletion": 4.8e-10}
-    },
-    "proc-machining-cold-drawing": {
-        "traci21": {"global warming potential": 0.12, "acidification potential": 0.0007, "eutrophication potential": 0.00015, "smog formation potential": 0.004, "ozone depletion potential": 4.0e-10},
-        "ef31": {"climate change - total": 0.122, "acidification": 0.00065, "eutrophication, freshwater": 0.000025, "photochemical ozone formation": 0.00038, "ozone depletion": 3.7e-10}
-    },
-    "proc-surface-galvanizing": {
-        "traci21": {"global warming potential": 0.45, "acidification potential": 0.0035, "eutrophication potential": 0.0008, "smog formation potential": 0.015, "ozone depletion potential": 2.0e-9},
-        "ef31": {"climate change - total": 0.46, "acidification": 0.0033, "eutrophication, freshwater": 0.00012, "photochemical ozone formation": 0.0016, "ozone depletion": 1.9e-9}
-    },
-    "proc-transport-freight-lorry": {
-        "traci21": {"global warming potential": 0.088, "acidification potential": 0.0004, "eutrophication potential": 0.00009, "smog formation potential": 0.008, "ozone depletion potential": 1.8e-9},
-        "ef31": {"climate change - total": 0.089, "acidification": 0.00038, "eutrophication, freshwater": 0.00001, "photochemical ozone formation": 0.0007, "ozone depletion": 1.7e-9}
-    },
-    "proc-electricity-grid-mv": {
-        "traci21": {"global warming potential": 0.716, "acidification potential": 0.0038, "eutrophication potential": 0.0006, "smog formation potential": 0.018, "ozone depletion potential": 5.0e-9},
-        "ef31": {"climate change - total": 0.725, "acidification": 0.0036, "eutrophication, freshwater": 0.00009, "photochemical ozone formation": 0.0015, "ozone depletion": 4.7e-9}
-    }
-}
-
-
 class ProcessChainEngine:
     """
     Multi-tier Supply Chain Entanglement and Process Chaining Engine.
@@ -336,16 +283,10 @@ class ProcessChainEngine:
         """
         Retrieves LCIA factors from fallback dictionary or dynamically queries Ecoinvent seed.
         """
-        if node_id in FALLBACK_LCIA_FACTORS:
-            return FALLBACK_LCIA_FACTORS[node_id].get(method_key, FALLBACK_LCIA_FACTORS[node_id].get("traci21", {}))
-        
-        return {
-            "global warming potential": 0.10,
-            "acidification potential": 0.001,
-            "eutrophication potential": 0.0002,
-            "smog formation potential": 0.005,
-            "ozone depletion potential": 1.0e-9
-        }
+        factors = get_activity_lcia(node_id, method_key)
+        if not factors:
+            raise ValueError(f"No Supabase LCIA values found for process provider '{node_id}'")
+        return factors
 
     def list_all_process_nodes(self, sector: Optional[str] = None, search: Optional[str] = None) -> List[Dict[str, Any]]:
         query = self.db.query(ProcessNode)

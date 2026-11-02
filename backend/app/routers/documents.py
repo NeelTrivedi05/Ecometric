@@ -6,7 +6,7 @@ import zipfile
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, Body, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
-from ..engines.ecoinvent_lookup import search_ecoinvent_activities, get_activity_lcia
+from ..engines import lca_store
 from ..engines.pdf_extractor import extract_pdf_data
 from ..engines.excel_extractor import extract_excel_data
 from ..engines.messy_data_parser import (
@@ -738,16 +738,23 @@ def match_providers(payload: Dict[str, Any] = Body(default_factory=dict)):
     region = project_region(extracted)
     bom = extracted.setdefault("bom", [])
 
-    # The matcher supplies seed-backed automatic defaults when the remote LCIA
-    # metadata is unavailable, so users are never forced into manual selection.
+    # Matching is intentionally unsuccessful when the authoritative store is unavailable.
     bom_stats = assign_bom_providers(bom, pid, region, overwrite=refresh)
     stage_stats = assign_stage_providers(extracted, pid, region, overwrite=refresh)
+    store_status = lca_store.status()
+    unavailable = not store_status["available"] and not any(
+        item.get("match_method") == "user_selected" for item in bom
+    )
 
     return {
-        "status": "success",
+        "status": "unavailable" if unavailable else "success",
         "product_category": pid,
         "extracted": extracted,
-        "provider_matching": {**bom_stats, "stages": stage_stats, "database_available": database_available()},
+        "provider_matching": {
+            **bom_stats, "stages": stage_stats,
+            "database_available": store_status["available"],
+            "database_status": store_status,
+        },
     }
 
 
@@ -790,48 +797,15 @@ def search_lcia_products(query: str = "", limit: int = 200, unit: Optional[str] 
     if not query.strip():
         return {"status": "success", "query": query, "count": 0, "results": []}
 
-    if database_available():
-        hits = rank_datasets(query.strip(), normalize_region(region), unit or None, limit=limit)
-        results = [{
-            "option_number": n,
-            "row_index": h["ecoinvent_row"],
-            "activity_name": h["activity_name"],
-            "geography": h["geography"],
-            "reference_product_name": h["reference_product_name"],
-            "reference_unit": h["reference_unit"],
-        } for n, h in enumerate(hits)]
-        return {"status": "success", "query": query, "count": len(results), "results": results}
-
-    if not lcia_extractor or not os.path.exists(lcia_extractor.FILE_PATH):
-<<<<<<< Updated upstream
-        raise HTTPException(status_code=503, detail="ecoinvent database unavailable: set SUPABASE_DB_URL on the backend")
     try:
-        data = lcia_extractor.get_lcia_data()
-        matches = lcia_extractor.search_product(data, query.strip())
-    except Exception as exc:
-        # The repository's small implementation workbook is not a searchable LCIA export.
-        # Do not expose its pandas/openpyxl error as an API 500; the Supabase reference store
-        # is the supported provider-search source in deployed environments.
-        print(f"[documents] LCIA provider search unavailable: {exc}")
-        raise HTTPException(
-            status_code=503,
-            detail="ecoinvent provider search unavailable: configure SUPABASE_DB_URL and load the LCIA reference tables",
-        ) from exc
-=======
-        raise HTTPException(status_code=503, detail="ecoinvent database unavailable: backend/database files are missing")
-    data = lcia_extractor.get_lcia_data()
-    matches = lcia_extractor.search_product(data, query.strip())
->>>>>>> Stashed changes
-    unit_col = ("META", "META", "META", "Reference Product Unit")
-    results = [{
-        "option_number": idx,
-        "row_index": int(row["index"]),
-        "activity_name": str(row["Activity Name"]),
-        "geography": str(row["Geography"]),
-        "reference_product_name": str(row["Reference Product Name"]),
-        "reference_unit": str(data.at[int(row["index"]), unit_col]),
-    } for idx, row in matches.head(limit).iterrows()]
-    return {"status": "success", "query": query, "count": len(matches), "results": results}
+        results = lca_store.search(query.strip(), unit=unit, geography=normalize_region(region), limit=limit)
+    except lca_store.ReferenceStoreError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    for number, result in enumerate(results):
+        result["option_number"] = number
+        result["source"] = "supabase"
+    return {"status": "success", "query": query, "count": len(results), "results": results,
+            "database_status": lca_store.status()}
 
 @router.post("/lcia-calculate")
 def calculate_lcia_epd(payload: Dict[str, Any]):
@@ -843,15 +817,14 @@ def calculate_lcia_epd(payload: Dict[str, Any]):
     
     if row_index is None:
         raise HTTPException(status_code=400, detail="row_index is required")
-    if not lcia_extractor:
-        raise HTTPException(status_code=500, detail="lcia_extractor module not available")
-    
-    data = lcia_extractor.get_lcia_data()
-    if row_index < 0 or row_index >= len(data):
-        raise HTTPException(status_code=400, detail=f"Invalid row_index {row_index}")
-    
-    res = lcia_extractor.extract_lcia_results_dict(data, int(row_index), methodology or None)
-    return {
-        "status": "success",
-        "result": res
-    }
+    try:
+        row = lca_store.provider_row(f"ecoinvent_row_{int(row_index)}")
+        indicators = lca_store.indicators()
+        codes = [
+            code for code, method, _category, _indicator, _unit in indicators
+            if not methodology or str(methodology).lower() in str(method).lower()
+        ]
+        values = lca_store.impact_values([row], codes)[row]
+    except lca_store.ReferenceStoreError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {"status": "success", "source": "supabase", "result": values}

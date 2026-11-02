@@ -37,9 +37,14 @@ export function bomProvider(item) {
   return {
     id: i.provider_id || i.ecoinvent_id || '',
     dataset: i.dataset || '',
+    referenceProduct: i.reference_product_name || '',
+    geography: i.ecoinvent_geography || '',
+    confidence: i.confidence,
+    source: i.source || '',
     unit: i.reference_unit || '',
     method: i.match_method || '',
     unmatched: i.ecoinvent_matched === false,
+    unavailable: i.match_error === 'Reference database unavailable',
     pending: !(i.provider_id || i.ecoinvent_id) && i.ecoinvent_matched === undefined,
   };
 }
@@ -48,6 +53,7 @@ export function bomProvider(item) {
 export function matchStatus(provider) {
   if (provider.method === USER_SELECTED) return 'user';
   if (provider.pending) return 'pending';
+  if (provider.unavailable) return 'unavailable';
   if (!provider.id || provider.unmatched) return 'none';
   if (AUTO_METHODS.has(provider.method)) return 'auto';
   return 'document';
@@ -94,6 +100,7 @@ const BADGE_STYLES = {
   document: { label: 'From document', color: '#6e5a12', bg: 'rgba(191, 144, 0, 0.12)', title: 'Dataset stated in the uploaded document.' },
   pending: { label: 'Matching…', color: '#6e6e73', bg: 'rgba(0, 0, 0, 0.06)', title: 'Looking up the best dataset for this line.' },
   none: { label: 'Not matched', color: '#c4271b', bg: 'rgba(255, 59, 48, 0.10)', title: 'No dataset found. Select one before calculating.' },
+  unavailable: { label: 'Reference database unavailable', color: '#9b2c2c', bg: 'rgba(155, 44, 44, 0.10)', title: 'The Supabase ecoinvent reference database is unavailable. Matching will retry.' },
 };
 
 export function MatchBadge({ status }) {
@@ -119,10 +126,13 @@ export function ProviderLine({ label, provider }) {
           title={provider.dataset || provider.id}
           style={{ fontSize: '11px', color: status === 'none' ? '#c4271b' : 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
         >
-          {status === 'none' ? 'No dataset selected' : status === 'pending' ? 'Finding the best dataset…' : (provider.dataset || provider.id)}
+          {status === 'none' ? 'No dataset selected' : status === 'unavailable' ? 'Reference database unavailable' : status === 'pending' ? 'Finding the best dataset…' : (provider.dataset || provider.id)}
         </span>
-        {provider.unit && status !== 'none' && status !== 'pending' && (
-          <span style={{ fontSize: '10px', color: 'var(--text-secondary, #86868b)', flexShrink: 0 }}>per {provider.unit}</span>
+        {provider.unit && status !== 'none' && status !== 'pending' && status !== 'unavailable' && (
+          <span style={{ fontSize: '10px', color: 'var(--text-secondary, #86868b)', flexShrink: 0 }}>
+            {provider.referenceProduct ? `${provider.referenceProduct} · ` : ''}{provider.geography ? `${provider.geography} · ` : ''}per {provider.unit}
+            {provider.confidence != null ? ` · ${Math.round(provider.confidence * 100)}%` : ''}
+          </span>
         )}
         <MatchBadge status={status} />
       </div>

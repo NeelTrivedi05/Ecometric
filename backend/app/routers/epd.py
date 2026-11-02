@@ -106,18 +106,6 @@ REFRIGERANT_GWP_CF = {
     "R32": 675.0,
 }
 
-LEGACY_DEFAULT_SLUGS = {
-    "electricity": "ecoinvent_elec_mv_us",
-    "natural_gas": "ecoinvent_gas_burned_boiler_glo",
-    "water": "ecoinvent_water_deionised_glo",
-    "diesel_machine": "ecoinvent_row_2621",
-    "lorry": "ecoinvent_transport_lorry_32t_rer",
-    "lorry_16_32": "ecoinvent_transport_lorry_32t_rer",
-    "ship": "ecoinvent_transport_container_ship_glo",
-    "train": "ecoinvent_transport_freight_train_rer",
-    "lubricating_oil": "ecoinvent_lubricating_oil_glo",
-}
-
 def resolve_reference_unit(pid: str, default: str = "kg") -> str:
     pid_l = str(pid).lower()
     if "elec" in pid_l or "kwh" in pid_l:
@@ -143,11 +131,9 @@ def _num(value, default=0.0) -> float:
 
 def _ensure_provider(block: dict, field: str, fallback_unit: str, legacy_kind: Optional[str] = None):
     """
-    Datasets are picked by assign_stage_providers; this only covers a missing ecoinvent database
-    (legacy seed slug) and fills in the reference unit the calculation converts to.
+    Datasets are picked by assign_stage_providers; this only fills in the
+    reference unit for an already selected provider.
     """
-    if not block.get(field) and legacy_kind:
-        block[field] = LEGACY_DEFAULT_SLUGS[legacy_kind]
     if block.get(field):
         unit_key = meta_key(field, "reference_unit")
         block[unit_key] = block.get(unit_key) or _provider_unit(block[field], fallback_unit)
@@ -438,7 +424,11 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
         calculation_record["extracted_ef_values"] = ef_results
         print(f"[EPD Router] Extracted EF values for {len(ef_results)} providers ({methodology})")
     except Exception as e:
-        print(f"[EPD Router] Warning: Could not extract EF values: {e}")
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=503,
+            detail=f"Supabase reference data unavailable; calculation could not load LCIA values: {e}",
+        ) from e
 
     # Save the consolidated JSON (user inputs + EF values) to results/ directory
     try:
@@ -867,5 +857,3 @@ def save_report_details_endpoint(
 
     db.commit()
     return {"success": True, "message": "Report details saved successfully", "project_id": project_id}
-
-

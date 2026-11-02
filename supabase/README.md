@@ -122,3 +122,16 @@ recreates only the five policies defined by this file, so the complete schema ca
 again safely. It lets the UI distinguish an unknown email from an incorrect password; this
 intentionally allows email-account enumeration because that was requested for the login
 experience.
+## Backend reference store
+
+The backend is the only consumer of `public.lca_activities` and
+`public.impact_indicators`. Apply `migrations/009_lca_reference_search_indexes.sql`
+after migration 005. Keep RLS enabled and do not add browser-readable policies.
+Configure the backend with `SUPABASE_DB_URL` (the Supabase session pooler URI);
+never expose it as a frontend variable.
+
+The backend health endpoint (`/health` or `/api/health`) reports reference-store
+availability, row counts, schema/query errors, and the last successful metadata
+refresh. Local fixture loading is disabled unless
+`ECOMETRIC_ENABLE_LOCAL_REFERENCE_FIXTURES=true` is explicitly set for tests or
+local development.
