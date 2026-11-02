@@ -145,31 +145,6 @@
         "value": "TRACI 2.1"
        },
        {
-        "label": "Independent verification of the declaration and data, according to ISO 14025:2006",
-        "options": {
-         "choices": [
-          "internal",
-          "external"
-         ]
-        },
-        "type": "checkbox",
-        "value": "Not declared"
-       },
-       {
-        "label": "EPD verifier",
-        "options": {
-         "image": null
-        },
-        "type": "signature",
-        "value": "Not declared"
-       },
-       {
-        "label": "LCA conducted by",
-        "options": {},
-        "type": "text",
-        "value": "Not declared"
-       },
-       {
         "label": "Limitations",
         "options": {},
         "type": "text",

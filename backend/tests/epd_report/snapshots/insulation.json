@@ -189,31 +189,6 @@
         "value": "ISO 14025, ISO 14040, ISO 14044, EN 15804:2012+A2:2019"
        },
        {
-        "label": "Independent verification of the declaration and data, according to ISO 14025:2006",
-        "options": {
-         "choices": [
-          "internal",
-          "external"
-         ]
-        },
-        "type": "checkbox",
-        "value": "external"
-       },
-       {
-        "label": "EPD verifier",
-        "options": {
-         "image": null
-        },
-        "type": "signature",
-        "value": "A. Verifier, Independent Verification Ltd."
-       },
-       {
-        "label": "LCA conducted by",
-        "options": {},
-        "type": "text",
-        "value": "C. Analyst, Example LCA Consulting"
-       },
-       {
         "label": "LCA verified by",
         "options": {
          "image": null
