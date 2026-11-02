@@ -105,9 +105,10 @@ export default function StudioWorkspace() {
   useEffect(() => {
     if (!phase) return;
 
-    if (STUDIO_PHASES.includes(phase) && phase !== activePhase) {
+    const targetPhase = phase === 'product' ? 'upload' : phase;
+    if (STUDIO_PHASES.includes(targetPhase) && targetPhase !== activePhase) {
       syncingPhaseRef.current = true;
-      setActivePhase(phase);
+      setActivePhase(targetPhase);
     }
   }, [phase, setActivePhase]);
 

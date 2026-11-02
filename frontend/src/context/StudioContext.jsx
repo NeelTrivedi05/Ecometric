@@ -583,6 +583,16 @@ export function StudioProvider({ children }) {
     return true;
   }, [activeOrg?.id, currentAccount, showNotif]);
 
+  // Rename Project (also syncs the EPD product name for the active project)
+  const renameProject = useCallback((projectId, name) => {
+    setProjectsList((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, name, last_modified: 'Just now by You' } : p))
+    );
+    if (projectId === activeProjectId) {
+      setExtractedData((prev) => ({ ...prev, project_info: { ...prev.project_info, product_name: name } }));
+    }
+  }, [activeProjectId]);
+
   // Duplicate Project
   const duplicateProject = useCallback((projectId) => {
     const proj = projectsList.find((p) => p.id === projectId);
@@ -1988,6 +1998,7 @@ export function StudioProvider({ children }) {
         restoreProject,
         openProject,
         createProject,
+        renameProject,
         duplicateProject,
         deleteProject,
         closeToProjectsHub,

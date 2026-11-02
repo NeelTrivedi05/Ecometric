@@ -62,14 +62,6 @@
       "check": {"type": "none_listed", "path": "results.core_indicators_missing", "label": "Core indicator(s) without results"}
     },
     {
-      "id": "CORE.RES.MODULES",
-      "title": "Modules required for this product declared",
-      "requirement": "The life-cycle modules the product's PCR requires should have results.",
-      "source": {"section": "Product PCR (see product profile)"},
-      "phase": "results", "severity": "major", "obligation": "shall", "derived": false,
-      "check": {"type": "modules_required", "modules_path": "profile.modules.required"}
-    },
-    {
       "id": "CORE.RES.FORBIDDEN_MODULES",
       "title": "Modules not allowed for this product left out",
       "requirement": "Modules the product's PCR does not allow (e.g. D for chillers) must not be declared.",

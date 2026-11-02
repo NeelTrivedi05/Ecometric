@@ -196,23 +196,35 @@ export const USER_PERSONAS = [
 
 export const FAQS = [
   {
-    q: "Why do raw ecoinvent numbers differ from published EPDs like Carrier Chiller EPD11017?",
-    a: "Raw ecoinvent LCI contains unweighted elementary flows without characterization factors. To match certified declarations, the correct LCIA methodology (EF 3.1, EN 15804+A2) must be applied. EcoMetric automates this characterization matrix."
+    q: "What is an EPD?",
+    a: "An Environmental Product Declaration (EPD) is a standardized, independently verified document that reports a product's environmental impact — such as its carbon footprint — across its life cycle. It is based on a life cycle assessment (LCA) and follows ISO 14025 and EN 15804."
   },
   {
-    q: "How does the platform enforce EF 3.1 requirements?",
-    a: "Since September 2024, EF 3.1 characterization factors are mandatory for International EPD System declarations under GPI 5.0.1. EcoMetric includes pre-validated EF 3.1 matrices covering all 13 core indicators."
+    q: "Why is an EPD necessary?",
+    a: "EPDs are increasingly required in public tenders, Buy Clean policies and green building schemes like LEED and BREEAM. Architects and contractors use them to compare products, so without one your product can be left out of specifications."
   },
   {
-    q: "What is the biogenic carbon net-zero mass balance rule?",
-    a: "Under PCR 2019:14 Annex 2, biogenic carbon uptake during raw material growth must balance out to net-zero across the complete cradle-to-grave cycle unless permanent capture is proven."
+    q: "How does an EPD help manufacturers?",
+    a: "It helps you win bids and get specified, gives customers credits toward green building certifications, and backs your sustainability claims with verified data. The underlying LCA also shows where emissions and costs can be cut."
   },
   {
-    q: "Are exports third-party verifier ready?",
-    a: "Yes. Declarations include all required modules (A1-A3, B1-B7, C1-C4, D), data quality ratings (DQRs), and mandatory GPI indicator disclaimers in both PDF and ILCD+EPD JSON formats."
+    q: "What information does an EPD contain?",
+    a: "A product description, the declared or functional unit, the life-cycle stages covered, impact results such as global warming potential, data-quality details and a verification statement."
   },
   {
-    q: "Can I use my own supplier-specific emission factors?",
-    a: "Yes. The system allows you to override default ecoinvent datasets with Tier-1 supplier verified EPD data for high-impact components like compressors and heat exchangers."
+    q: "What is a PCR?",
+    a: "Product Category Rules (PCR) define how the LCA must be done for a specific product type, so EPDs in the same category are comparable. EcoMetric applies the right PCR for the product you select."
+  },
+  {
+    q: "What data do I need to create an EPD?",
+    a: "Mainly a bill of materials with material types and weights, plus factory energy use, waste, transport distances and product specifications. EcoMetric reads these from your existing spreadsheets and PDFs."
+  },
+  {
+    q: "How does EcoMetric speed up the process?",
+    a: "Instead of months of manual work, EcoMetric extracts your data, maps materials to ecoinvent v3.12, runs the impact calculation and PCR checks, and produces a verifier-ready EPD report in a fraction of the time."
+  },
+  {
+    q: "Does an EPD need verification, and how long is it valid?",
+    a: "Yes. Before publication, an EPD must be checked by an independent third-party verifier and registered with a program operator. Once published, it is typically valid for five years."
   }
 ];

@@ -17,7 +17,7 @@ import {
 } from './Icons';
 
 const PHASES = [
-  { id: 'upload', step: '1', label: 'Product Setup & Upload', sub: 'Select product, upload XLSX, CSV, PDF', icon: UploadIcon },
+  { id: 'upload', step: '1', label: 'Product & Documents', sub: 'Select product, upload XLSX/CSV/PDF', icon: UploadIcon },
   { id: 'extract', step: '2', label: 'Extracted Inventory', sub: 'Modules A1–D Coverage', icon: ReviewIcon },
   { id: 'user_review', step: '3', label: 'Review & Mapping', sub: 'BOM & ecoinvent Providers', icon: EditIcon },
   { id: 'validate', step: '4', label: 'Pre-Calculation Checks', sub: 'Checked before calculation', icon: ValidateIcon },
@@ -34,6 +34,7 @@ export default function StudioSidebar() {
     setActivePhase,
     isSidebarOpen,
     setIsSidebarOpen,
+    productCategory,
     uploadedFiles,
     extractedData,
     validationResults,
@@ -66,7 +67,7 @@ export default function StudioSidebar() {
   const getPhaseStatus = (phaseId) => {
     switch (phaseId) {
       case 'upload':
-        return uploadedFiles.length > 0 ? 'done' : '';
+        return productCategory && uploadedFiles.length > 0 ? 'done' : '';
       case 'extract':
         return uploadedFiles.some(f => f.status === 'done') || (extractedData?.bom && extractedData.bom.length > 0) ? 'done' : '';
       case 'user_review':

@@ -49,7 +49,7 @@ function AccountMenuItem({ icon: Icon, label, onClick, isDestructive = false }) 
         padding: '8px 10px',
         borderRadius: '8px',
         color: isHovered ? '#ffffff' : (isDestructive ? '#e4ebe6' : '#d2ded7'),
-        backgroundColor: isHovered ? (isDestructive ? 'rgba(220, 38, 38, 0.16)' : '#26342b') : 'transparent',
+        backgroundColor: isHovered ? (isDestructive ? 'rgba(220, 38, 38, 0.16)' : '#1c3f2d') : 'transparent',
         cursor: 'pointer',
         fontSize: '13px',
         fontWeight: 500,
@@ -318,7 +318,6 @@ export default function ProjectsConsole() {
   const [newTagInput, setNewTagInput] = useState('');
 
   // Top banner dismiss state
-  const [showBanner, setShowBanner] = useState(true);
 
   // Search & filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -570,7 +569,7 @@ export default function ProjectsConsole() {
   const handleNewProject = async () => {
     const newProj = {
       id: `proj-${Date.now()}`,
-      name: 'Untitled Project',
+      name: 'Untitled project',
       product_model: 'UNTITLED-500RT',
       capacity_rt: 500,
       refrigerant: assembledDatabase?.default_refrigerant || 'R1233zd',
@@ -617,9 +616,9 @@ export default function ProjectsConsole() {
         style={{
           width: '260px',
           minWidth: '260px',
-          backgroundColor: '#1b2620', // Dark forest slate matching the industrial console template
+          backgroundColor: '#143424', // Dark forest slate matching the industrial console template
           color: '#e4ebe6',
-          borderRight: '1px solid #28372d',
+          borderRight: '1px solid #224a35',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -632,7 +631,7 @@ export default function ProjectsConsole() {
           <div
             style={{
               padding: '18px 20px 14px',
-              borderBottom: '1px solid #28372d',
+              borderBottom: '1px solid #224a35',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
@@ -682,7 +681,7 @@ export default function ProjectsConsole() {
                   marginLeft: 'auto',
                   fontSize: '11px',
                   fontWeight: 600,
-                  backgroundColor: activeFolder === 'all' && !selectedTag ? 'rgba(255,255,255,0.2)' : '#28372d',
+                  backgroundColor: activeFolder === 'all' && !selectedTag ? 'rgba(255,255,255,0.2)' : '#224a35',
                   padding: '2px 7px',
                   borderRadius: '9999px',
                 }}
@@ -704,7 +703,7 @@ export default function ProjectsConsole() {
                   color: activeFolder === 'all' && !selectedTag ? '#ffffff' : '#b1c2b7',
                   fontWeight: activeFolder === 'all' && !selectedTag ? 600 : 400,
                   cursor: 'pointer',
-                  backgroundColor: activeFolder === 'all' && !selectedTag ? '#263b2f' : 'transparent',
+                  backgroundColor: activeFolder === 'all' && !selectedTag ? '#23523a' : 'transparent',
                 }}
               >
                 All projects
@@ -721,7 +720,7 @@ export default function ProjectsConsole() {
                   color: activeFolder === 'mine' ? '#ffffff' : '#b1c2b7',
                   fontWeight: activeFolder === 'mine' ? 600 : 400,
                   cursor: 'pointer',
-                  backgroundColor: activeFolder === 'mine' ? '#263b2f' : 'transparent',
+                  backgroundColor: activeFolder === 'mine' ? '#23523a' : 'transparent',
                 }}
               >
                 Your projects
@@ -738,7 +737,7 @@ export default function ProjectsConsole() {
                   color: activeFolder === 'shared' ? '#ffffff' : '#b1c2b7',
                   fontWeight: activeFolder === 'shared' ? 600 : 400,
                   cursor: 'pointer',
-                  backgroundColor: activeFolder === 'shared' ? '#263b2f' : 'transparent',
+                  backgroundColor: activeFolder === 'shared' ? '#23523a' : 'transparent',
                 }}
               >
                 Shared with you
@@ -755,7 +754,7 @@ export default function ProjectsConsole() {
                   color: activeFolder === 'archived' ? '#ffffff' : '#b1c2b7',
                   fontWeight: activeFolder === 'archived' ? 600 : 400,
                   cursor: 'pointer',
-                  backgroundColor: activeFolder === 'archived' ? '#263b2f' : 'transparent',
+                  backgroundColor: activeFolder === 'archived' ? '#23523a' : 'transparent',
                 }}
               >
                 Archived projects
@@ -772,7 +771,7 @@ export default function ProjectsConsole() {
                   color: activeFolder === 'epds' ? '#ffffff' : '#b1c2b7',
                   fontWeight: activeFolder === 'epds' ? 600 : 400,
                   cursor: 'pointer',
-                  backgroundColor: activeFolder === 'epds' ? '#263b2f' : 'transparent',
+                  backgroundColor: activeFolder === 'epds' ? '#23523a' : 'transparent',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -796,7 +795,7 @@ export default function ProjectsConsole() {
           </div>
 
           {/* Section: ORGANIZE TAGS */}
-          <div style={{ padding: '16px 16px 8px', borderTop: '1px solid #28372d', marginTop: '10px' }}>
+          <div style={{ padding: '16px 16px 8px', borderTop: '1px solid #224a35', marginTop: '10px' }}>
             <div
               style={{
                 fontSize: '11px',
@@ -830,7 +829,7 @@ export default function ProjectsConsole() {
                       color: isTagActive ? '#ffffff' : '#b1c2b7',
                       fontWeight: isTagActive ? 600 : 400,
                       cursor: 'pointer',
-                      backgroundColor: isTagActive ? '#263b2f' : 'transparent',
+                      backgroundColor: isTagActive ? '#23523a' : 'transparent',
                     }}
                   >
                     <TagIcon size={13} style={{ color: isTagActive ? '#1f7a4c' : '#73857a' }} />
@@ -853,8 +852,8 @@ export default function ProjectsConsole() {
                       width: '100%',
                       padding: '5px 8px',
                       fontSize: '12px',
-                      backgroundColor: '#28372d',
-                      border: '1px solid #3d5244',
+                      backgroundColor: '#224a35',
+                      border: '1px solid #336048',
                       borderRadius: '4px',
                       color: '#ffffff',
                       outline: 'none',
@@ -893,7 +892,7 @@ export default function ProjectsConsole() {
         </div>
 
         {/* Bottom Utility Navigation */}
-        <div style={{ padding: '12px', borderTop: '1px solid #28372d', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        <div style={{ padding: '12px', borderTop: '1px solid #224a35', display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <div
             style={{
               padding: '8px 10px',
@@ -954,9 +953,9 @@ export default function ProjectsConsole() {
                   left: 0,
                   width: '100%',
                   minWidth: '236px',
-                  backgroundColor: '#1b2620',
+                  backgroundColor: '#143424',
                   borderRadius: '12px',
-                  border: '1px solid #334438',
+                  border: '1px solid #2c5940',
                   boxShadow: '0 16px 36px rgba(10, 25, 18, 0.55)',
                   padding: '6px',
                   zIndex: 100,
@@ -992,7 +991,7 @@ export default function ProjectsConsole() {
                 <div
                   style={{
                     height: '1px',
-                    backgroundColor: '#28372d',
+                    backgroundColor: '#224a35',
                     margin: '4px 6px',
                   }}
                 />
@@ -1016,8 +1015,8 @@ export default function ProjectsConsole() {
               style={{
                 padding: '8px 10px',
                 borderRadius: '10px',
-                backgroundColor: isCardHovered ? '#2c3c31' : '#26342b',
-                border: isCardHovered ? '1px solid #3f5345' : '1px solid #334438',
+                backgroundColor: isCardHovered ? '#24503a' : '#1c3f2d',
+                border: isCardHovered ? '1px solid #38664c' : '1px solid #2c5940',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
@@ -1078,7 +1077,7 @@ export default function ProjectsConsole() {
                     height: '10px',
                     backgroundColor: '#12b76a',
                     borderRadius: '50%',
-                    border: '2px solid #26342b',
+                    border: '2px solid #1c3f2d',
                     boxSizing: 'border-box',
                     zIndex: 2,
                   }}
@@ -1139,81 +1138,6 @@ export default function ProjectsConsole() {
           overflowY: 'auto',
         }}
       >
-        {/* Top Dismissible Announcement Banner (Matching Overleaf Template in image) */}
-        {showBanner && (
-          <div
-            style={{
-              backgroundColor: '#1b3829', // Deep nature forest slate
-              color: '#ffffff',
-              padding: '12px 24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '16px',
-              borderBottom: '1px solid #284c39',
-              fontSize: '13px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-              <div
-                style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255,255,255,0.15)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  fontSize: '11px',
-                  fontWeight: 700,
-                }}
-              >
-                i
-              </div>
-              <span>
-                ISO 14025 & EN 15804+A2 Verification Pipeline active. All LCI calculations use ecoinvent v3.12 verified datasets assembled for{' '}
-                <strong>{currentAccount?.company_name}</strong>.
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-              <a
-                href="/info"
-                style={{
-                  padding: '5px 14px',
-                  borderRadius: '9999px',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  color: '#ffffff',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                  transition: 'background 0.15s ease',
-                }}
-              >
-                Verification Standards
-              </a>
-
-              <button
-                type="button"
-                onClick={() => setShowBanner(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'rgba(255,255,255,0.7)',
-                  cursor: 'pointer',
-                  padding: '2px',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-                title="Dismiss notice"
-              >
-                <XIcon size={16} />
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Content Container */}
         <div style={{ padding: '24px 36px', maxWidth: '1440px', width: '100%', boxSizing: 'border-box' }}>
@@ -1744,7 +1668,7 @@ export default function ProjectsConsole() {
             bottom: '24px',
             left: '50%',
             transform: 'translateX(-50%)',
-            backgroundColor: '#1b2620',
+            backgroundColor: '#143424',
             color: '#ffffff',
             padding: '10px 20px',
             borderRadius: '9999px',
@@ -1760,7 +1684,7 @@ export default function ProjectsConsole() {
             <strong>{selectedProjectIds.length}</strong> project{selectedProjectIds.length > 1 ? 's' : ''} selected
           </span>
 
-          <div style={{ width: '1px', height: '16px', backgroundColor: '#3d5244' }} />
+          <div style={{ width: '1px', height: '16px', backgroundColor: '#336048' }} />
 
           <button
             type="button"

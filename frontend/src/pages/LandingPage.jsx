@@ -5,8 +5,6 @@ import Hero9 from '../components/landing/Hero9';
 import WhatIsEpd from '../components/landing/WhatIsEpd';
 import WhyEpdMatters from '../components/landing/WhyEpdMatters';
 import WhoNeedsEpd from '../components/landing/WhoNeedsEpd';
-import Pricing11 from '../components/landing/Pricing11';
-import PricingAbstractAngles from '../components/landing/PricingAbstractAngles';
 import TrustProof from '../components/landing/TrustProof';
 import TheProblem from '../components/landing/TheProblem';
 import LifeCycleRibbon from '../components/landing/LifeCycleRibbon';
@@ -78,8 +76,6 @@ export default function LandingPage() {
             <CtaBanner onLaunchApp={handleLaunchApp} />
           </>
         );
-      case 'pricing':
-        return <PricingAbstractAngles onLaunchApp={handleLaunchApp} />;
       case 'overview':
       default:
         return (
@@ -88,7 +84,6 @@ export default function LandingPage() {
             <WhatIsEpd />
             <WhyEpdMatters />
             <WhoNeedsEpd />
-            <Pricing11 onLaunchApp={handleLaunchApp} />
             <TrustProof />
             <TheProblem />
           </>

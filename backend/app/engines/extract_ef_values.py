@@ -642,8 +642,8 @@ def extract_ef_from_lca_store(payload: dict, target_methodology: str | None = No
 
 def extract_ef_for_payload(payload: dict, target_methodology: str | None = None) -> dict:
     """
-    Extracts emission factor values from the ecoinvent LCIA data in backend/database for all providers
-    in payload. If those files are missing, unreadable, or match nothing, it automatically
+    Extracts emission factor values from the ecoinvent LCIA data in backend/database for all
+    providers in payload. If those files are missing, unreadable, or match nothing, it automatically
     falls back to the high-fidelity ecoinvent v3.12 industrial seed database.
     """
     if not target_methodology:

@@ -15,6 +15,8 @@ import {
 import ProcessFlowModal from '../ProcessFlowModal';
 import { PRODUCT_LIST } from '../../../data/products';
 
+const INITIAL_PRODUCT_COUNT = 4;
+
 export default function UploadView() {
   const {
     uploadedFiles,
@@ -31,9 +33,14 @@ export default function UploadView() {
     productCategory,
     selectProduct,
     productProfile,
+    activeProject,
+    renameProject,
   } = useStudio();
   const hasProduct = Boolean(productCategory);
   const product = hasProduct ? productProfile : null;
+  const selectedProductIndex = PRODUCT_LIST.findIndex((item) => item.id === productCategory);
+  const [showAllProducts, setShowAllProducts] = useState(selectedProductIndex >= INITIAL_PRODUCT_COUNT);
+  const visibleProducts = showAllProducts ? PRODUCT_LIST : PRODUCT_LIST.slice(0, INITIAL_PRODUCT_COUNT);
 
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -100,6 +107,26 @@ export default function UploadView() {
         </div>
       </div>
 
+      {/* Project title */}
+      {activeProject && (
+        <div className="gallery-title-group" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '4px', marginBottom: '24px' }}>
+          <label className="gallery-title" htmlFor="project-title-input">Project title</label>
+          <span className="gallery-desc">
+            Used as the project name in the console and the product name on the EPD.
+          </span>
+          <input
+            id="project-title-input"
+            type="text"
+            className="form-input"
+            style={{ maxWidth: 520, marginTop: '8px' }}
+            value={activeProject.name}
+            onChange={(e) => renameProject(activeProject.id, e.target.value)}
+            onFocus={(e) => { if (e.target.value === 'Untitled project') e.target.select(); }}
+            onBlur={(e) => { if (!e.target.value.trim()) renameProject(activeProject.id, 'Untitled project'); }}
+          />
+        </div>
+      )}
+
       {/* Step 1: Product selection (required before upload) */}
       <div className="apple-benchmark-gallery">
         <div className="gallery-header-row">
@@ -115,7 +142,7 @@ export default function UploadView() {
         </div>
 
         <div className="benchmark-card-grid">
-          {PRODUCT_LIST.map((item) => {
+          {visibleProducts.map((item) => {
             const isSelected = productCategory === item.id;
             return (
               <div
@@ -140,12 +167,6 @@ export default function UploadView() {
                     <span className="spec-label">Unit</span>
                     <span className="spec-value">{item.fuShort}</span>
                   </div>
-                  <div className="card-spec-item">
-                    <span className="spec-label">Use stage</span>
-                    <span className="spec-value">
-                      {item.useStage.refrigerant ? 'Refrigerant + energy' : item.useStage.b6 === 'none' ? 'Not modelled' : 'Declared use'}
-                    </span>
-                  </div>
                 </div>
                 <div className="card-action-row">
                   <button
@@ -165,6 +186,17 @@ export default function UploadView() {
             );
           })}
         </div>
+        {PRODUCT_LIST.length > INITIAL_PRODUCT_COUNT && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+            <button
+              type="button"
+              className="btn-apple-secondary-pill"
+              onClick={() => setShowAllProducts((prev) => !prev)}
+            >
+              {showAllProducts ? 'Show less' : `Show more (${PRODUCT_LIST.length - INITIAL_PRODUCT_COUNT})`}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Upload Dropzone (enabled once a product is selected) */}

@@ -123,7 +123,6 @@ export default function App() {
           <Route path="/how-it-works" element={<LandingPage />} />
           <Route path="/capabilities" element={<LandingPage />} />
           <Route path="/faq" element={<LandingPage />} />
-          <Route path="/pricing" element={<LandingPage />} />
 
           {/* Knowledge Base & Detailed Info Pages */}
           <Route path="/info" element={<InfoPage />} />

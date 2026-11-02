@@ -20,7 +20,7 @@ export default function Faq() {
             Frequently Asked Questions
           </h2>
           <p className="apple-section-subtitle">
-            Essential facts on ISO 14025, EN 15804+A2, ecoinvent v3.12, and third-party verification.
+            Quick answers about EPDs and how EcoMetric helps manufacturers create them.
           </p>
         </div>
 
