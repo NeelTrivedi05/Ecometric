@@ -2,8 +2,8 @@
 Assigns ecoinvent datasets to BOM lines and stage defaults by name.
 
 Read-only: searches the ecoinvent "Cut-off Cumulative LCIA" activities stored in
-backend/database (engines/lca_store.py, loaded once into memory). When those files
-are missing or unreadable, items get the seed fallback providers below.
+Supabase (engines/lca_store.py, loaded once into memory). When that data
+is not configured or unreachable, items get the seed fallback providers below.
 
 Matching order for a BOM line:
   1. already matched to an ecoinvent row by the user -> kept

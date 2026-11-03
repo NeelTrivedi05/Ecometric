@@ -413,8 +413,8 @@ def analyze_pcr_gaps(extracted: Dict[str, Any], file_names: List[str],
             "category": "Emission Factors",
             "severity": "high",
             "title": "ecoinvent LCIA database not available",
-            "message": "The ecoinvent database files could not be loaded on the server, so materials could not be matched by name.",
-            "action": "Check that backend/database contains the lca_activities_*.parquet files (scripts/build_lca_files.py) and redeploy."
+            "message": "The ecoinvent data could not be loaded from Supabase, so materials could not be matched by name.",
+            "action": "Check that SUPABASE_DB_URL is set on the backend and the LCIA reference tables are loaded (scripts/upload_lca_data.py)."
         })
 
     # Gap 3: Inbound transport distance (A2)
@@ -803,7 +803,6 @@ def search_lcia_products(query: str = "", limit: int = 200, unit: Optional[str] 
         return {"status": "success", "query": query, "count": len(results), "results": results}
 
     if not lcia_extractor or not os.path.exists(lcia_extractor.FILE_PATH):
-<<<<<<< Updated upstream
         raise HTTPException(status_code=503, detail="ecoinvent database unavailable: set SUPABASE_DB_URL on the backend")
     try:
         data = lcia_extractor.get_lcia_data()
@@ -817,11 +816,6 @@ def search_lcia_products(query: str = "", limit: int = 200, unit: Optional[str] 
             status_code=503,
             detail="ecoinvent provider search unavailable: configure SUPABASE_DB_URL and load the LCIA reference tables",
         ) from exc
-=======
-        raise HTTPException(status_code=503, detail="ecoinvent database unavailable: backend/database files are missing")
-    data = lcia_extractor.get_lcia_data()
-    matches = lcia_extractor.search_product(data, query.strip())
->>>>>>> Stashed changes
     unit_col = ("META", "META", "META", "Reference Product Unit")
     results = [{
         "option_number": idx,

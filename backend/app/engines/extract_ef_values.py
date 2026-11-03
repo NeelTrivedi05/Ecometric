@@ -6,7 +6,7 @@ Purpose
 Reads your EPD calculation input JSON (e.g. epd_calculation_input.json)
 and extracts the emission factor (EF) value for every provider referenced
 in the JSON from the ecoinvent Cut-off Cumulative LCIA data stored in
-backend/database (engines/lca_store.py), across every impact category of the
+Supabase (engines/lca_store.py), across every impact category of the
 selected methodology. load_headers_and_data still reads the workbook
 directly for the offline analysis scripts in backend/scripts.
 """
@@ -604,7 +604,7 @@ def extract_ef_from_lca_store(payload: dict, target_methodology: str | None = No
     """
     Matches every provider in payload to an ecoinvent row (same rules as the workbook:
     find_best_match) and reads the matched rows' values for target_methodology from
-    backend/database. Returns {} when those files are missing or unreadable.
+    Supabase. Returns {} when that data is not configured or unreachable.
     """
     from app.engines import lca_store
 
@@ -642,8 +642,8 @@ def extract_ef_from_lca_store(payload: dict, target_methodology: str | None = No
 
 def extract_ef_for_payload(payload: dict, target_methodology: str | None = None) -> dict:
     """
-    Extracts emission factor values from the ecoinvent LCIA data in backend/database for all
-    providers in payload. If those files are missing, unreadable, or match nothing, it automatically
+    Extracts emission factor values from the ecoinvent LCIA data in Supabase for all
+    providers in payload. If that data is not configured, unreachable, or match nothing, it automatically
     falls back to the high-fidelity ecoinvent v3.12 industrial seed database.
     """
     if not target_methodology:
