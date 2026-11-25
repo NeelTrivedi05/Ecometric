@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useStudio } from '../../../context/StudioContext';
 import { DownloadIcon, CheckIcon } from '../Icons';
 
@@ -16,12 +17,14 @@ const PDF_CONTENTS = [
   'System boundary and modules',
   'Characterization results',
   'PCR compliance and data quality',
-  'Certificate ID',
 ];
 
 export default function ExportView() {
   const {
-    showNotif,
+    generateOpenEpdDocument,
+    downloadOpenEpdJson,
+    setActivePhase,
+    canExport,
     exportEpdPdf,
     reportDetails,
     activeProject,
@@ -29,18 +32,28 @@ export default function ExportView() {
     projectInfo,
   } = useStudio();
 
-  const [isExportingPdf, setIsExportingPdf] = useState(false);
-
-  const handlePdfDownload = async () => {
-    setIsExportingPdf(true);
+  const [format, setFormat] = useState(null);
+  const [receipt, setReceipt] = useState(null);
+  const [error, setError] = useState('');
+  async function download(kind) {
+    if (!canExport || format) return;
+    setFormat(kind);
+    setReceipt(null);
+    setError('');
     try {
-      await exportEpdPdf(reportDetails);
+      if (kind === 'PDF') {
+        setReceipt(await exportEpdPdf(reportDetails));
+      } else {
+        const document = await generateOpenEpdDocument();
+        if (!document) throw new Error('The report service could not prepare the openEPD file. Try again.');
+        setReceipt(await downloadOpenEpdJson(document));
+      }
     } catch (err) {
-      showNotif(`PDF export failed: ${err.message || 'Unknown error'}`, 'Export Error');
+      setError(err.message || 'The download failed. Please try again.');
     } finally {
-      setIsExportingPdf(false);
+      setFormat(null);
     }
-  };
+  }
 
   const summaryRows = [
     ['Project', activeProject?.name],
@@ -97,7 +110,7 @@ export default function ExportView() {
             marginBottom: 0,
           }}
         >
-          Review the declaration summary, then download the finished Environmental Product Declaration as a PDF.
+          Review the project details and choose a report format.
         </p>
       </div>
 
@@ -126,7 +139,7 @@ export default function ExportView() {
       <div style={cardStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
           <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#16231b' }}>
-            EPD report (PDF)
+            Report files
           </h3>
           <span
             style={{
@@ -142,7 +155,7 @@ export default function ExportView() {
           </span>
         </div>
         <p style={{ margin: '0 0 16px', fontSize: 13, color: '#5b6f62', lineHeight: 1.5 }}>
-          A signed PDF that opens in any viewer and can be verified on the public verification page.
+          Use the PDF for document review or openEPD JSON for the calculated impact data.
         </p>
 
         <div style={{ fontSize: 12, fontWeight: 600, color: '#5b6f62', marginBottom: 8 }}>Included in the PDF</div>
@@ -155,30 +168,27 @@ export default function ExportView() {
           ))}
         </ul>
 
-        <button
-          type="button"
-          onClick={handlePdfDownload}
-          disabled={isExportingPdf}
-          style={{
-            marginTop: 20,
-            backgroundColor: '#1f7a4c',
-            color: '#FFFFFF',
-            border: 'none',
-            borderRadius: 8,
-            padding: '11px 20px',
-            fontSize: 13,
-            fontWeight: 600,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            cursor: isExportingPdf ? 'wait' : 'pointer',
-            opacity: isExportingPdf ? 0.7 : 1,
-          }}
-        >
-          <DownloadIcon className="w-4 h-4" />
-          <span>{isExportingPdf ? 'Preparing PDF...' : 'Download PDF'}</span>
-        </button>
+        {canExport ? (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 20 }}>
+            {['PDF', 'openEPD JSON'].map(kind => (
+              <button key={kind} className="btn btn-outline" disabled={Boolean(format)} onClick={() => download(kind)}>
+                <DownloadIcon size={16} /> {format === kind ? 'Preparing file…' : `Download ${kind}`}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div>
+            <p>Complete the input and results checks for the current inventory before downloading.</p>
+            <button className="btn btn-outline" onClick={() => setActivePhase('audit')}>Return to pre-audit verification</button>
+          </div>
+        )}
+        {error && <p role="alert">{error}</p>}
+        {receipt && <div role="status" style={{ marginTop: 16 }}>
+          <p>Downloaded {receipt.filename}.</p>
+          {receipt.certificateId
+            ? <Link to={`/verify?c=${encodeURIComponent(receipt.certificateId)}`}>View certificate {receipt.certificateId}</Link>
+            : <p>This export was issued without a registry certificate.</p>}
+        </div>}
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ import { supabase } from '../lib/supabase';
 import { subscribeToScopedTable } from '../lib/tenantScopedClient';
 
 // Minimum time the progress bar stays up for a PDF export, even when the server is faster.
-const PDF_EXPORT_MIN_MS = 28000;
+const PDF_EXPORT_ESTIMATE_MS = 28000;
 
 // Resolves once Date.now() reaches the given timestamp (immediately if already past).
 export const waitUntil = (timestamp) =>
@@ -869,10 +869,11 @@ export function StudioProvider({ children }) {
 
     const succeeded = Boolean(data?.epd_results && Object.keys(data.epd_results).length > 0);
     if (succeeded) {
-      setResults(data);
+      const calculatedSignature = signatureOf(activeData);
+      setResults({ ...data, inputSignature: calculatedSignature, selectedMethod: targetMethod });
       setResultsByMethod(prev => ({
-        ...prev,
-        [targetMethod]: { epd_results: data.epd_results, epd_metadata: data.epd_metadata },
+        ...Object.fromEntries(Object.entries(prev).filter(([, value]) => value.inputSignature === calculatedSignature)),
+        [targetMethod]: { epd_results: data.epd_results, epd_metadata: data.epd_metadata, inputSignature: calculatedSignature },
       }));
       setResultsAudit(data.pcr_results_audit
         ? { ...data.pcr_results_audit, inputSignature: signatureOf(activeData) }
@@ -1537,7 +1538,7 @@ export function StudioProvider({ children }) {
   }, []);
 
   // Methodology the shown results were calculated with, and whether the selection has moved on since
-  const resultsMethodology = results?.epd_metadata?.methodology_key || null;
+  const resultsMethodology = results?.selectedMethod || results?.epd_metadata?.methodology_key || null;
   const methodologyStale = Boolean(resultsMethodology) && resultsMethodology !== selectedMethodology;
 
   // Derive comprehensive LCA characterization metrics for real-time display & certificate export
@@ -1716,6 +1717,11 @@ export function StudioProvider({ children }) {
     () => getProduct(extractedData.project_info?.product_category || productCategory),
     [extractedData.project_info?.product_category, productCategory]
   );
+
+  const calculationStale = methodologyStale || Boolean(results && results.inputSignature !== inputSignature);
+  const canExport = Boolean(lca.isCalculated && !calculationStale
+    && validationResults.run_at && validationResults.passed && !validationStale
+    && resultsAudit?.passed && !resultsAuditStale && resultsAudit.summary?.blocking === 0);
 
   const projectInfo = useMemo(() => ({
     productName: extractedData.project_info?.product_name || productProfile.name,
@@ -1993,14 +1999,14 @@ export function StudioProvider({ children }) {
       byMethod = { [selectedMethodology]: { epd_results: results.epd_results, epd_metadata: results.epd_metadata } };
     }
     return {
-      projectId: 'current_project',
+      projectId: activeProjectId,
       extractedData,
       resultsByMethod: byMethod,
       reportDetails: detailsOverride || reportDetails,
       selection,
       options,
     };
-  }, [resultsByMethod, results, selectedMethodology, extractedData, reportDetails]);
+  }, [activeProjectId, resultsByMethod, results, selectedMethodology, extractedData, reportDetails]);
 
   const fetchEpdReportOptions = useCallback(async () => {
     const res = await apiFetch(`${API_BASE}/epd-reports/options`);
@@ -2022,7 +2028,7 @@ export function StudioProvider({ children }) {
 
   const downloadEpdReport = useCallback(async (selection, options, detailsOverride) => {
     const startedAt = Date.now();
-    setProgressTask({ title: 'Generating EPD PDF…', durationMs: PDF_EXPORT_MIN_MS, startedAt });
+    setProgressTask({ title: 'Generating EPD PDF…', durationMs: PDF_EXPORT_ESTIMATE_MS, startedAt });
     let res;
     let blob;
     try {
@@ -2032,10 +2038,8 @@ export function StudioProvider({ children }) {
         exportMode,
         organizationId: currentAccount?.id || 'carrier-hvac',
         organizationName: currentAccount?.company_name || 'Carrier Commercial HVAC',
-        userId: 'user-current',
-        userName: 'Current User',
-        adminUserId: 'admin-current',
-        adminName: 'Account Administrator',
+        userId: user?.id,
+        userName: user?.user_metadata?.full_name || user?.email,
       };
       res = await apiFetch(`${API_BASE}/epd-reports`, {
         method: 'POST',
@@ -2044,7 +2048,9 @@ export function StudioProvider({ children }) {
       });
       if (!res.ok) throw await epdReportError(res);
       blob = await res.blob();
-      await waitUntil(startedAt + PDF_EXPORT_MIN_MS);
+      if (!blob.size || !['application/pdf', 'application/octet-stream'].includes(blob.type.split(';')[0])) {
+        throw new Error('The report service returned an unexpected file. Retry the export.');
+      }
     } finally {
       setProgressTask(null);
     }
@@ -2061,58 +2067,9 @@ export function StudioProvider({ children }) {
     link.click();
     URL.revokeObjectURL(url);
 
-    // Automatically certify the project as Verified EPD in the projects list and add certificate to epdsList
-    const epdCertNumber = activeProject?.epd_number || `EPD-CC-${new Date().getFullYear()}-${String(epdsList.length + 1).padStart(3, '0')}`;
-    const formattedDate = new Date().toISOString().split('T')[0];
-    const expiryDate = new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-    setProjectsList((prev) =>
-      prev.map((p) => {
-        if (p.id === activeProjectId) {
-          return {
-            ...p,
-            status: 'Verified EPD',
-            epd_number: epdCertNumber,
-            last_modified: 'Just now by You',
-          };
-        }
-        return p;
-      })
-    );
-
-    setEpdsList((prev) => {
-      const alreadyHas = prev.some((e) => e.epd_number === epdCertNumber || (activeProject && e.product_name === activeProject.name));
-      if (alreadyHas) return prev;
-      const newCert = {
-        id: `epd-${Date.now()}`,
-        epd_number: epdCertNumber,
-        title: `${activeProject?.name || extractedData?.project_info?.product_name || 'AquaEdge 19DV Centrifugal Chiller'} Type III Declaration`,
-        product_name: activeProject?.name || extractedData?.project_info?.product_name || 'Commercial HVAC Equipment',
-        program_operator: assembledDatabase?.program_operator || 'UL Solutions / EcoPlatform',
-        pcr_standard: activeProject?.standard || assembledDatabase?.pcr_standard || 'UL 10010-4 Part B v2.0 & EN 15804+A2',
-        publication_date: formattedDate,
-        valid_until: expiryDate,
-        verifier: assembledDatabase?.verifier_name || 'Jack Geibig',
-        verifier_org: assembledDatabase?.verifier_org || 'EcoForm Certification',
-        functional_unit: activeProject?.functional_unit || '1 ton cooling capacity over 25 years RSL',
-        gwp_total: activeProject?.gwp_total || 38420,
-        gwp_per_unit: `${((activeProject?.gwp_total || 38420) / (activeProject?.capacity_rt || 500)).toFixed(2)} kg CO2e / RT`,
-        a1_a3_gwp: Math.round((activeProject?.gwp_total || 38420) * 0.37),
-        a4_a5_gwp: Math.round((activeProject?.gwp_total || 38420) * 0.05),
-        b1_b7_gwp: Math.round((activeProject?.gwp_total || 38420) * 0.55),
-        c1_c4_gwp: Math.round((activeProject?.gwp_total || 38420) * 0.03),
-        module_d: -Math.round((activeProject?.gwp_total || 38420) * 0.1),
-        sha256_hash: '9a2f7c4b1890de5a6b7312c4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4',
-        dqr_score: 1.28,
-        status: 'Published & Verified',
-        file_type: 'pdf',
-      };
-      return [newCert, ...prev];
-    });
-
     showNotif(`${filename} downloaded ${certId ? `(Sealed: ${certId})` : ''}`, 'EPD Report');
     return { filename, certificateId: certId, verifyUrl };
-  }, [buildEpdReportRequest, showNotif, activeProject, activeProjectId, assembledDatabase, epdsList, extractedData, currentAccount]);
+  }, [buildEpdReportRequest, showNotif, currentAccount, user]);
 
   // Report Details modal helpers, built on the same report API.
   const validatePreExport = useCallback(async (detailsToValidate) => {
@@ -2133,7 +2090,7 @@ export function StudioProvider({ children }) {
   const exportEpdPdf = useCallback(async (detailsForExport) => {
     setIsLoading(true);
     try {
-      await downloadEpdReport({}, {}, detailsForExport);
+      return await downloadEpdReport({}, {}, detailsForExport);
     } finally {
       setIsLoading(false);
     }
@@ -2197,6 +2154,8 @@ export function StudioProvider({ children }) {
         changeMethodology,
         resultsMethodology,
         methodologyStale,
+        calculationStale,
+        canExport,
         results,
         lca,
         projectInfo,

@@ -92,6 +92,7 @@ export default function VerifyPage() {
                 catch { setError('Select and copy the certificate ID above.'); }
               }}>{copied ? 'Copied' : 'Copy ID'}</button>}
               <button onClick={() => window.print()}>Print</button>
+              <Link to="/app">Open project workspace</Link>
             </div>
           </> : <>
             <h2>Certificate lookup</h2>

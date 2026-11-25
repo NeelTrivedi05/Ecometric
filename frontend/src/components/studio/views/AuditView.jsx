@@ -16,6 +16,8 @@ export default function AuditView() {
     resultsAudit,
     runResultsAudit,
     resultsAuditStale,
+    calculationStale,
+    canExport,
     lca,
   } = useStudio();
 
@@ -30,13 +32,15 @@ export default function AuditView() {
   const inputRun = Boolean(validationResults.run_at);
   const inputOk = inputRun && !validationStale && validationResults.passed;
   const blocking = resultsAudit?.summary?.blocking ?? 0;
-  const resultsOk = Boolean(resultsAudit) && !resultsAuditStale && blocking === 0;
-  const canExport = inputOk && resultsOk;
+  const resultsOk = Boolean(lca?.isCalculated && resultsAudit?.passed) && !calculationStale && !resultsAuditStale && blocking === 0;
+
 
   let verdict;
-  if (!resultsAudit) {
+  if (calculationStale) {
+    verdict = 'The inventory or methodology has changed. Recalculate in step 6 before checking these results.';
+  } else if (!resultsAudit) {
     verdict = lca?.isCalculated
-      ? 'These results were estimated in the browser and have not been checked against the PCR. Start the EcoMetric backend (port 8000) and recalculate in step 6.'
+      ? 'The results check has not run. Run it here before exporting.'
       : 'Calculate the LCA (step 6) to check the results rules.';
   } else if (resultsAuditStale) {
     verdict = 'The inventory changed after the last calculation. Recalculate in step 6, then re-run this audit.';
@@ -64,7 +68,7 @@ export default function AuditView() {
               <span>Process Entanglement Graph</span>
             </button>
             <button type="button" className="btn btn-outline btn-sm" onClick={handleReAudit}
-              disabled={isAuditing || isLoading || !lca?.isCalculated}
+              disabled={isAuditing || isLoading || calculationStale || !lca?.isCalculated}
               style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <RefreshCwIcon size={14} className={isAuditing ? 'spin' : ''} />
               <span>{isAuditing ? 'Auditing...' : 'Re-run Results Rules'}</span>
@@ -121,7 +125,7 @@ export default function AuditView() {
 
         {resultsAudit && <PcrCheckList report={resultsAudit} blockingLabel="Blocks export" />}
 
-        {!resultsAudit && (
+        {(!resultsAudit || calculationStale || resultsAuditStale) && (
           <div style={{ marginTop: 16 }}>
             <button type="button" className="btn btn-outline btn-sm" onClick={() => setActivePhase('results')}>
               Go to step 6 · LCIA Results
@@ -148,7 +152,7 @@ export default function AuditView() {
             setActivePhase('export');
           }}
         >
-          <span>Proceed to Export &amp; Publish</span>
+          <span>Continue to export</span>
           <ChevronRightIcon className="w-4 h-4" />
         </button>
       </div>
