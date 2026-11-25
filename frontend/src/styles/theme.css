@@ -135,9 +135,13 @@
 .auth3-intro__eyebrow { margin-bottom: 12px; color: rgb(255 255 255 / 0.78); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .auth3-intro h2 { margin-bottom: 18px; font-size: clamp(34px, 5vw, 52px); letter-spacing: -0.05em; }
 .auth3-intro > p:last-child { color: rgb(255 255 255 / 0.88); font-size: clamp(18px, 2vw, 24px); line-height: 1.35; }
-.auth3-page--otp { grid-template-columns: minmax(320px, 460px); }
+.auth3-page.auth3-page--otp {
+  grid-template-columns: minmax(0, 460px);
+  background: linear-gradient(rgb(11 35 22 / 18%), rgb(11 35 22 / 28%)), url('../assets/otp/field.webp') center / cover no-repeat;
+}
 .otp-card { width: 100%; padding: 34px; color: var(--text-primary); text-align: center; background: rgb(255 255 255 / 0.98); border: 1px solid rgb(255 255 255 / 0.7); border-radius: 20px; box-shadow: 0 24px 80px rgb(0 20 35 / 0.32); animation: auth3-slide-in-left 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-.otp-mark { display: grid; place-items: center; width: 48px; height: 48px; margin: 0 auto 24px; color: white; background: var(--accent); border-radius: 14px; }
+.otp-mark { display: grid; place-items: center; margin: -34px -34px 24px; padding: 24px 20px; border-radius: 19px 19px 0 0; background: #183b2b; }
+.otp-mark img { display: block; width: min(215px, 80%); height: auto; }
 .otp-card h1 { margin: 4px 0 10px; font-size: 30px; }
 .otp-description { margin: 0 auto 28px; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
 .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }

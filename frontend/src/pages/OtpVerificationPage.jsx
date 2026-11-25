@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from '@untitledui/icons';
 import { supabase } from '../lib/supabase';
-import BrandLogo from '../components/BrandLogo';
+import wordmark from '../assets/otp/wordmark.png';
 import {
   getAuthRedirectUrl,
   processInviteAcceptance,
@@ -123,7 +123,7 @@ export default function OtpVerificationPage() {
   return (
     <main className="auth3-page auth3-page--otp">
       <section className="otp-card" aria-labelledby="otp-title">
-        <div className="otp-mark"><BrandLogo /></div>
+        <div className="otp-mark"><img src={wordmark} alt="EcoMetric" /></div>
         <p className="eyebrow">Secure sign in</p>
         <h1 id="otp-title">Check your email</h1>
         <p className="otp-description">Enter the 6-digit code we sent to <strong>{email}</strong>. It expires in 100 seconds.</p>
