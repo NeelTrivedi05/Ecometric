@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import pricingVideo from '../../assets/video/pricing.mp4';
+import pricingPoster from '../../assets/video/pricing-poster.jpg';
 import { Link } from 'react-router-dom';
 import { ChevronRightIcon } from '../studio/Icons';
 
@@ -20,6 +22,23 @@ const plans = [
 ];
 
 export default function Pricing11({ onLaunchApp }) {
+  const videoRef = useRef(null);
+  const [loadVideo, setLoadVideo] = useState(false);
+  useEffect(() => {
+    if (!window.IntersectionObserver) {
+      setLoadVideo(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setLoadVideo(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '400px' });
+    observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className="pricing-11 reveal-on-scroll" id="pricing">
       <div className="lp-container">
@@ -41,12 +60,14 @@ export default function Pricing11({ onLaunchApp }) {
             <div className="pricing-11__phone-screen">
               <video
                 className="pricing-11__phone-video"
-                src="/pricing-phone.mp4"
+                ref={videoRef}
+                src={loadVideo ? pricingVideo : undefined}
+                poster={pricingPoster}
                 autoPlay
                 loop
                 muted
                 playsInline
-                preload="metadata"
+                preload="auto"
               />
             </div>
           </div>

@@ -1,3 +1,5 @@
+import loginVideo from '../../assets/video/login.mp4';
+import loginPoster from '../../assets/video/login-poster.jpg';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, Lock01, Mail01 } from '@untitledui/icons';
@@ -221,14 +223,15 @@ export default function Auth3({ initialMode = 'signin' }) {
     <main className={`auth3-page ${mode === 'signup' ? 'auth3-page--signup' : ''}`}>
       <video
         className="auth3-video-background"
+        src={loginVideo}
+        poster={loginPoster}
+        preload="auto"
         autoPlay
         loop
         muted
         playsInline
         aria-hidden="true"
-      >
-        <source src="/login-bg.mp4" type="video/mp4" />
-      </video>
+      />
       <section key={mode} className={`auth3-card ${mode === 'signup' ? 'auth3-card--signup' : ''}`} aria-labelledby="auth3-title">
         <div className="brand-lockup"><BrandLogo theme="light" height={26} /></div>
         {inviteToken && (

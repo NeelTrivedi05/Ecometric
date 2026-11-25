@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRightIcon } from '../studio/Icons';
 
-const VIDEO_SOURCE = '/new_video.mp4';
+const VIDEO_SOURCE = '/hero-background-web.mp4';
 
 export default function Hero9({ onLaunchApp }) {
   return (
@@ -13,7 +13,7 @@ export default function Hero9({ onLaunchApp }) {
         loop
         muted
         playsInline
-        preload="metadata"
+        preload="auto"
         poster="/hero-background-poster.jpg"
         aria-hidden="true"
       >
