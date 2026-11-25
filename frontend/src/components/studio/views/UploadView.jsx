@@ -66,7 +66,8 @@ export default function UploadView() {
 
   const handleFileSelect = useCallback((e) => {
     if (e.target.files.length > 0) {
-      addFiles(e.target.files);
+      addFiles(Array.from(e.target.files));
+      e.target.value = '';
     }
   }, [addFiles]);
 
@@ -78,8 +79,7 @@ export default function UploadView() {
   };
 
   const handleExtractAndProceed = async () => {
-    await extractDocuments();
-    setActivePhase('extract');
+    if (await extractDocuments()) setActivePhase('extract');
   };
 
   return (
@@ -219,6 +219,15 @@ export default function UploadView() {
         onDragLeave={handleDragLeave}
         onClick={() => hasProduct && fileInputRef.current?.click()}
         style={{ cursor: hasProduct ? 'pointer' : 'not-allowed', opacity: hasProduct ? 1 : 0.5 }}
+        role="button"
+        tabIndex={hasProduct ? 0 : -1}
+        aria-label="Browse product documents"
+        onKeyDown={(event) => {
+          if (hasProduct && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault();
+            fileInputRef.current?.click();
+          }
+        }}
         aria-disabled={!hasProduct}
       >
         <div className="upload-icon-circle">
@@ -329,6 +338,8 @@ export default function UploadView() {
                           <RefreshCwIcon size={12} className="spin" />
                           <span>Parsing...</span>
                         </span>
+                      ) : file.status === 'error' ? (
+                        <span className="status-chip">Extraction failed. Retry below.</span>
                       ) : (
                         <span className="status-chip neutral">Ready</span>
                       )}

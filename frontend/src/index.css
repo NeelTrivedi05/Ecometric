@@ -4329,3 +4329,8 @@ textarea.form-input {
     display: table-cell !important;
   }
 }
+
+.facility-settings { max-width: 48rem; padding: 1.5rem; }
+.facility-settings fieldset { border: 0; margin: 1.25rem 0; padding: 0; display: grid; gap: 1rem; }
+.facility-settings label { display: grid; gap: .35rem; font-weight: 600; }
+.facility-settings input { padding: .65rem; border: 1px solid #bdcabe; border-radius: .5rem; font: inherit; }

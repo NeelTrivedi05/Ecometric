@@ -586,7 +586,7 @@ export default function UserReviewView() {
           <div>
             <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.01em' }}>
               <DatabaseIcon size={18} style={{ color: 'var(--accent, #1f7a4c)' }} />
-              <span>Bill of Materials (BOM) & Database Activity Provider Selection</span>
+              <span id="bom-review" tabIndex={-1}>Bill of Materials (BOM) & Database Activity Provider Selection</span>
             </h2>
             <div style={{ fontSize: '12px', color: 'var(--text-secondary, #86868b)', marginTop: '3px' }}>
               Every component is auto-matched to the best ecoinvent v3.12 dataset when it is uploaded, added or renamed. Click <strong>"Select Provider"</strong> to choose another one; your choice is never replaced.
@@ -888,12 +888,13 @@ export default function UserReviewView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }}>Energy Used – Electricity (kWh)</label>
+                  <label className="form-label" style={{ fontSize: '11px', color: 'var(--text-secondary, #86868b)' }} htmlFor="factory-electricity">Energy Used – Electricity (kWh/year)</label>
                   <input
                     type="number"
                     min="0"
                     className="form-input"
-                    value={manufacturing.annual_facility_kwh || ''}
+                    id="factory-electricity"
+                    value={manufacturing.annual_facility_kwh ?? ''}
                     onChange={(e) => updateManufacturing({ annual_facility_kwh: Math.max(0, parseFloat(e.target.value) || 0) })}
                     placeholder="34000"
                   />

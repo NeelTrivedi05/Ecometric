@@ -274,6 +274,8 @@ export function StudioProvider({ children }) {
         ...(existing || {}),
         id: activeOrg.id,
         company_name: activeOrg.name,
+        facility_name: activeOrg.settings?.facility_name ?? existing?.facility_name,
+        database_assembly: { ...existing?.database_assembly, ...activeOrg.settings?.database_assembly },
         user_name: user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'Workspace owner',
         user_email: user?.email || '',
         role: activeOrg.role || 'account_admin',
@@ -685,9 +687,9 @@ export function StudioProvider({ children }) {
         product_model: newProj.product_model,
         pcr_ref: newProj.standard,
         status: 'DRAFT',
-        capacity_rt: newProj.capacity_rt,
-        refrigerant: newProj.refrigerant,
-        refrigerant_charge_kg: newProj.refrigerant_charge_kg,
+        capacity_rt: newProj.capacity_rt ?? null,
+        refrigerant: newProj.refrigerant ?? null,
+        refrigerant_charge_kg: newProj.refrigerant_charge_kg ?? null,
         functional_unit: newProj.functional_unit,
         declared_unit: newProj.declared_unit,
         facility: newProj.facility,
@@ -711,22 +713,19 @@ export function StudioProvider({ children }) {
     setProjectsList((prev) => [persistedProject, ...prev.filter((project) => project.id !== persistedProject.id)]);
     setActiveProjectId(persistedProject.id);
 
-    setExtractedData((prev) => ({
-      ...prev,
-      project_info: {
-        ...prev.project_info,
-        product_name: persistedProject.name,
-        manufacturer_name: currentAccount?.company_name || 'Manufacturer',
-        functional_unit: persistedProject.functional_unit,
-        pcr_ref: persistedProject.standard || persistedProject.pcr_ref,
-      },
-      operational: {
-        ...prev.operational,
-        capacity_rt: persistedProject.capacity_rt,
-        refrigerant_type: persistedProject.refrigerant,
-        refrigerant_charge_kg: persistedProject.refrigerant_charge_kg,
-      },
-    }));
+    const empty = buildEmptyStudioState(DEFAULT_PRODUCT_ID);
+    empty.project_info.product_name = persistedProject.name;
+    empty.project_info.manufacturer_name = currentAccount?.company_name || '';
+    setExtractedData(empty);
+    setProductCategory(null);
+    setUploadedFiles([]);
+    setCurrentPresetId(null);
+    setResults(null);
+    setResultsByMethod({});
+    setGaps([]);
+    setTraceabilityFlow(null);
+    setValidationResults({ checks: [], overall_pass: false, run_at: null });
+    setResultsAudit(null);
 
     setStudioViewMode('workspace');
     setActivePhase('upload');
@@ -899,7 +898,10 @@ export function StudioProvider({ children }) {
     const product = getProduct(productId);
     setProductCategory(product.id);
     if ((extractedData?.project_info?.product_category || DEFAULT_PRODUCT_ID) !== product.id) {
-      setExtractedData(buildEmptyStudioState(product.id));
+      const empty = buildEmptyStudioState(product.id);
+      empty.project_info.product_name = extractedData.project_info?.product_name || '';
+      empty.project_info.manufacturer_name = extractedData.project_info?.manufacturer_name || '';
+      setExtractedData(empty);
       setUploadedFiles([]);
       setResults(null);
       setResultsByMethod({});
@@ -954,23 +956,18 @@ export function StudioProvider({ children }) {
       return;
     }
     setIsLoading(true);
-    const pending = uploadedFiles.filter(f => f.status === 'pending');
-    const targetFiles = pending.length > 0 ? pending : uploadedFiles;
-
-    targetFiles.forEach(f => updateFileStatus(f.id, 'extracting'));
+    const targetFiles = uploadedFiles.filter(file => file.file);
+    if (!targetFiles.length) {
+      showNotif('Choose a file before starting extraction.', 'Documents required');
+      setIsLoading(false);
+      return false;
+    }
+    targetFiles.forEach(file => updateFileStatus(file.id, 'extracting'));
 
     try {
       const formData = new FormData();
       formData.append('product_category', productCategory);
-      if (targetFiles.length > 0 && targetFiles[0].file) {
-        targetFiles.forEach(f => {
-          if (f.file) formData.append('files', f.file);
-        });
-      } else {
-        // Fallback simulated file blob for instant testing
-        const sampleBlob = new Blob([JSON.stringify({ test: true })], { type: 'application/json' });
-        formData.append('files', sampleBlob, 'Chiller_BOM_Specification.json');
-      }
+      targetFiles.forEach(file => formData.append('files', file.file));
 
       const res = await apiFetch(`${API_BASE}/documents/upload`, {
         method: 'POST',
@@ -978,6 +975,9 @@ export function StudioProvider({ children }) {
       });
 
       if (res.ok) {
+        if (res.headers.get('content-type')?.includes('text/html')) {
+          throw new Error('The document service returned a web page. Check the API connection and retry your upload.');
+        }
         const data = await res.json();
         // Start from empty baseline so stale arrays from previous sessions never accumulate.
         // Preserve only project_info fields that the user may have already edited manually.
@@ -1004,6 +1004,7 @@ export function StudioProvider({ children }) {
           `${data.gap_count || 0} PCR gap(s).`,
           'Extraction'
         );
+        return true;
       } else {
         targetFiles.forEach(f => updateFileStatus(f.id, 'error'));
         const body = await res.json().catch(() => ({}));
@@ -1013,9 +1014,10 @@ export function StudioProvider({ children }) {
     } catch (err) {
       targetFiles.forEach(f => updateFileStatus(f.id, 'error'));
       showNotif(err.message || 'Could not reach the document extraction service.', 'Extraction Failed');
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
+    return false;
   }, [uploadedFiles, updateFileStatus, showNotif, productCategory]);
 
   // Load verified sample dataset
@@ -1842,7 +1844,7 @@ export function StudioProvider({ children }) {
       if (res.ok) {
         const doc = await res.json();
         setOpenepdDocument(doc);
-        showNotif('Official openEPD v2.0 specification generated', 'openEPD Ready');
+        showNotif('Draft declaration generated from the calculated impacts.', 'Draft openEPD ready');
         return doc;
       }
     } catch (err) {

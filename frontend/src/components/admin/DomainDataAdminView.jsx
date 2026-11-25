@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useTenant } from '../../context/TenantContext';
 import { ACCOUNTS_DATA } from '../../data/accountsData';
 import { Button } from '../base/buttons/button';
+import FacilitySettings from './FacilitySettings';
 import {
   SearchIcon,
   FilterIcon,
@@ -17,10 +18,15 @@ import {
 
 export default function DomainDataAdminView() {
   const { orgSlug } = useParams();
-  const { activeOrg, isAccountAdmin } = useTenant();
+  const { activeOrg, isAccountAdmin, refreshTenant } = useTenant();
 
   const accountKey = activeOrg?.slug || orgSlug || 'carrier-hvac';
-  const accountData = ACCOUNTS_DATA[accountKey] || ACCOUNTS_DATA['carrier-hvac'];
+  const defaults = ACCOUNTS_DATA[accountKey] || {};
+  const accountData = {
+    ...defaults,
+    facility_name: activeOrg?.settings?.facility_name ?? defaults.facility_name,
+    database_assembly: { ...defaults.database_assembly, ...activeOrg?.settings?.database_assembly },
+  };
 
   const rawProjects = accountData?.projects || [];
   const rawEpds = accountData?.epds || [];
@@ -464,127 +470,8 @@ export default function DomainDataAdminView() {
 
       {/* View: Facility Assembly Configuration */}
       {activeTab === 'facility' && (
-        <div
-          style={{
-            backgroundColor: 'var(--bg-card, #ffffff)',
-            borderRadius: '16px',
-            border: '1px solid var(--border, #dfe7dd)',
-            padding: '28px',
-            maxWidth: '800px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div>
-              <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0, color: 'var(--text-primary, #16231b)' }}>
-                Plant LCI Assembly Configuration
-              </h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted, #5b6f62)', margin: '4px 0 0' }}>
-                Defines the regional emission factors and baseline background databases applied to all projects in this organization.
-              </p>
-            </div>
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 600,
-                color: 'var(--accent, #1f7a4c)',
-                backgroundColor: 'rgba(31, 122, 76, 0.08)',
-                padding: '4px 10px',
-                borderRadius: '9999px',
-              }}
-            >
-              Verified Facility
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)', marginBottom: '4px' }}>
-                Manufacturing Facility Name
-              </label>
-              <input
-                type="text"
-                readOnly={!isAccountAdmin}
-                defaultValue={accountData.facility_name}
-                style={{
-                  width: '100%',
-                  padding: '9px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border, #dfe7dd)',
-                  fontSize: '13px',
-                  backgroundColor: isAccountAdmin ? '#ffffff' : 'var(--bg-card2, #f8faf6)',
-                }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)', marginBottom: '4px' }}>
-                Regional Electricity Grid Subregion
-              </label>
-              <input
-                type="text"
-                readOnly={!isAccountAdmin}
-                defaultValue={accountData.database_assembly?.grid_mix_name}
-                style={{
-                  width: '100%',
-                  padding: '9px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border, #dfe7dd)',
-                  fontSize: '13px',
-                  backgroundColor: isAccountAdmin ? '#ffffff' : 'var(--bg-card2, #f8faf6)',
-                }}
-              />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)', marginBottom: '4px' }}>
-                  Grid Emission Factor (kg CO₂e / kWh)
-                </label>
-                <input
-                  type="number"
-                  step="0.001"
-                  readOnly={!isAccountAdmin}
-                  defaultValue={accountData.database_assembly?.grid_emission_factor}
-                  style={{
-                    width: '100%',
-                    padding: '9px 12px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border, #dfe7dd)',
-                    fontSize: '13px',
-                    backgroundColor: isAccountAdmin ? '#ffffff' : 'var(--bg-card2, #f8faf6)',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary, #2f3b33)', marginBottom: '4px' }}>
-                  Default Refrigerant Spectrum
-                </label>
-                <input
-                  type="text"
-                  readOnly={!isAccountAdmin}
-                  defaultValue={accountData.database_assembly?.default_refrigerant || 'R1233zd'}
-                  style={{
-                    width: '100%',
-                    padding: '9px 12px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border, #dfe7dd)',
-                    fontSize: '13px',
-                    backgroundColor: isAccountAdmin ? '#ffffff' : 'var(--bg-card2, #f8faf6)',
-                  }}
-                />
-              </div>
-            </div>
-
-            {isAccountAdmin && (
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
-                <Button onClick={() => alert('Facility assembly settings saved for this organization.')}>
-                  Save Assembly Parameters
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
+        <FacilitySettings key={activeOrg?.id} org={activeOrg} account={accountData}
+          isAdmin={isAccountAdmin} onSaved={refreshTenant} />
       )}
     </div>
   );

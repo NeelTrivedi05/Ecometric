@@ -53,7 +53,7 @@ export function SummaryChips({ summary }) {
   );
 }
 
-function CheckItem({ check, blockingLabel }) {
+function CheckItem({ check, blockingLabel, onResolve }) {
   const st = STATUS[check.status] || STATUS.manual;
   const { Icon } = st;
   const source = sourceLabel(check.source);
@@ -86,6 +86,12 @@ function CheckItem({ check, blockingLabel }) {
           </span>
         </div>
         <p style={{ fontSize: '12px', color: '#1d1d1f', margin: '2px 0 0', lineHeight: 1.4 }}>{check.message}</p>
+        {check.blocking && onResolve && (
+          <button type="button" className="btn-apple-secondary-pill" onClick={() => onResolve(
+            check.id === 'STUDIO.A3_ENERGY' ? 'factory-electricity' :
+              ['STUDIO.BOM', 'STUDIO.MAPPING'].includes(check.id) ? 'bom-review' : null
+          )}>{check.id === 'STUDIO.A3_ENERGY' ? 'Edit factory energy' : 'Review inventory'}</button>
+        )}
         {check.requirement && check.status !== 'pass' && (
           <p style={{ fontSize: '11px', color: '#86868b', margin: '4px 0 0', lineHeight: 1.4 }}>{check.requirement}</p>
         )}
@@ -97,7 +103,7 @@ function CheckItem({ check, blockingLabel }) {
   );
 }
 
-export default function PcrCheckList({ report, blockingLabel = 'Blocking' }) {
+export default function PcrCheckList({ report, onResolve, blockingLabel = 'Blocking' }) {
   const [showInapplicable, setShowInapplicable] = useState(false);
   if (!report?.checks?.length) return null;
 
@@ -125,7 +131,7 @@ export default function PcrCheckList({ report, blockingLabel = 'Blocking' }) {
               </span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {visible.map(c => <CheckItem key={`${g.id}-${c.id}`} check={c} blockingLabel={blockingLabel} />)}
+              {visible.map(c => <CheckItem onResolve={onResolve} key={`${g.id}-${c.id}`} check={c} blockingLabel={blockingLabel} />)}
             </div>
           </div>
         );

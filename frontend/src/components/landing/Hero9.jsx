@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronRightIcon } from '../studio/Icons';
 
 const VIDEO_SOURCE = '/new_video.mp4';
@@ -22,25 +23,24 @@ export default function Hero9({ onLaunchApp }) {
 
       <div className="hero-9__content">
         <h1 className="hero-9__title">
-          <span className="hero-9__reveal hero-9__reveal--two">Think</span>
-          <span className="hero-9__reveal hero-9__reveal--three">Green</span>
+          <span className="hero-9__reveal hero-9__reveal--two">From materials</span>
+          <span className="hero-9__reveal hero-9__reveal--three">to a draft EPD.</span>
         </h1>
         <p className="hero-9__description hero-9__reveal hero-9__reveal--four">
-          Turn engineering data into audit-ready EPDs, with every impact mapped,
-          verified, and ready to move the built world forward.
+          Upload your bill of materials, review its environmental impacts, and prepare an Environmental Product Declaration for verification.
         </p>
         <div className="hero-9__actions hero-9__reveal hero-9__reveal--five">
           <button type="button" onClick={onLaunchApp} className="hero-9__primary">
-            Start creating EPD <ChevronRightIcon size={16} />
+            Create a project <ChevronRightIcon size={16} />
           </button>
-          <a className="hero-9__secondary" href="#solution">
-            Explore EcoMetric
-          </a>
+          <Link className="hero-9__secondary" to="/how-it-works">
+            See how it works
+          </Link>
         </div>
       </div>
 
       <div className="hero-9__footer hero-9__reveal hero-9__reveal--six">
-        <span>Lifecycle intelligence for the products that shape our world</span>
+        <Link to="/verify">Verify a declaration</Link>
         <span className="hero-9__scroll-hint" aria-hidden="true">
           Scroll to explore <span />
         </span>

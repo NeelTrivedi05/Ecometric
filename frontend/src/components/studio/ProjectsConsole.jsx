@@ -96,6 +96,14 @@ function ProjectTitleCell({ project, onOpen }) {
   return (
     <div
       ref={containerRef}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(project);
+        }
+      }}
       onClick={() => onOpen(project)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -130,7 +138,9 @@ function ProjectTitleCell({ project, onOpen }) {
         </span>
       </div>
       <div style={{ fontSize: '11px', color: '#5b6f62', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        Model: {project.product_model} • {project.capacity_rt} RT • {project.refrigerant}
+        {project.status?.toLowerCase() === 'draft' && !project.product_model
+          ? 'Next step: choose a product and upload its bill of materials'
+          : [project.product_model, project.capacity_rt && `${project.capacity_rt} RT`, project.refrigerant].filter(Boolean).join(' / ')}
       </div>
 
       {/* Floating hover card revealing entire name and specs */}
@@ -570,20 +580,10 @@ export default function ProjectsConsole() {
     const newProj = {
       id: `proj-${Date.now()}`,
       name: 'Untitled project',
-      product_model: 'UNTITLED-500RT',
-      capacity_rt: 500,
-      refrigerant: assembledDatabase?.default_refrigerant || 'R1233zd',
-      refrigerant_charge_kg: 320,
-      gwp_total: Math.round(500 * 76.8),
-      status: 'In Calculation',
-      standard: assembledDatabase?.pcr_standard || 'UL 10010-4 Part B v2.0 & EN 15804+A2',
+      status: 'Draft',
       owner: 'You',
       last_modified: 'Just now by You',
       created_at: new Date().toISOString().split('T')[0],
-      tags: ['Chillers', 'Primary Facility LCI'],
-      preset_key: 'carrier_19dv_benchmark',
-      functional_unit: '1 ton chilling capacity over 25 years reference service life',
-      declared_unit: '1 complete chiller unit (500 RT)',
       facility: assembledDatabase?.facility_name || currentAccount?.facility_name || 'Primary Facility',
       epd_number: null,
     };

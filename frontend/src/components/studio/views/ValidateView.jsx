@@ -4,7 +4,7 @@ import { CheckIcon, AlertIcon, RefreshCwIcon, ChevronRightIcon } from '../Icons'
 import PcrCheckList, { SummaryChips } from '../PcrCheckList';
 
 // Step 4: PCR `input` rules, evaluated before the LCA is calculated.
-export default function ValidateView() {
+export default function ValidateView({ onResolve }) {
   const {
     validationResults,
     validationStale,
@@ -98,7 +98,7 @@ export default function ValidateView() {
       )}
 
       {hasRun ? (
-        <PcrCheckList report={validationResults} blockingLabel="Blocks calculation" />
+        <PcrCheckList onResolve={onResolve} report={validationResults} blockingLabel="Blocks calculation" />
       ) : !validationResults.error && (
         <div className="apple-card" style={{ padding: 48, textAlign: 'center' }}>
           <div style={{ fontSize: '16px', fontWeight: 600, color: '#1d1d1f', marginBottom: 6 }}>No check run yet</div>

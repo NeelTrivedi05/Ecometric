@@ -3437,3 +3437,19 @@ html {
     padding: 24px;
   }
 }
+
+.landing-page-root .hero-9__title {
+  font-size: clamp(46px, 7.5vw, 108px);
+  line-height: 1.02;
+  letter-spacing: -.055em;
+}
+.landing-page-root .hero-9__footer a { color: #fff; text-underline-offset: 4px; }
+@media (max-width: 760px) {
+  .landing-page-root .apple-sub-nav-inner { flex-wrap: wrap; height: auto; padding-block: 8px; }
+  .landing-page-root .apple-subnav-links {
+    display: flex; order: 3; flex-basis: 100%; overflow-x: auto; justify-content: flex-start;
+    gap: 20px; padding: 5px 2px;
+  }
+  .landing-page-root .apple-subnav-link { flex-shrink: 0; }
+  .landing-page-root .hero-9__content { padding-block: 74px 120px; }
+}

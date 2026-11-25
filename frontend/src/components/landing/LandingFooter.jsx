@@ -13,10 +13,10 @@ export default function LandingFooter() {
 
         <div className="footer-8__column">
           <h2>Product</h2>
-          <a href="#solution">Platform overview</a>
-          <a href="#how-it-works">How it works</a>
+          <a href="/overview">Platform overview</a>
+          <a href="/how-it-works">How it works</a>
           <button type="button" onClick={() => navigate('/verify')}>Verify Authenticity</button>
-          <button type="button" onClick={() => navigate('/login')}>Launch Studio</button>
+          <button type="button" onClick={() => navigate('/app')}>Launch Studio</button>
         </div>
         <div className="footer-8__column">
           <h2>Resources</h2>
@@ -35,11 +35,7 @@ export default function LandingFooter() {
       <div className="footer-8__wordmark"><img src="/brand-wordmark.png" alt="EcoMetric" /></div>
       <div className="footer-8__bottom">
         <span>© {new Date().getFullYear()} EcoMetric Systems Inc. / Built for transparent LCA.</span>
-        <div>
-          <a href="#footer">Security</a>
-          <a href="#footer">Terms of service</a>
-          <a href="#footer">Privacy policy</a>
-        </div>
+
       </div>
     </footer>
   );

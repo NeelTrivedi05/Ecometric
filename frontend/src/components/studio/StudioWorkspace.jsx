@@ -81,6 +81,7 @@ class StudioErrorBoundary extends Component {
 export default function StudioWorkspace() {
   const { projectId, phase, workspaceSlug } = useParams();
   const navigate = useNavigate();
+  const reviewTarget = useRef(null);
   const syncingPhaseRef = useRef(false);
   const {
     openProject,
@@ -127,6 +128,15 @@ export default function StudioWorkspace() {
   // Smooth scroll back to top when phase switches
   useEffect(() => {
     const mainEl = document.getElementById('studio-main-scroll');
+    if (activePhase === 'user_review' && reviewTarget.current) {
+      const target = document.getElementById(reviewTarget.current);
+      reviewTarget.current = null;
+      if (target) {
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({ block: 'center' });
+        return;
+      }
+    }
     if (mainEl) {
       mainEl.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -142,7 +152,10 @@ export default function StudioWorkspace() {
       case 'user_review':
         return <UserReviewView />;
       case 'validate':
-        return <ValidateView />;
+        return <ValidateView onResolve={(target) => {
+          reviewTarget.current = target;
+          setActivePhase('user_review');
+        }} />;
       case 'audit':
         return <AuditView />;
       case 'methodology':
