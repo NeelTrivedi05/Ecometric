@@ -255,12 +255,12 @@ export const aboutTopics: AboutTopic[] = [
   {
     id: "data-quality",
     tabLabel: "Data & Quality",
-    title: "Background LCA Databases & Uncertainty Modeling",
-    intro: "The accuracy of any LCA depends on the quality of its underlying secondary data and background databases. High-integrity EPD tools combine precise primary factory data with audited secondary background datasets. Quantitative data quality scoring and uncertainty propagation ensure that reported environmental footprints remain robust and audit-proof.",
+    title: "Data quality in a life cycle assessment",
+    intro: "Factory records tell you how much material and energy a product uses. Background datasets help estimate the impacts of supplying them.",
     points: [
       {
-        heading: "ecoinvent v3.12 LCI Database Integration",
-        body: "ecoinvent is the world's leading background life cycle inventory database, containing over 20,000 international activity datasets covering energy, raw metals, plastics, industrial chemicals, and freight transport."
+        heading: "Choosing an ecoinvent dataset",
+        body: "A factory may record the electricity it buys in kilowatt-hours. To model that purchase, select an electricity dataset in ecoinvent v3.12 that matches the region and voltage of the supply."
       },
       {
         heading: "Cutoff Allocation System Model",

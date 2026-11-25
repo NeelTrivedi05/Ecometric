@@ -17,31 +17,30 @@ export default function TopicTimeline({ topic }) {
   };
 
   return (
-    <section className="about-timeline topic-timeline" aria-labelledby="topic-timeline-title">
-      <div className="about-timeline__heading">
-        <span className="about-timeline__eyebrow">EcoMetric knowledge base</span>
-        <h2 id="topic-timeline-title">{topic.title}</h2>
-        <p className="topic-timeline__intro">{topic.intro}</p>
-      </div>
-
-      <div className="about-timeline__active">
+    <section className="about-timeline topic-timeline" aria-label={topic.title}>
+      <div className={`about-timeline__active ${topic.id === 'data-quality' ? 'topic-spread' : 'topic-spread--text'}`}>
         <div className="about-timeline__active-copy">
           <span className="about-timeline__active-date">
             {String(activeIndex + 1).padStart(2, '0')} / {String(points.length).padStart(2, '0')}
           </span>
           <div>
-            <span className="about-timeline__active-accent">{topic.tabLabel}</span>
             <h3>{activePoint.heading}</h3>
             <p>{activePoint.body}</p>
           </div>
         </div>
-        <div className="about-timeline__visual" aria-hidden="true">
-          <div className="about-timeline__visual-ring">
-            <span />
-          </div>
-          <span className="about-timeline__visual-label">VERIFIED / TRACEABLE</span>
-        </div>
+        {topic.id === 'data-quality' && (
+          <figure className="topic-spread__photo">
+            <img src="/wind-farm.webp" alt="Wind turbines above open fields at sunset" width="1200" height="800" />
+            <figcaption>Electricity generation is one input in a product inventory.</figcaption>
+          </figure>
+        )}
       </div>
+
+      <label className="topic-picker">Explore this topic
+        <select value={activeIndex} onChange={e => setActiveIndex(Number(e.target.value))}>
+          {points.map((point, index) => <option key={point.heading} value={index}>{point.heading}</option>)}
+        </select>
+      </label>
 
       <div className="about-timeline__navigation">
         <div className="about-timeline__labels">

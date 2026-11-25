@@ -3453,3 +3453,18 @@ html {
   .landing-page-root .apple-subnav-link { flex-shrink: 0; }
   .landing-page-root .hero-9__content { padding-block: 74px 120px; }
 }
+
+.declaration-guide { padding:clamp(50px,7vw,108px) 0; background:#f5f4ed; color:#22392b; }
+.declaration-guide__layout { display:grid; grid-template-columns:1fr 1fr; gap:clamp(30px,7vw,110px); align-items:center; }
+.declaration-guide h2 { font:normal clamp(38px,4.4vw,68px)/1.08 Georgia,serif; letter-spacing:-.045em; margin:0 0 24px; }
+.declaration-guide__layout > div > p { font-size:17px; line-height:1.65; max-width:55ch; margin:0 0 16px; }
+.declaration-guide a { color:#23533b; text-underline-offset:4px; }
+.declaration-guide__sheet { margin:0; background:white; border-top:3px solid #35533e; padding:clamp(18px,3.2vw,44px); }
+.declaration-guide__sheet figcaption { display:flex; justify-content:space-between; font:13px/1.4 monospace; color:#506451; }
+.declaration-guide__sheet h3 { font:normal clamp(28px,2.7vw,40px)/1.1 Georgia,serif; margin:24px 0 6px; }
+.declaration-guide__sheet p,.declaration-guide__sheet small { color:#526154; font-size:13px; }
+.declaration-guide table { width:100%; border-collapse:collapse; margin:24px 0 16px; font-size:14px; }
+.declaration-guide th,.declaration-guide td { text-align:left; font-weight:400; padding:12px 0; border-bottom:1px solid #d6dcd2; }
+.declaration-guide thead th { font-weight:600; border-bottom-color:#81917e; }
+.declaration-guide tr > :last-child { text-align:right; font-variant-numeric:tabular-nums; }
+@media(max-width:760px){.declaration-guide__layout{grid-template-columns:1fr;}}
