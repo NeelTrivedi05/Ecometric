@@ -53,7 +53,13 @@ def _connect():
             "Supabase reference store is not configured; set SUPABASE_DB_URL on the backend"
         )
     import psycopg
-    return psycopg.connect(os.environ["SUPABASE_DB_URL"], connect_timeout=10)
+    dsn = os.environ["SUPABASE_DB_URL"].strip()
+    # A raw @ in URI credentials otherwise becomes part of the pooler hostname.
+    match = re.match(r"^(postgres(?:ql)?://)([^/?#]+)(.*)$", dsn)
+    if match and match[2].count("@") > 1:
+        credentials, host = match[2].rsplit("@", 1)
+        dsn = match[1] + credentials.replace("@", "%40") + "@" + host + match[3]
+    return psycopg.connect(dsn, connect_timeout=10)
 
 
 def invalidate_cache() -> None:
@@ -79,7 +85,7 @@ def _load() -> None:
             ).fetchall()
     except Exception as exc:
         _failed_at = time.monotonic()
-        _last_error = f"{type(exc).__name__}: {exc}"
+        _last_error = f"{type(exc).__name__}: reference database connection or query failed"
         raise ReferenceStoreUnavailable(
             "Supabase reference store query failed; verify SUPABASE_DB_URL and the "
             "lca_activities/impact_indicators schema"

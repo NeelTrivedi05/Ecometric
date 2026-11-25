@@ -63,3 +63,16 @@ def test_unavailable_store_does_not_fabricate(monkeypatch):
     assert stats["unmatched"] == 1
     assert "provider_id" not in bom[0]
     assert bom[0]["match_error"] == "Reference database unavailable"
+
+
+@pytest.mark.parametrize("password", ["ex@ample", "ex%40ample"])
+def test_pooler_uri_handles_at_in_password(monkeypatch, password):
+    import psycopg
+    from psycopg.conninfo import conninfo_to_dict
+
+    monkeypatch.setenv("SUPABASE_DB_URL", f"postgresql://reader:{password}@pool.example/db?sslmode=require")
+    monkeypatch.setattr(psycopg, "connect", lambda dsn, **kwargs: conninfo_to_dict(dsn))
+    connection = lca_store._connect()
+    assert connection["host"] == "pool.example"
+    assert connection["password"] == "ex@ample"
+    assert connection["sslmode"] == "require"
