@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import InfoPage from './pages/InfoPage';
 import LoginPage from './pages/LoginPage';
@@ -79,10 +79,37 @@ function RequireAdmin() {
   return <Outlet />;
 }
 
-function ConsoleRedirect({ to = 'overview' }) {
-  const { activeOrg, loading } = useTenant();
+// Watcher to catch Supabase auth confirmation hash tokens arriving at the root domain
+function AuthCallbackWatcher() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  if (loading) {
+  useEffect(() => {
+    // If incoming on root / with Supabase auth hash (signup verification, magic link, invite, recovery)
+    if (location.pathname === '/' && location.hash) {
+      if (
+        location.hash.includes('access_token') ||
+        location.hash.includes('type=signup') ||
+        location.hash.includes('type=invite') ||
+        location.hash.includes('type=magiclink')
+      ) {
+        navigate(`/console${location.hash}`, { replace: true });
+      } else if (location.hash.includes('type=recovery')) {
+        navigate(`/reset-password${location.hash}`, { replace: true });
+      }
+    }
+  }, [location.pathname, location.hash, navigate]);
+
+  return null;
+}
+
+function ConsoleRedirect({ to = 'overview' }) {
+  const { user, loading: authLoading } = useAuth();
+  const { activeOrg, memberships, loading: tenantLoading } = useTenant();
+
+  const isLoading = authLoading || tenantLoading;
+
+  if (isLoading) {
     return (
       <main
         className="auth-page"
@@ -100,20 +127,23 @@ function ConsoleRedirect({ to = 'overview' }) {
     );
   }
 
+  // Once loading completes, if not logged in:
+  if (!user && !activeOrg) {
+    return <Navigate to="/login" replace />;
+  }
+
   let storedSlug = window.localStorage.getItem('ecometric_active_org_slug');
   if (storedSlug === 'undefined' || storedSlug === 'null' || !storedSlug) {
     storedSlug = null;
   }
-  const slug = activeOrg?.slug || storedSlug;
-  if (!slug) {
-    return <Navigate to="/login" replace />;
-  }
+  const slug = activeOrg?.slug || memberships?.[0]?.organizations?.slug || storedSlug || 'carrier-hvac';
   return <Navigate to={`/console/${slug}/${to}`} replace />;
 }
 
 export default function App() {
   return (
     <BrowserRouter>
+      <AuthCallbackWatcher />
       <TenantProvider>
         <Routes>
           {/* Marketing / Landing Page at Root */}

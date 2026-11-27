@@ -67,47 +67,8 @@ export default function UserReviewView() {
   const refurbishment_b5 = extractedData.refurbishment_b5 || {};
   const project_info = extractedData.project_info || {};
 
-  const STANDARD_DATABASE_PROVIDERS_MAP = {
-    // Direct row-index IDs from ecoinvent v3.12 Cut-off (checked against the database)
-    ecoinvent_row_15528: { activity_name: 'market for steel, low-alloyed, hot rolled', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_row_15529: { activity_name: 'market for steel, structural, 100% scrap', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_row_2621: { activity_name: 'diesel, burned in building machine', geography: 'GLO', reference_unit: 'MJ' },
-    ecoinvent_row_20713: { activity_name: 'sorting and pressing of iron scrap', geography: 'RoW', reference_unit: 'kg' },
-    ecoinvent_row_22918: { activity_name: 'treatment of municipal solid waste, municipal incineration', geography: 'RoW', reference_unit: 'kg' },
-    ecoinvent_row_14191: { activity_name: 'market for process-specific burdens, sanitary landfill', geography: 'RoW', reference_unit: 'kg' },
-    ecoinvent_steel_hot_rolled_glo: { activity_name: 'steel production, low-alloyed, hot rolled', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_copper_tube_wire_glo: { activity_name: 'wire drawing, copper', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_electric_motor_industrial_glo: { activity_name: 'electric motor production, vehicle auxiliary engine', geography: 'GLO', reference_unit: 'unit' },
-    ecoinvent_insulation_pu_rigid_rer: { activity_name: 'polyurethane foam production, rigid', geography: 'RER', reference_unit: 'kg' },
-    ecoinvent_electronics_vfd_glo: { activity_name: 'inverter production, for electric drive', geography: 'GLO', reference_unit: 'unit' },
-    ecoinvent_transport_lorry_32t_rer: { activity_name: 'transport, freight, lorry >32 metric ton, EURO 6', geography: 'RER', reference_unit: 'tkm' },
-    ecoinvent_transport_container_ship_glo: { activity_name: 'transport, freight, sea, container ship', geography: 'GLO', reference_unit: 'tkm' },
-    ecoinvent_transport_freight_train_rer: { activity_name: 'transport, freight train', geography: 'RER', reference_unit: 'tkm' },
-    ecoinvent_elec_mv_us: { activity_name: 'market for electricity, medium voltage', geography: 'US', reference_unit: 'kWh' },
-    ecoinvent_elec_tx: { activity_name: 'market for electricity, medium voltage [US-TRE]', geography: 'US-TRE', reference_unit: 'kWh' },
-    ecoinvent_elec_de: { activity_name: 'market for electricity, medium voltage [DE]', geography: 'DE', reference_unit: 'kWh' },
-    ecoinvent_elec_ae: { activity_name: 'market for electricity, medium voltage [AE]', geography: 'AE', reference_unit: 'kWh' },
-    ecoinvent_gas_burned_boiler_glo: { activity_name: 'heat production, natural gas, at boiler industrial >100kW', geography: 'GLO', reference_unit: 'MJ' },
-    ecoinvent_water_deionised_glo: { activity_name: 'deionised water production', geography: 'GLO', reference_unit: 'm3' },
-    ecoinvent_diesel_burned_building_machine_glo: { activity_name: 'diesel, burned in building machine', geography: 'GLO', reference_unit: 'MJ' },
-    ecoinvent_lubricating_oil_glo: { activity_name: 'lubricating oil production', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_diesel_dismantling_glo: { activity_name: 'diesel, burned in building machine for dismantling', geography: 'GLO', reference_unit: 'MJ' },
-    ecoinvent_waste_metal_recycling_glo: { activity_name: 'treatment of scrap steel, sorting and pressing', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_waste_incineration_glo: { activity_name: 'treatment of municipal solid waste, incineration', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_waste_landfill_glo: { activity_name: 'treatment of inert waste, sanitary landfill', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_virgin_steel_primary_glo: { activity_name: 'steel production, converter, unalloyed', geography: 'GLO', reference_unit: 'kg' },
-    ecoinvent_secondary_steel_electric_glo: { activity_name: 'steel production, electric, unalloyed', geography: 'GLO', reference_unit: 'kg' },
-  };
-
-  // Dataset shown for a stage input: stored name / unit, else the curated name for legacy ids
-  const describeStageProvider = (block, field) => {
-    const p = stageProvider(block, field);
-    if (p.id && !p.dataset) {
-      const std = STANDARD_DATABASE_PROVIDERS_MAP[p.id];
-      if (std) return { ...p, dataset: `${std.activity_name} [${std.geography}]`, unit: p.unit || std.reference_unit };
-    }
-    return p;
-  };
+  // Provider metadata is supplied by the backend reference store.
+  const describeStageProvider = (block, field) => stageProvider(block, field);
 
   // Dataset selector for one stage input (block[field]); a pick is stored as the user's choice
   const renderProviderSelector = (label, block, field, update, kind) => {

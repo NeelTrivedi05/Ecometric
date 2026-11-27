@@ -6,7 +6,7 @@ Purpose
 Reads your EPD calculation input JSON (e.g. epd_calculation_input.json)
 and extracts the emission factor (EF) value for every provider referenced
 in the JSON from the ecoinvent Cut-off Cumulative LCIA data stored in
-Supabase (engines/lca_store.py), across every impact category of the
+backend/database (engines/lca_store.py), across every impact category of the
 selected methodology. load_headers_and_data still reads the workbook
 directly for the offline analysis scripts in backend/scripts.
 """
@@ -423,6 +423,10 @@ def extract_ef_from_seed(payload: dict, target_methodology: str | None = None) -
     high-fidelity ecoinvent v3.12 industrial seed database and lcia_search_index.
     Ensures sub-10ms response latency and 100% coverage across all 46 methodologies.
     """
+    if os.getenv("ECOMETRIC_ENABLE_LOCAL_REFERENCE_FIXTURES", "").lower() != "true":
+        raise RuntimeError(
+            "Local ecoinvent fixtures are disabled; configure Supabase reference data"
+        )
     if not target_methodology:
         meta = payload.get("metadata", {})
         target_methodology = (
@@ -604,13 +608,11 @@ def extract_ef_from_lca_store(payload: dict, target_methodology: str | None = No
     """
     Matches every provider in payload to an ecoinvent row (same rules as the workbook:
     find_best_match) and reads the matched rows' values for target_methodology from
-    Supabase. Returns {} when that data is not configured or unreachable.
+    backend/database.     Raises an explicit reference-store error when Supabase is unavailable.
     """
     from app.engines import lca_store
 
     meta = lca_store.activities()
-    if meta is None:
-        return {}
     labels = {
         code: f"{method} | {category} | {indicator} [{unit}]"
         for code, method, category, indicator, unit in lca_store.indicators()
@@ -642,9 +644,8 @@ def extract_ef_from_lca_store(payload: dict, target_methodology: str | None = No
 
 def extract_ef_for_payload(payload: dict, target_methodology: str | None = None) -> dict:
     """
-    Extracts emission factor values from the ecoinvent LCIA data in Supabase for all
-    providers in payload. If that data is not configured, unreachable, or match nothing, it automatically
-    falls back to the high-fidelity ecoinvent v3.12 industrial seed database.
+    Extracts emission factor values from the ecoinvent LCIA data in backend/database for all
+    providers in payload. Supabase is the only production reference source.
     """
     if not target_methodology:
         meta = payload.get("metadata", {})
@@ -656,15 +657,7 @@ def extract_ef_for_payload(payload: dict, target_methodology: str | None = None)
             "EF v3.1"
         )
 
-    try:
-        results = extract_ef_from_lca_store(payload, target_methodology)
-        if results:
-            return results
-    except Exception as e:
-        print(f"[extract_ef_values] Notice: ecoinvent database extraction fallback ({e}). Using verified ecoinvent v3.12 seed.")
-
-    # Fallback to high-performance verified seed dataset
-    return extract_ef_from_seed(payload, target_methodology)
+    return extract_ef_from_lca_store(payload, target_methodology)
 
 
 def main():

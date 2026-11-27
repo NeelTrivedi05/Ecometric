@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { LayersTwo01, Mail01 } from '@untitledui/icons';
+import { Mail01 } from '@untitledui/icons';
 import { supabase } from '../lib/supabase';
 import BrandLogo from '../components/BrandLogo';
+import { getAuthRedirectUrl, formatAuthError } from '../lib/authRedirect';
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -21,12 +22,12 @@ export default function ForgotPasswordPage() {
     setBusy(true);
     setError('');
     setMessage('');
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+      redirectTo: getAuthRedirectUrl('/reset-password'),
     });
     setBusy(false);
     if (resetError) {
-      setError(resetError.message);
+      setError(formatAuthError(resetError));
       return;
     }
     setMessage('If an account exists for this email, a password reset link is on its way.');

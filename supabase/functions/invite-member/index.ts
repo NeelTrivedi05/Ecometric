@@ -79,8 +79,11 @@ serve(async (req: Request) => {
     // 4. Admin client with service_role to invite user via Supabase Auth
     const adminClient = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Build redirect URL
-    const origin = req.headers.get('origin') || 'http://localhost:5173'
+    // Build redirect URL: use production canonical domain for external/deployed origins
+    const reqOrigin = req.headers.get('origin') || ''
+    const origin = (reqOrigin.includes('localhost') || reqOrigin.includes('127.0.0.1'))
+      ? reqOrigin
+      : 'https://ecometric-in.vercel.app'
     const inviteRedirectTo = `${origin}/login?invite=${token || ''}&org=${organization_slug || ''}&email=${encodeURIComponent(normalizedEmail)}`
 
     // Call Supabase Auth Admin invite API

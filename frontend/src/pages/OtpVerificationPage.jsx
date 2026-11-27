@@ -1,8 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, LayersTwo01 } from '@untitledui/icons';
+import { ArrowLeft } from '@untitledui/icons';
 import { supabase } from '../lib/supabase';
 import BrandLogo from '../components/BrandLogo';
+import {
+  getAuthRedirectUrl,
+  processInviteAcceptance,
+  resolveUserOrgSlug,
+  formatAuthError,
+} from '../lib/authRedirect';
 
 const OTP_LIFETIME_SECONDS = 100;
 
@@ -36,30 +42,35 @@ export default function OtpVerificationPage() {
     const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' });
     setBusy(false);
     if (verifyError) {
-      setError(verifyError.message);
+      setError(formatAuthError(verifyError));
       return;
     }
+
+    // Stamp 24-hr session timestamp
     window.localStorage.setItem('ecometric_session_login_time', Date.now().toString());
     window.sessionStorage.removeItem('pending_otp_email');
 
-    let targetSlug = window.localStorage.getItem('ecometric_active_org_slug');
+    // Accept pending team invite if present
+    const pendingInviteToken = window.sessionStorage.getItem('pending_invite_token');
+    const pendingInviteOrg = window.sessionStorage.getItem('pending_invite_org');
+    if (verifyData?.user?.id && (pendingInviteToken || pendingInviteOrg)) {
+      await processInviteAcceptance(verifyData.user.id, email, pendingInviteToken, pendingInviteOrg);
+      window.sessionStorage.removeItem('pending_invite_token');
+      window.sessionStorage.removeItem('pending_invite_org');
+    }
+
+    // Resolve user's active organization slug
+    let targetSlug = pendingInviteOrg || window.localStorage.getItem('ecometric_active_org_slug');
     if (verifyData?.user?.id) {
-      try {
-        const { data: memberData } = await supabase
-          .from('organization_members')
-          .select('organizations(slug)')
-          .eq('user_id', verifyData.user.id)
-          .eq('status', 'active')
-          .maybeSingle();
-        if (memberData?.organizations?.slug) {
-          targetSlug = memberData.organizations.slug;
-        }
-      } catch (err) {
-        console.warn('OTP target org lookup warning:', err);
+      const resolved = await resolveUserOrgSlug(verifyData.user.id);
+      if (resolved) {
+        targetSlug = resolved;
       }
     }
     const slug = targetSlug || 'carrier-hvac';
     window.localStorage.setItem('ecometric_active_org_slug', slug);
+
+    // Redirect to active console
     navigate(`/console/${slug}/overview`, { replace: true });
   }
 
@@ -70,11 +81,14 @@ export default function OtpVerificationPage() {
     setMessage('');
     const { error: resendError } = await supabase.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: false },
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: getAuthRedirectUrl('/console'),
+      },
     });
     setBusy(false);
     if (resendError) {
-      setError(resendError.message);
+      setError(formatAuthError(resendError));
       return;
     }
     setCode('');

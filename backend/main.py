@@ -104,11 +104,14 @@ def root():
 @app.get("/health")
 @app.get("/api/health")
 def healthcheck():
+    from app.engines import lca_store
+    reference_store = lca_store.status()
     return {
-        "status": "healthy",
+        "status": "healthy" if reference_store["available"] else "degraded",
         "service": "EcoMetric Backend Engine",
         "pcr_standard": "UL 10010-4 Part B v2.0 (2018)",
-        "ecoinvent_version": "3.12"
+        "ecoinvent_version": "3.12",
+        "reference_store": reference_store,
     }
 
 @app.post("/api/validate")
