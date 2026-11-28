@@ -285,7 +285,7 @@ class ProcessChainEngine:
         """
         factors = get_activity_lcia(node_id, method_key)
         if not factors:
-            raise ValueError(f"No Supabase LCIA values found for process provider '{node_id}'")
+            raise ValueError(f"No ecoinvent LCIA values found for process provider '{node_id}'")
         return factors
 
     def list_all_process_nodes(self, sector: Optional[str] = None, search: Optional[str] = None) -> List[Dict[str, Any]]:

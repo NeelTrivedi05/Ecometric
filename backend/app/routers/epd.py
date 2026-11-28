@@ -418,7 +418,7 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
     except Exception as e:
         print(f"[EPD Router] Warning cleaning up old results files: {e}")
 
-    # Extract EF values (ecoinvent data in Supabase) and embed into calculation_record
+    # Extract EF values (ecoinvent data files in backend/database) and embed into calculation_record
     try:
         ef_results = extract_ef_for_payload(calculation_record, methodology)
         calculation_record["extracted_ef_values"] = ef_results
@@ -427,7 +427,7 @@ def calculate_anti_endpoint(payload: Dict[str, Any] = Body(default_factory=dict)
         from fastapi import HTTPException
         raise HTTPException(
             status_code=503,
-            detail=f"Supabase reference data unavailable; calculation could not load LCIA values: {e}",
+            detail=f"ecoinvent reference data unavailable; calculation could not load LCIA values: {e}",
         ) from e
 
     # Save the consolidated JSON (user inputs + EF values) to results/ directory

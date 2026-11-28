@@ -6,12 +6,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import {
   FolderIcon,
-  TagIcon,
   SearchIcon,
   PlusIcon,
   TrashIcon,
   BookOpenIcon,
-  BuildingIcon,
   LayersIcon,
   CheckIcon,
   FileTextIcon,
@@ -307,15 +305,6 @@ export default function ProjectsConsole() {
   // Navigation sidebar selection
   const [activeFolder, setActiveFolder] = useState('all'); // 'all', 'mine', 'shared', 'archived', 'epds'
   const [selectedTag, setSelectedTag] = useState(null);
-  const [customTags, setCustomTags] = useState([
-    'Chillers',
-    'Heat Pumps',
-    'Low-GWP HFO',
-    'Variable Speed',
-    'PEP Ecopassport',
-  ]);
-  const [isAddingTag, setIsAddingTag] = useState(false);
-  const [newTagInput, setNewTagInput] = useState('');
 
   // Top banner dismiss state
 
@@ -546,16 +535,6 @@ export default function ProjectsConsole() {
       setSelectedProjectIds(selectedProjectIds.filter((pId) => pId !== id));
     } else {
       setSelectedProjectIds([...selectedProjectIds, id]);
-    }
-  };
-
-  // Tag creation
-  const handleAddTag = (e) => {
-    e.preventDefault();
-    if (newTagInput.trim() && !customTags.includes(newTagInput.trim())) {
-      setCustomTags([...customTags, newTagInput.trim()]);
-      setNewTagInput('');
-      setIsAddingTag(false);
     }
   };
 
@@ -794,152 +773,10 @@ export default function ProjectsConsole() {
             </div>
           </div>
 
-          {/* Section: ORGANIZE TAGS */}
-          <div style={{ padding: '16px 16px 8px', borderTop: '1px solid #224a35', marginTop: '10px' }}>
-            <div
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                letterSpacing: '0.06em',
-                color: '#829589',
-                textTransform: 'uppercase',
-                marginBottom: '8px',
-              }}
-            >
-              Organize Tags
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {customTags.map((tag) => {
-                const isTagActive = selectedTag === tag;
-                return (
-                  <div
-                    key={tag}
-                    onClick={() => {
-                      setSelectedTag(isTagActive ? null : tag);
-                      if (activeFolder === 'epds') navigateToFolder('all');
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '6px 8px',
-                      borderRadius: '6px',
-                      fontSize: '12.5px',
-                      color: isTagActive ? '#ffffff' : '#b1c2b7',
-                      fontWeight: isTagActive ? 600 : 400,
-                      cursor: 'pointer',
-                      backgroundColor: isTagActive ? '#23523a' : 'transparent',
-                    }}
-                  >
-                    <TagIcon size={13} style={{ color: isTagActive ? '#1f7a4c' : '#73857a' }} />
-                    <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                      {tag}
-                    </span>
-                  </div>
-                );
-              })}
-
-              {isAddingTag ? (
-                <form onSubmit={handleAddTag} style={{ marginTop: '6px' }}>
-                  <input
-                    type="text"
-                    autoFocus
-                    value={newTagInput}
-                    onChange={(e) => setNewTagInput(e.target.value)}
-                    placeholder="Tag name..."
-                    style={{
-                      width: '100%',
-                      padding: '5px 8px',
-                      fontSize: '12px',
-                      backgroundColor: '#224a35',
-                      border: '1px solid #336048',
-                      borderRadius: '4px',
-                      color: '#ffffff',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                    }}
-                    onBlur={() => {
-                      if (!newTagInput.trim()) setIsAddingTag(false);
-                    }}
-                  />
-                </form>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsAddingTag(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#829589',
-                    fontSize: '12.5px',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    padding: '6px 8px',
-                    textAlign: 'left',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    marginTop: '4px',
-                  }}
-                >
-                  <PlusIcon size={12} />
-                  <span>New tag</span>
-                </button>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Bottom Utility Navigation */}
         <div style={{ padding: '12px', borderTop: '1px solid #224a35', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <div
-            style={{
-              padding: '8px 10px',
-              borderRadius: '6px',
-              fontSize: '12.5px',
-              color: '#b1c2b7',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              cursor: 'pointer',
-            }}
-            onClick={() => navigate(accountConsolePath('domain-data'))}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <BuildingIcon size={15} style={{ color: '#829589' }} />
-              <span>LCI Plant Lineage</span>
-            </div>
-            <span
-              style={{
-                fontSize: '10px',
-                fontWeight: 600,
-                backgroundColor: '#1f7a4c',
-                color: '#ffffff',
-                padding: '1px 6px',
-                borderRadius: '4px',
-              }}
-            >
-              v3.12
-            </span>
-          </div>
-
-          <div
-            style={{
-              padding: '8px 10px',
-              borderRadius: '6px',
-              fontSize: '12.5px',
-              color: '#b1c2b7',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              cursor: 'pointer',
-            }}
-            onClick={() => navigateToFolder('archived')}
-          >
-            <TrashIcon size={15} style={{ color: '#829589' }} />
-            <span>Trash</span>
-          </div>
 
           {/* Account Profile Footer Card & Popover Menu (Matching DESIGN.md & Untitled UI) */}
           <div style={{ position: 'relative', marginTop: '8px' }}>

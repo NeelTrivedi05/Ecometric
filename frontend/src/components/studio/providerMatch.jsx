@@ -100,7 +100,7 @@ const BADGE_STYLES = {
   document: { label: 'From document', color: '#6e5a12', bg: 'rgba(191, 144, 0, 0.12)', title: 'Dataset stated in the uploaded document.' },
   pending: { label: 'Matching…', color: '#6e6e73', bg: 'rgba(0, 0, 0, 0.06)', title: 'Looking up the best dataset for this line.' },
   none: { label: 'Not matched', color: '#c4271b', bg: 'rgba(255, 59, 48, 0.10)', title: 'No dataset found. Select one before calculating.' },
-  unavailable: { label: 'Reference database unavailable', color: '#9b2c2c', bg: 'rgba(155, 44, 44, 0.10)', title: 'The Supabase ecoinvent reference database is unavailable. Matching will retry.' },
+  unavailable: { label: 'Reference database unavailable', color: '#9b2c2c', bg: 'rgba(155, 44, 44, 0.10)', title: 'The ecoinvent reference database is unavailable. Matching will retry.' },
 };
 
 export function MatchBadge({ status }) {

@@ -1,17 +1,27 @@
-"""Backend-only access to the Supabase ecoinvent reference store.
+"""ecoinvent v3.12 Cut-off Cumulative LCIA data, read from the files in backend/database.
 
-The browser never receives the database credentials or direct access to these
-tables.  Only metadata is cached; impact_values JSONB is fetched in bounded
-row batches for the providers used by a calculation.
+Files:
+  lca_activities_*.parquet   one row per activity / product, split in two to stay under
+                             GitHub's file size limit. `row` is the row's position in the
+                             workbook's LCIA sheet, so provider ids stay "ecoinvent_row_<n>"
+  impact_indicators.json     [indicator_code, method, category, indicator, unit] of each
+                             impact column (col_007 ...)
+
+Activity metadata is loaded once into memory; impact values are read per calculation,
+only for the rows and indicators it uses.
 """
 
-import os
+import json
 import re
 import threading
 import time
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import pandas as pd
+
+DATABASE_DIR = Path(__file__).resolve().parents[2] / "database"
+INDICATORS_PATH = DATABASE_DIR / "impact_indicators.json"
 
 
 class ReferenceStoreError(RuntimeError):
@@ -19,7 +29,7 @@ class ReferenceStoreError(RuntimeError):
 
 
 class ReferenceStoreUnavailable(ReferenceStoreError):
-    """Supabase is not configured or cannot be queried."""
+    """The ecoinvent data files are missing or unreadable."""
 
 
 class ProviderNotFound(ReferenceStoreError):
@@ -33,77 +43,56 @@ class IndicatorNotFound(ReferenceStoreError):
 _lock = threading.Lock()
 _activities: Optional[pd.DataFrame] = None
 _indicators: Optional[List[Tuple[str, str, str, str, str]]] = None
-_loaded_at = 0.0
-_failed_at = 0.0
 _last_error: Optional[str] = None
 _last_success_at: Optional[float] = None
 
 
-def _ttl() -> float:
-    return max(1.0, float(os.getenv("SUPABASE_REFERENCE_CACHE_TTL_SECONDS", "300")))
+def _activity_files() -> List[Path]:
+    return sorted(DATABASE_DIR.glob("lca_activities_*.parquet"))
 
 
 def configured() -> bool:
-    return bool(os.getenv("SUPABASE_DB_URL"))
-
-
-def _connect():
-    if not configured():
-        raise ReferenceStoreUnavailable(
-            "Supabase reference store is not configured; set SUPABASE_DB_URL on the backend"
-        )
-    import psycopg
-    return psycopg.connect(os.environ["SUPABASE_DB_URL"], connect_timeout=10)
+    return bool(_activity_files()) and INDICATORS_PATH.exists()
 
 
 def invalidate_cache() -> None:
-    global _activities, _indicators, _loaded_at
+    global _activities, _indicators
     with _lock:
         _activities = None
         _indicators = None
-        _loaded_at = 0.0
 
 
 def _load() -> None:
-    global _activities, _indicators, _failed_at, _last_error, _loaded_at, _last_success_at
-    try:
-        with _connect() as conn:
-            rows = conn.execute(
-                "SELECT row_index, activity_name, geography, reference_product_name, "
-                "reference_product_unit FROM public.lca_activities "
-                "WHERE row_index IS NOT NULL ORDER BY row_index"
-            ).fetchall()
-            indicators = conn.execute(
-                "SELECT indicator_code, method, category, indicator, unit "
-                "FROM public.impact_indicators ORDER BY excel_column_number"
-            ).fetchall()
-    except Exception as exc:
-        _failed_at = time.monotonic()
-        _last_error = f"{type(exc).__name__}: {exc}"
+    global _activities, _indicators, _last_error, _last_success_at
+    if not configured():
         raise ReferenceStoreUnavailable(
-            "Supabase reference store query failed; verify SUPABASE_DB_URL and the "
-            "lca_activities/impact_indicators schema"
-        ) from exc
-    meta = pd.DataFrame(
-        rows, columns=["row", "activity", "geo", "product", "unit"]
-    ).set_index("row").sort_index()
-    if meta.empty or not indicators:
-        raise ReferenceStoreUnavailable(
-            "Supabase reference store is reachable but contains no activities or indicators"
+            f"ecoinvent data files are missing from {DATABASE_DIR} "
+            "(lca_activities_*.parquet and impact_indicators.json)"
         )
+    try:
+        meta = pd.concat(
+            pd.read_parquet(path, columns=["row", "activity", "geo", "product", "unit"])
+            for path in _activity_files()
+        )
+        indicators = [tuple(i) for i in json.loads(INDICATORS_PATH.read_text(encoding="utf-8"))]
+    except Exception as exc:
+        _last_error = f"{type(exc).__name__}: {exc}"
+        raise ReferenceStoreUnavailable(f"Could not read ecoinvent data files in {DATABASE_DIR}") from exc
+    meta = meta.set_index("row").sort_index()
+    if meta.empty or not indicators:
+        raise ReferenceStoreUnavailable("ecoinvent data files contain no activities or indicators")
     meta = meta.fillna("").astype(str)
     meta["activity_l"] = meta["activity"].str.lower()
     meta["product_l"] = meta["product"].str.lower()
     _activities, _indicators = meta, indicators
-    _loaded_at = time.monotonic()
     _last_success_at = time.time()
     _last_error = None
 
 
 def activities() -> pd.DataFrame:
-    if _activities is None or time.monotonic() - _loaded_at >= _ttl():
+    if _activities is None:
         with _lock:
-            if _activities is None or time.monotonic() - _loaded_at >= _ttl():
+            if _activities is None:
                 _load()
     return _activities
 
@@ -116,25 +105,23 @@ def status() -> Dict[str, Any]:
     try:
         table = activities()
         return {
-            "state": "connected",
+            "state": "loaded",
             "available": True,
             "activity_count": int(len(table)),
             "indicator_count": len(_indicators or []),
             "schema_error": None,
             "last_error": None,
             "last_successful_refresh": _last_success_at,
-            "cache_ttl_seconds": _ttl(),
         }
     except ReferenceStoreError as exc:
         return {
-            "state": "not_configured" if not configured() else "unavailable",
+            "state": "files_missing" if not configured() else "unavailable",
             "available": False,
             "activity_count": 0,
             "indicator_count": 0,
             "schema_error": _last_error,
             "last_error": str(exc),
             "last_successful_refresh": _last_success_at,
-            "cache_ttl_seconds": _ttl(),
         }
 
 
@@ -182,21 +169,20 @@ def impact_values(rows: Iterable[int], codes: List[str]) -> Dict[int, Dict[str, 
     known = {row[0] for row in indicators()}
     missing = sorted(set(codes) - known)
     if missing:
-        raise IndicatorNotFound(f"LCIA indicators not found in Supabase: {', '.join(missing)}")
+        raise IndicatorNotFound(f"LCIA indicators not found in the ecoinvent data files: {', '.join(missing)}")
+    values: Dict[int, Dict[str, float]] = {}
     try:
-        with _connect() as conn:
-            result = conn.execute(
-                "SELECT row_index, impact_values FROM public.lca_activities "
-                "WHERE row_index = ANY(%s) AND row_index IS NOT NULL",
-                (row_ids,),
-            ).fetchall()
+        for path in _activity_files():
+            df = pd.read_parquet(path, columns=["row", *codes], filters=[("row", "in", row_ids)])
+            for record in df.to_dict("records"):
+                row = int(record.pop("row"))
+                values[row] = {code: float(v) for code, v in record.items() if pd.notna(v)}
     except Exception as exc:
-        raise ReferenceStoreUnavailable("Supabase impact_values query failed") from exc
-    values = {int(row): (payload or {}) for row, payload in result}
+        raise ReferenceStoreUnavailable("Could not read impact values from the ecoinvent data files") from exc
     missing_rows = [str(row) for row in row_ids if row not in values]
     if missing_rows:
-        raise ProviderNotFound(f"ecoinvent rows not found in Supabase: {', '.join(missing_rows)}")
-    return {row: {code: values[row][code] for code in codes if code in values[row]} for row in row_ids}
+        raise ProviderNotFound(f"ecoinvent rows not found in the data files: {', '.join(missing_rows)}")
+    return values
 
 
 def provider_row(provider_id: str) -> int:
@@ -205,5 +191,5 @@ def provider_row(provider_id: str) -> int:
         raise ProviderNotFound(f"Invalid ecoinvent provider id: {provider_id}")
     row = int(match.group(1))
     if row not in activities().index:
-        raise ProviderNotFound(f"ecoinvent provider is missing from Supabase: {provider_id}")
+        raise ProviderNotFound(f"ecoinvent provider is missing from the data files: {provider_id}")
     return row

@@ -425,7 +425,7 @@ def extract_ef_from_seed(payload: dict, target_methodology: str | None = None) -
     """
     if os.getenv("ECOMETRIC_ENABLE_LOCAL_REFERENCE_FIXTURES", "").lower() != "true":
         raise RuntimeError(
-            "Local ecoinvent fixtures are disabled; configure Supabase reference data"
+            "Local ecoinvent fixtures are disabled; use the ecoinvent data files in backend/database"
         )
     if not target_methodology:
         meta = payload.get("metadata", {})
@@ -608,7 +608,7 @@ def extract_ef_from_lca_store(payload: dict, target_methodology: str | None = No
     """
     Matches every provider in payload to an ecoinvent row (same rules as the workbook:
     find_best_match) and reads the matched rows' values for target_methodology from
-    backend/database.     Raises an explicit reference-store error when Supabase is unavailable.
+    backend/database. Raises an explicit reference-store error when those files are unavailable.
     """
     from app.engines import lca_store
 
@@ -645,7 +645,7 @@ def extract_ef_from_lca_store(payload: dict, target_methodology: str | None = No
 def extract_ef_for_payload(payload: dict, target_methodology: str | None = None) -> dict:
     """
     Extracts emission factor values from the ecoinvent LCIA data in backend/database for all
-    providers in payload. Supabase is the only production reference source.
+    providers in payload. Those files are the only production reference source.
     """
     if not target_methodology:
         meta = payload.get("metadata", {})

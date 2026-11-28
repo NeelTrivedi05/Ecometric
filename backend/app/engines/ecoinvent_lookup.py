@@ -1,4 +1,4 @@
-"""Compatibility helpers backed exclusively by the Supabase reference store."""
+"""Compatibility helpers backed exclusively by the ecoinvent data files (engines/lca_store.py)."""
 
 import re
 from typing import Dict, Any, List, Optional
@@ -10,7 +10,7 @@ def _gwp_code() -> str:
     for code, _method, _category, indicator, _unit in lca_store.indicators():
         if indicator and "global warming" in indicator.lower():
             return code
-    raise lca_store.IndicatorNotFound("No global-warming indicator is present in Supabase")
+    raise lca_store.IndicatorNotFound("No global-warming indicator is present in the ecoinvent data files")
 
 
 def search_ecoinvent_activities(query: str = "", category: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -39,7 +39,7 @@ def get_activity_lcia(activity_key: str, methodology: str = "ef31") -> Dict[str,
 def _factor(query: str) -> float:
     hit = lca_store.search(query, unit="kg", limit=1)
     if not hit:
-        raise lca_store.ProviderNotFound(f"No Supabase ecoinvent activity matched '{query}'")
+        raise lca_store.ProviderNotFound(f"No ecoinvent activity matched '{query}'")
     values = get_activity_lcia(f"ecoinvent_row_{hit[0]['row_index']}")
     return values["GWP-total"]
 
@@ -59,5 +59,5 @@ def get_grid_emission_factor(grid_key: str = "US_Average", methodology: str = "e
 def get_transport_factor(mode_key: str = "lorry >32t", methodology: str = "ef31") -> float:
     hit = lca_store.search(f"transport {mode_key}", unit="tkm", limit=1)
     if not hit:
-        raise lca_store.ProviderNotFound(f"No Supabase transport activity matched '{mode_key}'")
+        raise lca_store.ProviderNotFound(f"No ecoinvent transport activity matched '{mode_key}'")
     return get_activity_lcia(f"ecoinvent_row_{hit[0]['row_index']}")["GWP-total"]

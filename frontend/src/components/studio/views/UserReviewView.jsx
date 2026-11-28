@@ -203,7 +203,7 @@ export default function UserReviewView() {
     if (!stats) {
       showNotif?.('Dataset matching is unavailable - check that the backend is running', 'Auto-Match');
     } else if (!stats.database_available && (stats.matched || stats.stages?.matched)) {
-      showNotif?.('Automatic seed-backed providers were applied. Supabase LCIA metadata will refine them when available.', 'Auto-Match Complete');
+      showNotif?.('Automatic seed-backed providers were applied. ecoinvent LCIA metadata will refine them when available.', 'Auto-Match Complete');
     } else {
       const matched = stats.matched + (stats.stages?.matched || 0);
       const kept = stats.kept + (stats.stages?.kept || 0);
